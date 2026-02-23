@@ -16,7 +16,7 @@ public class SpriteSorting : MonoBehaviour
         if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Mob"))
         {
             isColliding = true;
-            //GetComponent<SpriteRenderer>().sortingOrder = 1;
+            GetComponent<SpriteRenderer>().sortingOrder = 10;
         }
     }
 
@@ -25,7 +25,7 @@ public class SpriteSorting : MonoBehaviour
         if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Mob"))
         {
             isColliding = false;
-            //GetComponent<SpriteRenderer>().sortingOrder = 0;
+            GetComponent<SpriteRenderer>().sortingOrder = 0;
         }
     }
 }
