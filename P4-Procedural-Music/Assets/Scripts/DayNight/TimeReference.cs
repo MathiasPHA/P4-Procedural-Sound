@@ -24,6 +24,7 @@ public class TimeReference : MonoBehaviour
 
     void Awake()
     {
+        // Instantiate the scripts that are used to create the reference system
         timeMilestoneManager = GetComponent<TimeMilestoneManager>();
         dayNightMaster = GetComponent<DayNightMaster>();
     }
@@ -31,6 +32,7 @@ public class TimeReference : MonoBehaviour
 
     void Update()
     {
+        // Update the variables used to create the reference system
         time = dayNightMaster.currentTime;
         timeRounded = Mathf.RoundToInt(time);
         timeOfDay = timeMilestoneManager.currentTimeMilestone;
