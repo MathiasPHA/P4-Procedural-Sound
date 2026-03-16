@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Stone Axe
   description: Chops trees
   loreNote: Not very sharp
-  icon: {fileID: 0}
+  icon: {fileID: 4315506946141470425, guid: 8a98bc9a807961b4aa1f997e283f1d85, type: 3}
   category: 1
   maxStackSize: 1
   isDroppable: 1

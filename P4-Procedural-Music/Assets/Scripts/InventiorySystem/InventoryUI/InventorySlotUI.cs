@@ -25,9 +25,12 @@ namespace InventorySystem.UI
         [SerializeField] private Image highlightBorder;
 
         [Header("Colours")]
-        [SerializeField] private Color normalColour = new Color(0.2f, 0.2f, 0.2f, 0.8f);
         [SerializeField] private Color highlightColour = new Color(0.35f, 0.35f, 0.35f, 0.9f);
         [SerializeField] private Color hotbarSelectedColour = new Color(0.9f, 0.75f, 0.3f, 1f);
+
+        [Header("Layout")]
+        [Tooltip("Pixel padding between slot edge and icon. Keeps sprites from filling the entire slot.")]
+        [SerializeField] private float iconPadding = 6f;
 
         /// <summary>Index into the Inventory.Slots array this UI element represents.</summary>
         public int SlotIndex { get; private set; }
@@ -37,6 +40,12 @@ namespace InventorySystem.UI
 
         private InventoryUIManager _manager;
         private bool _isHighlighted;
+
+        /// <summary>
+        /// Captured from the slot background Image at init time
+        /// so we always restore the actual original colour on pointer exit.
+        /// </summary>
+        private Color _originalBackgroundColour;
 
         // =====================================================================
         // Initialisation
@@ -48,8 +57,24 @@ namespace InventorySystem.UI
             _manager = manager;
             IsHotbarSlot = isHotbar;
 
+            // Capture whatever colour the prefab's background was set to
+            if (slotBackground != null)
+                _originalBackgroundColour = slotBackground.color;
+
             if (highlightBorder != null)
                 highlightBorder.enabled = false;
+
+            // Force the icon to stretch-fill the slot with padding,
+            // so it scales correctly regardless of slot size
+            if (iconImage != null)
+            {
+                var iconRect = iconImage.rectTransform;
+                iconRect.anchorMin = Vector2.zero;
+                iconRect.anchorMax = Vector2.one;
+                iconRect.offsetMin = new Vector2(iconPadding, iconPadding);   // bottom-left inset
+                iconRect.offsetMax = new Vector2(-iconPadding, -iconPadding); // top-right inset
+                iconImage.preserveAspect = true;
+            }
 
             Refresh();
         }
@@ -183,7 +208,7 @@ namespace InventorySystem.UI
             var slot = _manager.GetSlotData(SlotIndex);
             if (slot != null && !slot.IsEmpty)
             {
-                _manager.ShowTooltip(slot.Instance, slot.Quantity, eventData.position);
+                _manager.ShowTooltip(slot.Instance, slot.Quantity, transform as RectTransform);
             }
         }
 
@@ -192,7 +217,7 @@ namespace InventorySystem.UI
             _isHighlighted = false;
 
             if (slotBackground != null)
-                slotBackground.color = normalColour;
+                slotBackground.color = _originalBackgroundColour;
 
             _manager.HideTooltip();
         }

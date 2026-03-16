@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Berries
   description: Some times maybe good sometimes mabye bad.
   loreNote: Ancient god poop
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 697f48aff71a67d4fa654fd9a6022b30, type: 3}
   category: 2
   maxStackSize: 16
   isDroppable: 1

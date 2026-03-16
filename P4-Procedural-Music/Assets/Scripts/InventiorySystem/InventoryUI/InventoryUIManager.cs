@@ -179,10 +179,6 @@ namespace InventorySystem.UI
         {
             if (!_isDragging) return;
             draggedItem.FollowPointer(screenPosition);
-
-            // Also update tooltip position if still showing
-            if (tooltip != null)
-                tooltip.UpdatePosition(screenPosition);
         }
 
         public void EndDrag(bool droppedOnSlot, int targetSlotIndex)
@@ -267,10 +263,10 @@ namespace InventorySystem.UI
 
         // --- Tooltip ---
 
-        public void ShowTooltip(ItemInstance instance, int quantity, Vector2 screenPosition)
+        public void ShowTooltip(ItemInstance instance, int quantity, RectTransform slotRect)
         {
             if (_isDragging) return; // Don't show tooltip while dragging
-            tooltip?.Show(instance, quantity, screenPosition);
+            tooltip?.Show(instance, quantity, slotRect);
         }
 
         public void HideTooltip()

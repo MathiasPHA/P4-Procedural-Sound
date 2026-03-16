@@ -7,7 +7,7 @@ namespace InventorySystem.UI
     /// <summary>
     /// Single tooltip instance used across the entire inventory UI.
     /// Displays item name, category, description, lore, and durability.
-    /// Follows the cursor with a slight offset so it doesn't obscure the slot.
+    /// Positions itself just above the hovered slot.
     /// </summary>
     public class TooltipController : MonoBehaviour
     {
@@ -21,8 +21,9 @@ namespace InventorySystem.UI
         [SerializeField] private TMPro.TextMeshProUGUI quantityText;
 
         [Header("Settings")]
-        [SerializeField] private Vector2 offset = new Vector2(16f, -16f);
-        [SerializeField] private float padding = 12f;
+        [Tooltip("Vertical gap in pixels between the slot top edge and the tooltip bottom edge")]
+        [SerializeField] private float gapAboveSlot = 8f;
+        [SerializeField] private float screenPadding = 12f;
 
         private Canvas _rootCanvas;
         private RectTransform _canvasRect;
@@ -37,9 +38,12 @@ namespace InventorySystem.UI
             Hide();
         }
 
-        public void Show(ItemInstance instance, int quantity, Vector2 screenPosition)
+        /// <summary>
+        /// Show the tooltip anchored above the given slot RectTransform.
+        /// </summary>
+        public void Show(ItemInstance instance, int quantity, RectTransform slotRect)
         {
-            if (instance == null || tooltipPanel == null) return;
+            if (instance == null || tooltipPanel == null || slotRect == null) return;
 
             var data = instance.Data;
 
@@ -106,7 +110,7 @@ namespace InventorySystem.UI
             tooltipPanel.gameObject.SetActive(true);
             _isVisible = true;
 
-            UpdatePosition(screenPosition);
+            PositionAboveSlot(slotRect);
         }
 
         public void Hide()
@@ -117,38 +121,52 @@ namespace InventorySystem.UI
         }
 
         /// <summary>
-        /// Update tooltip position to follow cursor. Call from Update when visible.
+        /// Positions the tooltip centred horizontally above the slot,
+        /// with the tooltip's bottom edge sitting just above the slot's top edge.
+        /// Clamps to screen edges so it never goes off-screen.
         /// </summary>
-        public void UpdatePosition(Vector2 screenPosition)
+        private void PositionAboveSlot(RectTransform slotRect)
         {
-            if (!_isVisible || tooltipPanel == null || _canvasRect == null) return;
+            if (_canvasRect == null) return;
 
-            Vector2 anchoredPos;
+            // Get the slot's world-space corners: [0]=bottom-left, [1]=top-left, [2]=top-right, [3]=bottom-right
+            Vector3[] slotCorners = new Vector3[4];
+            slotRect.GetWorldCorners(slotCorners);
 
-            if (_rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-            {
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    _canvasRect, screenPosition, null, out anchoredPos);
-            }
-            else
-            {
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    _canvasRect, screenPosition, _rootCanvas.worldCamera, out anchoredPos);
-            }
+            // Slot centre X and top Y in screen space
+            Camera cam = _rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay
+                ? null
+                : _rootCanvas.worldCamera;
 
-            anchoredPos += offset;
+            Vector2 slotTopLeft = RectTransformUtility.WorldToScreenPoint(cam, slotCorners[1]);
+            Vector2 slotTopRight = RectTransformUtility.WorldToScreenPoint(cam, slotCorners[2]);
 
-            // Clamp to screen bounds so the tooltip doesn't go off-screen
+            float slotCentreScreenX = (slotTopLeft.x + slotTopRight.x) * 0.5f;
+            float slotTopScreenY = slotTopLeft.y;
+
+            // Convert that screen point to canvas local space
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                _canvasRect,
+                new Vector2(slotCentreScreenX, slotTopScreenY),
+                cam,
+                out var anchoredPos
+            );
+
+            // Offset upward: tooltip pivot is (0.5, 0) so its bottom edge is at the anchor point
+            // Add the gap so it floats above the slot
+            anchoredPos.y += gapAboveSlot;
+
+            // Clamp to screen bounds
             var tooltipSize = tooltipPanel.sizeDelta;
             var canvasSize = _canvasRect.sizeDelta;
 
-            float maxX = canvasSize.x * 0.5f - tooltipSize.x - padding;
-            float minX = -canvasSize.x * 0.5f + padding;
-            float maxY = canvasSize.y * 0.5f - padding;
-            float minY = -canvasSize.y * 0.5f + tooltipSize.y + padding;
+            float halfTooltipW = tooltipSize.x * 0.5f;
+            float minX = -canvasSize.x * 0.5f + halfTooltipW + screenPadding;
+            float maxX = canvasSize.x * 0.5f - halfTooltipW - screenPadding;
+            float maxY = canvasSize.y * 0.5f - tooltipSize.y - screenPadding;
 
             anchoredPos.x = Mathf.Clamp(anchoredPos.x, minX, maxX);
-            anchoredPos.y = Mathf.Clamp(anchoredPos.y, minY, maxY);
+            anchoredPos.y = Mathf.Clamp(anchoredPos.y, -canvasSize.y * 0.5f + screenPadding, maxY);
 
             tooltipPanel.anchoredPosition = anchoredPos;
         }

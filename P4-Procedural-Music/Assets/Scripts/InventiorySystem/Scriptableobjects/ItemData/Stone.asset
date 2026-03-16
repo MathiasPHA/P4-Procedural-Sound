@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Stone
   description: A Stone
   loreNote: Its a Stone
-  icon: {fileID: 0}
+  icon: {fileID: 3084696591817005911, guid: 04f533d857f5b844abf7dde60b577d06, type: 3}
   category: 0
   maxStackSize: 64
   isDroppable: 1
