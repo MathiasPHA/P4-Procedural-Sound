@@ -32,7 +32,6 @@ public class PlayerMovement : MonoBehaviour
         }*/
 
     }
-
     private void FlipX(float x)
     {
         if (x != 0)
@@ -40,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = new Vector3(Mathf.Sign(x), 1, 1);
         }
     }
+
 
     /*private void LookAtMouse()
     {
@@ -54,6 +54,5 @@ public class PlayerMovement : MonoBehaviour
     {
         moveInput = value.Get<Vector2>();
         rb.linearVelocity = moveInput * moveSpeed;
-
     }
 }
