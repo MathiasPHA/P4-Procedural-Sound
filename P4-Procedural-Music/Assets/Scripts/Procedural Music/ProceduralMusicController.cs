@@ -43,6 +43,7 @@ namespace ProceduralMusic.Bridge
         public bool Bass = true;
         public bool Percussion = true;
         public bool Strings = true;
+        public bool Kantele = true;
         public float FMModIndexMultiplier = 1f;
 
         public static MusicStateConfig GetDefault(GameMusicState state)
@@ -57,7 +58,7 @@ namespace ProceduralMusic.Bridge
                         TempoMin = 85, TempoMax = 105,
                         BaseTensionOffset = -0.1f, MaxTension = 0.6f, RootOffset = 0,
                         Pads = true, Melody = true, Bass = true, Percussion = false,
-                        Strings = true
+                        Strings = true, Kantele = true
                     };
 
                 case GameMusicState.Dialogue:
@@ -68,7 +69,7 @@ namespace ProceduralMusic.Bridge
                         TempoMin = 70, TempoMax = 90,
                         BaseTensionOffset = -0.2f, MaxTension = 0.3f, RootOffset = 5,
                         Pads = true, Melody = false, Bass = false, Percussion = false,
-                        Strings = true
+                        Strings = true, Kantele = true
                     };
 
                 case GameMusicState.Tension:
@@ -79,7 +80,7 @@ namespace ProceduralMusic.Bridge
                         TempoMin = 90, TempoMax = 115,
                         BaseTensionOffset = 0.15f, MaxTension = 0.75f, RootOffset = 0,
                         Pads = true, Melody = true, Bass = true, Percussion = true,
-                        Strings = true, FMModIndexMultiplier = 1.5f
+                        Strings = true, Kantele = true, FMModIndexMultiplier = 1.5f
                     };
 
                 case GameMusicState.Combat:
@@ -90,7 +91,7 @@ namespace ProceduralMusic.Bridge
                         TempoMin = 85, TempoMax = 110,
                         BaseTensionOffset = 0.2f, MaxTension = 0.65f, RootOffset = -3,
                         Pads = true, Melody = true, Bass = true, Percussion = true,
-                        Strings = true, FMModIndexMultiplier = 1.5f
+                        Strings = true, Kantele = false, FMModIndexMultiplier = 1.5f
                     };
 
                 case GameMusicState.Victory:
@@ -101,7 +102,7 @@ namespace ProceduralMusic.Bridge
                         TempoMin = 105, TempoMax = 120,
                         BaseTensionOffset = -0.15f, MaxTension = 0.4f, RootOffset = 7,
                         Pads = true, Melody = true, Bass = true, Percussion = true,
-                        Strings = true
+                        Strings = true, Kantele = true
                     };
 
                 case GameMusicState.Mystery:
@@ -112,7 +113,7 @@ namespace ProceduralMusic.Bridge
                         TempoMin = 75, TempoMax = 95,
                         BaseTensionOffset = 0.15f, MaxTension = 0.55f, RootOffset = 2,
                         Pads = false, Melody = true, Bass = false, Percussion = false,
-                        Strings = true, FMModIndexMultiplier = 1.8f
+                        Strings = true, Kantele = true, FMModIndexMultiplier = 1.8f
                     };
 
                 case GameMusicState.Ambient:
@@ -123,7 +124,7 @@ namespace ProceduralMusic.Bridge
                         TempoMin = 60, TempoMax = 80,
                         BaseTensionOffset = -0.2f, MaxTension = 0.3f, RootOffset = 5,
                         Pads = true, Melody = false, Bass = false, Percussion = false,
-                        Strings = true
+                        Strings = true, Kantele = true
                     };
 
                 case GameMusicState.Spooky:
@@ -134,7 +135,7 @@ namespace ProceduralMusic.Bridge
                         TempoMin = 55, TempoMax = 75,
                         BaseTensionOffset = 0.25f, MaxTension = 0.7f, RootOffset = -6,
                         Pads = true, Melody = true, Bass = false, Percussion = false,
-                        Strings = true, FMModIndexMultiplier = 2f
+                        Strings = true, Kantele = true, FMModIndexMultiplier = 2f
                     };
 
                 default:
@@ -203,6 +204,7 @@ namespace ProceduralMusic.Bridge
         private VoiceManager _snareVoices;
         private VoiceManager _hihatVoices;
         private VoiceManager _stringsVoices;
+        private VoiceManager _kanteleVoices;
 
         private float _sampleRate;
         private bool _initialized;
@@ -230,6 +232,7 @@ namespace ProceduralMusic.Bridge
             _snareVoices = _mixer.AddInstrument(InstrumentPreset.Snare);       // 4
             _hihatVoices = _mixer.AddInstrument(InstrumentPreset.HiHat);       // 5
             _stringsVoices = _mixer.AddInstrument(InstrumentPreset.Strings);   // 6
+            _kanteleVoices = _mixer.AddInstrument(InstrumentPreset.Kantele);   // 7
 
             // Initialize composition engine
             Key startKey = new Key(StartingKey, StartingMode);
@@ -420,18 +423,21 @@ namespace ProceduralMusic.Bridge
         /// <summary>
         /// Enable/disable individual composition layers at runtime.
         /// </summary>
-        public void SetLayerEnabled(bool pad, bool melody, bool bass, bool percussion, bool strings = true)
+        public void SetLayerEnabled(bool pad, bool melody, bool bass, bool percussion,
+            bool strings = true, bool kantele = true)
         {
             _composer.EnablePad = pad;
             _composer.EnableMelody = melody;
             _composer.EnableBass = bass;
             _composer.EnablePercussion = percussion;
             _composer.EnableStrings = strings;
+            _composer.EnableKantele = kantele;
 
             if (!pad) _padVoices.AllNotesOff();
             if (!melody) _leadVoices.AllNotesOff();
             if (!bass) _bassVoices.AllNotesOff();
             if (!strings) _stringsVoices.AllNotesOff();
+            if (!kantele) _kanteleVoices.AllNotesOff();
             if (!percussion)
             {
                 _kickVoices.AllNotesOff();
@@ -485,11 +491,13 @@ namespace ProceduralMusic.Bridge
             _composer.EnableBass = config.Bass;
             _composer.EnablePercussion = config.Percussion;
             _composer.EnableStrings = config.Strings;
+            _composer.EnableKantele = config.Kantele;
 
             if (!config.Pads) _padVoices.AllNotesOff();
             if (!config.Melody) _leadVoices.AllNotesOff();
             if (!config.Bass) _bassVoices.AllNotesOff();
             if (!config.Strings) _stringsVoices.AllNotesOff();
+            if (!config.Kantele) _kanteleVoices.AllNotesOff();
             if (!config.Percussion)
             {
                 _kickVoices.AllNotesOff();

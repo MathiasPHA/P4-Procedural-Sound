@@ -290,7 +290,7 @@ namespace ProceduralMusic.Synthesis
     /// </summary>
     public class SynthVoice
     {
-        public enum SynthType { Subtractive, FM, Additive, Percussion, StringEnsemble, LegatoLead }
+        public enum SynthType { Subtractive, FM, Additive, Percussion, StringEnsemble, LegatoLead, PluckedString, HurdyGurdy }
 
         public SynthType Type = SynthType.FM;
         public bool IsActive => _ampEnvelope.IsActive;
@@ -300,6 +300,7 @@ namespace ProceduralMusic.Synthesis
 
         // Subtractive components
         private Oscillator _oscillator;
+        private Oscillator _subOsc;               // Sub-sine one octave below for bass depth
         private LowPassFilter _filter;
         private float _filterBaseFreq = 2000f;
         private float _filterEnvAmount = 4000f;
@@ -311,11 +312,15 @@ namespace ProceduralMusic.Synthesis
         private Oscillator[] _additiveOscs;
         private float[] _additiveAmps;
 
-        // Percussion
+        // Percussion — different behavior per drum type
         private Oscillator _percOsc;
         private Oscillator _noiseOsc;
+        private LowPassFilter _percNoiseFilter;  // Filter noise differently per drum
         private float _percPitchEnv;
-        private float _percPitchDecay = 0.98f;
+        private float _percPitchTarget;           // Where the pitch sweep lands
+        private float _percPitchDecay;
+        private float _percSineAmt;               // Sine vs noise balance (per drum)
+        private float _percNoiseAmt;
 
         // String ensemble: 4 detuned saw oscillators + filter + vibrato
         private Oscillator[] _stringOscs;
@@ -334,6 +339,23 @@ namespace ProceduralMusic.Synthesis
         private float _fluteVibratoFadeIn;       // Vibrato fades in over time (realistic)
         private float _fluteBreathAmount = 0.08f; // How much breath noise to mix in
 
+        // Plucked string (Karplus-Strong inspired): noise burst → delay line → filter feedback
+        // Produces kantele, guitar, or zither-like sounds
+        private float[] _pluckBuffer;             // Circular delay buffer
+        private int _pluckBufferSize;
+        private int _pluckReadIndex;
+        private float _pluckDamping = 0.996f;     // How fast the string decays
+        private LowPassFilter _pluckFilter;
+
+        // Hurdy-gurdy: square-ish oscillator + constant wheel buzz + pitch wobble
+        private Oscillator _hurdyMelodyOsc;       // Square wave for the buzzy string tone
+        private Oscillator _hurdyDroneOsc;        // Drone string (stays on root)
+        private Oscillator _hurdyBuzzNoise;       // Constant wheel grind noise
+        private LowPassFilter _hurdyFilter;       // Overall darkening filter
+        private LowPassFilter _hurdyBuzzFilter;   // Filter on the buzz
+        private LFO _hurdyWobble;                 // Pitch irregularity from wheel rotation
+        private float _hurdyDroneFreq;            // Drone pitch (root of key)
+
         // Shared
         private ADSREnvelope _ampEnvelope;
         private float _sampleRate;
@@ -342,6 +364,7 @@ namespace ProceduralMusic.Synthesis
         {
             _sampleRate = sampleRate;
             _oscillator = new Oscillator(sampleRate);
+            _subOsc = new Oscillator(sampleRate) { Waveform = Waveform.Sine };
             _filter = new LowPassFilter(sampleRate);
             _fmOperator = new FMOperator(sampleRate);
             _ampEnvelope = new ADSREnvelope(sampleRate);
@@ -355,6 +378,7 @@ namespace ProceduralMusic.Synthesis
             // Percussion
             _percOsc = new Oscillator(sampleRate) { Waveform = Waveform.Sine };
             _noiseOsc = new Oscillator(sampleRate) { Waveform = Waveform.Noise };
+            _percNoiseFilter = new LowPassFilter(sampleRate) { Cutoff = 8000f, Resonance = 0.2f };
 
             // String ensemble: 4 saw oscillators with different detunings
             _stringOscs = new Oscillator[4];
@@ -376,6 +400,18 @@ namespace ProceduralMusic.Synthesis
             // Breath noise: filtered noise mixed in for airiness
             _fluteBreathNoise = new Oscillator(sampleRate) { Waveform = Waveform.Noise };
             _fluteBreathFilter = new LowPassFilter(sampleRate) { Cutoff = 2500f, Resonance = 0.3f };
+
+            // Plucked string: pre-allocate buffer for lowest expected pitch (~60Hz)
+            _pluckBuffer = new float[(int)(sampleRate / 50f) + 1]; // Enough for ~50Hz
+            _pluckFilter = new LowPassFilter(sampleRate) { Cutoff = 3000f, Resonance = 0.05f };
+
+            // Hurdy-gurdy
+            _hurdyMelodyOsc = new Oscillator(sampleRate) { Waveform = Waveform.Square };
+            _hurdyDroneOsc = new Oscillator(sampleRate) { Waveform = Waveform.Square };
+            _hurdyBuzzNoise = new Oscillator(sampleRate) { Waveform = Waveform.Noise };
+            _hurdyFilter = new LowPassFilter(sampleRate) { Cutoff = 2000f, Resonance = 0.15f };
+            _hurdyBuzzFilter = new LowPassFilter(sampleRate) { Cutoff = 1500f, Resonance = 0.3f };
+            _hurdyWobble = new LFO(sampleRate) { Rate = 7f, Depth = 0.006f };
         }
 
         public void Configure(SynthType type, float attack, float decay, float sustain, float release,
@@ -414,6 +450,8 @@ namespace ProceduralMusic.Synthesis
                 case SynthType.Subtractive:
                     _oscillator.Frequency = freq;
                     _oscillator.Reset();
+                    _subOsc.Frequency = freq * 0.5f;  // One octave below — the deep foundation
+                    _subOsc.Reset();
                     _filter.Reset();
                     _ampEnvelope.NoteOn();
                     break;
@@ -435,9 +473,49 @@ namespace ProceduralMusic.Synthesis
                     break;
 
                 case SynthType.Percussion:
-                    _percOsc.Frequency = freq;
-                    _percPitchEnv = freq * 4f;
                     _noiseOsc.Reset();
+                    _percNoiseFilter.Reset();
+
+                    // Folk/wooden percussion — log drums, frame drums, brushes
+                    if (midiNote <= 36)
+                    {
+                        // LOG DRUM / BODHRAN: deep woody thump
+                        // Lower pitch sweep than 808, with a woody resonant body
+                        // Think of a hollow log being struck
+                        _percOsc.Frequency = 55f;
+                        _percPitchEnv = 200f;             // Moderate start — not as clicky as 808
+                        _percPitchTarget = 55f;            // Settles into a deep woody tone
+                        _percPitchDecay = 0.9992f;         // Fast but not instant
+                        _percSineAmt = 0.85f;              // Mostly tonal body
+                        _percNoiseAmt = 0.25f;             // More noise than 808 — wood is noisy
+                        _percNoiseFilter.Cutoff = 1200f;   // Mid-low — woody knock character
+                    }
+                    else if (midiNote <= 40)
+                    {
+                        // FRAME DRUM / HAND DRUM: mid-range thud with skin resonance
+                        // No snare wires — this is a bodhran or djembe-like sound
+                        // Skin slap with filtered mid-range body
+                        _percOsc.Frequency = 140f;
+                        _percPitchEnv = 280f;              // Skin slap transient
+                        _percPitchTarget = 120f;           // Settles to a warm mid tone
+                        _percPitchDecay = 0.9988f;
+                        _percSineAmt = 0.5f;               // Good body
+                        _percNoiseAmt = 0.5f;              // Equal noise — the slap of skin
+                        _percNoiseFilter.Cutoff = 3000f;   // Mid-range noise, not bright/metallic
+                    }
+                    else
+                    {
+                        // BRUSH / STICK TAP: gentle high-frequency tap
+                        // Like a stick on the rim of a drum, or brushes on wood
+                        _percOsc.Frequency = freq;
+                        _percPitchEnv = freq * 1.3f;
+                        _percPitchTarget = freq;
+                        _percPitchDecay = 0.999f;
+                        _percSineAmt = 0.1f;               // Barely any tone
+                        _percNoiseAmt = 0.9f;              // Mostly texture
+                        _percNoiseFilter.Cutoff = 6000f;   // Softer than a metal hihat
+                    }
+
                     _ampEnvelope.NoteOn();
                     break;
 
@@ -480,6 +558,33 @@ namespace ProceduralMusic.Synthesis
                     if (!isLegato)
                         _ampEnvelope.NoteOn();
                     break;
+
+                case SynthType.PluckedString:
+                    // Karplus-Strong: fill buffer with noise burst, then let it feed back
+                    // through a low-pass filter. The buffer length determines the pitch.
+                    _pluckBufferSize = Mathf.Max((int)(_sampleRate / freq), 2);
+                    _pluckBufferSize = Mathf.Min(_pluckBufferSize, _pluckBuffer.Length);
+                    _pluckReadIndex = 0;
+                    _pluckFilter.Reset();
+                    _pluckFilter.Cutoff = _filterBaseFreq;
+                    // Fill buffer with filtered noise burst — this is the "pluck"
+                    var pluckRng = new System.Random(midiNote * 31 + 17);
+                    for (int i = 0; i < _pluckBufferSize; i++)
+                        _pluckBuffer[i] = (float)(pluckRng.NextDouble() * 2.0 - 1.0) * velocity;
+                    _ampEnvelope.NoteOn();
+                    break;
+
+                case SynthType.HurdyGurdy:
+                    // Melody string plays the note pitch
+                    _hurdyMelodyOsc.Frequency = freq;
+                    // Drone string stays one octave below (or at the root)
+                    _hurdyDroneFreq = freq * 0.5f;
+                    _hurdyDroneOsc.Frequency = _hurdyDroneFreq;
+                    _hurdyFilter.Cutoff = _filterBaseFreq;
+                    _hurdyFilter.Reset();
+                    _hurdyBuzzFilter.Reset();
+                    _ampEnvelope.NoteOn();
+                    break;
             }
 
             if (Type != SynthType.LegatoLead && Type != SynthType.StringEnsemble)
@@ -511,9 +616,16 @@ namespace ProceduralMusic.Synthesis
             switch (Type)
             {
                 case SynthType.Subtractive:
-                    sample = _oscillator.NextSample();
+                    // Saw through filter gives the character/growl
+                    float sawSample = _oscillator.NextSample();
                     _filter.Cutoff = _filterBaseFreq + _filterEnvAmount * env;
-                    sample = _filter.Process(sample);
+                    sawSample = _filter.Process(sawSample);
+
+                    // Sub-sine adds deep, clean low end that cuts through
+                    float subSample = _subOsc.NextSample();
+
+                    // Mix: 60% filtered saw + 40% clean sub-sine
+                    sample = sawSample * 0.6f + subSample * 0.4f;
                     break;
 
                 case SynthType.FM:
@@ -528,9 +640,14 @@ namespace ProceduralMusic.Synthesis
                     break;
 
                 case SynthType.Percussion:
-                    _percPitchEnv *= _percPitchDecay;
+                    // Pitch sweep: exponential decay toward target
+                    _percPitchEnv = _percPitchTarget + (_percPitchEnv - _percPitchTarget) * _percPitchDecay;
                     _percOsc.Frequency = _percPitchEnv;
-                    sample = _percOsc.NextSample() * 0.6f + _noiseOsc.NextSample() * 0.4f;
+
+                    // Mix sine body + filtered noise
+                    float body = _percOsc.NextSample() * _percSineAmt;
+                    float noise = _percNoiseFilter.Process(_noiseOsc.NextSample()) * _percNoiseAmt;
+                    sample = body + noise;
                     break;
 
                 case SynthType.StringEnsemble:
@@ -539,6 +656,28 @@ namespace ProceduralMusic.Synthesis
 
                 case SynthType.LegatoLead:
                     sample = GenerateLegatoLead(env);
+                    break;
+
+                case SynthType.PluckedString:
+                    // Karplus-Strong: read from delay buffer, filter, write back
+                    // The delay line length = sample rate / frequency, so it naturally rings at pitch
+                    if (_pluckBufferSize > 0)
+                    {
+                        sample = _pluckBuffer[_pluckReadIndex];
+                        // Average current and next sample (simple low-pass) + damping
+                        int nextIdx = (_pluckReadIndex + 1) % _pluckBufferSize;
+                        float filtered = (sample + _pluckBuffer[nextIdx]) * 0.5f * _pluckDamping;
+                        _pluckBuffer[_pluckReadIndex] = filtered;
+                        _pluckReadIndex = nextIdx;
+                    }
+                    else
+                    {
+                        sample = 0f;
+                    }
+                    break;
+
+                case SynthType.HurdyGurdy:
+                    sample = GenerateHurdyGurdy(env);
                     break;
 
                 default:
@@ -621,6 +760,52 @@ namespace ProceduralMusic.Synthesis
             // Gentle overall filtering for warmth
             _legatoFilter.Cutoff = _filterBaseFreq + _filterEnvAmount * env * 0.4f;
             sample = _legatoFilter.Process(sample);
+
+            return sample;
+        }
+
+        /// <summary>
+        /// Hurdy-gurdy: buzzy, grinding medieval drone instrument.
+        /// 
+        /// The sound comes from a rosined wheel scraping strings — it's NOT bowed like a violin.
+        /// Key characteristics:
+        ///  - Square-ish waveform (strong odd harmonics = buzzy, nasal tone)
+        ///  - Constant wheel grind noise that runs the whole time, not just on attack
+        ///  - Drone string an octave below that sits on one note
+        ///  - Pitch wobble from wheel irregularity (faster/rougher than violin vibrato)
+        ///  - Dark, filtered — not bright or clean
+        /// </summary>
+        private float GenerateHurdyGurdy(float env)
+        {
+            // Pitch wobble from wheel rotation — faster and rougher than normal vibrato
+            float wobble = _hurdyWobble.NextSample();
+
+            // Melody string: square wave with wobble
+            float melodyFreq = _hurdyMelodyOsc.Frequency;
+            _hurdyMelodyOsc.Frequency = melodyFreq * (1f + wobble);
+            float melody = _hurdyMelodyOsc.NextSample();
+            _hurdyMelodyOsc.Frequency = melodyFreq; // Restore
+
+            // Drone string: an octave below, constant, also wobbles
+            float droneFreq = _hurdyDroneOsc.Frequency;
+            _hurdyDroneOsc.Frequency = droneFreq * (1f + wobble * 0.7f);
+            float drone = _hurdyDroneOsc.NextSample();
+            _hurdyDroneOsc.Frequency = droneFreq;
+
+            // Mix melody and drone
+            float toneSignal = melody * 0.55f + drone * 0.35f;
+
+            // Wheel buzz: CONSTANT filtered noise — this is what makes it a hurdy-gurdy
+            // Not gated by envelope like attack noise — the wheel always grinds
+            float buzz = _hurdyBuzzNoise.NextSample();
+            _hurdyBuzzFilter.Cutoff = 800f + _filterBaseFreq * 0.3f;
+            buzz = _hurdyBuzzFilter.Process(buzz) * 0.2f;
+
+            float sample = toneSignal + buzz;
+
+            // Dark overall filter — hurdy-gurdies are NOT bright instruments
+            _hurdyFilter.Cutoff = _filterBaseFreq + _filterEnvAmount * env * 0.2f;
+            sample = _hurdyFilter.Process(sample);
 
             return sample;
         }

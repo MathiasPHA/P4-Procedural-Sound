@@ -97,15 +97,15 @@ namespace ProceduralMusic.Composition
     public class MelodyGenerator
     {
         public int OctaveMin = 4;
-        public int OctaveMax = 5;
+        public int OctaveMax = 4;                    // Same octave — keeps melody focused
         public float RestProbability = 0.15f;
-        public float StepwiseMotionBias = 0.8f;     // Strong preference for smooth motion
+        public float StepwiseMotionBias = 1.5f;      // Much stronger stepwise preference
         public float SyncopationAmount = 0.12f;
-        public float TiedNoteProbability = 0.2f;     // More legato ties for singing quality
-        public float LeapRecoveryBias = 0.9f;        // After a leap, strongly prefer stepping back
+        public float TiedNoteProbability = 0.2f;
+        public float LeapRecoveryBias = 0.9f;
 
         private int _lastPitch = -1;
-        private int _lastInterval = 0;               // Track last interval for contour shaping
+        private int _lastInterval = 0;
         private System.Random _rng;
 
         // Rhythmic pattern library: beat offsets within a 4-beat measure.
@@ -255,14 +255,13 @@ namespace ProceduralMusic.Composition
                 foreach (int pc in scalePCs)
                 {
                     int midi = (octave + 1) * 12 + pc;
-                    float attraction = TonalPitchSpace.GetAttraction(pc, chord, key);
                     float stability = TonalPitchSpace.GetPitchStability(pc, chordPCs, scalePCs, (int)key.Root);
 
-                    float weight = stability * 0.6f + attraction * 0.4f;
-                    if (tension > 0.5f)
-                        weight = stability * 0.3f + attraction * 0.7f + (4f - stability) * tension * 0.3f;
+                    // Weight based purely on stability — chord tones always preferred.
+                    // No more "instability bonus" at high tension which was causing weird notes.
+                    float weight = stability * stability; // Squared: root=16, chord=9, scale=4, chromatic=1
 
-                    candidates.Add((midi, Mathf.Max(weight, 0.1f)));
+                    candidates.Add((midi, Mathf.Max(weight, 0.5f)));
                 }
             }
             return candidates;
@@ -272,65 +271,65 @@ namespace ProceduralMusic.Composition
             int noteIndex, int totalNotes, int[] chordPCs, int[] scalePCs,
             float beatPos, int beatsPerChord)
         {
+            // If no last pitch, start on a chord tone near the middle of the range
+            if (_lastPitch <= 0)
+            {
+                int midMidi = (OctaveMin + 1) * 12 + (int)chordPCs[0] + 7; // Roughly middle
+                _lastPitch = midMidi;
+            }
+
             var adjusted = candidates.Select(c =>
             {
                 float w = c.weight;
 
-                if (_lastPitch > 0)
+                int interval = c.midiNote - _lastPitch;
+                int distance = Mathf.Abs(interval);
+
+                // Very strong proximity bias — stepwise motion is heavily preferred
+                if (distance == 0) w *= 0.3f;           // Repeated note: possible but not preferred
+                else if (distance <= 2) w *= 1f + StepwiseMotionBias;  // 1-2 semitones: strong preference
+                else if (distance <= 3) w *= 0.6f;      // Minor/major 3rd: sometimes ok
+                else if (distance <= 5) w *= 0.15f;     // 4th/5th: rare
+                else w *= 0.02f;                         // Anything bigger: almost never
+
+                // Leap recovery: after a big jump, strongly prefer stepping back
+                if (Mathf.Abs(_lastInterval) > 4)
                 {
-                    int interval = c.midiNote - _lastPitch;
-                    int distance = Mathf.Abs(interval);
+                    bool isRecovery = (interval * _lastInterval) < 0;
+                    bool isStep = distance <= 3;
+                    if (isRecovery && isStep)
+                        w *= LeapRecoveryBias * 3f;
+                    else if (!isRecovery && distance > 2)
+                        w *= 0.05f;
+                }
 
-                    // Stepwise motion preference
-                    if (distance <= 2) w *= 1f + StepwiseMotionBias;
-                    else if (distance <= 4) w *= 0.9f;
-                    else if (distance <= 7) w *= 0.4f;
-                    else w *= 0.1f;
-
-                    // Leap recovery: if last interval was a leap (>4 semitones),
-                    // strongly prefer stepping back in the opposite direction.
-                    // This is a fundamental rule of melodic writing.
-                    if (Mathf.Abs(_lastInterval) > 4)
-                    {
-                        bool isRecovery = (interval * _lastInterval) < 0; // Opposite direction
-                        bool isStep = distance <= 3;
-                        if (isRecovery && isStep)
-                            w *= LeapRecoveryBias * 2f; // Strongly favor recovery step
-                        else if (!isRecovery && distance > 2)
-                            w *= 0.2f; // Penalize continuing in leap direction
-                    }
-
-                    // Phrase contour: first half trends upward, second half trends downward
-                    // Creates natural arch shape (like a sung phrase)
-                    float phrasePosition = (float)noteIndex / Mathf.Max(totalNotes - 1, 1);
-                    if (phrasePosition < 0.5f)
-                    {
-                        // Rising phase: slight preference for upward motion
-                        if (interval > 0 && distance <= 4) w *= 1.2f;
-                    }
-                    else
-                    {
-                        // Falling phase: slight preference for downward motion
-                        if (interval < 0 && distance <= 4) w *= 1.2f;
-                    }
+                // Phrase contour: arch shape
+                float phrasePosition = (float)noteIndex / Mathf.Max(totalNotes - 1, 1);
+                if (phrasePosition < 0.5f)
+                {
+                    if (interval > 0 && distance <= 3) w *= 1.3f;
+                }
+                else
+                {
+                    if (interval < 0 && distance <= 3) w *= 1.3f;
                 }
 
                 // Strong beats: favor chord tones
                 if (beatPos % 1f < 0.05f && chordPCs.Contains(c.midiNote % 12))
-                    w *= 1.5f;
+                    w *= 2f;
 
                 // Phrase start/end: chord tones for coherence
                 if ((noteIndex == 0 || noteIndex == totalNotes - 1) && chordPCs.Contains(c.midiNote % 12))
-                    w *= 2f;
+                    w *= 2.5f;
 
-                // Near measure end: pull toward chord tones for resolution
-                if (beatPos > beatsPerChord * 0.8f && chordPCs.Contains(c.midiNote % 12))
-                    w *= 1.3f;
+                // Near measure end: resolve toward chord tones
+                if (beatPos > beatsPerChord * 0.75f && chordPCs.Contains(c.midiNote % 12))
+                    w *= 1.5f;
 
-                return (c.midiNote, w);
+                return (c.midiNote, Mathf.Max(w, 0.001f));
             }).ToList();
 
-            float totalWeight = adjusted.Sum(a => a.w);
+            float totalWeight = adjusted.Sum(a => a.Item2);
             float roll = (float)_rng.NextDouble() * totalWeight;
             float cumulative = 0f;
 
@@ -339,7 +338,6 @@ namespace ProceduralMusic.Composition
                 cumulative += w;
                 if (roll <= cumulative)
                 {
-                    // Track interval for leap recovery on next note
                     if (_lastPitch > 0)
                         _lastInterval = midiNote - _lastPitch;
                     return midiNote;
@@ -679,12 +677,14 @@ namespace ProceduralMusic.Composition
         public int SnareInstrumentIndex = 4;
         public int HiHatInstrumentIndex = 5;
         public int StringsInstrumentIndex = 6;
+        public int KanteleInstrumentIndex = 7;
 
         public bool EnablePad = true;
         public bool EnableMelody = true;
         public bool EnableBass = true;
         public bool EnablePercussion = true;
         public bool EnableStrings = true;
+        public bool EnableKantele = true;
 
         // Scheduled events queue with absolute beat timestamps
         private List<(float absoluteBeat, NoteEvent noteEvent)> _pendingNoteOns
@@ -770,14 +770,32 @@ namespace ProceduralMusic.Composition
         private void GenerateMeasure()
         {
             float measureStart = _nextChordBeat;
+            float t = _smoothedTension;
 
-            Chord newChord = Chords.GetNextChord(_smoothedTension);
+            Chord newChord = Chords.GetNextChord(t);
 
-            // Pad: ALWAYS sustained at consistent volume — this is the harmonic glue.
-            // Without it, high tension sounds thin and broken.
-            if (EnablePad)
+            // ── Layer entry thresholds ──
+            // Each layer fades in at a specific tension level.
+            // The state's Enable flags act as a master switch — if disabled, the layer
+            // never plays regardless of tension. But if enabled, it only enters
+            // when tension crosses its threshold.
+            //
+            // Tension 0.0:  Drone (hurdy-gurdy) + Kantele — sparse, folk campfire
+            // Tension 0.15: Melody (flute) enters — a lonely tune
+            // Tension 0.3:  Strings enter — harmonic support swells in
+            // Tension 0.4:  Bass enters — grounding the harmony
+            // Tension 0.55: Percussion enters — rhythm kicks in
+
+            bool padActive = EnablePad;
+            bool kanteleActive = EnableKantele;
+            bool melodyActive = EnableMelody && t >= 0.15f;
+            bool stringsActive = EnableStrings && t >= 0.3f;
+            bool bassActive = EnableBass && t >= 0.4f;
+            bool percActive = EnablePercussion && t >= 0.55f;
+
+            // Pad (Hurdy-Gurdy drone): always present as the harmonic bed
+            if (padActive)
             {
-                // Slight extra duration for overlap into next chord (smooth transition)
                 float padDuration = BeatsPerChord + 0.15f;
                 int[] notes = newChord.GetMidiNotes(3);
                 foreach (int note in notes)
@@ -787,76 +805,74 @@ namespace ProceduralMusic.Composition
                 }
             }
 
-            // Melody: notes spread across the measure
-            if (EnableMelody)
+            // Melody (Flute): enters at tension 0.15
+            if (melodyActive)
             {
                 var melodyEvents = Melody.GeneratePhrase(
-                    newChord, CurrentKey, _smoothedTension, BeatsPerChord, LeadInstrumentIndex);
+                    newChord, CurrentKey, t, BeatsPerChord, LeadInstrumentIndex);
                 foreach (var evt in melodyEvents)
                     _pendingNoteOns.Add((measureStart + evt.BeatOffset, evt));
             }
 
-            // Bass: groove-placed notes
-            if (EnableBass)
+            // Bass: enters at tension 0.4
+            if (bassActive)
             {
                 var bassEvents = Bass.GeneratePhrase(
-                    newChord, CurrentKey, _smoothedTension, BeatsPerChord, BassInstrumentIndex);
+                    newChord, CurrentKey, t, BeatsPerChord, BassInstrumentIndex);
                 foreach (var evt in bassEvents)
                     _pendingNoteOns.Add((measureStart + evt.BeatOffset, evt));
             }
 
-            // Percussion: hits at exact 16th note positions
-            if (EnablePercussion)
+            // Percussion: enters at tension 0.55
+            if (percActive)
             {
                 var percEvents = Rhythm.GeneratePattern(
-                    _smoothedTension, BeatsPerChord,
+                    t, BeatsPerChord,
                     KickInstrumentIndex, SnareInstrumentIndex, HiHatInstrumentIndex);
                 foreach (var evt in percEvents)
                     _pendingNoteOns.Add((measureStart + evt.BeatOffset, evt));
             }
 
-            // Strings: adapt articulation to tension while ALWAYS providing harmonic support
-            if (EnableStrings)
+            // Strings: enter at tension 0.3, adapt articulation
+            if (stringsActive)
             {
                 int[] stringNotes = newChord.GetMidiNotes(4);
 
-                if (_smoothedTension < 0.4f)
+                if (t < 0.5f)
                 {
-                    // Low tension: long sustained strings, gentle staggered entry
+                    // Just entered: soft, fading in
                     for (int i = 0; i < stringNotes.Length; i++)
                     {
                         float stagger = i * 0.05f;
-                        float vel = (i == 0 || i == stringNotes.Length - 1) ? 0.5f : 0.35f;
+                        float vel = Mathf.Lerp(0.2f, 0.5f, (t - 0.3f) / 0.2f);
                         var evt = new NoteEvent(stringNotes[i], vel, BeatsPerChord - 0.1f,
                             StringsInstrumentIndex, stagger);
                         _pendingNoteOns.Add((measureStart + stagger, evt));
                     }
                 }
-                else if (_smoothedTension < 0.65f)
+                else if (t < 0.65f)
                 {
-                    // Medium tension: sustained but louder, more present
+                    // Medium: full sustained
                     for (int i = 0; i < stringNotes.Length; i++)
                     {
                         float stagger = i * 0.03f;
-                        float vel = 0.55f;
-                        var evt = new NoteEvent(stringNotes[i], vel, BeatsPerChord - 0.1f,
+                        var evt = new NoteEvent(stringNotes[i], 0.55f, BeatsPerChord - 0.1f,
                             StringsInstrumentIndex, stagger);
                         _pendingNoteOns.Add((measureStart + stagger, evt));
                     }
                 }
                 else
                 {
-                    // High tension: rhythmic pulsing on every beat — NOT staccato with gaps.
-                    // Each hit sustains until the next hit, so harmony never drops out.
-                    float stringVel = Mathf.Lerp(0.5f, 0.65f, _smoothedTension);
-                    int hitsPerMeasure = BeatsPerChord; // One hit per beat
+                    // High: rhythmic pulsing
+                    float stringVel = Mathf.Lerp(0.5f, 0.65f, t);
+                    int hitsPerMeasure = BeatsPerChord;
                     float hitSpacing = (float)BeatsPerChord / hitsPerMeasure;
 
                     for (int hit = 0; hit < hitsPerMeasure; hit++)
                     {
                         float beatPos = hit * hitSpacing;
-                        float hitDur = hitSpacing + 0.1f; // Slight overlap into next hit
-                        float hitVel = (hit == 0) ? stringVel : stringVel * 0.85f; // Beat 1 accented
+                        float hitDur = hitSpacing + 0.1f;
+                        float hitVel = (hit == 0) ? stringVel : stringVel * 0.85f;
 
                         foreach (int note in stringNotes)
                         {
@@ -866,8 +882,70 @@ namespace ProceduralMusic.Composition
                     }
                 }
             }
-        }
 
+            // Kantele: always present if enabled — the folk heartbeat
+            if (kanteleActive)
+            {
+                int[] chordPCs = newChord.GetPitchClasses();
+                int kanteleOctave = 4;
+
+                var kantelePitches = new List<int>();
+                foreach (int pc in chordPCs)
+                    kantelePitches.Add((kanteleOctave + 1) * 12 + pc);
+                kantelePitches.Add((kanteleOctave + 2) * 12 + chordPCs[0]);
+
+                if (t < 0.3f)
+                {
+                    // Sparse gentle plucks
+                    float[] pluckTimes = { 0f, 1.5f, 3f };
+                    for (int p = 0; p < pluckTimes.Length && p < kantelePitches.Count; p++)
+                    {
+                        if (pluckTimes[p] >= BeatsPerChord) break;
+                        int note = kantelePitches[p % kantelePitches.Count];
+                        float vel = 0.35f + (p == 0 ? 0.1f : 0f);
+                        _pendingNoteOns.Add((measureStart + pluckTimes[p],
+                            new NoteEvent(note, vel, 1.5f, KanteleInstrumentIndex, pluckTimes[p])));
+                    }
+                }
+                else if (t < 0.6f)
+                {
+                    // Flowing arpeggios
+                    float spacing = 0.5f;
+                    for (int p = 0; p < kantelePitches.Count; p++)
+                    {
+                        float beatPos = p * spacing;
+                        if (beatPos >= BeatsPerChord) break;
+                        float vel = 0.4f - p * 0.03f;
+                        _pendingNoteOns.Add((measureStart + beatPos,
+                            new NoteEvent(kantelePitches[p], vel, 1.0f, KanteleInstrumentIndex, beatPos)));
+                    }
+                    for (int p = 0; p < kantelePitches.Count; p++)
+                    {
+                        float beatPos = 2f + p * spacing;
+                        if (beatPos >= BeatsPerChord) break;
+                        float vel = 0.35f - p * 0.03f;
+                        _pendingNoteOns.Add((measureStart + beatPos,
+                            new NoteEvent(kantelePitches[p], vel, 1.0f, KanteleInstrumentIndex, beatPos)));
+                    }
+                }
+                else
+                {
+                    // Tremolo picking
+                    int rootNote = kantelePitches[0];
+                    int fifthNote = kantelePitches.Count > 2 ? kantelePitches[2] : rootNote;
+                    float spacing = 0.25f;
+                    for (int p = 0; p < BeatsPerChord / spacing; p++)
+                    {
+                        float beatPos = p * spacing;
+                        if (beatPos >= BeatsPerChord) break;
+                        int note = (p % 2 == 0) ? rootNote : fifthNote;
+                        float vel = 0.3f + (p % 4 == 0 ? 0.1f : 0f);
+                        _pendingNoteOns.Add((measureStart + beatPos,
+                            new NoteEvent(note, vel, 0.3f, KanteleInstrumentIndex, beatPos)));
+                    }
+                }
+            }
+        }
         public void ChangeKey(Key newKey)
         {
             CurrentKey = newKey;

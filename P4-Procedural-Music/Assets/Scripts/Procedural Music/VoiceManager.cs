@@ -39,13 +39,18 @@ namespace ProceduralMusic.Synthesis
         public float Volume = 0.5f;
         public float Pan = 0f;
 
+        /// <summary>
+        /// Drone pad: dark, grinding hurdy-gurdy texture.
+        /// Square wave strings + constant wheel buzz + pitch wobble.
+        /// </summary>
         public static InstrumentPreset Pad => new InstrumentPreset
         {
-            Name = "Pad",
-            SynthType = SynthVoice.SynthType.Additive,
-            MaxPolyphony = 6,
+            Name = "HurdyGurdy",
+            SynthType = SynthVoice.SynthType.HurdyGurdy,
+            MaxPolyphony = 4,
             Attack = 0.8f, Decay = 0.3f, Sustain = 0.8f, Release = 1.5f,
-            Volume = 0.25f
+            FilterCutoff = 1800f, FilterEnvAmount = 600f,
+            Volume = 0.22f
         };
 
         public static InstrumentPreset Lead => new InstrumentPreset
@@ -63,37 +68,36 @@ namespace ProceduralMusic.Synthesis
             Name = "Bass",
             SynthType = SynthVoice.SynthType.Subtractive,
             MaxPolyphony = 1,
-            Attack = 0.005f, Decay = 0.15f, Sustain = 0.5f, Release = 0.1f,
-            OscWaveform = Waveform.Saw, FilterCutoff = 800f, FilterEnvAmount = 3000f,
-            Volume = 0.4f
+            Attack = 0.003f, Decay = 0.2f, Sustain = 0.75f, Release = 0.15f,
+            OscWaveform = Waveform.Saw, FilterCutoff = 400f, FilterEnvAmount = 800f,
+            Volume = 0.6f
         };
 
         public static InstrumentPreset Kick => new InstrumentPreset
         {
-            Name = "Kick",
+            Name = "LogDrum",
             SynthType = SynthVoice.SynthType.Percussion,
             MaxPolyphony = 1,
-            Attack = 0.001f, Decay = 0.2f, Sustain = 0f, Release = 0.1f,
-            Volume = 0.5f
+            Attack = 0.001f, Decay = 0.45f, Sustain = 0f, Release = 0.2f,
+            Volume = 0.85f
         };
 
         public static InstrumentPreset Snare => new InstrumentPreset
         {
-            Name = "Snare",
+            Name = "FrameDrum",
             SynthType = SynthVoice.SynthType.Percussion,
             MaxPolyphony = 1,
-            Attack = 0.001f, Decay = 0.12f, Sustain = 0f, Release = 0.08f,
-            Volume = 0.35f
+            Attack = 0.001f, Decay = 0.22f, Sustain = 0f, Release = 0.12f,
+            Volume = 0.45f
         };
 
         public static InstrumentPreset HiHat => new InstrumentPreset
         {
-            Name = "HiHat",
+            Name = "Brush",
             SynthType = SynthVoice.SynthType.Percussion,
             MaxPolyphony = 1,
-            Attack = 0.001f, Decay = 0.04f, Sustain = 0f, Release = 0.03f,
-            OscWaveform = Waveform.Noise, FilterCutoff = 10000f,
-            Volume = 0.2f
+            Attack = 0.002f, Decay = 0.06f, Sustain = 0f, Release = 0.04f,
+            Volume = 0.18f  // Quieter — subtle texture
         };
 
         /// <summary>
@@ -154,6 +158,35 @@ namespace ProceduralMusic.Synthesis
             Attack = 0.3f, Decay = 0.15f, Sustain = 0.8f, Release = 0.8f,
             FilterCutoff = 2000f, FilterEnvAmount = 1500f,
             PortamentoTime = 0.05f, VibratoRate = 5f, VibratoDepth = 0.004f,
+            Volume = 0.35f
+        };
+
+        /// <summary>
+        /// Kantele / plucked zither: bright plucked string that rings out.
+        /// Uses Karplus-Strong synthesis. Perfect for folk arpeggios.
+        /// Think Over the Garden Wall guitar or Finnish kantele.
+        /// </summary>
+        public static InstrumentPreset Kantele => new InstrumentPreset
+        {
+            Name = "Kantele",
+            SynthType = SynthVoice.SynthType.PluckedString,
+            MaxPolyphony = 8,
+            Attack = 0.001f, Decay = 1.5f, Sustain = 0f, Release = 0.5f,
+            FilterCutoff = 3500f, FilterEnvAmount = 0f,
+            Volume = 0.7f
+        };
+
+        /// <summary>
+        /// Darker plucked string — gut-string guitar feel.
+        /// Less bright, longer sustain, warmer.
+        /// </summary>
+        public static InstrumentPreset GutGuitar => new InstrumentPreset
+        {
+            Name = "GutGuitar",
+            SynthType = SynthVoice.SynthType.PluckedString,
+            MaxPolyphony = 6,
+            Attack = 0.001f, Decay = 2.0f, Sustain = 0f, Release = 0.8f,
+            FilterCutoff = 2000f, FilterEnvAmount = 0f,
             Volume = 0.35f
         };
     }

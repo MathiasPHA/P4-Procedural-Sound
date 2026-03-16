@@ -52,6 +52,7 @@ namespace ProceduralMusic.Examples
         private bool _enableBass = true;
         private bool _enablePerc = true;
         private bool _enableStrings = true;
+        private bool _enableKantele = true;
         private int _selectedKeyRoot;
         private int _selectedMode;
         private int _selectedState;
@@ -59,7 +60,8 @@ namespace ProceduralMusic.Examples
             "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
         };
         private readonly string[] _modeNames = {
-            "Major", "Natural Minor", "Harmonic Minor", "Dorian", "Mixolydian", "Aeolian"
+            "Major", "Natural Minor", "Harmonic Minor", "Dorian", "Mixolydian", "Aeolian",
+            "Phrygian", "Locrian"
         };
         private readonly string[] _stateNames;
 
@@ -67,7 +69,8 @@ namespace ProceduralMusic.Examples
         private int _testOctave = 4;
         private int _testInstrument;
         private readonly string[] _instrumentNames = {
-            "Pad (Additive)", "Flute (Legato)", "Bass (Subtractive)", "Kick", "Snare", "HiHat", "Strings"
+            "HurdyGurdy (Drone)", "Flute (Legato)", "Bass (Sub)", "Log Drum", "Frame Drum", "Brush",
+            "Strings", "Kantele"
         };
         private float _testVelocity = 0.8f;
         private int _lastTriggeredNote = -1;
@@ -384,18 +387,18 @@ namespace ProceduralMusic.Examples
             bool newBas = GUILayout.Toggle(_enableBass, " Bass");
             bool newPer = GUILayout.Toggle(_enablePerc, " Percussion");
             bool newStr = GUILayout.Toggle(_enableStrings, " Strings");
+            bool newKan = GUILayout.Toggle(_enableKantele, " Kantele");
 
             if (newPad != _enablePad || newMel != _enableMelody ||
-                newBas != _enableBass || newPer != _enablePerc || newStr != _enableStrings)
+                newBas != _enableBass || newPer != _enablePerc ||
+                newStr != _enableStrings || newKan != _enableKantele)
             {
                 _enablePad = newPad;
                 _enableMelody = newMel;
                 _enableBass = newBas;
                 _enablePerc = newPer;
                 _enableStrings = newStr;
-                // Access the composition engine through reflection or make these public
-                // For now we use the game state approach - but we also need direct access.
-                // Let's toggle via the controller's fields:
+                _enableKantele = newKan;
                 ApplyLayerToggles();
             }
 
@@ -833,7 +836,8 @@ namespace ProceduralMusic.Examples
 
         private void ApplyLayerToggles()
         {
-            _music.SetLayerEnabled(_enablePad, _enableMelody, _enableBass, _enablePerc, _enableStrings);
+            _music.SetLayerEnabled(_enablePad, _enableMelody, _enableBass, _enablePerc,
+                _enableStrings, _enableKantele);
         }
 
         private List<VoiceManager> GetInstrumentList()
