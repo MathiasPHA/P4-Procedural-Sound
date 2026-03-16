@@ -6,6 +6,7 @@ using UnityEngine.Timeline;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
+    private Vector2 moveInput;
     //private Vector3 mouseWorldPosition;
 
     [SerializeField] private float moveSpeed;
@@ -17,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        FlipX(moveInput.x);
         /*LookAtMouse();
         if (body.linearVelocity.x != 0 || body.linearVelocity.y != 0)
         {
@@ -31,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    /*private void FlipX(float x)
+    private void FlipX(float x)
     {
         if (x != 0)
         {
@@ -39,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void LookAtMouse()
+    /*private void LookAtMouse()
     {
         mouseWorldPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         var mouseForwardPosition = mouseWorldPosition + (Camera.main.transform.forward * 10.0f);
@@ -50,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnMove(InputValue value)
     {
-        var moveInput = value.Get<Vector2>();
+        moveInput = value.Get<Vector2>();
         rb.linearVelocity = moveInput * moveSpeed;
 
     }
