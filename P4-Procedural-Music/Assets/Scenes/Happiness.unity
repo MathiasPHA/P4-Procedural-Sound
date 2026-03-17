@@ -691,6 +691,10 @@ PrefabInstance:
       value: HappinessMeter
       objectReference: {fileID: 0}
     - target: {fileID: 7522288208616733920, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7522288208616733920, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
@@ -728,15 +732,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8334237477380076586, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.03
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 8334237477380076586, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.03
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 8334237477380076586, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.03
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 8334237477380076586, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
       propertyPath: m_LocalPosition.x
