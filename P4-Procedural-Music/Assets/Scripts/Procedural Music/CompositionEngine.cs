@@ -189,7 +189,9 @@ namespace ProceduralMusic.Composition
                     beatPos, beatsPerChord);
 
                 // Velocity: clear accent pattern, capped so melody doesn't overwhelm
-                float velocity = Mathf.Lerp(0.45f, 0.75f, tension); // Capped at 0.75 not 0.85
+                // Velocity: loud and expressive when soloing (low tension),
+                // softer and blending when part of the ensemble (high tension)
+                float velocity = Mathf.Lerp(0.7f, 0.45f, tension); // Louder at LOW tension
                 bool isDownbeat = beatPos < 0.05f;
                 bool isStrongBeat = (beatPos % 1f < 0.05f) && (Mathf.RoundToInt(beatPos) % 2 == 0);
                 if (isDownbeat) velocity *= 1.1f;
@@ -250,18 +252,33 @@ namespace ProceduralMusic.Composition
             int[] scalePCs, int[] chordPCs)
         {
             var candidates = new List<(int midiNote, float weight)>();
+
+            // At low tension the flute is the soloist — it can wander through scale tones freely.
+            // At high tension other instruments are playing, so the flute should stick to chord tones
+            // to blend with the ensemble rather than clash.
+            // chordStrictness: 0 = free/melodic, 1 = locked to chord tones
+            float chordStrictness = Mathf.Clamp01((tension - 0.2f) / 0.5f); // 0 below 0.2, 1 above 0.7
+
             for (int octave = OctaveMin; octave <= OctaveMax; octave++)
             {
                 foreach (int pc in scalePCs)
                 {
                     int midi = (octave + 1) * 12 + pc;
-                    float stability = TonalPitchSpace.GetPitchStability(pc, chordPCs, scalePCs, (int)key.Root);
+                    bool isChordTone = chordPCs.Contains(pc);
 
-                    // Weight based purely on stability — chord tones always preferred.
-                    // No more "instability bonus" at high tension which was causing weird notes.
-                    float weight = stability * stability; // Squared: root=16, chord=9, scale=4, chromatic=1
+                    float weight;
+                    if (isChordTone)
+                    {
+                        // Chord tones always have decent weight
+                        weight = Mathf.Lerp(9f, 20f, chordStrictness);
+                    }
+                    else
+                    {
+                        // Scale tones: freely available at low tension, suppressed at high
+                        weight = Mathf.Lerp(4f, 0.5f, chordStrictness);
+                    }
 
-                    candidates.Add((midi, Mathf.Max(weight, 0.5f)));
+                    candidates.Add((midi, weight));
                 }
             }
             return candidates;
@@ -271,10 +288,9 @@ namespace ProceduralMusic.Composition
             int noteIndex, int totalNotes, int[] chordPCs, int[] scalePCs,
             float beatPos, int beatsPerChord)
         {
-            // If no last pitch, start on a chord tone near the middle of the range
             if (_lastPitch <= 0)
             {
-                int midMidi = (OctaveMin + 1) * 12 + (int)chordPCs[0] + 7; // Roughly middle
+                int midMidi = (OctaveMin + 1) * 12 + (int)chordPCs[0] + 7;
                 _lastPitch = midMidi;
             }
 
@@ -285,14 +301,14 @@ namespace ProceduralMusic.Composition
                 int interval = c.midiNote - _lastPitch;
                 int distance = Mathf.Abs(interval);
 
-                // Very strong proximity bias — stepwise motion is heavily preferred
-                if (distance == 0) w *= 0.3f;           // Repeated note: possible but not preferred
-                else if (distance <= 2) w *= 1f + StepwiseMotionBias;  // 1-2 semitones: strong preference
-                else if (distance <= 3) w *= 0.6f;      // Minor/major 3rd: sometimes ok
-                else if (distance <= 5) w *= 0.15f;     // 4th/5th: rare
-                else w *= 0.02f;                         // Anything bigger: almost never
+                // Stepwise motion preference
+                if (distance == 0) w *= 0.3f;
+                else if (distance <= 2) w *= 1f + StepwiseMotionBias;
+                else if (distance <= 3) w *= 0.6f;
+                else if (distance <= 5) w *= 0.15f;
+                else w *= 0.02f;
 
-                // Leap recovery: after a big jump, strongly prefer stepping back
+                // Leap recovery
                 if (Mathf.Abs(_lastInterval) > 4)
                 {
                     bool isRecovery = (interval * _lastInterval) < 0;
@@ -344,7 +360,7 @@ namespace ProceduralMusic.Composition
                 }
             }
 
-            return adjusted[0].midiNote;
+            return adjusted[0].Item1;
         }
     }
 
@@ -667,7 +683,8 @@ namespace ProceduralMusic.Composition
 
         public float Tempo = 120f;
         public int BeatsPerChord = 4;
-        public float TensionTarget = 0.3f;
+        public float TensionTarget = 0.3f;       // Clamped by MaxTension — controls chord selection
+        public float LayerTension = 0.3f;         // Unclamped — controls which layers play
         public Key CurrentKey;
 
         public int PadInstrumentIndex = 0;
@@ -695,6 +712,7 @@ namespace ProceduralMusic.Composition
         private float _currentBeat;
         private float _nextChordBeat;
         private float _smoothedTension;
+        private float _smoothedLayerTension;
         private bool _firstUpdate = true;
 
         public float CurrentBeat => _currentBeat;
@@ -720,6 +738,7 @@ namespace ProceduralMusic.Composition
             noteOffs = new List<(int, int)>();
 
             _smoothedTension = Mathf.Lerp(_smoothedTension, TensionTarget, deltaTime * 2f);
+            _smoothedLayerTension = Mathf.Lerp(_smoothedLayerTension, LayerTension, deltaTime * 2f);
 
             float beatsPerSecond = Tempo / 60f;
             float previousBeat = _currentBeat;
@@ -770,15 +789,14 @@ namespace ProceduralMusic.Composition
         private void GenerateMeasure()
         {
             float measureStart = _nextChordBeat;
-            float t = _smoothedTension;
+            float t = _smoothedTension;         // Clamped by MaxTension — for chord/musical decisions
+            float lt = _smoothedLayerTension;   // Unclamped — for layer entry decisions
 
             Chord newChord = Chords.GetNextChord(t);
 
             // ── Layer entry thresholds ──
-            // Each layer fades in at a specific tension level.
-            // The state's Enable flags act as a master switch — if disabled, the layer
-            // never plays regardless of tension. But if enabled, it only enters
-            // when tension crosses its threshold.
+            // Uses unclamped LayerTension so MaxTension doesn't prevent instruments from entering.
+            // MaxTension only affects harmonic choices (which chords TPS picks).
             //
             // Tension 0.0:  Drone (hurdy-gurdy) + Kantele — sparse, folk campfire
             // Tension 0.15: Melody (flute) enters — a lonely tune
@@ -788,10 +806,10 @@ namespace ProceduralMusic.Composition
 
             bool padActive = EnablePad;
             bool kanteleActive = EnableKantele;
-            bool melodyActive = EnableMelody && t >= 0.15f;
-            bool stringsActive = EnableStrings && t >= 0.3f;
-            bool bassActive = EnableBass && t >= 0.4f;
-            bool percActive = EnablePercussion && t >= 0.55f;
+            bool melodyActive = EnableMelody && lt >= 0.15f;
+            bool stringsActive = EnableStrings && lt >= 0.3f;
+            bool bassActive = EnableBass && lt >= 0.4f;
+            bool percActive = EnablePercussion && lt >= 0.55f;
 
             // Pad (Hurdy-Gurdy drone): always present as the harmonic bed
             if (padActive)

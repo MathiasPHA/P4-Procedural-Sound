@@ -70,7 +70,7 @@ namespace ProceduralMusic.Synthesis
             MaxPolyphony = 1,
             Attack = 0.003f, Decay = 0.2f, Sustain = 0.75f, Release = 0.15f,
             OscWaveform = Waveform.Saw, FilterCutoff = 400f, FilterEnvAmount = 800f,
-            Volume = 0.6f
+            Volume = 0.38f
         };
 
         public static InstrumentPreset Kick => new InstrumentPreset

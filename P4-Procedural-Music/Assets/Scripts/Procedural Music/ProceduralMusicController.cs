@@ -264,11 +264,14 @@ namespace ProceduralMusic.Bridge
                 _previousState = CurrentState;
             }
 
-            // Update composer with current tension, clamped by state's max
+            // Update composer with current tension
             var config = _stateConfigs[CurrentState];
             float effectiveTension = Mathf.Clamp01(Tension + config.BaseTensionOffset);
-            effectiveTension = Mathf.Min(effectiveTension, config.MaxTension);
-            _composer.TensionTarget = effectiveTension;
+
+            // MaxTension only clamps HARMONIC tension (chord choices via TPS).
+            // Layer entry uses the unclamped tension so instruments aren't cut off.
+            _composer.TensionTarget = Mathf.Min(effectiveTension, config.MaxTension);
+            _composer.LayerTension = effectiveTension;
             _composer.Tempo = Mathf.Lerp(config.TempoMin, config.TempoMax, Tension);
             _mixer.MasterVolume = MasterVolume;
 
