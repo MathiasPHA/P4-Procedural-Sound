@@ -9,5 +9,7 @@ public class ChangeToTension : MonoBehaviour
     public void OnButtonClicked()
     {
         proceduralMusicController.SetKey(PitchClass.D);
+        proceduralMusicController.SetGameState(GameMusicState.Tension);
+        proceduralMusicController.SetTension(0.8f);
     }
 }
