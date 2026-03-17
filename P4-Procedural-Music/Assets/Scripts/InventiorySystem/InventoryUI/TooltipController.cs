@@ -7,7 +7,8 @@ namespace InventorySystem.UI
     /// <summary>
     /// Single tooltip instance used across the entire inventory UI.
     /// Displays item name, category, description, lore, and durability.
-    /// Positions itself just above the hovered slot.
+    /// Positions itself near the hovered slot using a simple offset.
+    /// Flips direction automatically when it would go off-screen.
     /// </summary>
     public class TooltipController : MonoBehaviour
     {
@@ -20,97 +21,37 @@ namespace InventorySystem.UI
         [SerializeField] private TMPro.TextMeshProUGUI durabilityText;
         [SerializeField] private TMPro.TextMeshProUGUI quantityText;
 
-        [Header("Settings")]
-        [Tooltip("Vertical gap in pixels between the slot top edge and the tooltip bottom edge")]
-        [SerializeField] private float gapAboveSlot = 8f;
+        [Header("Offset")]
+        [Tooltip("Offset from the slot in local canvas units. " +
+                 "Positive Y = above the slot. Tweak in inspector to taste.")]
+        [SerializeField] private Vector2 offset = new Vector2(0f, 40f);
+
+        [Tooltip("Minimum distance from screen edges before the tooltip flips direction")]
         [SerializeField] private float screenPadding = 12f;
 
-        private Canvas _rootCanvas;
-        private RectTransform _canvasRect;
         private bool _isVisible;
 
         private void Awake()
         {
-            _rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
-            if (_rootCanvas != null)
-                _canvasRect = _rootCanvas.transform as RectTransform;
-
             Hide();
         }
 
         /// <summary>
-        /// Show the tooltip anchored above the given slot RectTransform.
+        /// Show the tooltip near the given slot.
         /// </summary>
         public void Show(ItemInstance instance, int quantity, RectTransform slotRect)
         {
             if (instance == null || tooltipPanel == null || slotRect == null) return;
 
-            var data = instance.Data;
+            PopulateContent(instance, quantity);
 
-            // Name
-            if (nameText != null)
-            {
-                nameText.text = data.displayName;
-                nameText.color = GetCategoryColour(data.category);
-            }
-
-            // Category
-            if (categoryText != null)
-            {
-                categoryText.text = data.category.ToString();
-            }
-
-            // Description
-            if (descriptionText != null)
-            {
-                descriptionText.text = data.description;
-                descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(data.description));
-            }
-
-            // Lore note (the cute little flavour text)
-            if (loreText != null)
-            {
-                loreText.text = !string.IsNullOrEmpty(data.loreNote)
-                    ? $"\"{data.loreNote}\""
-                    : "";
-                loreText.gameObject.SetActive(!string.IsNullOrEmpty(data.loreNote));
-            }
-
-            // Durability
-            if (durabilityText != null)
-            {
-                if (data.hasInstanceState)
-                {
-                    durabilityText.text = $"Durability: {instance.CurrentDurability}/{data.maxDurability}";
-                    durabilityText.gameObject.SetActive(true);
-                }
-                else
-                {
-                    durabilityText.gameObject.SetActive(false);
-                }
-            }
-
-            // Quantity
-            if (quantityText != null)
-            {
-                if (quantity > 1)
-                {
-                    quantityText.text = $"Quantity: {quantity}";
-                    quantityText.gameObject.SetActive(true);
-                }
-                else
-                {
-                    quantityText.gameObject.SetActive(false);
-                }
-            }
-
-            // Force layout rebuild so size is correct before positioning
+            // Rebuild layout so sizeDelta is accurate before positioning
             LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipPanel);
 
             tooltipPanel.gameObject.SetActive(true);
             _isVisible = true;
 
-            PositionAboveSlot(slotRect);
+            PositionNearSlot(slotRect);
         }
 
         public void Hide()
@@ -120,55 +61,97 @@ namespace InventorySystem.UI
                 tooltipPanel.gameObject.SetActive(false);
         }
 
-        /// <summary>
-        /// Positions the tooltip centred horizontally above the slot,
-        /// with the tooltip's bottom edge sitting just above the slot's top edge.
-        /// Clamps to screen edges so it never goes off-screen.
-        /// </summary>
-        private void PositionAboveSlot(RectTransform slotRect)
+        // =================================================================
+        // Positioning
+        // =================================================================
+
+        private void PositionNearSlot(RectTransform slotRect)
         {
-            if (_canvasRect == null) return;
+            // Both the slot and the tooltip live on the same Screen Space
+            // Overlay canvas, so we can work directly in world/screen space.
 
-            // Get the slot's world-space corners: [0]=bottom-left, [1]=top-left, [2]=top-right, [3]=bottom-right
-            Vector3[] slotCorners = new Vector3[4];
-            slotRect.GetWorldCorners(slotCorners);
+            Vector3 slotPos = slotRect.position;
+            float slotHalfH = slotRect.rect.height * slotRect.lossyScale.y * 0.5f;
 
-            // Slot centre X and top Y in screen space
-            Camera cam = _rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay
-                ? null
-                : _rootCanvas.worldCamera;
+            float tooltipH = tooltipPanel.rect.height * tooltipPanel.lossyScale.y;
+            float tooltipHalfW = tooltipPanel.rect.width * tooltipPanel.lossyScale.x * 0.5f;
 
-            Vector2 slotTopLeft = RectTransformUtility.WorldToScreenPoint(cam, slotCorners[1]);
-            Vector2 slotTopRight = RectTransformUtility.WorldToScreenPoint(cam, slotCorners[2]);
+            // Scale the offset by canvas scale so the inspector values
+            // behave consistently regardless of CanvasScaler settings
+            float scaledOffsetX = offset.x * tooltipPanel.lossyScale.x;
+            float scaledOffsetY = offset.y * tooltipPanel.lossyScale.y;
 
-            float slotCentreScreenX = (slotTopLeft.x + slotTopRight.x) * 0.5f;
-            float slotTopScreenY = slotTopLeft.y;
+            // Default position: centred above the slot
+            float x = slotPos.x + scaledOffsetX;
+            float y = slotPos.y + slotHalfH + scaledOffsetY;
 
-            // Convert that screen point to canvas local space
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _canvasRect,
-                new Vector2(slotCentreScreenX, slotTopScreenY),
-                cam,
-                out var anchoredPos
+            // If the tooltip would overflow the top of the screen, flip below
+            if (y + tooltipH > Screen.height - screenPadding)
+            {
+                y = slotPos.y - slotHalfH - scaledOffsetY - tooltipH;
+            }
+
+            // If it would go below the screen bottom, push it back up
+            if (y < screenPadding)
+            {
+                y = screenPadding;
+            }
+
+            // Clamp horizontally
+            x = Mathf.Clamp(
+                x,
+                tooltipHalfW + screenPadding,
+                Screen.width - tooltipHalfW - screenPadding
             );
 
-            // Offset upward: tooltip pivot is (0.5, 0) so its bottom edge is at the anchor point
-            // Add the gap so it floats above the slot
-            anchoredPos.y += gapAboveSlot;
+            tooltipPanel.position = new Vector3(x, y, slotPos.z);
+        }
 
-            // Clamp to screen bounds
-            var tooltipSize = tooltipPanel.sizeDelta;
-            var canvasSize = _canvasRect.sizeDelta;
+        // =================================================================
+        // Content
+        // =================================================================
 
-            float halfTooltipW = tooltipSize.x * 0.5f;
-            float minX = -canvasSize.x * 0.5f + halfTooltipW + screenPadding;
-            float maxX = canvasSize.x * 0.5f - halfTooltipW - screenPadding;
-            float maxY = canvasSize.y * 0.5f - tooltipSize.y - screenPadding;
+        private void PopulateContent(ItemInstance instance, int quantity)
+        {
+            var data = instance.Data;
 
-            anchoredPos.x = Mathf.Clamp(anchoredPos.x, minX, maxX);
-            anchoredPos.y = Mathf.Clamp(anchoredPos.y, -canvasSize.y * 0.5f + screenPadding, maxY);
+            if (nameText != null)
+            {
+                nameText.text = data.displayName;
+                nameText.color = GetCategoryColour(data.category);
+            }
 
-            tooltipPanel.anchoredPosition = anchoredPos;
+            if (categoryText != null)
+                categoryText.text = data.category.ToString();
+
+            if (descriptionText != null)
+            {
+                descriptionText.text = data.description;
+                descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(data.description));
+            }
+
+            if (loreText != null)
+            {
+                bool hasLore = !string.IsNullOrEmpty(data.loreNote);
+                loreText.text = hasLore ? $"\"{data.loreNote}\"" : "";
+                loreText.gameObject.SetActive(hasLore);
+            }
+
+            if (durabilityText != null)
+            {
+                bool show = data.hasInstanceState;
+                durabilityText.text = show
+                    ? $"Durability: {instance.CurrentDurability}/{data.maxDurability}"
+                    : "";
+                durabilityText.gameObject.SetActive(show);
+            }
+
+            if (quantityText != null)
+            {
+                bool show = quantity > 1;
+                quantityText.text = show ? $"Quantity: {quantity}" : "";
+                quantityText.gameObject.SetActive(show);
+            }
         }
 
         private Color GetCategoryColour(ItemCategory category)

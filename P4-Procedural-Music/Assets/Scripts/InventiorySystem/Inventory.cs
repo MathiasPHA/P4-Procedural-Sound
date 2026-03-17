@@ -13,8 +13,8 @@ namespace InventorySystem.Data
     /// </summary>
     public class Inventory
     {
-        public const int DefaultSlotCount = 24;
-        public const int HotbarSize = 6;
+        public const int DefaultSlotCount = 32;
+        public const int HotbarSize = 8;
 
         public InventorySlot[] Slots { get; }
         public int SlotCount => Slots.Length;
@@ -304,6 +304,18 @@ namespace InventorySystem.Data
         // Hotbar
         // =====================================================================
 
+        /// <summary>
+        /// The inventory slot index that is currently equipped, or -1 if nothing is.
+        /// This can be a hotbar slot OR any inventory slot (right-click equip).
+        /// </summary>
+        public int EquippedSlotIndex { get; private set; } = -1;
+
+        /// <summary>Fired when the equipped item changes. Parameter is the new slot index (-1 = unequipped).</summary>
+        public event Action<int> OnEquippedChanged;
+
+        /// <summary>Fired when a consumable is used. Parameter is the ItemInstance that was consumed.</summary>
+        public event Action<ItemInstance> OnItemConsumed;
+
         public void SetActiveHotbar(int index)
         {
             if (index < 0 || index >= HotbarSize) return;
@@ -318,6 +330,114 @@ namespace InventorySystem.Data
         /// </summary>
         public ItemInstance ActiveHotbarItem =>
             Slots[ActiveHotbarIndex].IsEmpty ? null : Slots[ActiveHotbarIndex].Instance;
+
+        /// <summary>
+        /// The currently equipped ItemInstance. May be null.
+        /// </summary>
+        public ItemInstance EquippedItem =>
+            EquippedSlotIndex >= 0 && !Slots[EquippedSlotIndex].IsEmpty
+                ? Slots[EquippedSlotIndex].Instance
+                : null;
+
+        /// <summary>
+        /// Valheim-style hotbar press: selects the hotbar slot and toggles equip.
+        /// If the slot holds a consumable, it's used immediately instead of equipping.
+        /// </summary>
+        public void HotbarUse(int hotbarIndex)
+        {
+            if (hotbarIndex < 0 || hotbarIndex >= HotbarSize) return;
+
+            // Always update the visual selection
+            ActiveHotbarIndex = hotbarIndex;
+            OnHotbarSelectionChanged?.Invoke(hotbarIndex);
+
+            var slot = Slots[hotbarIndex];
+            if (slot.IsEmpty) return;
+
+            UseSlot(hotbarIndex);
+        }
+
+        /// <summary>
+        /// Use an item in any slot (hotbar or inventory).
+        /// Tools/Buildables: toggle equip on/off.
+        /// Consumables: consume one and remove from stack.
+        /// Materials: no action.
+        /// </summary>
+        public void UseSlot(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= Slots.Length) return;
+
+            var slot = Slots[slotIndex];
+            if (slot.IsEmpty) return;
+
+            switch (slot.ItemData.category)
+            {
+                case ItemCategory.Tool:
+                case ItemCategory.Buildable:
+                    ToggleEquip(slotIndex);
+                    break;
+
+                case ItemCategory.Consumable:
+                    ConsumeFromSlot(slotIndex);
+                    break;
+
+                case ItemCategory.Material:
+                    // Materials can't be used directly
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Equip the item in the given slot. If already equipped, unequip.
+        /// If a different item was equipped, swap to the new one.
+        /// </summary>
+        private void ToggleEquip(int slotIndex)
+        {
+            int previousEquipped = EquippedSlotIndex;
+
+            if (EquippedSlotIndex == slotIndex)
+            {
+                // Already equipped — unequip
+                EquippedSlotIndex = -1;
+            }
+            else
+            {
+                // Equip the new slot
+                EquippedSlotIndex = slotIndex;
+            }
+
+            // Notify UI to update both the old and new slot visuals
+            if (previousEquipped >= 0)
+                NotifySlotChanged(previousEquipped);
+            if (EquippedSlotIndex >= 0)
+                NotifySlotChanged(EquippedSlotIndex);
+
+            OnEquippedChanged?.Invoke(EquippedSlotIndex);
+        }
+
+        /// <summary>
+        /// Consume one item from the slot and fire the consumed event.
+        /// </summary>
+        private void ConsumeFromSlot(int slotIndex)
+        {
+            var slot = Slots[slotIndex];
+            if (slot.IsEmpty) return;
+
+            var consumed = slot.Instance;
+
+            slot.RemoveFromStack(1);
+            NotifySlotChanged(slotIndex);
+            OnInventoryChanged?.Invoke();
+
+            // If the consumed item was equipped and the slot is now empty, unequip
+            if (EquippedSlotIndex == slotIndex && slot.IsEmpty)
+            {
+                EquippedSlotIndex = -1;
+                OnEquippedChanged?.Invoke(-1);
+            }
+
+            OnItemConsumed?.Invoke(consumed);
+        }
 
         // =====================================================================
         // Save / Load

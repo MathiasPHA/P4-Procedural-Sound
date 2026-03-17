@@ -7,9 +7,8 @@ namespace InventorySystem.UI
 {
     /// <summary>
     /// Visual representation of a single inventory slot.
-    /// Handles drag/drop via Unity's EventSystem interfaces and
-    /// hover for tooltips. Communicates with InventoryUIManager for
-    /// all actual data operations.
+    /// Handles drag/drop, hover tooltips, and Valheim-style right-click use.
+    /// Hotbar slots display a keybind number label (1-8).
     /// </summary>
     [RequireComponent(typeof(Image))]
     public class InventorySlotUI : MonoBehaviour,
@@ -27,9 +26,10 @@ namespace InventorySystem.UI
         [Header("Colours")]
         [SerializeField] private Color highlightColour = new Color(0.35f, 0.35f, 0.35f, 0.9f);
         [SerializeField] private Color hotbarSelectedColour = new Color(0.9f, 0.75f, 0.3f, 1f);
+        [SerializeField] private Color equippedColour = new Color(0.3f, 0.8f, 0.4f, 1f);
 
         [Header("Layout")]
-        [Tooltip("Pixel padding between slot edge and icon. Keeps sprites from filling the entire slot.")]
+        [Tooltip("Pixel padding between slot edge and icon")]
         [SerializeField] private float iconPadding = 6f;
 
         /// <summary>Index into the Inventory.Slots array this UI element represents.</summary>
@@ -40,12 +40,10 @@ namespace InventorySystem.UI
 
         private InventoryUIManager _manager;
         private bool _isHighlighted;
-
-        /// <summary>
-        /// Captured from the slot background Image at init time
-        /// so we always restore the actual original colour on pointer exit.
-        /// </summary>
         private Color _originalBackgroundColour;
+
+        // Dynamically created keybind label for hotbar slots
+        private TMPro.TextMeshProUGUI _keybindLabel;
 
         // =====================================================================
         // Initialisation
@@ -57,36 +55,87 @@ namespace InventorySystem.UI
             _manager = manager;
             IsHotbarSlot = isHotbar;
 
-            // Capture whatever colour the prefab's background was set to
             if (slotBackground != null)
                 _originalBackgroundColour = slotBackground.color;
 
             if (highlightBorder != null)
                 highlightBorder.enabled = false;
 
-            // Force the icon to stretch-fill the slot with padding,
-            // so it scales correctly regardless of slot size
+            // Force icon to stretch-fill with padding
             if (iconImage != null)
             {
                 var iconRect = iconImage.rectTransform;
                 iconRect.anchorMin = Vector2.zero;
                 iconRect.anchorMax = Vector2.one;
-                iconRect.offsetMin = new Vector2(iconPadding, iconPadding);   // bottom-left inset
-                iconRect.offsetMax = new Vector2(-iconPadding, -iconPadding); // top-right inset
+                iconRect.offsetMin = new Vector2(iconPadding, iconPadding);
+                iconRect.offsetMax = new Vector2(-iconPadding, -iconPadding);
                 iconImage.preserveAspect = true;
             }
 
+            DisableChildRaycastTargets();
+
+            // Anchor quantity text to bottom-right
+            if (quantityText != null)
+            {
+                var textRect = quantityText.rectTransform;
+                textRect.anchorMin = new Vector2(1f, 0f);
+                textRect.anchorMax = new Vector2(1f, 0f);
+                textRect.pivot = new Vector2(1f, 0f);
+                textRect.anchoredPosition = new Vector2(-2f, 2f);
+                textRect.sizeDelta = new Vector2(40f, 20f);
+                quantityText.fontSize = 14;
+                quantityText.alignment = TMPro.TextAlignmentOptions.BottomRight;
+            }
+
+            // Create keybind number label for hotbar slots
+            if (isHotbar)
+            {
+                CreateKeybindLabel(slotIndex + 1); // 1-based display
+            }
+
             Refresh();
+        }
+
+        /// <summary>
+        /// Creates a small number label (1-8) in the top-left corner of hotbar slots.
+        /// Built entirely in code so you don't need to add it to the prefab.
+        /// </summary>
+        private void CreateKeybindLabel(int number)
+        {
+            var labelGO = new GameObject($"KeybindLabel_{number}", typeof(RectTransform));
+            labelGO.transform.SetParent(transform, false);
+            labelGO.layer = gameObject.layer;
+
+            var rect = labelGO.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0f, 1f); // top-left
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(3f, -2f);
+            rect.sizeDelta = new Vector2(16f, 16f);
+
+            _keybindLabel = labelGO.AddComponent<TMPro.TextMeshProUGUI>();
+            _keybindLabel.text = number.ToString();
+            _keybindLabel.fontSize = 11;
+            _keybindLabel.fontStyle = TMPro.FontStyles.Bold;
+            _keybindLabel.color = new Color(1f, 1f, 1f, 0.7f);
+            _keybindLabel.alignment = TMPro.TextAlignmentOptions.TopLeft;
+            _keybindLabel.raycastTarget = false;
+            _keybindLabel.enableWordWrapping = false;
+            _keybindLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
+        }
+
+        private void DisableChildRaycastTargets()
+        {
+            if (iconImage != null) iconImage.raycastTarget = false;
+            if (quantityText != null) quantityText.raycastTarget = false;
+            if (durabilityBar != null) durabilityBar.raycastTarget = false;
+            if (highlightBorder != null) highlightBorder.raycastTarget = false;
         }
 
         // =====================================================================
         // Visual updates
         // =====================================================================
 
-        /// <summary>
-        /// Refresh visuals from the current inventory data.
-        /// Called by InventoryUIManager when the slot's data changes.
-        /// </summary>
         public void Refresh()
         {
             var slot = _manager.GetSlotData(SlotIndex);
@@ -102,7 +151,7 @@ namespace InventorySystem.UI
             iconImage.color = Color.white;
             iconImage.enabled = true;
 
-            // Quantity (only show for stacks > 1)
+            // Quantity
             if (quantityText != null)
             {
                 bool showQuantity = slot.Quantity > 1;
@@ -124,6 +173,9 @@ namespace InventorySystem.UI
                         slot.Instance.DurabilityNormalized);
                 }
             }
+
+            // Equipped indicator
+            UpdateEquippedVisual();
         }
 
         private void ShowEmpty()
@@ -140,6 +192,34 @@ namespace InventorySystem.UI
 
             if (durabilityBar != null)
                 durabilityBar.enabled = false;
+
+            UpdateEquippedVisual();
+        }
+
+        /// <summary>
+        /// Shows a coloured border when this slot's item is the currently equipped one.
+        /// </summary>
+        public void UpdateEquippedVisual()
+        {
+            bool isEquipped = _manager.IsSlotEquipped(SlotIndex);
+
+            if (highlightBorder != null && !_isHighlighted)
+            {
+                if (isEquipped)
+                {
+                    highlightBorder.enabled = true;
+                    highlightBorder.color = equippedColour;
+                }
+                else if (IsHotbarSlot && _manager.IsSlotActiveHotbar(SlotIndex))
+                {
+                    highlightBorder.enabled = true;
+                    highlightBorder.color = hotbarSelectedColour;
+                }
+                else
+                {
+                    highlightBorder.enabled = false;
+                }
+            }
         }
 
         /// <summary>
@@ -147,10 +227,13 @@ namespace InventorySystem.UI
         /// </summary>
         public void SetHotbarSelected(bool selected)
         {
+            // Don't override equipped colour
+            if (_manager.IsSlotEquipped(SlotIndex)) return;
+
             if (highlightBorder != null)
             {
                 highlightBorder.enabled = selected;
-                highlightBorder.color = hotbarSelectedColour;
+                if (selected) highlightBorder.color = hotbarSelectedColour;
             }
         }
 
@@ -160,15 +243,13 @@ namespace InventorySystem.UI
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             var slot = _manager.GetSlotData(SlotIndex);
             if (slot == null || slot.IsEmpty) return;
 
-            // Right-click drag = split stack
-            bool isSplit = eventData.button == PointerEventData.InputButton.Right;
+            _manager.BeginDrag(SlotIndex, false);
 
-            _manager.BeginDrag(SlotIndex, isSplit);
-
-            // Dim the source slot while dragging
             if (iconImage != null)
                 iconImage.color = new Color(1f, 1f, 1f, 0.3f);
         }
@@ -180,17 +261,12 @@ namespace InventorySystem.UI
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            // If we didn't drop on a valid target, the manager handles
-            // either dropping to world or cancelling
             _manager.EndDrag(droppedOnSlot: false, targetSlotIndex: -1);
-
-            // Restore icon alpha
             Refresh();
         }
 
         public void OnDrop(PointerEventData eventData)
         {
-            // Something was dropped on us
             _manager.EndDrag(droppedOnSlot: true, targetSlotIndex: SlotIndex);
         }
 
@@ -223,19 +299,31 @@ namespace InventorySystem.UI
         }
 
         // =====================================================================
-        // Click — right-click to split into empty slot
+        // Click
+        // Right-click = Valheim-style use (equip tool / consume food)
+        // Shift + right-click = split stack (old right-click behaviour)
         // =====================================================================
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (eventData.button == PointerEventData.InputButton.Right && !eventData.dragging)
+            if (eventData.button != PointerEventData.InputButton.Right) return;
+            if (eventData.dragging) return;
+
+            var slot = _manager.GetSlotData(SlotIndex);
+            if (slot == null || slot.IsEmpty) return;
+
+            // Shift + right-click = split stack
+            if (_manager.IsModifierHeld)
             {
-                var slot = _manager.GetSlotData(SlotIndex);
-                if (slot != null && !slot.IsEmpty && slot.Quantity > 1)
+                if (slot.Quantity > 1)
                 {
                     _manager.SplitStack(SlotIndex);
                 }
+                return;
             }
+
+            // Plain right-click = use item (equip / consume)
+            _manager.UseSlot(SlotIndex);
         }
     }
 }

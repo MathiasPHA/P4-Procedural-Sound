@@ -98,6 +98,8 @@ namespace InventorySystem.UI
             // Data events
             _inventory.OnSlotChanged += OnSlotDataChanged;
             _inventory.OnHotbarSelectionChanged += UpdateHotbarSelection;
+            _inventory.OnEquippedChanged += OnEquippedChanged;
+            _inventory.OnItemConsumed += OnItemConsumed;
 
             // Input events
             if (inputProvider != null)
@@ -114,6 +116,8 @@ namespace InventorySystem.UI
             {
                 _inventory.OnSlotChanged -= OnSlotDataChanged;
                 _inventory.OnHotbarSelectionChanged -= UpdateHotbarSelection;
+                _inventory.OnEquippedChanged -= OnEquippedChanged;
+                _inventory.OnItemConsumed -= OnItemConsumed;
             }
 
             if (inputProvider != null)
@@ -134,6 +138,12 @@ namespace InventorySystem.UI
                 return null;
             return _inventory.Slots[index];
         }
+
+        /// <summary>
+        /// Whether the shift modifier key is currently held.
+        /// Proxies through the InventoryInputProvider (new Input System).
+        /// </summary>
+        public bool IsModifierHeld => inputProvider != null && inputProvider.IsModifierHeld;
 
         // --- Drag and drop ---
 
@@ -286,6 +296,33 @@ namespace InventorySystem.UI
             }
         }
 
+        // --- Item use (equip / consume) ---
+
+        /// <summary>
+        /// Called by InventorySlotUI on right-click. Delegates to Inventory.
+        /// </summary>
+        public void UseSlot(int slotIndex)
+        {
+            _inventory.UseSlot(slotIndex);
+        }
+
+        /// <summary>
+        /// Query: is this slot the currently equipped item?
+        /// Used by InventorySlotUI to show the equipped border.
+        /// </summary>
+        public bool IsSlotEquipped(int slotIndex)
+        {
+            return _inventory.EquippedSlotIndex == slotIndex;
+        }
+
+        /// <summary>
+        /// Query: is this slot the currently active hotbar selection?
+        /// </summary>
+        public bool IsSlotActiveHotbar(int slotIndex)
+        {
+            return slotIndex == _inventory.ActiveHotbarIndex;
+        }
+
         // =====================================================================
         // Inventory panel toggle
         // =====================================================================
@@ -298,13 +335,10 @@ namespace InventorySystem.UI
             if (_inventoryOpen)
             {
                 RefreshAllSlots();
-                // Optionally: inputProvider.EnableUIOnly();
-                // (depends on whether you want to block movement while inventory is open)
             }
             else
             {
                 HideTooltip();
-                // inputProvider.EnableAll();
             }
         }
 
@@ -316,7 +350,8 @@ namespace InventorySystem.UI
 
         private void OnHotbarKeyPressed(int index)
         {
-            _inventory.SetActiveHotbar(index);
+            // Valheim-style: pressing the key both selects AND uses the slot
+            _inventory.HotbarUse(index);
         }
 
         private void OnScrollHotbar(float scrollValue)
@@ -327,6 +362,7 @@ namespace InventorySystem.UI
             else
                 current = (current + 1) % Inventory.HotbarSize;
 
+            // Scroll just selects, doesn't auto-use
             _inventory.SetActiveHotbar(current);
         }
 
@@ -336,6 +372,31 @@ namespace InventorySystem.UI
             {
                 _hotbarSlotUIs[i].SetHotbarSelected(i == activeIndex);
             }
+        }
+
+        private void OnEquippedChanged(int equippedSlotIndex)
+        {
+            // Refresh all slots to update equipped borders
+            for (int i = 0; i < _allSlotUIs.Count; i++)
+            {
+                _allSlotUIs[i].UpdateEquippedVisual();
+            }
+
+            if (equippedSlotIndex >= 0)
+            {
+                var item = _inventory.Slots[equippedSlotIndex].ItemData;
+                Debug.Log($"[Inventory] Equipped: {item.displayName}");
+            }
+            else
+            {
+                Debug.Log("[Inventory] Unequipped");
+            }
+        }
+
+        private void OnItemConsumed(Data.ItemInstance consumed)
+        {
+            Debug.Log($"[Inventory] Consumed: {consumed.Data.displayName}");
+            // TODO: Apply consumable effects (heal, buff, etc.)
         }
 
         // =====================================================================

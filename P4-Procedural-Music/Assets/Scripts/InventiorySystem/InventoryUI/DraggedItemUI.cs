@@ -13,6 +13,7 @@ namespace InventorySystem.UI
     {
         [SerializeField] private Image iconImage;
         [SerializeField] private TMPro.TextMeshProUGUI quantityText;
+        [SerializeField] private float iconPadding = 4f;
 
         private RectTransform _rectTransform;
         private CanvasGroup _canvasGroup;
@@ -38,6 +39,32 @@ namespace InventorySystem.UI
             // Ensure raycasts pass through the ghost to hit drop targets beneath
             _canvasGroup.blocksRaycasts = false;
             _canvasGroup.interactable = false;
+
+            // Force icon to stretch-fill with padding
+            if (iconImage != null)
+            {
+                var iconRect = iconImage.rectTransform;
+                iconRect.anchorMin = Vector2.zero;
+                iconRect.anchorMax = Vector2.one;
+                iconRect.offsetMin = new Vector2(iconPadding, iconPadding);
+                iconRect.offsetMax = new Vector2(-iconPadding, -iconPadding);
+                iconImage.preserveAspect = true;
+                iconImage.raycastTarget = false;
+            }
+
+            // Anchor quantity text to bottom-right corner
+            if (quantityText != null)
+            {
+                var textRect = quantityText.rectTransform;
+                textRect.anchorMin = new Vector2(1f, 0f);
+                textRect.anchorMax = new Vector2(1f, 0f);
+                textRect.pivot = new Vector2(1f, 0f);
+                textRect.anchoredPosition = new Vector2(-2f, 2f);
+                textRect.sizeDelta = new Vector2(40f, 20f);
+                quantityText.fontSize = 14;
+                quantityText.alignment = TMPro.TextAlignmentOptions.BottomRight;
+                quantityText.raycastTarget = false;
+            }
 
             Hide();
         }
