@@ -151,7 +151,7 @@ namespace InventorySystem.UI
             iconImage.color = Color.white;
             iconImage.enabled = true;
 
-            // Quantity
+            // Quantity (only show for stacks > 1)
             if (quantityText != null)
             {
                 bool showQuantity = slot.Quantity > 1;
@@ -244,6 +244,7 @@ namespace InventorySystem.UI
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left) return;
+            if (_manager.IsSplitSliderOpen) return; // Block drag while slider is open
 
             var slot = _manager.GetSlotData(SlotIndex);
             if (slot == null || slot.IsEmpty) return;
@@ -256,6 +257,7 @@ namespace InventorySystem.UI
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (_manager.IsSplitSliderOpen) return;
             _manager.UpdateDrag(eventData.position);
         }
 
@@ -300,30 +302,52 @@ namespace InventorySystem.UI
 
         // =====================================================================
         // Click
+        // Ctrl + left-click = open precise split slider
         // Right-click = Valheim-style use (equip tool / consume food)
-        // Shift + right-click = split stack (old right-click behaviour)
+        // Shift + right-click = split stack in half
         // =====================================================================
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Right) return;
             if (eventData.dragging) return;
+
+            // If the split slider is open, close it on any click elsewhere
+            if (_manager.IsSplitSliderOpen)
+            {
+                _manager.CloseSplitSlider();
+                return;
+            }
 
             var slot = _manager.GetSlotData(SlotIndex);
             if (slot == null || slot.IsEmpty) return;
 
-            // Shift + right-click = split stack
-            if (_manager.IsModifierHeld)
+            // --- Left click ---
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                if (slot.Quantity > 1)
+                // Ctrl + left-click = open precise split slider
+                if (_manager.IsCtrlHeld && slot.Quantity > 1)
                 {
-                    _manager.SplitStack(SlotIndex);
+                    _manager.OpenSplitSlider(SlotIndex, transform as RectTransform);
                 }
                 return;
             }
 
-            // Plain right-click = use item (equip / consume)
-            _manager.UseSlot(SlotIndex);
+            // --- Right click ---
+            if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                // Shift + right-click = split stack in half
+                if (_manager.IsModifierHeld)
+                {
+                    if (slot.Quantity > 1)
+                    {
+                        _manager.SplitStack(SlotIndex);
+                    }
+                    return;
+                }
+
+                // Plain right-click = use item (equip / consume)
+                _manager.UseSlot(SlotIndex);
+            }
         }
     }
 }

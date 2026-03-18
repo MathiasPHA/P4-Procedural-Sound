@@ -6,16 +6,15 @@ using InventorySystem.Input;
 namespace InventorySystem.UI
 {
     /// <summary>
-    /// Central UI orchestrator. Owns references to all slot UIs, the drag ghost,
-    /// tooltip, and the inventory panel. Bridges between the data-layer Inventory
-    /// and the visual elements.
-    ///
-    /// This is the only UI script that talks to the Inventory data directly.
-    /// Individual InventorySlotUI components call back into this manager.
+    /// Central UI orchestrator. Bridges between the Inventory data layer
+    /// and all visual elements (slots, tooltip, drag ghost, split slider).
+    /// 
+    /// Initialized explicitly by InventoryBootstrap.Start() — not by Awake.
+    /// This guarantees InventoryInputProvider has resolved its actions first.
     /// </summary>
     public class InventoryUIManager : MonoBehaviour
     {
-        [Header("Data")]
+        [Header("Input")]
         [SerializeField] private InventoryInputProvider inputProvider;
 
         [Header("UI References")]
@@ -24,50 +23,85 @@ namespace InventorySystem.UI
         [SerializeField] private Transform hotbarContainer;
         [SerializeField] private DraggedItemUI draggedItem;
         [SerializeField] private TooltipController tooltip;
+        [SerializeField] private StackSplitSliderUI splitSlider;
 
         [Header("Prefab")]
         [SerializeField] private GameObject slotPrefab;
 
         [Header("World Drop")]
-        [Tooltip("Prefab spawned when an item is dropped into the world")]
         [SerializeField] private GameObject worldItemPrefab;
         [SerializeField] private Transform playerTransform;
         [SerializeField] private float dropDistance = 1.5f;
+
+        [Header("Player State")]
+        [SerializeField] private PlayerStateManager playerStateManager;
 
         // --- Runtime state ---
         private Inventory _inventory;
         private readonly List<InventorySlotUI> _allSlotUIs = new();
         private readonly List<InventorySlotUI> _hotbarSlotUIs = new();
         private bool _inventoryOpen;
+        private bool _initialized;
 
         // Drag state
         private bool _isDragging;
         private int _dragSourceIndex = -1;
         private bool _dragIsSplit;
         private int _dragOriginalQuantity;
-        private InventorySlot _splitHeldSlot; // temp slot holding split items during drag
+        private InventorySlot _splitHeldSlot;
 
         // =====================================================================
-        // Initialisation
+        // Initialisation (called by InventoryBootstrap.Start)
         // =====================================================================
 
-        /// <summary>
-        /// Call this once from your game bootstrap after creating the Inventory.
-        /// Spawns all slot UI elements and wires up events.
-        /// </summary>
         public void Initialise(Inventory inventory)
         {
             _inventory = inventory;
+
+            if (!ValidateReferences())
+            {
+                Debug.LogError("[InventoryUIManager] Initialization failed — check missing references above.");
+                return;
+            }
 
             SpawnSlotUIs();
             SubscribeToEvents();
             RefreshAllSlots();
 
-            // Start with inventory panel closed, hotbar visible
             inventoryPanel.SetActive(false);
             _inventoryOpen = false;
+            _initialized = true;
 
             UpdateHotbarSelection(_inventory.ActiveHotbarIndex);
+            Debug.Log("[InventoryUIManager] Initialized successfully.");
+        }
+
+        private bool ValidateReferences()
+        {
+            bool valid = true;
+
+            if (inputProvider == null)
+            {
+                Debug.LogError("[InventoryUIManager] InputProvider is not assigned!");
+                valid = false;
+            }
+            else if (!inputProvider.IsInitialized)
+            {
+                Debug.LogWarning("[InventoryUIManager] InputProvider exists but hasn't initialized yet. " +
+                                 "Check execution order (InventoryInputProvider should be -100).");
+            }
+
+            if (inventoryPanel == null) { Debug.LogError("[InventoryUIManager] InventoryPanel not assigned!"); valid = false; }
+            if (slotContainer == null) { Debug.LogError("[InventoryUIManager] SlotContainer not assigned!"); valid = false; }
+            if (hotbarContainer == null) { Debug.LogError("[InventoryUIManager] HotbarContainer not assigned!"); valid = false; }
+            if (draggedItem == null) { Debug.LogError("[InventoryUIManager] DraggedItem not assigned!"); valid = false; }
+            if (slotPrefab == null) { Debug.LogError("[InventoryUIManager] SlotPrefab not assigned!"); valid = false; }
+
+            if (tooltip == null) Debug.LogWarning("[InventoryUIManager] Tooltip not assigned — hover info disabled.");
+            if (splitSlider == null) Debug.LogWarning("[InventoryUIManager] SplitSlider not assigned — Ctrl+click split disabled.");
+            if (playerStateManager == null) Debug.LogWarning("[InventoryUIManager] PlayerStateManager not assigned — state transitions disabled.");
+
+            return valid;
         }
 
         private void SpawnSlotUIs()
@@ -87,15 +121,13 @@ namespace InventorySystem.UI
                 slotUI.Initialise(i, this, isHotbar);
 
                 _allSlotUIs.Add(slotUI);
-
-                if (isHotbar)
-                    _hotbarSlotUIs.Add(slotUI);
+                if (isHotbar) _hotbarSlotUIs.Add(slotUI);
             }
         }
 
         private void SubscribeToEvents()
         {
-            // Data events
+            // Inventory data events
             _inventory.OnSlotChanged += OnSlotDataChanged;
             _inventory.OnHotbarSelectionChanged += UpdateHotbarSelection;
             _inventory.OnEquippedChanged += OnEquippedChanged;
@@ -107,6 +139,13 @@ namespace InventorySystem.UI
                 inputProvider.OnToggleInventory += ToggleInventory;
                 inputProvider.OnHotbarSelect += OnHotbarKeyPressed;
                 inputProvider.OnScrollHotbar += OnScrollHotbar;
+            }
+
+            // Split slider events
+            if (splitSlider != null)
+            {
+                splitSlider.OnConfirm += OnSplitSliderConfirm;
+                splitSlider.OnCancel += OnSplitSliderCancel;
             }
         }
 
@@ -126,6 +165,12 @@ namespace InventorySystem.UI
                 inputProvider.OnHotbarSelect -= OnHotbarKeyPressed;
                 inputProvider.OnScrollHotbar -= OnScrollHotbar;
             }
+
+            if (splitSlider != null)
+            {
+                splitSlider.OnConfirm -= OnSplitSliderConfirm;
+                splitSlider.OnCancel -= OnSplitSliderCancel;
+            }
         }
 
         // =====================================================================
@@ -134,16 +179,23 @@ namespace InventorySystem.UI
 
         public InventorySlot GetSlotData(int index)
         {
-            if (_inventory == null || index < 0 || index >= _inventory.SlotCount)
-                return null;
+            if (_inventory == null || index < 0 || index >= _inventory.SlotCount) return null;
             return _inventory.Slots[index];
         }
 
-        /// <summary>
-        /// Whether the shift modifier key is currently held.
-        /// Proxies through the InventoryInputProvider (new Input System).
-        /// </summary>
         public bool IsModifierHeld => inputProvider != null && inputProvider.IsModifierHeld;
+        public bool IsCtrlHeld => inputProvider != null && inputProvider.IsCtrlHeld;
+        public bool IsSplitSliderOpen => splitSlider != null && splitSlider.IsOpen;
+
+        public void OpenSplitSlider(int slotIndex, RectTransform slotRect)
+        {
+            if (splitSlider == null) return;
+            var slot = _inventory.Slots[slotIndex];
+            if (slot.IsEmpty || slot.Quantity <= 1) return;
+            splitSlider.Open(slotIndex, slot.Quantity, slotRect);
+        }
+
+        public void CloseSplitSlider() => splitSlider?.Close();
 
         // --- Drag and drop ---
 
@@ -160,24 +212,13 @@ namespace InventorySystem.UI
 
             if (isSplit && slot.Quantity > 1)
             {
-                // Split: take half, leave rest in source slot
                 _dragOriginalQuantity = slot.Quantity;
-                dragQuantity = slot.Quantity / 2;
-
-                // Perform the split in the data layer
-                // We temporarily hold the split portion
                 _splitHeldSlot = slot.SplitStack();
-                if (_splitHeldSlot != null)
-                {
-                    dragQuantity = _splitHeldSlot.Quantity;
-                }
-
-                // Refresh source to show reduced stack
+                dragQuantity = _splitHeldSlot?.Quantity ?? slot.Quantity;
                 RefreshSlot(sourceIndex);
             }
             else
             {
-                // Full drag — we'll move the entire slot contents on drop
                 dragQuantity = slot.Quantity;
                 _splitHeldSlot = null;
             }
@@ -187,8 +228,7 @@ namespace InventorySystem.UI
 
         public void UpdateDrag(Vector2 screenPosition)
         {
-            if (!_isDragging) return;
-            draggedItem.FollowPointer(screenPosition);
+            if (_isDragging) draggedItem.FollowPointer(screenPosition);
         }
 
         public void EndDrag(bool droppedOnSlot, int targetSlotIndex)
@@ -199,9 +239,7 @@ namespace InventorySystem.UI
             {
                 if (_dragIsSplit && _splitHeldSlot != null)
                 {
-                    // Place the split half into the target
                     var targetSlot = _inventory.Slots[targetSlotIndex];
-
                     if (targetSlot.IsEmpty)
                     {
                         targetSlot.Set(_splitHeldSlot.Instance, _splitHeldSlot.Quantity);
@@ -214,14 +252,12 @@ namespace InventorySystem.UI
                     }
                     else
                     {
-                        // Target can't accept — return split to source
                         _inventory.Slots[_dragSourceIndex].AddToStack(_splitHeldSlot.Quantity);
                         RefreshSlot(_dragSourceIndex);
                     }
                 }
                 else
                 {
-                    // Full drag — merge or swap
                     _inventory.MergeOrSwap(_dragSourceIndex, targetSlotIndex);
                 }
             }
@@ -229,21 +265,16 @@ namespace InventorySystem.UI
             {
                 if (_dragIsSplit && _splitHeldSlot != null)
                 {
-                    // Dropped outside — try to drop split portion to world
                     if (_splitHeldSlot.ItemData.isDroppable)
-                    {
                         SpawnWorldDrop(_splitHeldSlot.Instance, _splitHeldSlot.Quantity);
-                    }
                     else
                     {
-                        // Can't drop — return to source
                         _inventory.Slots[_dragSourceIndex].AddToStack(_splitHeldSlot.Quantity);
                         RefreshSlot(_dragSourceIndex);
                     }
                 }
                 else
                 {
-                    // Full drag dropped outside — drop to world
                     var sourceSlot = _inventory.Slots[_dragSourceIndex];
                     if (!sourceSlot.IsEmpty && sourceSlot.ItemData.isDroppable)
                     {
@@ -254,7 +285,6 @@ namespace InventorySystem.UI
             }
             else
             {
-                // Dropped on self or invalid — return split if applicable
                 if (_dragIsSplit && _splitHeldSlot != null)
                 {
                     _inventory.Slots[_dragSourceIndex].AddToStack(_splitHeldSlot.Quantity);
@@ -266,8 +296,6 @@ namespace InventorySystem.UI
             _dragSourceIndex = -1;
             _splitHeldSlot = null;
             draggedItem.Hide();
-
-            // Ensure crafting and other listeners know something changed
             _inventory.NotifyChanged();
         }
 
@@ -275,16 +303,12 @@ namespace InventorySystem.UI
 
         public void ShowTooltip(ItemInstance instance, int quantity, RectTransform slotRect)
         {
-            if (_isDragging) return; // Don't show tooltip while dragging
-            tooltip?.Show(instance, quantity, slotRect);
+            if (!_isDragging) tooltip?.Show(instance, quantity, slotRect);
         }
 
-        public void HideTooltip()
-        {
-            tooltip?.Hide();
-        }
+        public void HideTooltip() => tooltip?.Hide();
 
-        // --- Stack splitting (right-click without drag) ---
+        // --- Stack splitting ---
 
         public void SplitStack(int slotIndex)
         {
@@ -296,32 +320,11 @@ namespace InventorySystem.UI
             }
         }
 
-        // --- Item use (equip / consume) ---
+        // --- Item use ---
 
-        /// <summary>
-        /// Called by InventorySlotUI on right-click. Delegates to Inventory.
-        /// </summary>
-        public void UseSlot(int slotIndex)
-        {
-            _inventory.UseSlot(slotIndex);
-        }
-
-        /// <summary>
-        /// Query: is this slot the currently equipped item?
-        /// Used by InventorySlotUI to show the equipped border.
-        /// </summary>
-        public bool IsSlotEquipped(int slotIndex)
-        {
-            return _inventory.EquippedSlotIndex == slotIndex;
-        }
-
-        /// <summary>
-        /// Query: is this slot the currently active hotbar selection?
-        /// </summary>
-        public bool IsSlotActiveHotbar(int slotIndex)
-        {
-            return slotIndex == _inventory.ActiveHotbarIndex;
-        }
+        public void UseSlot(int slotIndex) => _inventory.UseSlot(slotIndex);
+        public bool IsSlotEquipped(int slotIndex) => _inventory.EquippedSlotIndex == slotIndex;
+        public bool IsSlotActiveHotbar(int slotIndex) => slotIndex == _inventory.ActiveHotbarIndex;
 
         // =====================================================================
         // Inventory panel toggle
@@ -335,10 +338,17 @@ namespace InventorySystem.UI
             if (_inventoryOpen)
             {
                 RefreshAllSlots();
+                inputProvider?.DisableMovement();
+                if (playerStateManager != null)
+                    playerStateManager.SwitchState(playerStateManager.inventoryState);
             }
             else
             {
                 HideTooltip();
+                CloseSplitSlider();
+                inputProvider?.EnableMovement();
+                if (playerStateManager != null)
+                    playerStateManager.SwitchState(playerStateManager.idleState);
             }
         }
 
@@ -348,56 +358,49 @@ namespace InventorySystem.UI
         // Hotbar
         // =====================================================================
 
-        private void OnHotbarKeyPressed(int index)
-        {
-            // Valheim-style: pressing the key both selects AND uses the slot
-            _inventory.HotbarUse(index);
-        }
+        private void OnHotbarKeyPressed(int index) => _inventory.HotbarUse(index);
 
         private void OnScrollHotbar(float scrollValue)
         {
             int current = _inventory.ActiveHotbarIndex;
-            if (scrollValue > 0)
-                current = (current - 1 + Inventory.HotbarSize) % Inventory.HotbarSize;
-            else
-                current = (current + 1) % Inventory.HotbarSize;
-
-            // Scroll just selects, doesn't auto-use
+            current = scrollValue > 0
+                ? (current - 1 + Inventory.HotbarSize) % Inventory.HotbarSize
+                : (current + 1) % Inventory.HotbarSize;
             _inventory.SetActiveHotbar(current);
         }
 
         private void UpdateHotbarSelection(int activeIndex)
         {
             for (int i = 0; i < _hotbarSlotUIs.Count; i++)
-            {
                 _hotbarSlotUIs[i].SetHotbarSelected(i == activeIndex);
-            }
         }
+
+        // =====================================================================
+        // Event handlers
+        // =====================================================================
 
         private void OnEquippedChanged(int equippedSlotIndex)
         {
-            // Refresh all slots to update equipped borders
             for (int i = 0; i < _allSlotUIs.Count; i++)
-            {
                 _allSlotUIs[i].UpdateEquippedVisual();
-            }
-
-            if (equippedSlotIndex >= 0)
-            {
-                var item = _inventory.Slots[equippedSlotIndex].ItemData;
-                Debug.Log($"[Inventory] Equipped: {item.displayName}");
-            }
-            else
-            {
-                Debug.Log("[Inventory] Unequipped");
-            }
         }
 
-        private void OnItemConsumed(Data.ItemInstance consumed)
+        private void OnItemConsumed(ItemInstance consumed)
         {
             Debug.Log($"[Inventory] Consumed: {consumed.Data.displayName}");
-            // TODO: Apply consumable effects (heal, buff, etc.)
         }
+
+        private void OnSplitSliderConfirm(int slotIndex, int amount)
+        {
+            int newSlot = _inventory.SplitExact(slotIndex, amount);
+            if (newSlot >= 0)
+            {
+                RefreshSlot(slotIndex);
+                RefreshSlot(newSlot);
+            }
+        }
+
+        private void OnSplitSliderCancel() { }
 
         // =====================================================================
         // World drops
@@ -405,50 +408,32 @@ namespace InventorySystem.UI
 
         private void SpawnWorldDrop(ItemInstance instance, int quantity)
         {
-            if (worldItemPrefab == null || playerTransform == null)
-            {
-                Debug.LogWarning("[InventoryUI] Cannot spawn world drop — prefab or player transform not assigned.");
-                return;
-            }
+            if (worldItemPrefab == null || playerTransform == null) return;
 
-            // Drop slightly in front of the player
             Vector2 dropPos = (Vector2)playerTransform.position
                 + (Vector2)(playerTransform.right * dropDistance);
 
             var go = Instantiate(worldItemPrefab, dropPos, Quaternion.identity);
-
-            // The world item prefab should have a component that accepts an ItemInstance.
-            // For now we'll use a simple WorldItem component (you'll implement this).
             var worldItem = go.GetComponent<WorldItem>();
-            if (worldItem != null)
-            {
-                worldItem.Initialise(instance, quantity);
-            }
+            worldItem?.Initialise(instance, quantity);
         }
 
         // =====================================================================
         // Refresh
         // =====================================================================
 
-        private void OnSlotDataChanged(int slotIndex)
-        {
-            RefreshSlot(slotIndex);
-        }
+        private void OnSlotDataChanged(int slotIndex) => RefreshSlot(slotIndex);
 
         private void RefreshSlot(int index)
         {
             if (index >= 0 && index < _allSlotUIs.Count)
-            {
                 _allSlotUIs[index].Refresh();
-            }
         }
 
         private void RefreshAllSlots()
         {
             for (int i = 0; i < _allSlotUIs.Count; i++)
-            {
                 _allSlotUIs[i].Refresh();
-            }
         }
     }
 }

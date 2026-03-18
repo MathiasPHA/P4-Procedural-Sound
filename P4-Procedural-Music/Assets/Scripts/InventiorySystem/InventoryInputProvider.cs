@@ -6,164 +6,206 @@ namespace InventorySystem.Input
 {
     /// <summary>
     /// Centralised access point for all inventory/UI input actions.
-    /// Lives on a persistent GameObject (e.g. GameManager or InputManager).
     /// 
-    /// Other scripts grab a reference to this and subscribe to the C# events.
-    /// Nobody else touches the InputActionAsset directly.
+    /// Uses the PlayerInput component's runtime clone (which is guaranteed
+    /// to be bound to devices). Resolves in Start() so that PlayerInput
+    /// has finished its Awake/OnEnable initialization first.
     /// 
-    /// IMPORTANT: Make sure your EventSystem uses InputSystemUIInputModule,
-    /// not the legacy StandaloneInputModule. Without this, Unity's built-in
-    /// pointer/drag interfaces (IPointerEnterHandler, IDragHandler, etc.)
-    /// won't receive events from the new Input System.
+    /// Execution order -100 ensures this resolves before anything that
+    /// subscribes to its events (InventoryBootstrap runs at -50).
     /// </summary>
+    [DefaultExecutionOrder(-100)]
     public class InventoryInputProvider : MonoBehaviour
     {
-        [SerializeField] private InputActionAsset inputActions;
+        [Header("Player Reference")]
+        [Tooltip("REQUIRED — Drag the Player GameObject here. Must have a PlayerInput component.")]
+        [SerializeField] private PlayerInput playerInput;
 
-        // --- Cached action references ---
+        // --- Resolved at Start ---
+        private bool _initialized;
+        private InputActionMap _uiMap;
         private InputAction _point;
         private InputAction _click;
         private InputAction _rightClick;
         private InputAction _middleClick;
         private InputAction _modifier;
+        private InputAction _ctrlModifier;
         private InputAction _toggleInventory;
         private InputAction _hotbarSelect;
         private InputAction _scrollHotbar;
-        private InputAction _interact;
-        private InputAction _dropItem;
 
         // =====================================================================
-        // Public events — subscribe to these from UI and gameplay scripts
+        // Public properties
         // =====================================================================
 
-        /// <summary>Current mouse position (read via PointerPosition property).</summary>
         public Vector2 PointerPosition => _point?.ReadValue<Vector2>() ?? Vector2.zero;
-
-        /// <summary>Whether the shift modifier is currently held.</summary>
         public bool IsModifierHeld => _modifier?.IsPressed() ?? false;
+        public bool IsCtrlHeld => _ctrlModifier?.IsPressed() ?? false;
+        public bool IsInitialized => _initialized;
 
-        // Button events
+        // =====================================================================
+        // Public events
+        // =====================================================================
+
+        public event Action OnToggleInventory;
         public event Action OnClick;
         public event Action OnRightClick;
         public event Action OnMiddleClick;
-        public event Action OnToggleInventory;
-        public event Action OnDropItem;
-        public event Action OnInteract;
-
-        /// <summary>
-        /// Fires when a hotbar key (1-6) is pressed.
-        /// The int parameter is the 0-based hotbar index.
-        /// </summary>
         public event Action<int> OnHotbarSelect;
-
-        /// <summary>
-        /// Fires when the scroll wheel moves. Positive = scroll up, negative = scroll down.
-        /// </summary>
         public event Action<float> OnScrollHotbar;
 
         // =====================================================================
         // Lifecycle
         // =====================================================================
 
-        private void Awake()
+        private void Start()
         {
-            if (inputActions == null)
+            // Start() runs after ALL Awake() and OnEnable() calls across
+            // all GameObjects. This guarantees PlayerInput has created its
+            // clone and bound it to devices before we try to read from it.
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            // --- Validate PlayerInput ---
+            if (playerInput == null)
             {
-                Debug.LogError("[InventoryInputProvider] No InputActionAsset assigned!");
+                Debug.LogError(
+                    "[InventoryInputProvider] PlayerInput is NOT assigned! " +
+                    "Drag the Player GameObject into the 'Player Input' field.");
                 return;
             }
 
-            // Resolve actions from the asset
-            var uiMap = inputActions.FindActionMap("UI", throwIfNotFound: true);
-            var gameplayMap = inputActions.FindActionMap("Gameplay", throwIfNotFound: true);
+            if (playerInput.actions == null)
+            {
+                Debug.LogError(
+                    "[InventoryInputProvider] PlayerInput.actions is null! " +
+                    "Make sure the Player's PlayerInput component has an Actions asset assigned.");
+                return;
+            }
 
-            _point          = uiMap.FindAction("Point");
-            _click          = uiMap.FindAction("Click");
-            _rightClick     = uiMap.FindAction("RightClick");
-            _middleClick    = uiMap.FindAction("MiddleClick");
-            _modifier       = uiMap.FindAction("Modifier");
-            _toggleInventory = uiMap.FindAction("ToggleInventory");
-            _hotbarSelect   = uiMap.FindAction("HotbarSelect");
-            _scrollHotbar   = uiMap.FindAction("ScrollHotbar");
-            _interact       = gameplayMap.FindAction("Interact");
-            _dropItem       = gameplayMap.FindAction("DropItem");
+            // --- Resolve UI map from PlayerInput's clone ---
+            var actions = playerInput.actions;
+            _uiMap = actions.FindActionMap("UI");
+
+            if (_uiMap == null)
+            {
+                Debug.LogError(
+                    "[InventoryInputProvider] No 'UI' action map found! " +
+                    "Open your PlayerInput.inputactions and add a map named exactly 'UI'.");
+                return;
+            }
+
+            // --- Resolve individual actions ---
+            // Each call logs clearly if an action is missing
+            _point           = ResolveAction("Mouse Position");
+            _click           = ResolveAction("Left Button");
+            _rightClick      = ResolveAction("RightButton");
+            _middleClick     = ResolveAction("MiddleButton");
+            _modifier        = ResolveAction("Modifier");
+            _ctrlModifier    = ResolveAction("Ctrl Modifier");
+            _toggleInventory = ResolveAction("Toggle Inventory");
+            _hotbarSelect    = ResolveAction("HotbarSelect");
+            _scrollHotbar    = ResolveAction("ScrollHotbar");
+
+            // --- Enable the UI map on the clone ---
+            _uiMap.Enable();
+
+            // --- Subscribe to callbacks ---
+            Subscribe(_toggleInventory, HandleToggleInventory);
+            Subscribe(_click, HandleClick);
+            Subscribe(_rightClick, HandleRightClick);
+            Subscribe(_middleClick, HandleMiddleClick);
+            Subscribe(_hotbarSelect, HandleHotbarSelect);
+            Subscribe(_scrollHotbar, HandleScrollHotbar);
+
+            _initialized = true;
+            Debug.Log("[InventoryInputProvider] Initialized successfully.");
         }
 
-        private void OnEnable()
+        private void OnDestroy()
         {
-            inputActions?.Enable();
-
-            _click.performed          += HandleClick;
-            _rightClick.performed     += HandleRightClick;
-            _middleClick.performed    += HandleMiddleClick;
-            _toggleInventory.performed += HandleToggleInventory;
-            _hotbarSelect.performed   += HandleHotbarSelect;
-            _scrollHotbar.performed   += HandleScrollHotbar;
-            _interact.performed       += HandleInteract;
-            _dropItem.performed       += HandleDropItem;
-        }
-
-        private void OnDisable()
-        {
-            _click.performed          -= HandleClick;
-            _rightClick.performed     -= HandleRightClick;
-            _middleClick.performed    -= HandleMiddleClick;
-            _toggleInventory.performed -= HandleToggleInventory;
-            _hotbarSelect.performed   -= HandleHotbarSelect;
-            _scrollHotbar.performed   -= HandleScrollHotbar;
-            _interact.performed       -= HandleInteract;
-            _dropItem.performed       -= HandleDropItem;
-
-            inputActions?.Disable();
+            // Unsubscribe from everything
+            Unsubscribe(_toggleInventory, HandleToggleInventory);
+            Unsubscribe(_click, HandleClick);
+            Unsubscribe(_rightClick, HandleRightClick);
+            Unsubscribe(_middleClick, HandleMiddleClick);
+            Unsubscribe(_hotbarSelect, HandleHotbarSelect);
+            Unsubscribe(_scrollHotbar, HandleScrollHotbar);
         }
 
         // =====================================================================
-        // Handlers — translate InputAction callbacks into clean C# events
+        // Action resolution helpers
         // =====================================================================
 
+        private InputAction ResolveAction(string actionName)
+        {
+            var action = _uiMap.FindAction(actionName);
+            if (action == null)
+            {
+                Debug.LogWarning(
+                    $"[InventoryInputProvider] Action '{actionName}' not found in the UI map. " +
+                    "Check that the name in your .inputactions asset matches EXACTLY " +
+                    "(including spaces and capitalization).");
+            }
+            return action;
+        }
+
+        private void Subscribe(InputAction action, Action<InputAction.CallbackContext> handler)
+        {
+            if (action != null)
+                action.performed += handler;
+        }
+
+        private void Unsubscribe(InputAction action, Action<InputAction.CallbackContext> handler)
+        {
+            if (action != null)
+                action.performed -= handler;
+        }
+
+        // =====================================================================
+        // Handlers
+        // =====================================================================
+
+        private void HandleToggleInventory(InputAction.CallbackContext ctx) => OnToggleInventory?.Invoke();
         private void HandleClick(InputAction.CallbackContext ctx) => OnClick?.Invoke();
         private void HandleRightClick(InputAction.CallbackContext ctx) => OnRightClick?.Invoke();
         private void HandleMiddleClick(InputAction.CallbackContext ctx) => OnMiddleClick?.Invoke();
-        private void HandleToggleInventory(InputAction.CallbackContext ctx) => OnToggleInventory?.Invoke();
-        private void HandleInteract(InputAction.CallbackContext ctx) => OnInteract?.Invoke();
-        private void HandleDropItem(InputAction.CallbackContext ctx) => OnDropItem?.Invoke();
 
         private void HandleHotbarSelect(InputAction.CallbackContext ctx)
         {
-            // The Scale processor on each binding encodes the slot index (0-5)
             int index = Mathf.RoundToInt(ctx.ReadValue<float>());
             OnHotbarSelect?.Invoke(index);
         }
 
         private void HandleScrollHotbar(InputAction.CallbackContext ctx)
         {
-            float value = ctx.ReadValue<float>();
-            if (Mathf.Abs(value) > 0.01f)
+            var scroll = ctx.ReadValue<Vector2>();
+            if (Mathf.Abs(scroll.y) > 0.01f)
             {
-                OnScrollHotbar?.Invoke(value);
+                OnScrollHotbar?.Invoke(scroll.y);
             }
         }
 
         // =====================================================================
-        // Action map switching
+        // Movement map control
         // =====================================================================
 
-        /// <summary>
-        /// Call when opening a full-screen menu that should block gameplay input.
-        /// </summary>
-        public void EnableUIOnly()
+        public void DisableMovement()
         {
-            inputActions.FindActionMap("Gameplay")?.Disable();
-            inputActions.FindActionMap("UI")?.Enable();
+            if (playerInput != null && playerInput.actions != null)
+            {
+                playerInput.actions.FindActionMap("Movement")?.Disable();
+            }
         }
 
-        /// <summary>
-        /// Call when closing menus to restore gameplay input.
-        /// </summary>
-        public void EnableAll()
+        public void EnableMovement()
         {
-            inputActions.FindActionMap("Gameplay")?.Enable();
-            inputActions.FindActionMap("UI")?.Enable();
+            if (playerInput != null && playerInput.actions != null)
+            {
+                playerInput.actions.FindActionMap("Movement")?.Enable();
+            }
         }
     }
 }

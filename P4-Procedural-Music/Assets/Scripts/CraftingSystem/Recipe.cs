@@ -5,6 +5,7 @@ namespace InventorySystem.Crafting
 {
     public enum CraftingStationType
     {
+        HandCraft,
         Workbench,
         CookingStation,
         BuildHammer

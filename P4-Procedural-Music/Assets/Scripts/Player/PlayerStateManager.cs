@@ -3,14 +3,18 @@ using UnityEngine.InputSystem;
 
 public class PlayerStateManager : MonoBehaviour
 {
+    // --- States ---
     PlayerBaseState currentState;
     public PlayerIdleState idleState = new PlayerIdleState();
     public PlayerRunState runState = new PlayerRunState();
+    public PlayerInventoryState inventoryState = new PlayerInventoryState();
 
+    // --- References ---
     public Rigidbody2D playerRB;
     public Vector2 moveInput;
-
     public float moveSpeed;
+
+    public bool IsInInventory => currentState == inventoryState;
 
     private void Awake()
     {
@@ -20,7 +24,6 @@ public class PlayerStateManager : MonoBehaviour
     void Start()
     {
         currentState = idleState;
-
         currentState.EnterState(this);
     }
 
@@ -29,7 +32,7 @@ public class PlayerStateManager : MonoBehaviour
         currentState.UpdateState(this);
     }
 
-    public void SwitchState(PlayerBaseState state) 
+    public void SwitchState(PlayerBaseState state)
     {
         currentState = state;
         currentState.EnterState(this);

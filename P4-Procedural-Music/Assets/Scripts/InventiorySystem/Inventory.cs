@@ -300,6 +300,36 @@ namespace InventorySystem.Data
             return emptyIndex;
         }
 
+        /// <summary>
+        /// Splits an exact amount from a stack and places it in the first
+        /// empty slot. Returns the new slot index, or -1 if it failed.
+        /// </summary>
+        public int SplitExact(int slotIndex, int amount)
+        {
+            if (slotIndex < 0 || slotIndex >= Slots.Length) return -1;
+
+            var slot = Slots[slotIndex];
+            if (slot.IsEmpty || amount <= 0 || amount >= slot.Quantity) return -1;
+
+            int emptyIndex = FindFirstEmptySlot();
+            if (emptyIndex < 0) return -1;
+
+            // Take the exact amount from the source
+            slot.RemoveFromStack(amount);
+
+            // Create a new instance in the target slot
+            var newInstance = slot.ItemData.hasInstanceState
+                ? new ItemInstance(slot.Instance)
+                : new ItemInstance(slot.ItemData);
+
+            Slots[emptyIndex].Set(newInstance, amount);
+
+            NotifySlotChanged(slotIndex);
+            NotifySlotChanged(emptyIndex);
+            OnInventoryChanged?.Invoke();
+            return emptyIndex;
+        }
+
         // =====================================================================
         // Hotbar
         // =====================================================================

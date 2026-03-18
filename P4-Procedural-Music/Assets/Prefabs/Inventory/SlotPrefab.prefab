@@ -274,7 +274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -308,9 +308,10 @@ MonoBehaviour:
   durabilityBar: {fileID: 6486542603074496263}
   slotBackground: {fileID: 3755022159843928681}
   highlightBorder: {fileID: 0}
-  normalColour: {r: 0.2, g: 0.2, b: 0.2, a: 0.8}
   highlightColour: {r: 0.35, g: 0.35, b: 0.35, a: 0.9}
   hotbarSelectedColour: {r: 0.9, g: 0.75, b: 0.3, a: 1}
+  equippedColour: {r: 0.3, g: 0.8, b: 0.4, a: 1}
+  iconPadding: 6
 --- !u!1 &7542272177649419019
 GameObject:
   m_ObjectHideFlags: 0
