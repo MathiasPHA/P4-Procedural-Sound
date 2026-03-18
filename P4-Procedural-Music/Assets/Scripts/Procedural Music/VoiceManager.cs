@@ -124,25 +124,25 @@ namespace ProceduralMusic.Synthesis
         };
 
         /// <summary>
-        /// String ensemble: warm, rich, orchestral strings.
-        /// 4 detuned saw oscillators + low-pass filter + vibrato.
-        /// Slow attack for bowing feel, long release for sustain.
+        /// Folk strings: dark, warm, bowed texture.
+        /// 4 detuned saw oscillators with darker filter and slower vibrato.
+        /// Sounds like a group of folk fiddles, not a symphony orchestra.
         /// </summary>
         public static InstrumentPreset Strings => new InstrumentPreset
         {
-            Name = "Strings",
+            Name = "FolkStrings",
             SynthType = SynthVoice.SynthType.StringEnsemble,
             MaxPolyphony = 8,
-            Attack = 0.6f,
-            Decay = 0.2f,
-            Sustain = 0.85f,
-            Release = 1.2f,
-            FilterCutoff = 3500f,
-            FilterEnvAmount = 2000f,
+            Attack = 0.8f,            // Slower attack — gentler entry
+            Decay = 0.25f,
+            Sustain = 0.8f,
+            Release = 1.5f,
+            FilterCutoff = 1800f,     // Much darker — folk, not orchestral
+            FilterEnvAmount = 600f,   // Minimal brightness change
             PortamentoTime = 0f,
-            VibratoRate = 5.2f,
-            VibratoDepth = 0.003f,
-            Volume = 0.3f
+            VibratoRate = 3.5f,       // Slower vibrato — folk fiddle, not classical
+            VibratoDepth = 0.004f,    // Slightly wider — more character
+            Volume = 0.22f            // Sits behind kantele and flute
         };
 
         /// <summary>

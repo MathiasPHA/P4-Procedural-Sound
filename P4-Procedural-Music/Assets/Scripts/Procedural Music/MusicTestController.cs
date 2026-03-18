@@ -32,7 +32,7 @@ namespace ProceduralMusic.Examples
 
             Debug.Log("=== Procedural Music System - Test Controls ===");
             Debug.Log("Arrow Up/Down: Increase/Decrease tension");
-            Debug.Log("1-7: Switch states (Exploring, Exploring2, Pressure, Combat, Spooky, Horror, Night)");
+            Debug.Log("1-8: Switch states (Exploring, Exploring2, Pressure, Combat, Spooky, Horror, Night, Cozy)");
             Debug.Log("Q/W: Change key root (down/up)");
             Debug.Log("M/N: Major/Minor mode");
             Debug.Log("Space: Panic (silence all)");
@@ -58,6 +58,7 @@ namespace ProceduralMusic.Examples
             if (Input.GetKeyDown(KeyCode.Alpha5)) MusicController.SetGameState(GameMusicState.Spooky);
             if (Input.GetKeyDown(KeyCode.Alpha6)) MusicController.SetGameState(GameMusicState.Horror);
             if (Input.GetKeyDown(KeyCode.Alpha7)) MusicController.SetGameState(GameMusicState.Night);
+            if (Input.GetKeyDown(KeyCode.Alpha8)) MusicController.SetGameState(GameMusicState.Cozy);
 
             if (Input.GetKeyDown(KeyCode.Q))
             {

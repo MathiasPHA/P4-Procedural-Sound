@@ -106,9 +106,10 @@ namespace ProceduralMusic.Examples
             ("The beast is near",         6f, GameMusicState.Horror,      0.5f),
             ("IT SEES YOU",               6f, GameMusicState.Horror,      0.9f),
             ("Night falls...",            6f, GameMusicState.Night,       0.1f),
-            ("Campfire under stars",      5f, GameMusicState.Night,       0.25f),
             ("Wolves in the distance",    5f, GameMusicState.Night,       0.5f),
             ("The darkness moves",        5f, GameMusicState.Night,       0.8f),
+            ("Found shelter...",          6f, GameMusicState.Cozy,        0.1f),
+            ("Warming by the fire",       8f, GameMusicState.Cozy,        0.2f),
         };
 
         // Waveform scope

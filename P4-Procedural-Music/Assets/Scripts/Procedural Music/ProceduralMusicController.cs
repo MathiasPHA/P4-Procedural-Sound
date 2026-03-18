@@ -21,7 +21,8 @@ namespace ProceduralMusic.Bridge
         Combat,         // Fighting trolls, nøkken, creatures
         Spooky,         // Unsettling, things aren't right
         Horror,         // Maximum dread — the beast is near
-        Night           // Nighttime — calm to terrifying depending on tension
+        Night,          // Nighttime — calm to terrifying depending on tension
+        Cozy            // By the fire — warm, safe, gentle
     }
 
     /// <summary>
@@ -67,7 +68,28 @@ namespace ProceduralMusic.Bridge
         public bool EnableVinyl = false;           // Broken vinyl effect (wow, crackle, dropout)
         public float VinylIntensity = 0.5f;        // How broken the vinyl sounds (0-1)
         public bool AllowTritones = false;
-        public MelodyStyle MelodyRhythmStyle = MelodyStyle.Folk;
+        // Per-instrument style: each instrument can use a different pattern pool per state
+        public MusicStyle MelodyStyle = MusicStyle.Folk;
+        public MusicStyle BassStyle = MusicStyle.Folk;
+        public MusicStyle PercussionStyle = MusicStyle.Folk;
+        public MusicStyle StringsStyle = MusicStyle.Folk;
+        public MusicStyle KanteleStyle = MusicStyle.Folk;
+
+        /// <summary>
+        /// Convenience: sets ALL instrument styles at once.
+        /// You can still override individual styles after setting this.
+        /// </summary>
+        public MusicStyle MusicStyleSetting
+        {
+            set
+            {
+                MelodyStyle = value;
+                BassStyle = value;
+                PercussionStyle = value;
+                StringsStyle = value;
+                KanteleStyle = value;
+            }
+        }
         public float FMModIndexMultiplier = 1f;
         public bool BassRootOnly = false;
 
@@ -103,7 +125,7 @@ namespace ProceduralMusic.Bridge
                         Strings = LayerRange.From(0.35f),
                         Bass = LayerRange.From(0.5f),
                         Percussion = LayerRange.Off,
-                        MelodyRhythmStyle = MelodyStyle.Folk
+                        MusicStyleSetting = MusicStyle.Folk
                     };
 
                 case GameMusicState.Exploring2:
@@ -124,7 +146,7 @@ namespace ProceduralMusic.Bridge
                         Strings = LayerRange.Always,
                         Bass = LayerRange.From(0.2f),
                         Percussion = LayerRange.From(0.25f),
-                        MelodyRhythmStyle = MelodyStyle.Triumphant
+                        MusicStyleSetting = MusicStyle.Triumphant
                     };
 
                 case GameMusicState.Pressure:
@@ -145,8 +167,8 @@ namespace ProceduralMusic.Bridge
                         Melody = LayerRange.From(0.15f),
                         Strings = LayerRange.From(0.25f),
                         Bass = LayerRange.From(0.35f),
-                        Percussion = LayerRange.Off,
-                        MelodyRhythmStyle = MelodyStyle.Tense,
+                        Percussion = LayerRange.From(0.5f),
+                        MusicStyleSetting = MusicStyle.Tense,
                         FMModIndexMultiplier = 1.5f
                     };
 
@@ -169,8 +191,7 @@ namespace ProceduralMusic.Bridge
                         Strings = LayerRange.Always,
                         Bass = LayerRange.Always,
                         Percussion = LayerRange.From(0.2f),
-                        Shriek = LayerRange.From(0.8f),
-                        MelodyRhythmStyle = MelodyStyle.Tense,
+                        MusicStyleSetting = MusicStyle.Tense,
                         FMModIndexMultiplier = 1.5f
                     };
 
@@ -194,7 +215,7 @@ namespace ProceduralMusic.Bridge
                         Strings = LayerRange.From(0.3f),
                         Bass = LayerRange.From(0.5f),
                         Percussion = LayerRange.Off,
-                        MelodyRhythmStyle = MelodyStyle.Sparse,
+                        MusicStyleSetting = MusicStyle.Sparse,
                         FMModIndexMultiplier = 2f
                     };
 
@@ -227,7 +248,7 @@ namespace ProceduralMusic.Bridge
                         Percussion = LayerRange.Off,
                         SubDrone = LayerRange.Always,           // Constant low rumble
                         Shriek = LayerRange.From(0.35f),        // High shriek creeps in with tension
-                        MelodyRhythmStyle = MelodyStyle.Horror,
+                        MusicStyleSetting = MusicStyle.Horror,
                         FMModIndexMultiplier = 2.5f,
                         BassRootOnly = true
                     };
@@ -253,8 +274,36 @@ namespace ProceduralMusic.Bridge
                         Strings = LayerRange.From(0.3f),    // Strings creep in
                         Bass = LayerRange.From(0.4f),       // Deep rumble as things get scary
                         Percussion = LayerRange.From(0.6f), // Heartbeat drums at high tension
-                        MelodyRhythmStyle = MelodyStyle.Sparse,
+                        MusicStyleSetting = MusicStyle.Sparse,
                         FMModIndexMultiplier = 1.8f
+                    };
+
+                case GameMusicState.Cozy:
+                    // Safe by the campfire — the warmest the game ever sounds.
+                    // Major key, very slow, kantele and flute are the stars.
+                    // Drone is gentle, strings are soft and warm. No percussion.
+                    // No bass — the low end is just the drone's warmth.
+                    // This is the reward for surviving. Hot cocoa for your ears.
+                    return new MusicStateConfig
+                    {
+                        State = state,
+                        PreferredMode = MusicalMode.Major,
+                        TempoMin = 62, TempoMax = 78,
+                        BaseTensionOffset = -0.2f, MaxTension = 0.3f, RootOffset = 5,
+                        EnableDistortion = false,
+                        EnableVinyl = false,
+                        AllowTritones = false,
+                        Pad = LayerRange.Always,
+                        Kantele = LayerRange.Always,
+                        Melody = LayerRange.From(0.05f),    // Flute almost always plays
+                        Strings = LayerRange.From(0.15f),   // Soft strings join early
+                        Bass = LayerRange.Off,               // No bass — just warmth
+                        Percussion = LayerRange.Off,         // No rhythm — just peace
+                        SubDrone = LayerRange.Off,
+                        Shriek = LayerRange.Off,
+                        MusicStyleSetting = MusicStyle.Folk,
+                        FMModIndexMultiplier = 0.8f,         // Softer timbres
+                        BassRootOnly = false
                     };
 
                 default:
@@ -648,8 +697,14 @@ namespace ProceduralMusic.Bridge
             _composer.SubDroneRange = config.SubDrone;
             _composer.ShriekRange = config.Shriek;
             _composer.AllowTritones = config.AllowTritones;
-            _composer.Melody.Style = config.MelodyRhythmStyle;
             _composer.BassRootOnly = config.BassRootOnly;
+
+            // Per-instrument styles
+            _composer.Melody.Style = config.MelodyStyle;
+            _composer.Bass.Style = config.BassStyle;
+            _composer.Rhythm.Style = config.PercussionStyle;
+            _composer.CurrentStringStyle = config.StringsStyle;
+            _composer.CurrentKanteleStyle = config.KanteleStyle;
 
             // Distortion
             _mixer.DistortionEnabled = config.EnableDistortion;
