@@ -145,7 +145,7 @@ namespace ProceduralMusic.Bridge
                         Melody = LayerRange.From(0.15f),
                         Strings = LayerRange.From(0.25f),
                         Bass = LayerRange.From(0.35f),
-                        Percussion = LayerRange.From(0.5f),
+                        Percussion = LayerRange.Off,
                         MelodyRhythmStyle = MelodyStyle.Tense,
                         FMModIndexMultiplier = 1.5f
                     };
@@ -169,6 +169,7 @@ namespace ProceduralMusic.Bridge
                         Strings = LayerRange.Always,
                         Bass = LayerRange.Always,
                         Percussion = LayerRange.From(0.2f),
+                        Shriek = LayerRange.From(0.8f),
                         MelodyRhythmStyle = MelodyStyle.Tense,
                         FMModIndexMultiplier = 1.5f
                     };
