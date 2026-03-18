@@ -379,7 +379,8 @@ namespace ProceduralMusic.Core
         /// Suggests the next chord given a desired tension level (0 = very relaxed, 1 = very tense).
         /// Returns a list of candidate chords sorted by how well they match the target tension.
         /// </summary>
-        public static List<Chord> SuggestNextChords(Chord current, Key key, float targetTension, int maxResults = 4)
+        public static List<Chord> SuggestNextChords(Chord current, Key key, float targetTension,
+            bool allowTritones = false, int maxResults = 4)
         {
             var diatonic = key.GetDiatonicChords();
             float maxTensionInKey = 0f;
@@ -399,21 +400,55 @@ namespace ProceduralMusic.Core
             {
                 foreach (var diaChord in diatonic)
                 {
-                    // Secondary dominant: V/x
                     var secDom = new Chord(
                         (PitchClass)(((int)diaChord.Root + 7) % 12),
                         ChordQuality.Dominant7
                     );
-                    float tension = GetTension(secDom, key) + 2f; // Bonus tension for chromatic
+                    float tension = GetTension(secDom, key) + 2f;
                     float distance = ChordDistance(current, secDom, key);
                     chordTensions.Add((secDom, tension, distance));
                     maxTensionInKey = Mathf.Max(maxTensionInKey, tension);
                 }
             }
 
+            // Tritone chords: diminished, augmented, and tritone substitutions
+            // The tritone (6 semitones) is the most dissonant interval — the "devil's interval"
+            if (allowTritones)
+            {
+                int root = (int)key.Root;
+
+                // Diminished chord on the root — pure instability
+                var rootDim = new Chord(key.Root, ChordQuality.Diminished);
+                chordTensions.Add((rootDim, GetTension(rootDim, key) + 3f,
+                    ChordDistance(current, rootDim, key)));
+
+                // Augmented chord on the root — eerie, floating
+                var rootAug = new Chord(key.Root, ChordQuality.Augmented);
+                chordTensions.Add((rootAug, GetTension(rootAug, key) + 2.5f,
+                    ChordDistance(current, rootAug, key)));
+
+                // Tritone substitution: chord a tritone (6 semitones) away from current
+                var tritoneSub = new Chord(
+                    (PitchClass)(((int)current.Root + 6) % 12),
+                    ChordQuality.Dominant7
+                );
+                chordTensions.Add((tritoneSub, GetTension(tritoneSub, key) + 4f,
+                    ChordDistance(current, tritoneSub, key)));
+
+                // Diminished 7th a half step above the root — classic horror
+                var dimApproach = new Chord(
+                    (PitchClass)((root + 1) % 12),
+                    ChordQuality.Diminished
+                );
+                chordTensions.Add((dimApproach, GetTension(dimApproach, key) + 3.5f,
+                    ChordDistance(current, dimApproach, key)));
+
+                maxTensionInKey = Mathf.Max(maxTensionInKey,
+                    chordTensions.Max(ct => ct.tension));
+            }
+
             if (maxTensionInKey < 0.01f) maxTensionInKey = 1f;
 
-            // Score each chord by how close its normalized tension matches the target
             float targetTensionScaled = targetTension * maxTensionInKey;
 
             var scored = chordTensions

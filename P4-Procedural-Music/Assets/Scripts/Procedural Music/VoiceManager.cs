@@ -48,8 +48,12 @@ namespace ProceduralMusic.Synthesis
             Name = "HurdyGurdy",
             SynthType = SynthVoice.SynthType.HurdyGurdy,
             MaxPolyphony = 4,
-            Attack = 0.8f, Decay = 0.3f, Sustain = 0.8f, Release = 1.5f,
-            FilterCutoff = 1800f, FilterEnvAmount = 600f,
+            Attack = 0.8f,
+            Decay = 0.3f,
+            Sustain = 0.8f,
+            Release = 1.5f,
+            FilterCutoff = 1800f,
+            FilterEnvAmount = 600f,
             Volume = 0.22f
         };
 
@@ -58,8 +62,13 @@ namespace ProceduralMusic.Synthesis
             Name = "Lead",
             SynthType = SynthVoice.SynthType.FM,
             MaxPolyphony = 2,
-            Attack = 0.01f, Decay = 0.2f, Sustain = 0.6f, Release = 0.2f,
-            FMRatio = 2f, FMIndex = 1.5f, FMEnvAmount = 0.7f,
+            Attack = 0.01f,
+            Decay = 0.2f,
+            Sustain = 0.6f,
+            Release = 0.2f,
+            FMRatio = 2f,
+            FMIndex = 1.5f,
+            FMEnvAmount = 0.7f,
             Volume = 0.35f
         };
 
@@ -68,8 +77,13 @@ namespace ProceduralMusic.Synthesis
             Name = "Bass",
             SynthType = SynthVoice.SynthType.Subtractive,
             MaxPolyphony = 1,
-            Attack = 0.003f, Decay = 0.2f, Sustain = 0.75f, Release = 0.15f,
-            OscWaveform = Waveform.Saw, FilterCutoff = 400f, FilterEnvAmount = 800f,
+            Attack = 0.003f,
+            Decay = 0.2f,
+            Sustain = 0.75f,
+            Release = 0.15f,
+            OscWaveform = Waveform.Saw,
+            FilterCutoff = 400f,
+            FilterEnvAmount = 800f,
             Volume = 0.38f
         };
 
@@ -78,7 +92,10 @@ namespace ProceduralMusic.Synthesis
             Name = "LogDrum",
             SynthType = SynthVoice.SynthType.Percussion,
             MaxPolyphony = 1,
-            Attack = 0.001f, Decay = 0.45f, Sustain = 0f, Release = 0.2f,
+            Attack = 0.001f,
+            Decay = 0.45f,
+            Sustain = 0f,
+            Release = 0.2f,
             Volume = 0.85f
         };
 
@@ -87,7 +104,10 @@ namespace ProceduralMusic.Synthesis
             Name = "FrameDrum",
             SynthType = SynthVoice.SynthType.Percussion,
             MaxPolyphony = 1,
-            Attack = 0.001f, Decay = 0.22f, Sustain = 0f, Release = 0.12f,
+            Attack = 0.001f,
+            Decay = 0.22f,
+            Sustain = 0f,
+            Release = 0.12f,
             Volume = 0.45f
         };
 
@@ -96,7 +116,10 @@ namespace ProceduralMusic.Synthesis
             Name = "Brush",
             SynthType = SynthVoice.SynthType.Percussion,
             MaxPolyphony = 1,
-            Attack = 0.002f, Decay = 0.06f, Sustain = 0f, Release = 0.04f,
+            Attack = 0.002f,
+            Decay = 0.06f,
+            Sustain = 0f,
+            Release = 0.04f,
             Volume = 0.18f  // Quieter — subtle texture
         };
 
@@ -110,9 +133,15 @@ namespace ProceduralMusic.Synthesis
             Name = "Strings",
             SynthType = SynthVoice.SynthType.StringEnsemble,
             MaxPolyphony = 8,
-            Attack = 0.6f, Decay = 0.2f, Sustain = 0.85f, Release = 1.2f,
-            FilterCutoff = 3500f, FilterEnvAmount = 2000f,
-            PortamentoTime = 0f, VibratoRate = 5.2f, VibratoDepth = 0.003f,
+            Attack = 0.6f,
+            Decay = 0.2f,
+            Sustain = 0.85f,
+            Release = 1.2f,
+            FilterCutoff = 3500f,
+            FilterEnvAmount = 2000f,
+            PortamentoTime = 0f,
+            VibratoRate = 5.2f,
+            VibratoDepth = 0.003f,
             Volume = 0.3f
         };
 
@@ -126,9 +155,15 @@ namespace ProceduralMusic.Synthesis
             Name = "Flute",
             SynthType = SynthVoice.SynthType.LegatoLead,
             MaxPolyphony = 1,  // Monophonic for true legato
-            Attack = 0.08f, Decay = 0.15f, Sustain = 0.8f, Release = 0.35f,
-            FilterCutoff = 4500f, FilterEnvAmount = 2000f,
-            PortamentoTime = 0.06f, VibratoRate = 5.0f, VibratoDepth = 0.005f,
+            Attack = 0.08f,
+            Decay = 0.15f,
+            Sustain = 0.8f,
+            Release = 0.35f,
+            FilterCutoff = 4500f,
+            FilterEnvAmount = 2000f,
+            PortamentoTime = 0.06f,
+            VibratoRate = 5.0f,
+            VibratoDepth = 0.005f,
             Volume = 0.35f
         };
 
@@ -141,9 +176,15 @@ namespace ProceduralMusic.Synthesis
             Name = "StringsStaccato",
             SynthType = SynthVoice.SynthType.StringEnsemble,
             MaxPolyphony = 6,
-            Attack = 0.02f, Decay = 0.3f, Sustain = 0.3f, Release = 0.2f,
-            FilterCutoff = 4000f, FilterEnvAmount = 3000f,
-            PortamentoTime = 0f, VibratoRate = 6f, VibratoDepth = 0.002f,
+            Attack = 0.02f,
+            Decay = 0.3f,
+            Sustain = 0.3f,
+            Release = 0.2f,
+            FilterCutoff = 4000f,
+            FilterEnvAmount = 3000f,
+            PortamentoTime = 0f,
+            VibratoRate = 6f,
+            VibratoDepth = 0.002f,
             Volume = 0.25f
         };
 
@@ -155,9 +196,15 @@ namespace ProceduralMusic.Synthesis
             Name = "Cello",
             SynthType = SynthVoice.SynthType.StringEnsemble,
             MaxPolyphony = 2,
-            Attack = 0.3f, Decay = 0.15f, Sustain = 0.8f, Release = 0.8f,
-            FilterCutoff = 2000f, FilterEnvAmount = 1500f,
-            PortamentoTime = 0.05f, VibratoRate = 5f, VibratoDepth = 0.004f,
+            Attack = 0.3f,
+            Decay = 0.15f,
+            Sustain = 0.8f,
+            Release = 0.8f,
+            FilterCutoff = 2000f,
+            FilterEnvAmount = 1500f,
+            PortamentoTime = 0.05f,
+            VibratoRate = 5f,
+            VibratoDepth = 0.004f,
             Volume = 0.35f
         };
 
@@ -171,9 +218,55 @@ namespace ProceduralMusic.Synthesis
             Name = "Kantele",
             SynthType = SynthVoice.SynthType.PluckedString,
             MaxPolyphony = 8,
-            Attack = 0.001f, Decay = 1.5f, Sustain = 0f, Release = 0.5f,
-            FilterCutoff = 3500f, FilterEnvAmount = 0f,
+            Attack = 0.001f,
+            Decay = 1.5f,
+            Sustain = 0f,
+            Release = 0.5f,
+            FilterCutoff = 3500f,
+            FilterEnvAmount = 0f,
             Volume = 0.7f
+        };
+
+        /// <summary>
+        /// Sub Drone: extremely low, constant rumble. Like the earth breathing.
+        /// Subtractive synth at octave 1 with sub-sine, very dark filter.
+        /// Used exclusively in Horror for oppressive low-end dread.
+        /// </summary>
+        public static InstrumentPreset SubDrone => new InstrumentPreset
+        {
+            Name = "SubDrone",
+            SynthType = SynthVoice.SynthType.Subtractive,
+            MaxPolyphony = 2,
+            Attack = 2.0f,       // Fades in very slowly — you feel it before you hear it
+            Decay = 0.5f,
+            Sustain = 0.9f,
+            Release = 3.0f,      // Takes forever to fade out
+            OscWaveform = Waveform.Saw,
+            FilterCutoff = 200f,  // Extremely dark — almost sub-bass only
+            FilterEnvAmount = 100f,
+            Volume = 0.55f
+        };
+
+        /// <summary>
+        /// Shriek String: high-pitched horror string that crawls between semitones.
+        /// StringEnsemble at very high octave with wide detuning and fast aggressive vibrato.
+        /// The sound of something screaming at the edge of hearing.
+        /// </summary>
+        public static InstrumentPreset ShriekString => new InstrumentPreset
+        {
+            Name = "ShriekString",
+            SynthType = SynthVoice.SynthType.StringEnsemble,
+            MaxPolyphony = 4,
+            Attack = 1.5f,        // Slow fade in — creeps up on you
+            Decay = 0.3f,
+            Sustain = 0.7f,
+            Release = 2.0f,       // Long ghostly tail
+            FilterCutoff = 6000f,  // Bright and piercing
+            FilterEnvAmount = 2000f,
+            PortamentoTime = 0f,
+            VibratoRate = 8f,      // Fast, nervous vibrato
+            VibratoDepth = 0.012f, // Wide — almost a tremolo, unsettling
+            Volume = 0.2f          // Quiet but piercing — it's in the high register
         };
 
         /// <summary>
@@ -185,8 +278,12 @@ namespace ProceduralMusic.Synthesis
             Name = "GutGuitar",
             SynthType = SynthVoice.SynthType.PluckedString,
             MaxPolyphony = 6,
-            Attack = 0.001f, Decay = 2.0f, Sustain = 0f, Release = 0.8f,
-            FilterCutoff = 2000f, FilterEnvAmount = 0f,
+            Attack = 0.001f,
+            Decay = 2.0f,
+            Sustain = 0f,
+            Release = 0.8f,
+            FilterCutoff = 2000f,
+            FilterEnvAmount = 0f,
             Volume = 0.35f
         };
     }
@@ -334,6 +431,12 @@ namespace ProceduralMusic.Synthesis
     public class MasterMixer
     {
         public float MasterVolume = 0.7f;
+        public bool DistortionEnabled = false;
+        public float DistortionAmount = 0f;
+
+        // Broken vinyl effect — wow/flutter, crackle, audio dropout
+        public bool VinylEnabled = false;
+        public float VinylAmount = 0f;            // 0-1, scales all vinyl effects
 
         private List<VoiceManager> _instruments = new List<VoiceManager>();
         private float _sampleRate;
@@ -343,6 +446,14 @@ namespace ProceduralMusic.Synthesis
         private int _reverbIndex;
         private float _reverbMix = 0.15f;
         private float _reverbFeedback = 0.4f;
+
+        // Vinyl internals
+        private float _vinylPhase;                // LFO phase for wow/flutter
+        private float _vinylDropoutTimer;         // Countdown to next dropout
+        private float _vinylDropoutDuration;      // How long current dropout lasts
+        private bool _vinylInDropout;
+        private System.Random _vinylRng = new System.Random(42);
+        private float _vinylLpL, _vinylLpR;       // One-pole LP filter state
 
         public MasterMixer(float sampleRate = 48000f)
         {
@@ -392,9 +503,62 @@ namespace ProceduralMusic.Synthesis
                 mixL += reverbL * _reverbMix;
                 mixR += reverbR * _reverbMix;
 
-                // Master volume + soft clip limiter
+                // Broken vinyl effect: wow/flutter + crackle + random dropouts
+                // Makes the music sound like a damaged record player in an abandoned room
+                if (VinylEnabled && VinylAmount > 0.01f)
+                {
+                    // Wow/flutter: slow pitch wobble (we fake it with volume modulation
+                    // since we can't pitch-shift in the mixer — but volume wobble on
+                    // a drone sounds eerily similar to a warped record)
+                    _vinylPhase += (1f / _sampleRate);
+                    float wow = 1f + Mathf.Sin(_vinylPhase * 2f * Mathf.PI * 0.8f) * VinylAmount * 0.15f
+                              + Mathf.Sin(_vinylPhase * 2f * Mathf.PI * 3.7f) * VinylAmount * 0.06f;
+                    mixL *= wow;
+                    mixR *= wow;
+
+                    // Crackle: random noise pops, more frequent at higher amounts
+                    if ((float)_vinylRng.NextDouble() < VinylAmount * 0.003f)
+                    {
+                        float pop = ((float)_vinylRng.NextDouble() - 0.5f) * VinylAmount * 0.4f;
+                        mixL += pop;
+                        mixR += pop * 0.7f;
+                    }
+
+                    // Low-pass filter simulation: vinyl loses high frequencies
+                    // Simple one-pole: heavier at higher amounts
+                    float lpCoeff = 1f - VinylAmount * 0.4f; // 1.0 = no filter, 0.6 = quite dark
+                    mixL = _vinylLpL + lpCoeff * (mixL - _vinylLpL);
+                    mixR = _vinylLpR + lpCoeff * (mixR - _vinylLpR);
+                    _vinylLpL = mixL;
+                    _vinylLpR = mixR;
+                }
+
+                // Master volume
                 mixL *= MasterVolume;
                 mixR *= MasterVolume;
+
+                // Distortion: waveshaper + bitcrush driven by DistortionAmount
+                // 0.0-0.3: subtle warmth (atan saturation)
+                // 0.3-0.6: gritty, crunchy (harder clipping)
+                // 0.6-1.0: DESTROYED — bitcrushed, broken, horrifying
+                if (DistortionEnabled && DistortionAmount > 0.01f)
+                {
+                    float drive = 1f + DistortionAmount * 15f; // 1x to 16x gain (was 9x)
+                    mixL = Distort(mixL * drive) / drive * 2f;
+                    mixR = Distort(mixR * drive) / drive * 2f;
+
+                    // Bitcrush at high distortion — reduces sample resolution
+                    // This creates that broken, degraded, VHS-horror sound
+                    if (DistortionAmount > 0.5f)
+                    {
+                        float crushAmount = (DistortionAmount - 0.5f) * 2f; // 0-1 over the 0.5-1.0 range
+                        float steps = Mathf.Lerp(256f, 12f, crushAmount); // 256 steps (clean) down to 12 (destroyed)
+                        mixL = Mathf.Round(mixL * steps) / steps;
+                        mixR = Mathf.Round(mixR * steps) / steps;
+                    }
+                }
+
+                // Soft clip limiter
                 mixL = SoftClip(mixL);
                 mixR = SoftClip(mixR);
 
@@ -412,7 +576,17 @@ namespace ProceduralMusic.Synthesis
         {
             if (x > 1.5f) return 1f;
             if (x < -1.5f) return -1f;
-            return x - (x * x * x) / 3f; // Approximate tanh
+            return x - (x * x * x) / 3f;
+        }
+
+        /// <summary>
+        /// Asymmetric waveshaper for distortion. Produces odd harmonics
+        /// that give a gritty, broken quality — good for horror/tension.
+        /// </summary>
+        private static float Distort(float x)
+        {
+            // atan-based saturation: smoother than hard clip, grittier than tanh
+            return (float)(System.Math.Atan(x) * 2.0 / System.Math.PI);
         }
     }
 }

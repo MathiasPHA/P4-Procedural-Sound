@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using ProceduralMusic.Core;
+using ProceduralMusic.Bridge;
 
 namespace ProceduralMusic.Composition
 {
@@ -49,9 +50,10 @@ namespace ProceduralMusic.Composition
             _rng = seed >= 0 ? new System.Random(seed) : new System.Random();
         }
 
-        public Chord GetNextChord(float targetTension)
+        public Chord GetNextChord(float targetTension, bool allowTritones = false)
         {
-            var candidates = TonalPitchSpace.SuggestNextChords(CurrentChord, CurrentKey, targetTension, 4);
+            var candidates = TonalPitchSpace.SuggestNextChords(
+                CurrentChord, CurrentKey, targetTension, allowTritones, 4);
 
             if (candidates.Count == 0)
             {
@@ -90,19 +92,31 @@ namespace ProceduralMusic.Composition
     }
 
     /// <summary>
+    /// Melody style determines which rhythm patterns the flute can choose from.
+    /// Each game state can set a different style for distinct musical character.
+    /// </summary>
+    public enum MelodyStyle
+    {
+        Folk,       // Flowing, singable — dotted rhythms, lilting triplets (Explore, Ambient)
+        Tense,      // Syncopated, driving — eighth notes, offbeats (Tension, Combat)
+        Sparse,     // Minimal, atmospheric — long held notes, lots of silence (Spooky, Mystery)
+        Triumphant, // Bold, march-like — strong downbeats, quarter notes (Victory)
+        Horror      // Dissonant, unsettling — sparse rhythms, unexpected accents (Horror)
+    }
+
+    /// <summary>
     /// Generates melodies using TPS attraction weights with proper rhythmic placement.
-    /// Notes are placed at musical subdivisions across the measure, not all at beat 1.
-    /// Uses rhythmic motifs and syncopation for natural-sounding phrases.
     /// </summary>
     public class MelodyGenerator
     {
         public int OctaveMin = 4;
-        public int OctaveMax = 4;                    // Same octave — keeps melody focused
+        public int OctaveMax = 4;
         public float RestProbability = 0.15f;
-        public float StepwiseMotionBias = 1.5f;      // Much stronger stepwise preference
+        public float StepwiseMotionBias = 1.5f;
         public float SyncopationAmount = 0.12f;
         public float TiedNoteProbability = 0.2f;
         public float LeapRecoveryBias = 0.9f;
+        public MelodyStyle Style = MelodyStyle.Folk;
 
         private int _lastPitch = -1;
         private int _lastInterval = 0;
@@ -147,6 +161,16 @@ namespace ProceduralMusic.Composition
             int instrumentIndex)
         {
             var events = new List<NoteEvent>();
+
+            // Sparse style: high chance of skipping the entire measure (silence as music)
+            // This creates the ambient feel where instruments play occasionally, not constantly
+            if (Style == MelodyStyle.Sparse)
+            {
+                float skipChance = 0.55f; // 55% of measures are pure silence
+                if ((float)_rng.NextDouble() < skipChance)
+                    return events; // Return empty — nothing plays this measure
+            }
+
             int[] scalePCs = key.GetScalePitchClasses();
             int[] chordPCs = chord.GetPitchClasses();
 
@@ -211,31 +235,85 @@ namespace ProceduralMusic.Composition
         {
             List<float[]> pool = new List<float[]>();
 
-            if (tension < 0.3f)
+            // Each MelodyStyle has its own pool of rhythm patterns,
+            // giving each game state a distinct melodic feel.
+            switch (Style)
             {
-                // Low tension: long, singing notes
-                pool.Add(_rhythmPatterns[3]);  // Two long notes
-                pool.Add(_rhythmPatterns[7]);  // Half note feel
-                pool.Add(_rhythmPatterns[10]); // Two longs with pickup
-                pool.Add(_rhythmPatterns[11]); // Sustained single
+                case MelodyStyle.Folk:
+                    // Flowing, singable — lilting dotted rhythms, triplets
+                    if (tension < 0.3f)
+                    {
+                        pool.Add(_rhythmPatterns[3]);  // Two long notes
+                        pool.Add(_rhythmPatterns[7]);  // Half note feel
+                        pool.Add(_rhythmPatterns[11]); // Sustained single
+                    }
+                    else if (tension < 0.6f)
+                    {
+                        pool.Add(_rhythmPatterns[1]);  // Dotted (very melodic)
+                        pool.Add(_rhythmPatterns[5]);  // Triplet feel
+                        pool.Add(_rhythmPatterns[8]);  // Offbeat singing
+                    }
+                    else
+                    {
+                        pool.Add(_rhythmPatterns[0]);  // Quarters
+                        pool.Add(_rhythmPatterns[1]);  // Dotted
+                        pool.Add(_rhythmPatterns[6]);  // Call and response
+                    }
+                    break;
+
+                case MelodyStyle.Tense:
+                    // Syncopated, driving — offbeats and eighth note runs
+                    if (tension < 0.4f)
+                    {
+                        pool.Add(_rhythmPatterns[0]);  // Quarters
+                        pool.Add(_rhythmPatterns[2]);  // Syncopated
+                    }
+                    else
+                    {
+                        pool.Add(_rhythmPatterns[2]);  // Syncopated
+                        pool.Add(_rhythmPatterns[4]);  // Eighth notes
+                        pool.Add(_rhythmPatterns[9]);  // Run then sustain
+                        pool.Add(_rhythmPatterns[6]);  // Call and response
+                    }
+                    break;
+
+                case MelodyStyle.Sparse:
+                    // Minimal, atmospheric — long notes with lots of silence
+                    pool.Add(_rhythmPatterns[3]);  // Two long notes
+                    pool.Add(_rhythmPatterns[11]); // Sustained single
+                    pool.Add(_rhythmPatterns[10]); // Two longs with pickup
+                    if (tension > 0.5f)
+                        pool.Add(_rhythmPatterns[7]); // Half note feel
+                    break;
+
+
+                case MelodyStyle.Horror:
+                    // Minimal, atmospheric — long notes with lots of silence
+                    pool.Add(_rhythmPatterns[3]);  // Two long notes
+                    pool.Add(_rhythmPatterns[11]); // Sustained single
+                    pool.Add(_rhythmPatterns[10]); // Two longs with pickup
+                    if (tension > 0.5f)
+                        pool.Add(_rhythmPatterns[7]); // Half note feel
+                    break;
+
+                case MelodyStyle.Triumphant:
+                    // Bold, march-like — strong downbeats, confident
+                    if (tension < 0.4f)
+                    {
+                        pool.Add(_rhythmPatterns[0]);  // Quarters (march)
+                        pool.Add(_rhythmPatterns[7]);  // Half note feel
+                    }
+                    else
+                    {
+                        pool.Add(_rhythmPatterns[0]);  // Quarters
+                        pool.Add(_rhythmPatterns[1]);  // Dotted
+                        pool.Add(_rhythmPatterns[5]);  // Triplet (fanfare feel)
+                    }
+                    break;
             }
-            else if (tension < 0.6f)
-            {
-                // Medium: melodic quarter/dotted patterns
-                pool.Add(_rhythmPatterns[0]);  // Simple quarters
-                pool.Add(_rhythmPatterns[1]);  // Dotted (very melodic)
-                pool.Add(_rhythmPatterns[5]);  // Triplet feel
-                pool.Add(_rhythmPatterns[8]);  // Offbeat singing
-                pool.Add(_rhythmPatterns[6]);  // Call and response
-            }
-            else
-            {
-                // High tension: denser, more active
-                pool.Add(_rhythmPatterns[2]);  // Syncopated
-                pool.Add(_rhythmPatterns[4]);  // Eighth notes
-                pool.Add(_rhythmPatterns[9]);  // Run then sustain
-                pool.Add(_rhythmPatterns[6]);  // Call and response
-            }
+
+            if (pool.Count == 0)
+                pool.Add(_rhythmPatterns[0]); // Fallback
 
             float[] pattern = pool[_rng.Next(pool.Count)];
 
@@ -374,6 +452,7 @@ namespace ProceduralMusic.Composition
 
         private System.Random _rng;
         private int _lastNote = -1;
+        public bool RootOnly = false;
 
         // Bass rhythm templates (beat offsets within 4 beats)
         private readonly float[][] _bassPatterns = new float[][]
@@ -488,6 +567,9 @@ namespace ProceduralMusic.Composition
         private int ChooseBassPitch(int noteIndex, int totalNotes, float beatPos, int beatsPerChord,
             int root, int third, int fifth, int octaveUp, int[] scalePCs, float tension)
         {
+            if (tension > 0f && RootOnly)
+                return root;
+
             // First note on the downbeat is always the root
             if (noteIndex == 0 && beatPos < 0.1f)
                 return root;
@@ -695,13 +777,27 @@ namespace ProceduralMusic.Composition
         public int HiHatInstrumentIndex = 5;
         public int StringsInstrumentIndex = 6;
         public int KanteleInstrumentIndex = 7;
+        public int SubDroneInstrumentIndex = 8;
+        public int ShriekInstrumentIndex = 9;
 
         public bool EnablePad = true;
         public bool EnableMelody = true;
         public bool EnableBass = true;
+        public bool BassRootOnly = false;
         public bool EnablePercussion = true;
         public bool EnableStrings = true;
         public bool EnableKantele = true;
+        public bool AllowTritones = false;
+
+        // Per-state layer ranges (set by bridge from MusicStateConfig)
+        public LayerRange PadRange = LayerRange.Always;
+        public LayerRange MelodyRange = LayerRange.From(0.15f);
+        public LayerRange BassRange = LayerRange.From(0.4f);
+        public LayerRange PercussionRange = LayerRange.From(0.55f);
+        public LayerRange StringsRange = LayerRange.From(0.3f);
+        public LayerRange KanteleRange = LayerRange.Always;
+        public LayerRange SubDroneRange = LayerRange.Off;
+        public LayerRange ShriekRange = LayerRange.Off;
 
         // Scheduled events queue with absolute beat timestamps
         private List<(float absoluteBeat, NoteEvent noteEvent)> _pendingNoteOns
@@ -714,6 +810,7 @@ namespace ProceduralMusic.Composition
         private float _smoothedTension;
         private float _smoothedLayerTension;
         private bool _firstUpdate = true;
+        private System.Random _sparseRng = new System.Random();
 
         public float CurrentBeat => _currentBeat;
 
@@ -792,24 +889,17 @@ namespace ProceduralMusic.Composition
             float t = _smoothedTension;         // Clamped by MaxTension — for chord/musical decisions
             float lt = _smoothedLayerTension;   // Unclamped — for layer entry decisions
 
-            Chord newChord = Chords.GetNextChord(t);
+            Chord newChord = Chords.GetNextChord(t, AllowTritones);
 
-            // ── Layer entry thresholds ──
-            // Uses unclamped LayerTension so MaxTension doesn't prevent instruments from entering.
-            // MaxTension only affects harmonic choices (which chords TPS picks).
-            //
-            // Tension 0.0:  Drone (hurdy-gurdy) + Kantele — sparse, folk campfire
-            // Tension 0.15: Melody (flute) enters — a lonely tune
-            // Tension 0.3:  Strings enter — harmonic support swells in
-            // Tension 0.4:  Bass enters — grounding the harmony
-            // Tension 0.55: Percussion enters — rhythm kicks in
-
-            bool padActive = EnablePad;
-            bool kanteleActive = EnableKantele;
-            bool melodyActive = EnableMelody && lt >= 0.15f;
-            bool stringsActive = EnableStrings && lt >= 0.3f;
-            bool bassActive = EnableBass && lt >= 0.4f;
-            bool percActive = EnablePercussion && lt >= 0.55f;
+            // ── Layer activation ──
+            // Each layer uses its LayerRange to decide if it plays at the current tension.
+            // LayerRange supports both "enters at X" and "exits at X" per state per instrument.
+            bool padActive = PadRange.IsActive(lt);
+            bool kanteleActive = KanteleRange.IsActive(lt);
+            bool melodyActive = MelodyRange.IsActive(lt);
+            bool stringsActive = StringsRange.IsActive(lt);
+            bool bassActive = BassRange.IsActive(lt);
+            bool percActive = PercussionRange.IsActive(lt);
 
             // Pad (Hurdy-Gurdy drone): always present as the harmonic bed
             if (padActive)
@@ -835,6 +925,7 @@ namespace ProceduralMusic.Composition
             // Bass: enters at tension 0.4
             if (bassActive)
             {
+                Bass.RootOnly = BassRootOnly;
                 var bassEvents = Bass.GeneratePhrase(
                     newChord, CurrentKey, t, BeatsPerChord, BassInstrumentIndex);
                 foreach (var evt in bassEvents)
@@ -852,115 +943,162 @@ namespace ProceduralMusic.Composition
             }
 
             // Strings: enter at tension 0.3, adapt articulation
+            // In Sparse mode, strings occasionally skip entire measures for ambient breathing room
             if (stringsActive)
             {
-                int[] stringNotes = newChord.GetMidiNotes(4);
+                bool stringsSkip = Melody.Style == MelodyStyle.Sparse
+                    && (float)_sparseRng.NextDouble() < 0.4f; // 40% silent measures
 
-                if (t < 0.5f)
+                if (!stringsSkip)
                 {
-                    // Just entered: soft, fading in
-                    for (int i = 0; i < stringNotes.Length; i++)
-                    {
-                        float stagger = i * 0.05f;
-                        float vel = Mathf.Lerp(0.2f, 0.5f, (t - 0.3f) / 0.2f);
-                        var evt = new NoteEvent(stringNotes[i], vel, BeatsPerChord - 0.1f,
-                            StringsInstrumentIndex, stagger);
-                        _pendingNoteOns.Add((measureStart + stagger, evt));
-                    }
-                }
-                else if (t < 0.65f)
-                {
-                    // Medium: full sustained
-                    for (int i = 0; i < stringNotes.Length; i++)
-                    {
-                        float stagger = i * 0.03f;
-                        var evt = new NoteEvent(stringNotes[i], 0.55f, BeatsPerChord - 0.1f,
-                            StringsInstrumentIndex, stagger);
-                        _pendingNoteOns.Add((measureStart + stagger, evt));
-                    }
-                }
-                else
-                {
-                    // High: rhythmic pulsing
-                    float stringVel = Mathf.Lerp(0.5f, 0.65f, t);
-                    int hitsPerMeasure = BeatsPerChord;
-                    float hitSpacing = (float)BeatsPerChord / hitsPerMeasure;
+                    int[] stringNotes = newChord.GetMidiNotes(4);
 
-                    for (int hit = 0; hit < hitsPerMeasure; hit++)
+                    if (t < 0.5f)
                     {
-                        float beatPos = hit * hitSpacing;
-                        float hitDur = hitSpacing + 0.1f;
-                        float hitVel = (hit == 0) ? stringVel : stringVel * 0.85f;
-
-                        foreach (int note in stringNotes)
+                        // Just entered: soft, fading in
+                        for (int i = 0; i < stringNotes.Length; i++)
                         {
-                            _pendingNoteOns.Add((measureStart + beatPos,
-                                new NoteEvent(note, hitVel, hitDur, StringsInstrumentIndex, beatPos)));
+                            float stagger = i * 0.05f;
+                            float vel = Mathf.Lerp(0.2f, 0.5f, (t - 0.3f) / 0.2f);
+                            var evt = new NoteEvent(stringNotes[i], vel, BeatsPerChord - 0.1f,
+                                StringsInstrumentIndex, stagger);
+                            _pendingNoteOns.Add((measureStart + stagger, evt));
                         }
                     }
-                }
+                    else if (t < 0.65f)
+                    {
+                        // Medium: full sustained
+                        for (int i = 0; i < stringNotes.Length; i++)
+                        {
+                            float stagger = i * 0.03f;
+                            var evt = new NoteEvent(stringNotes[i], 0.55f, BeatsPerChord - 0.1f,
+                                StringsInstrumentIndex, stagger);
+                            _pendingNoteOns.Add((measureStart + stagger, evt));
+                        }
+                    }
+                    else
+                    {
+                        // High: rhythmic pulsing
+                        float stringVel = Mathf.Lerp(0.5f, 0.65f, t);
+                        int hitsPerMeasure = BeatsPerChord;
+                        float hitSpacing = (float)BeatsPerChord / hitsPerMeasure;
+
+                        for (int hit = 0; hit < hitsPerMeasure; hit++)
+                        {
+                            float beatPos = hit * hitSpacing;
+                            float hitDur = hitSpacing + 0.1f;
+                            float hitVel = (hit == 0) ? stringVel : stringVel * 0.85f;
+
+                            foreach (int note in stringNotes)
+                            {
+                                _pendingNoteOns.Add((measureStart + beatPos,
+                                    new NoteEvent(note, hitVel, hitDur, StringsInstrumentIndex, beatPos)));
+                            }
+                        }
+                    }
+                } // end stringsSkip check
             }
 
             // Kantele: always present if enabled — the folk heartbeat
+            // In Sparse mode, kantele also skips measures for ambient feel
             if (kanteleActive)
             {
-                int[] chordPCs = newChord.GetPitchClasses();
-                int kanteleOctave = 4;
+                bool kanteleSkip = Melody.Style == MelodyStyle.Sparse
+                    && (float)_sparseRng.NextDouble() < 0.5f;
 
-                var kantelePitches = new List<int>();
-                foreach (int pc in chordPCs)
-                    kantelePitches.Add((kanteleOctave + 1) * 12 + pc);
-                kantelePitches.Add((kanteleOctave + 2) * 12 + chordPCs[0]);
+                if (!kanteleSkip)
+                {
+                    int[] chordPCs = newChord.GetPitchClasses();
+                    int kanteleOctave = 4;
 
-                if (t < 0.3f)
+                    var kantelePitches = new List<int>();
+                    foreach (int pc in chordPCs)
+                        kantelePitches.Add((kanteleOctave + 1) * 12 + pc);
+                    kantelePitches.Add((kanteleOctave + 2) * 12 + chordPCs[0]);
+
+                    if (t < 0.3f)
+                    {
+                        // Sparse gentle plucks
+                        float[] pluckTimes = { 0f, 1.5f, 3f };
+                        for (int p = 0; p < pluckTimes.Length && p < kantelePitches.Count; p++)
+                        {
+                            if (pluckTimes[p] >= BeatsPerChord) break;
+                            int note = kantelePitches[p % kantelePitches.Count];
+                            float vel = 0.35f + (p == 0 ? 0.1f : 0f);
+                            _pendingNoteOns.Add((measureStart + pluckTimes[p],
+                                new NoteEvent(note, vel, 1.5f, KanteleInstrumentIndex, pluckTimes[p])));
+                        }
+                    }
+                    else if (t < 0.6f)
+                    {
+                        // Flowing arpeggios
+                        float spacing = 0.5f;
+                        for (int p = 0; p < kantelePitches.Count; p++)
+                        {
+                            float beatPos = p * spacing;
+                            if (beatPos >= BeatsPerChord) break;
+                            float vel = 0.4f - p * 0.03f;
+                            _pendingNoteOns.Add((measureStart + beatPos,
+                                new NoteEvent(kantelePitches[p], vel, 1.0f, KanteleInstrumentIndex, beatPos)));
+                        }
+                        for (int p = 0; p < kantelePitches.Count; p++)
+                        {
+                            float beatPos = 2f + p * spacing;
+                            if (beatPos >= BeatsPerChord) break;
+                            float vel = 0.35f - p * 0.03f;
+                            _pendingNoteOns.Add((measureStart + beatPos,
+                                new NoteEvent(kantelePitches[p], vel, 1.0f, KanteleInstrumentIndex, beatPos)));
+                        }
+                    }
+                    else
+                    {
+                        // Tremolo picking
+                        int rootNote = kantelePitches[0];
+                        int fifthNote = kantelePitches.Count > 2 ? kantelePitches[2] : rootNote;
+                        float spacing = 0.25f;
+                        for (int p = 0; p < BeatsPerChord / spacing; p++)
+                        {
+                            float beatPos = p * spacing;
+                            if (beatPos >= BeatsPerChord) break;
+                            int note = (p % 2 == 0) ? rootNote : fifthNote;
+                            float vel = 0.3f + (p % 4 == 0 ? 0.1f : 0f);
+                            _pendingNoteOns.Add((measureStart + beatPos,
+                                new NoteEvent(note, vel, 0.3f, KanteleInstrumentIndex, beatPos)));
+                        }
+                    }
+                } // end kanteleSkip check
+            }
+
+            // Sub Drone: extremely low sustained root note — the rumble of dread
+            // Only active in Horror. Just holds one note per measure, very low octave.
+            bool subDroneActive = SubDroneRange.IsActive(lt);
+            if (subDroneActive)
+            {
+                int droneNote = TonalPitchSpace.ToMidi(newChord.Root, 1); // Octave 1 — deep sub
+                float droneDuration = BeatsPerChord + 0.3f; // Overlap into next chord
+                _pendingNoteOns.Add((measureStart,
+                    new NoteEvent(droneNote, 0.5f, droneDuration, SubDroneInstrumentIndex, 0f)));
+            }
+
+            // Shriek String: high-pitched horror string that crawls by semitones and tritones
+            // Sparse — skips many measures. When it plays, it picks a note in the shriek register
+            // (octave 6) and moves by semitone or tritone from the chord root. Terrifying.
+            bool shriekActive = ShriekRange.IsActive(lt);
+            if (shriekActive)
+            {
+                // 55% of measures are silent — the shriek is rare, which makes it worse
+                if ((float)_sparseRng.NextDouble() > 0.55f)
                 {
-                    // Sparse gentle plucks
-                    float[] pluckTimes = { 0f, 1.5f, 3f };
-                    for (int p = 0; p < pluckTimes.Length && p < kantelePitches.Count; p++)
-                    {
-                        if (pluckTimes[p] >= BeatsPerChord) break;
-                        int note = kantelePitches[p % kantelePitches.Count];
-                        float vel = 0.35f + (p == 0 ? 0.1f : 0f);
-                        _pendingNoteOns.Add((measureStart + pluckTimes[p],
-                            new NoteEvent(note, vel, 1.5f, KanteleInstrumentIndex, pluckTimes[p])));
-                    }
-                }
-                else if (t < 0.6f)
-                {
-                    // Flowing arpeggios
-                    float spacing = 0.5f;
-                    for (int p = 0; p < kantelePitches.Count; p++)
-                    {
-                        float beatPos = p * spacing;
-                        if (beatPos >= BeatsPerChord) break;
-                        float vel = 0.4f - p * 0.03f;
-                        _pendingNoteOns.Add((measureStart + beatPos,
-                            new NoteEvent(kantelePitches[p], vel, 1.0f, KanteleInstrumentIndex, beatPos)));
-                    }
-                    for (int p = 0; p < kantelePitches.Count; p++)
-                    {
-                        float beatPos = 2f + p * spacing;
-                        if (beatPos >= BeatsPerChord) break;
-                        float vel = 0.35f - p * 0.03f;
-                        _pendingNoteOns.Add((measureStart + beatPos,
-                            new NoteEvent(kantelePitches[p], vel, 1.0f, KanteleInstrumentIndex, beatPos)));
-                    }
-                }
-                else
-                {
-                    // Tremolo picking
-                    int rootNote = kantelePitches[0];
-                    int fifthNote = kantelePitches.Count > 2 ? kantelePitches[2] : rootNote;
-                    float spacing = 0.25f;
-                    for (int p = 0; p < BeatsPerChord / spacing; p++)
-                    {
-                        float beatPos = p * spacing;
-                        if (beatPos >= BeatsPerChord) break;
-                        int note = (p % 2 == 0) ? rootNote : fifthNote;
-                        float vel = 0.3f + (p % 4 == 0 ? 0.1f : 0f);
-                        _pendingNoteOns.Add((measureStart + beatPos,
-                            new NoteEvent(note, vel, 0.3f, KanteleInstrumentIndex, beatPos)));
-                    }
+                    int[] intervals = { 0, 1, -1, 6, -6, 11, -11, 1, -1 }; // Semitones and tritones
+                    int baseNote = TonalPitchSpace.ToMidi(newChord.Root, 6); // Octave 6 — high shriek
+                    int offset = intervals[_sparseRng.Next(intervals.Length)];
+                    int shriekNote = Mathf.Clamp(baseNote + offset, 84, 96); // C6 to C7
+
+                    // Long sustain — the note hangs and warps with the vibrato
+                    float shriekDuration = BeatsPerChord + 1f;
+                    float shriekVel = 0.15f + (float)_sparseRng.NextDouble() * 0.15f; // Quiet but piercing
+                    _pendingNoteOns.Add((measureStart,
+                        new NoteEvent(shriekNote, shriekVel, shriekDuration, ShriekInstrumentIndex, 0f)));
                 }
             }
         }

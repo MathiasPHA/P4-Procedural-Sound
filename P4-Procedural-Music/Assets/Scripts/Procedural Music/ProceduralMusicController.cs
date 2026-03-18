@@ -15,19 +15,43 @@ namespace ProceduralMusic.Bridge
     /// </summary>
     public enum GameMusicState
     {
-        Explore,        // Calm, ambient, major key, sparse
-        Dialogue,       // Quiet, simple pads only
-        Tension,        // Building, minor key, increasing density
-        Combat,         // Intense, fast, full instrumentation
-        Victory,        // Triumphant, major, fanfare-like
-        Mystery,        // Dorian/aeolian, sparse, high FM mod
-        Ambient,        // Very sparse, just pads and occasional melody
-        Spooky          // Phrygian, sparse, unpredictable, unsettling
+        Exploring,      // Calm folk wandering through the woods
+        Exploring2,     // More upbeat/confident exploration (found something good)
+        Pressure,       // Something is wrong, tension building
+        Combat,         // Fighting trolls, nøkken, creatures
+        Spooky,         // Unsettling, things aren't right
+        Horror,         // Maximum dread — the beast is near
+        Night           // Nighttime — calm to terrifying depending on tension
     }
 
     /// <summary>
     /// Configuration for a game music state.
     /// </summary>
+    /// <summary>
+    /// Per-instrument layer threshold: the instrument plays when LayerTension is between Min and Max.
+    /// Set Min=0, Max=1 for "always on". Set Min=0, Max=0 for "always off".
+    /// Set Min=0.5, Max=1 for "only at high tension". Set Min=0, Max=0.4 for "only at low tension".
+    /// </summary>
+    [Serializable]
+    public struct LayerRange
+    {
+        public float Min;
+        public float Max;
+
+        public LayerRange(float min, float max) { Min = min; Max = max; }
+
+        public bool IsActive(float layerTension)
+        {
+            return layerTension >= Min && (Max >= 1f || layerTension <= Max);
+        }
+
+        public static LayerRange Always => new LayerRange(0f, 1f);
+        public static LayerRange Off => new LayerRange(0f, 0f);
+        public static LayerRange From(float min) => new LayerRange(min, 1f);
+        public static LayerRange Until(float max) => new LayerRange(0f, max);
+        public static LayerRange Between(float min, float max) => new LayerRange(min, max);
+    }
+
     [Serializable]
     public class MusicStateConfig
     {
@@ -37,105 +61,199 @@ namespace ProceduralMusic.Bridge
         public float TempoMax = 120f;
         public float BaseTensionOffset = 0f;
         public float MaxTension = 1f;
-        public int RootOffset = 0;              // Semitones from starting key (0 = same key, 5 = up a fourth, 7 = up a fifth)
-        public bool Pads = true;
-        public bool Melody = true;
-        public bool Bass = true;
-        public bool Percussion = true;
-        public bool Strings = true;
-        public bool Kantele = true;
+        public int RootOffset = 0;
+        public bool EnableDistortion = false;
+        public float DistortionIntensity = 0.6f;
+        public bool EnableVinyl = false;           // Broken vinyl effect (wow, crackle, dropout)
+        public float VinylIntensity = 0.5f;        // How broken the vinyl sounds (0-1)
+        public bool AllowTritones = false;
+        public MelodyStyle MelodyRhythmStyle = MelodyStyle.Folk;
         public float FMModIndexMultiplier = 1f;
+        public bool BassRootOnly = false;
+
+        // Per-instrument layer ranges: when each instrument plays based on LayerTension
+        public LayerRange Pad = LayerRange.Always;
+        public LayerRange Melody = LayerRange.From(0.15f);
+        public LayerRange Bass = LayerRange.From(0.4f);
+        public LayerRange Percussion = LayerRange.From(0.55f);
+        public LayerRange Strings = LayerRange.From(0.3f);
+        public LayerRange Kantele = LayerRange.Always;
+        public LayerRange SubDrone = LayerRange.Off;    // Horror only
+        public LayerRange Shriek = LayerRange.Off;      // Horror only
 
         public static MusicStateConfig GetDefault(GameMusicState state)
         {
             switch (state)
             {
-                case GameMusicState.Explore:
-                    // Home key — the "default" key center
+                case GameMusicState.Exploring:
+                    // Wandering the Scandinavian woods — folk kantele, gentle flute
+                    // Dorian gives a folk-minor flavor without being too dark
                     return new MusicStateConfig
                     {
-                        State = state, PreferredMode = MusicalMode.Major,
-                        TempoMin = 85, TempoMax = 105,
-                        BaseTensionOffset = -0.1f, MaxTension = 0.6f, RootOffset = 0,
-                        Pads = true, Melody = true, Bass = true, Percussion = false,
-                        Strings = true, Kantele = true
+                        State = state,
+                        PreferredMode = MusicalMode.Dorian,
+                        TempoMin = 78,
+                        TempoMax = 100,
+                        BaseTensionOffset = -0.1f,
+                        MaxTension = 0.55f,
+                        RootOffset = 0,
+                        Pad = LayerRange.Always,
+                        Kantele = LayerRange.Always,
+                        Melody = LayerRange.From(0.1f),
+                        Strings = LayerRange.From(0.35f),
+                        Bass = LayerRange.From(0.5f),
+                        Percussion = LayerRange.Off,
+                        MelodyRhythmStyle = MelodyStyle.Folk
                     };
 
-                case GameMusicState.Dialogue:
-                    // Subdominant (up a 4th) — warm, related, slightly different color
+                case GameMusicState.Exploring2:
+                    // Found safety, a cabin, or something good — warmer, more confident
+                    // Major key, brighter, kantele more active
                     return new MusicStateConfig
                     {
-                        State = state, PreferredMode = MusicalMode.Major,
-                        TempoMin = 70, TempoMax = 90,
-                        BaseTensionOffset = -0.2f, MaxTension = 0.3f, RootOffset = 5,
-                        Pads = true, Melody = false, Bass = false, Percussion = false,
-                        Strings = true, Kantele = true
+                        State = state,
+                        PreferredMode = MusicalMode.Major,
+                        TempoMin = 90,
+                        TempoMax = 112,
+                        BaseTensionOffset = -0.15f,
+                        MaxTension = 0.45f,
+                        RootOffset = 7,
+                        Pad = LayerRange.Always,
+                        Kantele = LayerRange.Always,
+                        Melody = LayerRange.Always,
+                        Strings = LayerRange.Always,
+                        Bass = LayerRange.From(0.2f),
+                        Percussion = LayerRange.From(0.25f),
+                        MelodyRhythmStyle = MelodyStyle.Triumphant
                     };
 
-                case GameMusicState.Tension:
-                    // Relative minor (same key center, different mode) — seamless transition
+                case GameMusicState.Pressure:
+                    // Something is stalking, the old man senses danger
+                    // Natural minor, instruments layer in with dread
                     return new MusicStateConfig
                     {
-                        State = state, PreferredMode = MusicalMode.NaturalMinor,
-                        TempoMin = 90, TempoMax = 115,
-                        BaseTensionOffset = 0.15f, MaxTension = 0.75f, RootOffset = 0,
-                        Pads = true, Melody = true, Bass = true, Percussion = true,
-                        Strings = true, Kantele = true, FMModIndexMultiplier = 1.5f
+                        State = state,
+                        PreferredMode = MusicalMode.NaturalMinor,
+                        TempoMin = 85,
+                        TempoMax = 110,
+                        BaseTensionOffset = 0.15f,
+                        MaxTension = 0.75f,
+                        RootOffset = 0,
+                        EnableDistortion = true,
+                        Pad = LayerRange.Always,
+                        Kantele = LayerRange.Until(0.5f),  // Kantele drops out as pressure mounts
+                        Melody = LayerRange.From(0.15f),
+                        Strings = LayerRange.From(0.25f),
+                        Bass = LayerRange.From(0.35f),
+                        Percussion = LayerRange.From(0.5f),
+                        MelodyRhythmStyle = MelodyStyle.Tense,
+                        FMModIndexMultiplier = 1.5f
                     };
 
                 case GameMusicState.Combat:
-                    // Down a minor 3rd — dramatic shift, common in film scores
+                    // Fighting creatures — atmospheric, heavy, not JRPG
+                    // Harmonic minor for that dark Scandinavian edge
                     return new MusicStateConfig
                     {
-                        State = state, PreferredMode = MusicalMode.HarmonicMinor,
-                        TempoMin = 85, TempoMax = 110,
-                        BaseTensionOffset = 0.2f, MaxTension = 0.65f, RootOffset = -3,
-                        Pads = true, Melody = true, Bass = true, Percussion = true,
-                        Strings = true, Kantele = false, FMModIndexMultiplier = 1.5f
-                    };
-
-                case GameMusicState.Victory:
-                    // Dominant (up a 5th) — bright, triumphant, strong relationship to home
-                    return new MusicStateConfig
-                    {
-                        State = state, PreferredMode = MusicalMode.Major,
-                        TempoMin = 105, TempoMax = 120,
-                        BaseTensionOffset = -0.15f, MaxTension = 0.4f, RootOffset = 7,
-                        Pads = true, Melody = true, Bass = true, Percussion = true,
-                        Strings = true, Kantele = true
-                    };
-
-                case GameMusicState.Mystery:
-                    // Up a whole step — slightly distant, unusual
-                    return new MusicStateConfig
-                    {
-                        State = state, PreferredMode = MusicalMode.Dorian,
-                        TempoMin = 75, TempoMax = 95,
-                        BaseTensionOffset = 0.15f, MaxTension = 0.55f, RootOffset = 2,
-                        Pads = false, Melody = true, Bass = false, Percussion = false,
-                        Strings = true, Kantele = true, FMModIndexMultiplier = 1.8f
-                    };
-
-                case GameMusicState.Ambient:
-                    // Subdominant (up a 4th) — gentle, floating
-                    return new MusicStateConfig
-                    {
-                        State = state, PreferredMode = MusicalMode.Major,
-                        TempoMin = 60, TempoMax = 80,
-                        BaseTensionOffset = -0.2f, MaxTension = 0.3f, RootOffset = 5,
-                        Pads = true, Melody = false, Bass = false, Percussion = false,
-                        Strings = true, Kantele = true
+                        State = state,
+                        PreferredMode = MusicalMode.HarmonicMinor,
+                        TempoMin = 85,
+                        TempoMax = 110,
+                        BaseTensionOffset = 0.2f,
+                        MaxTension = 0.65f,
+                        RootOffset = -3,
+                        EnableDistortion = true,
+                        Pad = LayerRange.Always,
+                        Kantele = LayerRange.Off,
+                        Melody = LayerRange.From(0.1f),
+                        Strings = LayerRange.Always,
+                        Bass = LayerRange.Always,
+                        Percussion = LayerRange.From(0.2f),
+                        MelodyRhythmStyle = MelodyStyle.Tense,
+                        FMModIndexMultiplier = 1.5f
                     };
 
                 case GameMusicState.Spooky:
-                    // Down a tritone — maximum harmonic distance, unsettling
+                    // Things aren't right — the nisse are watching, shadows move wrong
+                    // Phrygian with that unsettling flat 2nd
                     return new MusicStateConfig
                     {
-                        State = state, PreferredMode = MusicalMode.Phrygian,
-                        TempoMin = 55, TempoMax = 75,
-                        BaseTensionOffset = 0.25f, MaxTension = 0.7f, RootOffset = -6,
-                        Pads = true, Melody = true, Bass = false, Percussion = false,
-                        Strings = true, Kantele = true, FMModIndexMultiplier = 2f
+                        State = state,
+                        PreferredMode = MusicalMode.Phrygian,
+                        TempoMin = 55,
+                        TempoMax = 75,
+                        BaseTensionOffset = 0.2f,
+                        MaxTension = 0.65f,
+                        RootOffset = -6,
+                        EnableDistortion = true,
+                        AllowTritones = true,
+                        Pad = LayerRange.Always,
+                        Kantele = LayerRange.Until(0.4f),  // Drops out as fear builds
+                        Melody = LayerRange.From(0.2f),
+                        Strings = LayerRange.From(0.3f),
+                        Bass = LayerRange.From(0.5f),
+                        Percussion = LayerRange.Off,
+                        MelodyRhythmStyle = MelodyStyle.Sparse,
+                        FMModIndexMultiplier = 2f
+                    };
+
+                case GameMusicState.Horror:
+                    // ABSOLUTE TERROR — ambient dread, less is more
+                    // Sounds like a broken record player in an abandoned cabin.
+                    // Locrian: most unstable scale. Tritones everywhere.
+                    // Almost nothing plays. When it does, it's warped and broken.
+                    // Audio cuts out randomly. Crackle. Wow/flutter.
+                    // The drone grinds beneath everything like something breathing.
+                    return new MusicStateConfig
+                    {
+                        State = state,
+                        PreferredMode = MusicalMode.Locrian,
+                        TempoMin = 40 ,
+                        TempoMax = 20,
+                        BaseTensionOffset = 0.3f,
+                        MaxTension = 1f,
+                        RootOffset = -1,
+                        EnableDistortion = true,
+                        DistortionIntensity = 0.7f,
+                        EnableVinyl = true,
+                        VinylIntensity = 0.35f,
+                        AllowTritones = true,
+                        Pad = LayerRange.Off,
+                        Kantele = LayerRange.Until(0.7f),
+                        Melody = LayerRange.Off,
+                        Strings = LayerRange.Off,
+                        Bass = LayerRange.Off,
+                        Percussion = LayerRange.Off,
+                        SubDrone = LayerRange.Always,           // Constant low rumble
+                        Shriek = LayerRange.From(0.35f),        // High shriek creeps in with tension
+                        MelodyRhythmStyle = MelodyStyle.Horror,
+                        FMModIndexMultiplier = 2.5f,
+                        BassRootOnly = true
+                    };
+
+                case GameMusicState.Night:
+                    // Night in the forest — calm at low tension, terrifying at high
+                    // Aeolian (natural minor) at root — familiar but uneasy
+                    // Everything layers in gradually: peaceful campfire → wolves howling
+                    return new MusicStateConfig
+                    {
+                        State = state,
+                        PreferredMode = MusicalMode.Aeolian,
+                        TempoMin = 55,
+                        TempoMax = 85,
+                        BaseTensionOffset = 0f,
+                        MaxTension = 0.7f,
+                        RootOffset = 0,
+                        EnableDistortion = true,            // Distortion scales with tension
+                        AllowTritones = false,              // No tritones at low tension, but...
+                        Pad = LayerRange.Always,
+                        Kantele = LayerRange.Until(0.45f),  // Campfire plucking, fades as night darkens
+                        Melody = LayerRange.Between(0.1f, 0.6f), // Flute plays in the middle range only
+                        Strings = LayerRange.From(0.3f),    // Strings creep in
+                        Bass = LayerRange.From(0.4f),       // Deep rumble as things get scary
+                        Percussion = LayerRange.From(0.6f), // Heartbeat drums at high tension
+                        MelodyRhythmStyle = MelodyStyle.Sparse,
+                        FMModIndexMultiplier = 1.8f
                     };
 
                 default:
@@ -180,7 +298,7 @@ namespace ProceduralMusic.Bridge
         public float Tension = 0.3f;
 
         [Tooltip("Current game music state")]
-        public GameMusicState CurrentState = GameMusicState.Explore;
+        public GameMusicState CurrentState = GameMusicState.Exploring;
 
         [Header("Audio")]
         [Range(0f, 1f)]
@@ -205,6 +323,8 @@ namespace ProceduralMusic.Bridge
         private VoiceManager _hihatVoices;
         private VoiceManager _stringsVoices;
         private VoiceManager _kanteleVoices;
+        private VoiceManager _subDroneVoices;
+        private VoiceManager _shriekVoices;
 
         private float _sampleRate;
         private bool _initialized;
@@ -233,6 +353,8 @@ namespace ProceduralMusic.Bridge
             _hihatVoices = _mixer.AddInstrument(InstrumentPreset.HiHat);       // 5
             _stringsVoices = _mixer.AddInstrument(InstrumentPreset.Strings);   // 6
             _kanteleVoices = _mixer.AddInstrument(InstrumentPreset.Kantele);   // 7
+            _subDroneVoices = _mixer.AddInstrument(InstrumentPreset.SubDrone); // 8
+            _shriekVoices = _mixer.AddInstrument(InstrumentPreset.ShriekString); // 9
 
             // Initialize composition engine
             Key startKey = new Key(StartingKey, StartingMode);
@@ -274,6 +396,19 @@ namespace ProceduralMusic.Bridge
             _composer.LayerTension = effectiveTension;
             _composer.Tempo = Mathf.Lerp(config.TempoMin, config.TempoMax, Tension);
             _mixer.MasterVolume = MasterVolume;
+
+            // Distortion scales with tension when enabled for the current state
+            if (config.EnableDistortion)
+                _mixer.DistortionAmount = Mathf.Lerp(0f, config.DistortionIntensity, effectiveTension);
+            else
+                _mixer.DistortionAmount = 0f;
+
+            // Broken vinyl effect scales with tension
+            _mixer.VinylEnabled = config.EnableVinyl;
+            if (config.EnableVinyl)
+                _mixer.VinylAmount = Mathf.Lerp(0f, config.VinylIntensity, effectiveTension);
+            else
+                _mixer.VinylAmount = 0f;
 
             // Advance composition engine — it handles all scheduling internally
             _composer.Update(Time.deltaTime, out var noteOns, out var noteOffs);
@@ -424,29 +559,42 @@ namespace ProceduralMusic.Bridge
         }
 
         /// <summary>
-        /// Enable/disable individual composition layers at runtime.
+        /// Simple enable/disable for layers (convenience method).
+        /// Pass true = Always, false = Off.
         /// </summary>
         public void SetLayerEnabled(bool pad, bool melody, bool bass, bool percussion,
             bool strings = true, bool kantele = true)
         {
-            _composer.EnablePad = pad;
-            _composer.EnableMelody = melody;
-            _composer.EnableBass = bass;
-            _composer.EnablePercussion = percussion;
-            _composer.EnableStrings = strings;
-            _composer.EnableKantele = kantele;
+            _composer.PadRange = pad ? LayerRange.Always : LayerRange.Off;
+            _composer.MelodyRange = melody ? LayerRange.Always : LayerRange.Off;
+            _composer.BassRange = bass ? LayerRange.Always : LayerRange.Off;
+            _composer.PercussionRange = percussion ? LayerRange.Always : LayerRange.Off;
+            _composer.StringsRange = strings ? LayerRange.Always : LayerRange.Off;
+            _composer.KanteleRange = kantele ? LayerRange.Always : LayerRange.Off;
+        }
 
-            if (!pad) _padVoices.AllNotesOff();
-            if (!melody) _leadVoices.AllNotesOff();
-            if (!bass) _bassVoices.AllNotesOff();
-            if (!strings) _stringsVoices.AllNotesOff();
-            if (!kantele) _kanteleVoices.AllNotesOff();
-            if (!percussion)
-            {
-                _kickVoices.AllNotesOff();
-                _snareVoices.AllNotesOff();
-                _hihatVoices.AllNotesOff();
-            }
+        /// <summary>
+        /// Advanced: set per-instrument layer ranges directly.
+        /// </summary>
+        public void SetLayerRanges(LayerRange pad, LayerRange melody, LayerRange bass,
+            LayerRange percussion, LayerRange strings, LayerRange kantele)
+        {
+            _composer.PadRange = pad;
+            _composer.MelodyRange = melody;
+            _composer.BassRange = bass;
+            _composer.PercussionRange = percussion;
+            _composer.StringsRange = strings;
+            _composer.KanteleRange = kantele;
+        }
+
+        /// <summary>
+        /// Toggle distortion on/off at runtime.
+        /// When enabled, distortion amount scales with tension automatically.
+        /// </summary>
+        public void SetDistortion(bool enabled)
+        {
+            _mixer.DistortionEnabled = enabled;
+            if (!enabled) _mixer.DistortionAmount = 0f;
         }
 
         /// <summary>
@@ -489,24 +637,21 @@ namespace ProceduralMusic.Bridge
 
         private void ApplyStateConfig(MusicStateConfig config)
         {
-            _composer.EnablePad = config.Pads;
-            _composer.EnableMelody = config.Melody;
-            _composer.EnableBass = config.Bass;
-            _composer.EnablePercussion = config.Percussion;
-            _composer.EnableStrings = config.Strings;
-            _composer.EnableKantele = config.Kantele;
+            // Pass layer ranges to composition engine
+            _composer.PadRange = config.Pad;
+            _composer.MelodyRange = config.Melody;
+            _composer.BassRange = config.Bass;
+            _composer.PercussionRange = config.Percussion;
+            _composer.StringsRange = config.Strings;
+            _composer.KanteleRange = config.Kantele;
+            _composer.SubDroneRange = config.SubDrone;
+            _composer.ShriekRange = config.Shriek;
+            _composer.AllowTritones = config.AllowTritones;
+            _composer.Melody.Style = config.MelodyRhythmStyle;
+            _composer.BassRootOnly = config.BassRootOnly;
 
-            if (!config.Pads) _padVoices.AllNotesOff();
-            if (!config.Melody) _leadVoices.AllNotesOff();
-            if (!config.Bass) _bassVoices.AllNotesOff();
-            if (!config.Strings) _stringsVoices.AllNotesOff();
-            if (!config.Kantele) _kanteleVoices.AllNotesOff();
-            if (!config.Percussion)
-            {
-                _kickVoices.AllNotesOff();
-                _snareVoices.AllNotesOff();
-                _hihatVoices.AllNotesOff();
-            }
+            // Distortion
+            _mixer.DistortionEnabled = config.EnableDistortion;
         }
 
         void OnGUI()

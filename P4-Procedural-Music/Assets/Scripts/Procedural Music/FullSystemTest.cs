@@ -70,7 +70,7 @@ namespace ProceduralMusic.Examples
         private int _testInstrument;
         private readonly string[] _instrumentNames = {
             "HurdyGurdy (Drone)", "Flute (Legato)", "Bass (Sub)", "Log Drum", "Frame Drum", "Brush",
-            "Strings", "Kantele"
+            "Strings", "Kantele", "SubDrone (Horror)", "ShriekString (Horror)"
         };
         private float _testVelocity = 0.8f;
         private int _lastTriggeredNote = -1;
@@ -93,18 +93,22 @@ namespace ProceduralMusic.Examples
         private readonly List<(string label, float duration, GameMusicState state, float tension)> _scenario
             = new List<(string, float, GameMusicState, float)>
         {
-            ("Calm exploration",       6f, GameMusicState.Explore,   0.15f),
-            ("Something stirs...",     4f, GameMusicState.Tension,   0.4f),
-            ("Tension building",       4f, GameMusicState.Tension,   0.65f),
-            ("COMBAT!",                8f, GameMusicState.Combat,    0.7f),
-            ("Boss phase 2",           6f, GameMusicState.Combat,    0.9f),
-            ("Victory!",               6f, GameMusicState.Victory,   0.3f),
-            ("Peaceful aftermath",     6f, GameMusicState.Explore,   0.1f),
-            ("Something feels wrong...", 6f, GameMusicState.Spooky,  0.3f),
-            ("The shadows move",       6f, GameMusicState.Spooky,    0.6f),
-            ("A mysterious cave",      6f, GameMusicState.Mystery,   0.35f),
-            ("Dialogue with NPC",      5f, GameMusicState.Dialogue,  0.1f),
-            ("Night ambient",          5f, GameMusicState.Ambient,   0.05f),
+            ("Wandering the woods",       6f, GameMusicState.Exploring,   0.15f),
+            ("The forest is peaceful",    5f, GameMusicState.Exploring,   0.3f),
+            ("Something stirs...",        4f, GameMusicState.Pressure,    0.4f),
+            ("Pressure building",         4f, GameMusicState.Pressure,    0.7f),
+            ("A troll attacks!",          8f, GameMusicState.Combat,      0.7f),
+            ("The beast appears",         6f, GameMusicState.Combat,      0.9f),
+            ("Safety at last",            6f, GameMusicState.Exploring2,  0.2f),
+            ("Found a cabin",             5f, GameMusicState.Exploring2,  0.4f),
+            ("Something feels wrong...",  6f, GameMusicState.Spooky,      0.3f),
+            ("The nisse are watching",    6f, GameMusicState.Spooky,      0.6f),
+            ("The beast is near",         6f, GameMusicState.Horror,      0.5f),
+            ("IT SEES YOU",               6f, GameMusicState.Horror,      0.9f),
+            ("Night falls...",            6f, GameMusicState.Night,       0.1f),
+            ("Campfire under stars",      5f, GameMusicState.Night,       0.25f),
+            ("Wolves in the distance",    5f, GameMusicState.Night,       0.5f),
+            ("The darkness moves",        5f, GameMusicState.Night,       0.8f),
         };
 
         // Waveform scope
@@ -960,7 +964,7 @@ namespace ProceduralMusic.Examples
             _tpsResults += $"\n═══ Chord Suggestions (from {diatonic[0]}) ═══\n";
             foreach (float target in new[] { 0f, 0.25f, 0.5f, 0.75f, 1f })
             {
-                var suggestions = TonalPitchSpace.SuggestNextChords(diatonic[0], key, target, 3);
+                var suggestions = TonalPitchSpace.SuggestNextChords(diatonic[0], key, target, false, 3);
                 string names = string.Join(", ", suggestions.Select(c => c.ToString()));
                 _tpsResults += $"  Target {target:F2}: {names}\n";
             }
