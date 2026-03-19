@@ -833,6 +833,7 @@ namespace ProceduralMusic.Composition
         public int KanteleInstrumentIndex = 7;
         public int SubDroneInstrumentIndex = 8;
         public int ShriekInstrumentIndex = 9;
+        public int BanjoInstrumentIndex = 10;
 
         public bool EnablePad = true;
         public bool EnableMelody = true;
@@ -858,6 +859,7 @@ namespace ProceduralMusic.Composition
         public LayerRange KanteleRange = LayerRange.Always;
         public LayerRange SubDroneRange = LayerRange.Off;
         public LayerRange ShriekRange = LayerRange.Off;
+        public LayerRange BanjoRange = LayerRange.Off;
 
         // Scheduled events queue with absolute beat timestamps
         private List<(float absoluteBeat, NoteEvent noteEvent)> _pendingNoteOns
@@ -1228,6 +1230,71 @@ namespace ProceduralMusic.Composition
                     float shriekVel = 0.15f + (float)_sparseRng.NextDouble() * 0.15f; // Quiet but piercing
                     _pendingNoteOns.Add((measureStart,
                         new NoteEvent(shriekNote, shriekVel, shriekDuration, ShriekInstrumentIndex, 0f)));
+                }
+            }
+
+            // Banjo: rolling fingerpick pattern — cozy campfire feel
+            // Classic 3-finger roll: thumb plays root, index plays middle, middle plays high
+            // Creates that warm, rolling sound that says "everything is going to be okay"
+            bool banjoActive = BanjoRange.IsActive(lt);
+            if (banjoActive)
+            {
+                int[] chordPCs = newChord.GetPitchClasses();
+                int banjoOctave = 4;
+
+                // Build chord tones for fingerpicking
+                int root = (banjoOctave + 1) * 12 + chordPCs[0];
+                int mid = (banjoOctave + 1) * 12 + (chordPCs.Length > 1 ? chordPCs[1] : chordPCs[0]);
+                int high = (banjoOctave + 1) * 12 + (chordPCs.Length > 2 ? chordPCs[2] : chordPCs[0]);
+                int octUp = root + 12;
+
+                // Rolling fingerpick pattern: T-I-M-T-I-M-T-M (classic bluegrass/folk)
+                // T=thumb(root), I=index(mid), M=middle(high)
+                // Spacing at eighth notes (0.5 beats) for gentle rolling feel
+                float[][] rollPatterns = new float[][]
+                {
+                    // Pattern 1: forward roll — T I M T I M T M
+                    new float[] { 0f, 0.5f, 1f, 1.5f, 2f, 2.5f, 3f, 3.5f },
+                    // Pattern 2: alternating — T M I M T M I M
+                    new float[] { 0f, 0.5f, 1f, 1.5f, 2f, 2.5f, 3f, 3.5f },
+                    // Pattern 3: sparse — T . M . T . I .
+                    new float[] { 0f, 1f, 2f, 3f },
+                };
+
+                int patternChoice = _sparseRng.Next(3);
+                float[] pattern = rollPatterns[patternChoice];
+
+                for (int p = 0; p < pattern.Length; p++)
+                {
+                    if (pattern[p] >= BeatsPerChord) break;
+
+                    int note;
+                    if (patternChoice == 0)
+                    {
+                        // Forward roll: root, mid, high, root, mid, high, root, high
+                        int[] roll = { root, mid, high, root, mid, high, root, high };
+                        note = roll[p % roll.Length];
+                    }
+                    else if (patternChoice == 1)
+                    {
+                        // Alternating: root, high, mid, high, root, high, mid, high
+                        int[] roll = { root, high, mid, high, root, high, mid, high };
+                        note = roll[p % roll.Length];
+                    }
+                    else
+                    {
+                        // Sparse: root, high, root, mid
+                        int[] roll = { root, high, root, mid };
+                        note = roll[p % roll.Length];
+                    }
+
+                    // Thumb notes (root) slightly louder, fingers softer
+                    float vel = (note == root) ? 0.45f : 0.35f;
+                    // Slight humanization
+                    vel *= 0.9f + (float)_sparseRng.NextDouble() * 0.2f;
+
+                    _pendingNoteOns.Add((measureStart + pattern[p],
+                        new NoteEvent(note, vel, 0.4f, BanjoInstrumentIndex, pattern[p])));
                 }
             }
         }

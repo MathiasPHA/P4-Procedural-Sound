@@ -286,6 +286,26 @@ namespace ProceduralMusic.Synthesis
             FilterEnvAmount = 0f,
             Volume = 0.35f
         };
+
+        /// <summary>
+        /// Banjo: bright, twangy plucked string with short sustain.
+        /// Karplus-Strong with higher filter cutoff for that metallic brightness
+        /// and faster decay so notes don't ring as long as kantele.
+        /// Perfect for cozy campfire fingerpicking.
+        /// </summary>
+        public static InstrumentPreset Banjo => new InstrumentPreset
+        {
+            Name = "Banjo",
+            SynthType = SynthVoice.SynthType.PluckedString,
+            MaxPolyphony = 6,
+            Attack = 0.001f,
+            Decay = 0.8f,      // Shorter ring than kantele (1.5) — twangy snap
+            Sustain = 0f,
+            Release = 0.3f,
+            FilterCutoff = 5000f, // Bright and metallic — the banjo twang
+            FilterEnvAmount = 0f,
+            Volume = 0.5f
+        };
     }
 
     /// <summary>

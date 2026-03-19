@@ -70,7 +70,7 @@ namespace ProceduralMusic.Examples
         private int _testInstrument;
         private readonly string[] _instrumentNames = {
             "HurdyGurdy (Drone)", "Flute (Legato)", "Bass (Sub)", "Log Drum", "Frame Drum", "Brush",
-            "Strings", "Kantele", "SubDrone (Horror)", "ShriekString (Horror)"
+            "Strings", "Kantele", "SubDrone (Horror)", "ShriekString (Horror)", "Banjo (Cozy)"
         };
         private float _testVelocity = 0.8f;
         private int _lastTriggeredNote = -1;
@@ -93,23 +93,23 @@ namespace ProceduralMusic.Examples
         private readonly List<(string label, float duration, GameMusicState state, float tension)> _scenario
             = new List<(string, float, GameMusicState, float)>
         {
-            ("Wandering the woods",       6f, GameMusicState.Exploring,   0.15f),
-            ("The forest is peaceful",    5f, GameMusicState.Exploring,   0.3f),
-            ("Something stirs...",        4f, GameMusicState.Pressure,    0.4f),
-            ("Pressure building",         4f, GameMusicState.Pressure,    0.7f),
-            ("A troll attacks!",          8f, GameMusicState.Combat,      0.7f),
-            ("The beast appears",         6f, GameMusicState.Combat,      0.9f),
-            ("Safety at last",            6f, GameMusicState.Exploring2,  0.2f),
-            ("Found a cabin",             5f, GameMusicState.Exploring2,  0.4f),
-            ("Something feels wrong...",  6f, GameMusicState.Spooky,      0.3f),
-            ("The nisse are watching",    6f, GameMusicState.Spooky,      0.6f),
-            ("The beast is near",         6f, GameMusicState.Horror,      0.5f),
-            ("IT SEES YOU",               6f, GameMusicState.Horror,      0.9f),
-            ("Night falls...",            6f, GameMusicState.Night,       0.1f),
-            ("Wolves in the distance",    5f, GameMusicState.Night,       0.5f),
-            ("The darkness moves",        5f, GameMusicState.Night,       0.8f),
-            ("Found shelter...",          6f, GameMusicState.Cozy,        0.1f),
-            ("Warming by the fire",       8f, GameMusicState.Cozy,        0.2f),
+            ("Wandering the woods",       12f, GameMusicState.Exploring,   0.15f),
+            ("The forest is peaceful",    10f, GameMusicState.Exploring,   0.3f),
+            ("Something stirs...",        8f, GameMusicState.Pressure,    0.4f),
+            ("Pressure building",         8f, GameMusicState.Pressure,    0.7f),
+            ("A troll attacks!",          16f, GameMusicState.Combat,      0.7f),
+            ("The beast appears",         12f, GameMusicState.Combat,      0.9f),
+            ("Safety at last",            12f, GameMusicState.Exploring2,  0.2f),
+            ("Found a cabin",             10f, GameMusicState.Exploring2,  0.4f),
+            ("Something feels wrong...",  12f, GameMusicState.Spooky,      0.3f),
+            ("The nisse are watching",    12f, GameMusicState.Spooky,      0.6f),
+            ("The beast is near",         12f, GameMusicState.Horror,      0.5f),
+            ("IT SEES YOU",               12f, GameMusicState.Horror,      0.9f),
+            ("Night falls...",            12f, GameMusicState.Night,       0.1f),
+            ("Wolves in the distance",    10f, GameMusicState.Night,       0.5f),
+            ("The darkness moves",        10f, GameMusicState.Night,       0.8f),
+            ("Found shelter...",          12f, GameMusicState.Cozy,        0.1f),
+            ("Warming by the fire",       16f, GameMusicState.Cozy,        0.2f),
         };
 
         // Waveform scope

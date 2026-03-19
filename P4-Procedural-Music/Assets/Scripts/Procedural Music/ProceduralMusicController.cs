@@ -102,6 +102,7 @@ namespace ProceduralMusic.Bridge
         public LayerRange Kantele = LayerRange.Always;
         public LayerRange SubDrone = LayerRange.Off;    // Horror only
         public LayerRange Shriek = LayerRange.Off;      // Horror only
+        public LayerRange Banjo = LayerRange.Off;       // Cozy only
 
         public static MusicStateConfig GetDefault(GameMusicState state)
         {
@@ -162,12 +163,13 @@ namespace ProceduralMusic.Bridge
                         MaxTension = 0.75f,
                         RootOffset = 0,
                         EnableDistortion = true,
+                        DistortionIntensity = 0.3f,
                         Pad = LayerRange.Always,
-                        Kantele = LayerRange.Until(0.5f),  // Kantele drops out as pressure mounts
+                        Kantele = LayerRange.Always,  // Kantele drops out as pressure mounts
                         Melody = LayerRange.From(0.15f),
                         Strings = LayerRange.From(0.25f),
                         Bass = LayerRange.From(0.35f),
-                        Percussion = LayerRange.From(0.5f),
+                        Percussion = LayerRange.Off,
                         MusicStyleSetting = MusicStyle.Tense,
                         FMModIndexMultiplier = 1.5f
                     };
@@ -182,7 +184,7 @@ namespace ProceduralMusic.Bridge
                         TempoMin = 85,
                         TempoMax = 110,
                         BaseTensionOffset = 0.2f,
-                        MaxTension = 0.65f,
+                        MaxTension = 0.95f,
                         RootOffset = -3,
                         EnableDistortion = true,
                         Pad = LayerRange.Always,
@@ -208,6 +210,7 @@ namespace ProceduralMusic.Bridge
                         MaxTension = 0.65f,
                         RootOffset = -6,
                         EnableDistortion = true,
+                        DistortionIntensity = 0.5f,
                         AllowTritones = true,
                         Pad = LayerRange.Always,
                         Kantele = LayerRange.Until(0.4f),  // Drops out as fear builds
@@ -236,7 +239,7 @@ namespace ProceduralMusic.Bridge
                         MaxTension = 1f,
                         RootOffset = -1,
                         EnableDistortion = true,
-                        DistortionIntensity = 0.7f,
+                        DistortionIntensity = 0.75f,
                         EnableVinyl = true,
                         VinylIntensity = 0.35f,
                         AllowTritones = true,
@@ -293,7 +296,7 @@ namespace ProceduralMusic.Bridge
                         EnableDistortion = false,
                         EnableVinyl = false,
                         AllowTritones = false,
-                        Pad = LayerRange.Always,
+                        Pad = LayerRange.From(0.15f),
                         Kantele = LayerRange.Always,
                         Melody = LayerRange.From(0.05f),    // Flute almost always plays
                         Strings = LayerRange.From(0.15f),   // Soft strings join early
@@ -301,6 +304,7 @@ namespace ProceduralMusic.Bridge
                         Percussion = LayerRange.Off,         // No rhythm — just peace
                         SubDrone = LayerRange.Off,
                         Shriek = LayerRange.Off,
+                        Banjo = LayerRange.Always,           // Campfire fingerpicking
                         MusicStyleSetting = MusicStyle.Folk,
                         FMModIndexMultiplier = 0.8f,         // Softer timbres
                         BassRootOnly = false
@@ -375,6 +379,7 @@ namespace ProceduralMusic.Bridge
         private VoiceManager _kanteleVoices;
         private VoiceManager _subDroneVoices;
         private VoiceManager _shriekVoices;
+        private VoiceManager _banjoVoices;
 
         private float _sampleRate;
         private bool _initialized;
@@ -405,6 +410,7 @@ namespace ProceduralMusic.Bridge
             _kanteleVoices = _mixer.AddInstrument(InstrumentPreset.Kantele);   // 7
             _subDroneVoices = _mixer.AddInstrument(InstrumentPreset.SubDrone); // 8
             _shriekVoices = _mixer.AddInstrument(InstrumentPreset.ShriekString); // 9
+            _banjoVoices = _mixer.AddInstrument(InstrumentPreset.Banjo);       // 10
 
             // Initialize composition engine
             Key startKey = new Key(StartingKey, StartingMode);
@@ -696,6 +702,7 @@ namespace ProceduralMusic.Bridge
             _composer.KanteleRange = config.Kantele;
             _composer.SubDroneRange = config.SubDrone;
             _composer.ShriekRange = config.Shriek;
+            _composer.BanjoRange = config.Banjo;
             _composer.AllowTritones = config.AllowTritones;
             _composer.BassRootOnly = config.BassRootOnly;
 
