@@ -4,6 +4,7 @@ public class PlayerAnimations : MonoBehaviour
 {
     [SerializeField] private PlayerStateManager playerStateManager;
     private Animator playerAnimator;
+    private string animationQue;
 
     private void Awake()
     {
@@ -13,25 +14,48 @@ public class PlayerAnimations : MonoBehaviour
     private void Update()
     {
         Animate();
+        animationQue = playerStateManager.animationQue;
     }
 
     void Animate() 
     {
-        if (playerStateManager.playerDir == "Down")
+        if (animationQue == "Idle") 
         {
-            playerAnimator.Play("PlayerIdleFront");
+            if (playerStateManager.playerDir == "Down")
+            {
+                playerAnimator.Play("PlayerIdleFront");
+            }
+            else if (playerStateManager.playerDir == "Left")
+            {
+                playerAnimator.Play("PlayerIdleLeft");
+            }
+            else if (playerStateManager.playerDir == "Right")
+            {
+                playerAnimator.Play("PlayerIdleRight");
+            }
+            else if (playerStateManager.playerDir == "Up")
+            {
+                playerAnimator.Play("PlayerIdleBack");
+            }
         }
-        else if (playerStateManager.playerDir == "Left")
+        if (animationQue == "Run")
         {
-            playerAnimator.Play("PlayerIdleLeft");
-        }
-        else if (playerStateManager.playerDir == "Right")
-        {
-            playerAnimator.Play("PlayerIdleRight");
-        }
-        else if (playerStateManager.playerDir == "Up")
-        {
-            playerAnimator.Play("PlayerIdleBack");
+            if (playerStateManager.playerDir == "Down")
+            {
+                playerAnimator.Play("PlayerIdleFront");
+            }
+            else if (playerStateManager.playerDir == "Left")
+            {
+                playerAnimator.Play("PlayerIdleLeft");
+            }
+            else if (playerStateManager.playerDir == "Right")
+            {
+                playerAnimator.Play("PlayerIdleRight");
+            }
+            else if (playerStateManager.playerDir == "Up")
+            {
+                playerAnimator.Play("PlayerIdleBack");
+            }
         }
     }
 }
