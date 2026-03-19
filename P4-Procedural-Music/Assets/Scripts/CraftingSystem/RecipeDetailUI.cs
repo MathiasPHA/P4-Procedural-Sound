@@ -9,19 +9,19 @@ namespace InventorySystem.UI
 {
     /// <summary>
     /// Displays the full detail view for the currently selected recipe.
-    /// Shows the result item's icon, name, description, a list of
+    /// Shows the result item's icon, name, description, item stats,
     /// required ingredients with have/need counts, and a Craft button.
     ///
-    /// Ingredient rows are spawned from a prefab (IngredientRowUI).
-    /// The Craft button is only interactable when all ingredients are met.
+    /// Stats are pulled from ItemData.displayStats (designer-configured)
+    /// plus auto-generated entries for durability when applicable.
     ///
-    /// BUILD THE PANEL:
-    ///   1. Create a vertical layout panel on the right side of the crafting UI
-    ///   2. Top section: result icon (large, ~80x80) + result name (TMP)
-    ///   3. Middle: description text (TMP, wrapping)
-    ///   4. Below: "Requirements" header, then a vertical container for ingredient rows
-    ///   5. Bottom: Craft button
-    ///   6. Attach this script to the panel root and wire references
+    /// BUILD THE PANEL (top to bottom):
+    ///   1. Result icon (Image, ~80x80)
+    ///   2. Result name (TMP, bold)
+    ///   3. Description (TMP, wrapping)
+    ///   4. StatsContainer (empty GameObject with Vertical Layout Group)
+    ///   5. IngredientContainer (empty GameObject with Vertical Layout Group)
+    ///   6. Craft button
     /// </summary>
     public class RecipeDetailUI : MonoBehaviour
     {
@@ -29,6 +29,10 @@ namespace InventorySystem.UI
         [SerializeField] private Image resultIcon;
         [SerializeField] private TMPro.TextMeshProUGUI resultName;
         [SerializeField] private TMPro.TextMeshProUGUI resultDescription;
+
+        [Header("Stats")]
+        [SerializeField] private Transform statsContainer;
+        [SerializeField] private GameObject statRowPrefab;
 
         [Header("Ingredients")]
         [SerializeField] private Transform ingredientContainer;
@@ -49,6 +53,7 @@ namespace InventorySystem.UI
         public event Action OnCraftClicked;
 
         private readonly List<IngredientRowUI> _ingredientRows = new();
+        private readonly List<StatRowUI> _statRows = new();
         private bool _canCraft;
 
         // =====================================================================
@@ -106,6 +111,9 @@ namespace InventorySystem.UI
                     !string.IsNullOrEmpty(recipe.result.description));
             }
 
+            // --- Stats ---
+            RebuildStatRows(recipe.result);
+
             // --- Ingredients ---
             RebuildIngredientRows(recipe, inventory);
 
@@ -122,7 +130,6 @@ namespace InventorySystem.UI
         {
             if (recipe == null || !gameObject.activeSelf) return;
 
-            // Update each ingredient row's have/need display
             for (int i = 0; i < _ingredientRows.Count && i < recipe.ingredients.Length; i++)
             {
                 var req = recipe.ingredients[i];
@@ -140,12 +147,78 @@ namespace InventorySystem.UI
         }
 
         // =====================================================================
+        // Stats
+        // =====================================================================
+
+        private void RebuildStatRows(ItemData item)
+        {
+            foreach (var row in _statRows)
+            {
+                if (row != null)
+                    Destroy(row.gameObject);
+            }
+            _statRows.Clear();
+
+            if (statsContainer == null || statRowPrefab == null) return;
+
+            // --- Auto-generated stats ---
+
+            // Durability (only for items with instance state)
+            if (item.hasInstanceState && item.maxDurability > 0)
+            {
+                SpawnStatRow("Durability", item.maxDurability.ToString());
+            }
+
+            // --- Designer-configured stats from ItemData.displayStats ---
+            if (item.displayStats != null)
+            {
+                foreach (var stat in item.displayStats)
+                {
+                    if (string.IsNullOrEmpty(stat.label)) continue;
+
+                    var go = Instantiate(statRowPrefab, statsContainer);
+                    go.name = $"Stat_{stat.label}";
+
+                    var row = go.GetComponent<StatRowUI>();
+                    if (row != null)
+                    {
+                        row.Initialise(stat);
+                        _statRows.Add(row);
+                    }
+                    else
+                    {
+                        Destroy(go);
+                    }
+                }
+            }
+        }
+
+        private void SpawnStatRow(string label, string value,
+            StatValueColour colour = StatValueColour.Neutral)
+        {
+            if (statsContainer == null || statRowPrefab == null) return;
+
+            var go = Instantiate(statRowPrefab, statsContainer);
+            go.name = $"Stat_{label}";
+
+            var row = go.GetComponent<StatRowUI>();
+            if (row != null)
+            {
+                row.Initialise(label, value, colour);
+                _statRows.Add(row);
+            }
+            else
+            {
+                Destroy(go);
+            }
+        }
+
+        // =====================================================================
         // Ingredient rows
         // =====================================================================
 
         private void RebuildIngredientRows(Recipe recipe, Inventory inventory)
         {
-            // Clear existing rows
             foreach (var row in _ingredientRows)
             {
                 if (row != null)
@@ -186,7 +259,6 @@ namespace InventorySystem.UI
 
             craftButton.interactable = _canCraft;
 
-            // Visual feedback on the button background
             var buttonImage = craftButton.GetComponent<Image>();
             if (buttonImage != null)
                 buttonImage.color = _canCraft ? craftableButtonColour : uncraftableButtonColour;

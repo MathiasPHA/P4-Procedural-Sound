@@ -52,9 +52,7 @@ namespace InventorySystem.UI
         {
             if (countText == null) return;
 
-            // Clamp display of 'have' to the 'need' amount so it reads "10/10" not "32/10"
-            int displayHave = Mathf.Min(have, need);
-            countText.text = $"{displayHave}/{need}";
+            countText.text = $"{have}/{need}";
             countText.color = have >= need ? satisfiedColour : shortColour;
         }
     }

@@ -22,3 +22,7 @@ MonoBehaviour:
   isDroppable: 1
   hasInstanceState: 1
   maxDurability: 100
+  displayStats:
+  - label: Chop Powah
+    value: 5
+    colour: 0

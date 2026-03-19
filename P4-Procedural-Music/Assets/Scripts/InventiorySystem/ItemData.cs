@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace InventorySystem.Data
@@ -36,6 +37,11 @@ namespace InventorySystem.Data
         [Tooltip("Max durability for tools/weapons. Ignored if hasInstanceState is false")]
         [Min(0)]
         public int maxDurability = 100;
+
+        [Header("Display Stats")]
+        [Tooltip("Stats/properties shown in the crafting detail pane and tooltip. " +
+                 "Each entry is a label + value pair. Order here = order in UI.")]
+        public List<ItemStatEntry> displayStats = new();
 
         /// <summary>
         /// Whether this item type can be stacked (maxStackSize > 1 and no per-instance state).
