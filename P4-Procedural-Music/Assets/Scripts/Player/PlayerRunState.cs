@@ -4,6 +4,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class PlayerRunState : PlayerBaseState
 {
     private PlayerStateManager PlayerStateManager;
+    public string playerDir;
 
     public override void EnterState(PlayerStateManager player)
     {
@@ -13,7 +14,7 @@ public class PlayerRunState : PlayerBaseState
 
     public override void UpdateState(PlayerStateManager player)
     {
-        FlipX(PlayerStateManager.moveInput.x);
+        GetDircetion(PlayerStateManager.moveInput.x, PlayerStateManager.moveInput.y);
 
         PlayerStateManager.playerRB.linearVelocity = PlayerStateManager.moveInput * PlayerStateManager.moveSpeed;// Move the player based on input and speed
 
@@ -29,11 +30,27 @@ public class PlayerRunState : PlayerBaseState
         
     }
 
-    private void FlipX(float x) // Flips the player's sprite based on the direction of movement
+    private void GetDircetion(float x, float y)
     {
-        if (x != 0)
+        if (x < 0)
         {
-            PlayerStateManager.transform.localScale = new Vector3(Mathf.Sign(x), 1, 1);
+            playerDir = "Left"; 
+            Debug.Log("Left");
+        }
+        else if (x > 0)
+        {
+            playerDir = "Right";
+            Debug.Log("Right");
+        }
+        else if (y < 0)
+        {
+            playerDir = "Down";
+            Debug.Log("Down");
+        }
+        else if (y > 0)
+        {
+            playerDir = "Up";
+            Debug.Log("Up");
         }
     }
 }
