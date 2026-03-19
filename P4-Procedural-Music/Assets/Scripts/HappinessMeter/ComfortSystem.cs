@@ -5,7 +5,7 @@ using UnityEngine;
 /// It finds all ComfortSource objects in the scene, picks the CLOSEST one,
 /// and sends a comfort delta to HappinessBar every frame.
 /// </summary>
-public class ComfortSystem : MonoBehaviour
+public class ComfortSystemV1 : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private HappinessBar happinessBar;
