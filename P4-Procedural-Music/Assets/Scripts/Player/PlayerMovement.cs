@@ -7,9 +7,9 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Vector2 moveInput;
-    //private Vector3 mouseWorldPosition;
 
     [SerializeField] private float moveSpeed;
+    [SerializeField] private Canvas playerCanvas; // Drag your player's Canvas here in the Inspector
 
     private void Awake()
     {
@@ -19,36 +19,19 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         FlipX(moveInput.x);
-        /*LookAtMouse();
-        if (body.linearVelocity.x != 0 || body.linearVelocity.y != 0)
-        {
-            animationTracker.isIdle = false;
-            animationTracker.isRunning = true;
-        }
-        else
-        {
-            animationTracker.isRunning = false;
-            animationTracker.isIdle = true;
-        }*/
-
     }
+
     private void FlipX(float x)
     {
         if (x != 0)
         {
             transform.localScale = new Vector3(Mathf.Sign(x), 1, 1);
+
+            // Counter-flip the canvas so it always stays upright
+            if (playerCanvas != null)
+                playerCanvas.transform.localScale = new Vector3(Mathf.Sign(x), 1, 1);
         }
     }
-
-
-    /*private void LookAtMouse()
-    {
-        mouseWorldPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        var mouseForwardPosition = mouseWorldPosition + (Camera.main.transform.forward * 10.0f);
-        var dir = (mouseForwardPosition - (Vector3)body.position).normalized;
-
-        FlipX(dir.x);
-    }*/
 
     private void OnMove(InputValue value)
     {
