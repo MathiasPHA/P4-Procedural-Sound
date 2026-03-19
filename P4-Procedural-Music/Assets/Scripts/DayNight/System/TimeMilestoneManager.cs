@@ -25,10 +25,25 @@ public class TimeMilestoneManager : MonoBehaviour
     private const int NoonTime = 12;        // Noon at 12:00
     private const int AfternoonTime = 14;   // Afternoon starts at 13:00
     private const int SunsetTime = 18;      // Sunset at 18:00
-    private const int Dusk = 19;            // Dusk starts at 18:00
+    private const int DuskTime = 19;        // Dusk starts at 18:00
     private const int NightTime = 22;       // Night starts at 22
     private const int MidnightTime24 = 24;  // Midnight at 24:00 - Kun gjordt for ikke at misse den ved uheld
     private const int MidnightTime0 = 0;    // Midnight at 00:00 - Kun gjordt for ikke at misse den ved uheld
+
+    public int[] timeMilestoneTimes = new int[]
+    {
+        DawnTime,       
+        SunriseTime,    
+        MorningTime,    
+        NoonTime,       
+        MiddayTime,     
+        AfternoonTime,  
+        SunsetTime,     
+        DuskTime,       
+        NightTime,      
+        MidnightTime24, 
+        MidnightTime0,  
+    };
 
 
     [Header("Others")]
@@ -86,7 +101,7 @@ public class TimeMilestoneManager : MonoBehaviour
                 // 18:00 - 18:59 is Sunset
                 currentTimeMilestone = timeMilestones[7];
                 break;
-            case Dusk:
+            case DuskTime:
                 // 19:00 - 20:59 is Dusk
                 currentTimeMilestone = timeMilestones[8];
                 break;

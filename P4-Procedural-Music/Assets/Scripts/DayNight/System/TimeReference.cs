@@ -20,6 +20,7 @@ public class TimeReference : MonoBehaviour
     [Range(0f, 24f)]
     public float time;
     public int timeRounded;
+    public int[] timeReferenceArray;
 
 
     void Awake()
@@ -27,6 +28,14 @@ public class TimeReference : MonoBehaviour
         // Instantiate the scripts that are used to create the reference system
         timeMilestoneManager = GetComponent<TimeMilestoneManager>();
         dayNightMaster = GetComponent<DayNightMaster>();
+    }
+
+    private void Start()
+    {
+        foreach (int milestoneTime in timeMilestoneManager.timeMilestoneTimes)
+        {
+            timeReferenceArray = timeMilestoneManager.timeMilestoneTimes;
+        }
     }
 
 
