@@ -2,20 +2,22 @@ using UnityEngine;
 
 public class PlayerIdleState : PlayerBaseState
 {
-    private PlayerStateManager PlayerStateManager;
+    private PlayerStateManager playerStateManager;
     public override void EnterState(PlayerStateManager player)
     {
-        Debug.Log("I'm Idle");
-        PlayerStateManager = player;
+        //Debug.Log("I'm Idle");
+        playerStateManager = player;
     }
 
     public override void UpdateState(PlayerStateManager player)
     {
         // If there is moveinput, switch to run state
-        if (PlayerStateManager.moveInput != Vector2.zero)
+        if (playerStateManager.moveInput != Vector2.zero)
         {
-            PlayerStateManager.SwitchState(PlayerStateManager.runState);
+            playerStateManager.SwitchState(playerStateManager.runState);
         }
+
+        playerStateManager.animationQue = "Idle";
     }
 
     public override void OnCollisionEnter(PlayerStateManager player)
