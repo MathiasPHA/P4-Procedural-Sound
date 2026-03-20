@@ -6,6 +6,7 @@ public class PlayerStateManager : MonoBehaviour
     PlayerBaseState currentState;
     public PlayerIdleState idleState = new PlayerIdleState();
     public PlayerRunState runState = new PlayerRunState();
+
     public string animationQue;
 
     public Rigidbody2D playerRB;

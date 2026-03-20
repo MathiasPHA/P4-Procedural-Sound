@@ -38,6 +38,7 @@ public class PlayerAnimations : MonoBehaviour
                 playerAnimator.Play("PlayerIdleBack");
             }
         }
+
         if (animationQue == "Run")
         {
             if (playerStateManager.playerDir == "Down")
