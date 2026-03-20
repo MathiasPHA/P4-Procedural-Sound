@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
+  m_Name: Stone Axe
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
+  id: stone_axe
+  displayName: Stone Axe
+  description: Chops trees
+  loreNote: Not very sharp
+  icon: {fileID: 4315506946141470425, guid: 8a98bc9a807961b4aa1f997e283f1d85, type: 3}
+  category: 1
+  maxStackSize: 1
+  isDroppable: 1
+  hasInstanceState: 1
+  maxDurability: 100
+  displayStats:
+  - label: Chop Powah
+    value: 5
+    colour: 0
