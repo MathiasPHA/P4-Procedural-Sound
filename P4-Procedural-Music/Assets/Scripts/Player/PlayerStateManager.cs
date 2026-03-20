@@ -6,6 +6,7 @@ public class PlayerStateManager : MonoBehaviour
     PlayerBaseState currentState;
     public PlayerIdleState idleState = new PlayerIdleState();
     public PlayerRunState runState = new PlayerRunState();
+    public PlayerInventoryState inventoryState = new PlayerInventoryState();
 
     public string animationQue;
 
