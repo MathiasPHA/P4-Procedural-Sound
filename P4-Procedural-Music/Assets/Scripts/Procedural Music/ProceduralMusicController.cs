@@ -126,7 +126,7 @@ namespace ProceduralMusic.Bridge
                         Strings = LayerRange.From(0.35f),
                         Bass = LayerRange.From(0.5f),
                         Percussion = LayerRange.Off,
-                        MusicStyleSetting = MusicStyle.Folk
+                        MusicStyleSetting = MusicStyle.Folk,
                     };
 
                 case GameMusicState.Exploring2:
