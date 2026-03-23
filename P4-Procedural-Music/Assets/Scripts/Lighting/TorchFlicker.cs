@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class TorchFlicker : MonoBehaviour
 {
     [Header("Light References")]
-    [SerializeField] private Light torchLight;
+    [SerializeField] private Light2D torchLight;
 
     [Header("Intensity Settings")]
     [SerializeField] private float minIntensity = 0.8f;
@@ -13,11 +14,17 @@ public class TorchFlicker : MonoBehaviour
     [Header("Flicker Speed")]
     [SerializeField] private float flickerSpeed = 3f;
 
-    [Header("Range Variation")]
+    [Header("Outer Radius Variation")]
     [SerializeField] private bool varyRange = true;
-    [SerializeField] private float minRange = 8f;
-    [SerializeField] private float maxRange = 10f;
-    [SerializeField] private float baseRange = 9f;
+    [SerializeField] private float minOuterRadius = 8f;
+    [SerializeField] private float maxOuterRadius = 10f;
+    [SerializeField] private float baseOuterRadius = 9f;
+
+    [Header("Inner Radius Variation")]
+    [SerializeField] private bool varyInnerRadius = true;
+    [SerializeField] private float minInnerRadius = 3f;
+    [SerializeField] private float maxInnerRadius = 5f;
+    [SerializeField] private float baseInnerRadius = 4f;
 
     [Header("Advanced Settings")]
     [SerializeField] private bool usePerlinNoise = true;
@@ -30,25 +37,24 @@ public class TorchFlicker : MonoBehaviour
 
     void Start()
     {
-        // Get light component if not assigned
         if (torchLight == null)
         {
-            torchLight = GetComponent<Light>();
+            torchLight = GetComponent<Light2D>();
         }
 
         if (torchLight == null)
         {
-            Debug.LogError("No Light component found! Please assign a Light or attach this script to a GameObject with a Light component.");
+            Debug.LogError("No Light2D component found! Please assign a Light2D or attach this script to a GameObject with a Light2D component.");
             enabled = false;
             return;
         }
 
-        // Random offset so multiple torches don't flicker in sync
         randomOffset = Random.Range(0f, 100f);
 
-        // Store base values
+        // Store base values from the light
         baseIntensity = torchLight.intensity;
-        baseRange = torchLight.range;
+        baseOuterRadius = torchLight.pointLightOuterRadius;
+        baseInnerRadius = torchLight.pointLightInnerRadius;
     }
 
     void Update()
@@ -59,22 +65,18 @@ public class TorchFlicker : MonoBehaviour
 
         if (usePerlinNoise)
         {
-            // Perlin noise for smooth, natural flickering
             float noise = Mathf.PerlinNoise(
                 (Time.time * flickerSpeed + randomOffset) * noiseScale,
                 randomOffset
             );
 
-            // Remap from 0-1 to -1 to 1 for variation
             flicker = (noise - 0.5f) * 2f;
         }
         else
         {
-            // Simple sine wave flickering
             flicker = Mathf.Sin(Time.time * flickerSpeed + randomOffset);
         }
 
-        // Add random spikes for more realism (like wind gusts)
         if (addRandomSpikes && Random.value < spikeChance)
         {
             spikeTimer = 0.1f;
@@ -82,7 +84,7 @@ public class TorchFlicker : MonoBehaviour
 
         if (spikeTimer > 0)
         {
-            flicker += Random.Range(-0.5f, -0.3f); // Sudden dip
+            flicker += Random.Range(-0.5f, -0.3f);
             spikeTimer -= Time.deltaTime;
         }
 
@@ -90,15 +92,25 @@ public class TorchFlicker : MonoBehaviour
         float targetIntensity = baseIntensity + flicker * (maxIntensity - minIntensity) * 0.5f;
         torchLight.intensity = Mathf.Clamp(targetIntensity, minIntensity, maxIntensity);
 
-        // Apply range variation if enabled
+        // Apply outer radius variation
         if (varyRange)
         {
-            float targetRange = baseRange + flicker * (maxRange - minRange) * 0.3f;
-            torchLight.range = Mathf.Clamp(targetRange, minRange, maxRange);
+            float targetOuter = baseOuterRadius + flicker * (maxOuterRadius - minOuterRadius) * 0.3f;
+            torchLight.pointLightOuterRadius = Mathf.Clamp(targetOuter, minOuterRadius, maxOuterRadius);
+        }
+
+        // Apply inner radius variation (tied to the same flicker so they move together)
+        if (varyInnerRadius)
+        {
+            float targetInner = baseInnerRadius + flicker * (maxInnerRadius - minInnerRadius) * 0.3f;
+            targetInner = Mathf.Clamp(targetInner, minInnerRadius, maxInnerRadius);
+
+            // Ensure inner never exceeds outer
+            targetInner = Mathf.Min(targetInner, torchLight.pointLightOuterRadius);
+            torchLight.pointLightInnerRadius = targetInner;
         }
     }
 
-    // Optional: Methods to control the torch programmatically
     public void SetFlickerSpeed(float speed)
     {
         flickerSpeed = speed;
@@ -115,9 +127,9 @@ public class TorchFlicker : MonoBehaviour
         enabled = enable;
         if (!enable)
         {
-            // Reset to base values when disabled
             torchLight.intensity = baseIntensity;
-            torchLight.range = baseRange;
+            torchLight.pointLightOuterRadius = baseOuterRadius;
+            torchLight.pointLightInnerRadius = baseInnerRadius;
         }
     }
 }
