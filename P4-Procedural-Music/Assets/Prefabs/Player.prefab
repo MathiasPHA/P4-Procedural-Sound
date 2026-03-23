@@ -140,6 +140,7 @@ GameObject:
   - component: {fileID: 50687759397478212}
   - component: {fileID: 1106152198793366464}
   - component: {fileID: 4859490917234952540}
+  - component: {fileID: 8437715424998398889}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -238,6 +239,27 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0}
   playerDir: 
   moveSpeed: 5
+--- !u!114 &8437715424998398889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08b961b239d0c9d4eb11568e3c7203ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ComfortSystem
+  happinessRiseRate: 0.08
+  happinessFallRate: 0.12
+  happinessSmoothTime: 0.5
+  dayBaselineComfort: 0.55
+  nightBaselineComfort: 0.3
+  comfortSmoothTime: 0.3
+  happinessTensionWeight: 0.7
+  comfortTensionWeight: 0.3
+  showDebugGUI: 1
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0

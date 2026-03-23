@@ -24,20 +24,18 @@ public class ComfortMusicBridge : MonoBehaviour
     [Tooltip("Enable to automatically switch GameMusicState based on tension thresholds")]
     [SerializeField] private bool autoSwitchStates = true;
 
-    [Tooltip("Tension above this triggers Horror")]
-    [SerializeField] private float horrorThreshold = 0.9f;
+    [Header("Day Thresholds (Cozy → Exploring → Pressure)")]
+    [SerializeField] private float dayCozyMax = 0.15f;
+    [SerializeField] private float dayPressureMin = 0.6f;
 
-    [Tooltip("Tension above this triggers Combat (if below horror)")]
-    [SerializeField] private float combatThreshold = 0.75f;
+    [Header("Night Thresholds (Cozy → Night → Spooky → Horror)")]
+    [SerializeField] private float nightCozyMax = 0.2f;
+    [SerializeField] private float nightSpookyMin = 0.6f;
+    [SerializeField] private float nightHorrorMin = 0.8f;
 
-    [Tooltip("Tension above this triggers Pressure (if below combat)")]
-    [SerializeField] private float pressureThreshold = 0.5f;
-
-    [Tooltip("Tension above this triggers Spooky (if below pressure)")]
-    [SerializeField] private float spookyThreshold = 0.35f;
-
-    [Tooltip("Tension below this triggers Cozy")]
-    [SerializeField] private float cozyThreshold = 0.12f;
+    [Header("Day/Night")]
+    [Tooltip("When the day/night value drops below this, switch to night threshold set")]
+    [SerializeField] private float nightThreshold = 0.35f;
 
     [Tooltip("How long tension must stay past a threshold before switching state (prevents flickering)")]
     [SerializeField] private float stateChangeDelay = 2f;
@@ -47,6 +45,8 @@ public class ComfortMusicBridge : MonoBehaviour
     private GameMusicState currentMusicState;
     private float stateTimer;
     private bool manualStateOverride;
+    private bool useExploring2;
+    private bool wasNight;
 
     private ProceduralMusicController Music => ProceduralMusicController.Instance;
 
@@ -83,22 +83,37 @@ public class ComfortMusicBridge : MonoBehaviour
 
     private void UpdateAutoState(float tension)
     {
-        // Map tension ranges to your game states
-        // Highest threshold wins, checked top-down
+        bool isNight = comfortSystem != null && comfortSystem.DayNightValue < nightThreshold;
+
+        // Reset to Exploring when night falls
+        if (isNight && !wasNight)
+            useExploring2 = false;
+        wasNight = isNight;
+
         GameMusicState suggestedState;
 
-        if (tension >= horrorThreshold)
-            suggestedState = GameMusicState.Horror;
-        else if (tension >= combatThreshold)
-            suggestedState = GameMusicState.Combat;
-        else if (tension >= pressureThreshold)
-            suggestedState = GameMusicState.Pressure;
-        else if (tension >= spookyThreshold)
-            suggestedState = GameMusicState.Exploring;
-        else if (tension <= cozyThreshold)
-            suggestedState = GameMusicState.Cozy;
+        if (isNight)
+        {
+            // Night: Cozy (0–0.2) → Night (0.2–0.6) → Spooky (0.6–0.8) → Horror (0.8–1)
+            if (tension >= nightHorrorMin)
+                suggestedState = GameMusicState.Horror;
+            else if (tension >= nightSpookyMin)
+                suggestedState = GameMusicState.Spooky;
+            else if (tension <= nightCozyMax)
+                suggestedState = GameMusicState.Cozy;
+            else
+                suggestedState = GameMusicState.Night;
+        }
         else
-            suggestedState = GameMusicState.Exploring;
+        {
+            // Day: Cozy (0–0.15) → Exploring/Exploring2 (0.15–0.6) → Pressure (0.6–1)
+            if (tension >= dayPressureMin)
+                suggestedState = GameMusicState.Pressure;
+            else if (tension <= dayCozyMax)
+                suggestedState = GameMusicState.Cozy;
+            else
+                suggestedState = useExploring2 ? GameMusicState.Exploring2 : GameMusicState.Exploring;
+        }
 
         // Hysteresis: require the suggested state to hold for stateChangeDelay
         if (suggestedState != pendingState)
@@ -146,5 +161,15 @@ public class ComfortMusicBridge : MonoBehaviour
     public void SetTensionCurve(AnimationCurve curve)
     {
         tensionCurve = curve;
+    }
+
+    /// <summary>
+    /// Switch the daytime default between Exploring and Exploring2.
+    /// Automatically resets to Exploring when night falls.
+    /// Call from your day/night script when you want the more upbeat variant.
+    /// </summary>
+    public void SetExploring2(bool active)
+    {
+        useExploring2 = active;
     }
 }

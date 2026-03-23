@@ -17,6 +17,10 @@ public class TimeMilestoneManager : MonoBehaviour
         "Night",        // 9
     };
 
+    [Header("References")]
+    [SerializeField] private ComfortSystem comfortSystem;
+    [SerializeField] private ComfortMusicBridge comfortMusicBridge;
+
     // Det her er lort, men det virker ikke hvis man bruger et array, da de ikke kan være sat til at være const
     private const int DawnTime = 5;         // Dawn starts at 5:00
     private const int SunriseTime = 6;      // Sunrise at 6:00
@@ -76,6 +80,7 @@ public class TimeMilestoneManager : MonoBehaviour
             case SunriseTime:
                 // 6:00 - 7:59 is Sunrise
                 currentTimeMilestone = timeMilestones[2];
+                comfortSystem.SetDayNightValue(1); // 1 = day
                 break;
             case MorningTime:
                 // 7:00 - 10:59 is Morning
@@ -92,6 +97,7 @@ public class TimeMilestoneManager : MonoBehaviour
             case NoonTime + 1:
                 // 13:00 - 13:59 is Midday
                 currentTimeMilestone = timeMilestones[5];
+                comfortMusicBridge.SetExploring2(true);  // switch to upbeat exploring
                 break;
             case AfternoonTime:
                 // 14:00 - 17:59 is Afternoon
@@ -108,6 +114,7 @@ public class TimeMilestoneManager : MonoBehaviour
             case NightTime:
                 // 21:00 - 23:59 is Night
                 currentTimeMilestone = timeMilestones[9];
+                comfortSystem.SetDayNightValue(0); // 0 = night
                 break;
             case MidnightTime24:
                 // 24:00 - 0:59 is Midnight

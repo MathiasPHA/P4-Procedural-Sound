@@ -298,9 +298,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8334237477380076586}
   - component: {fileID: 7225642842360560909}
-  - component: {fileID: 8569157974049387733}
-  - component: {fileID: 8819055166185279334}
-  - component: {fileID: 1127579817839034573}
+  - component: {fileID: 8229393275382358704}
   m_Layer: 5
   m_Name: HappinessMeter
   m_TagString: Untagged
@@ -317,8 +315,8 @@ RectTransform:
   m_GameObject: {fileID: 7194471966198297126}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.02, y: 0.02, z: 0.02}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7522288208616733920}
   - {fileID: 9076690371175691818}
@@ -381,7 +379,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8569157974049387733
+--- !u!114 &8229393275382358704
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -390,45 +388,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7194471966198297126}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e741851cba3ad425c91ecf922cc6b379, type: 3}
+  m_Script: {fileID: 11500000, guid: dc6878f0799fc134188eba55ae55ab74, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.VisualScripting.Core::Unity.VisualScripting.Variables
-  _data:
-    _json: '{"declarations":{"Kind":"Object","collection":{"$content":[],"$version":"A"},"$version":"A"}}'
-    _objectReferences: []
---- !u!114 &8819055166185279334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7194471966198297126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2fe5546f775c47d2820aa5e8a715f53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.VisualScripting.Flow::Unity.VisualScripting.ScriptMachine
-  _data:
-    _json: '{"nest":{"source":"Macro","macro":0,"embed":null}}'
-    _objectReferences:
-    - {fileID: 11400000, guid: 98f875f4c376d474bb13e7a25d3802bb, type: 2}
---- !u!114 &1127579817839034573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7194471966198297126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9203512b43d16a14ca51717559efacb5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HappinessBar
-  maxHappiness: 100
-  currentHappiness: 100
-  smoothSpeed: 5
+  m_EditorClassIdentifier: Assembly-CSharp::HappinessMeter
+  comfortSystem: {fileID: 0}
   happinessSlider: {fileID: 7225642842360560909}
-  comfortLabel: {fileID: 3585388937178545660}
 --- !u!1 &7769009739105312065
 GameObject:
   m_ObjectHideFlags: 0
