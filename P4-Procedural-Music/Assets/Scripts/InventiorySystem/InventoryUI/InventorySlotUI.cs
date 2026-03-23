@@ -197,44 +197,40 @@ namespace InventorySystem.UI
         }
 
         /// <summary>
-        /// Shows a coloured border when this slot's item is the currently equipped one.
+        /// Updates the highlight border based on equipped and hotbar selection state.
+        /// Active hotbar slot always gets a border — equipped colour if equipped,
+        /// selection colour otherwise.
         /// </summary>
         public void UpdateEquippedVisual()
         {
-            bool isEquipped = _manager.IsSlotEquipped(SlotIndex);
+            if (highlightBorder == null) return;
 
-            if (highlightBorder != null && !_isHighlighted)
+            bool isEquipped = _manager.IsSlotEquipped(SlotIndex);
+            bool isActiveHotbar = IsHotbarSlot && _manager.IsSlotActiveHotbar(SlotIndex);
+
+            if (isEquipped)
             {
-                if (isEquipped)
-                {
-                    highlightBorder.enabled = true;
-                    highlightBorder.color = equippedColour;
-                }
-                else if (IsHotbarSlot && _manager.IsSlotActiveHotbar(SlotIndex))
-                {
-                    highlightBorder.enabled = true;
-                    highlightBorder.color = hotbarSelectedColour;
-                }
-                else
-                {
-                    highlightBorder.enabled = false;
-                }
+                highlightBorder.enabled = true;
+                highlightBorder.color = equippedColour;
+            }
+            else if (isActiveHotbar)
+            {
+                highlightBorder.enabled = true;
+                highlightBorder.color = hotbarSelectedColour;
+            }
+            else
+            {
+                highlightBorder.enabled = false;
             }
         }
 
         /// <summary>
-        /// Show/hide the hotbar selection highlight.
+        /// Called when the hotbar selection changes. Delegates to the
+        /// unified highlight logic in UpdateEquippedVisual.
         /// </summary>
         public void SetHotbarSelected(bool selected)
         {
-            // Don't override equipped colour
-            if (_manager.IsSlotEquipped(SlotIndex)) return;
-
-            if (highlightBorder != null)
-            {
-                highlightBorder.enabled = selected;
-                if (selected) highlightBorder.color = hotbarSelectedColour;
-            }
+            UpdateEquippedVisual();
         }
 
         // =====================================================================
@@ -302,6 +298,7 @@ namespace InventorySystem.UI
 
         // =====================================================================
         // Click
+        // Left-click on hotbar slot = Stardew-style select (even if empty)
         // Ctrl + left-click = open precise split slider
         // Right-click = Valheim-style use (equip tool / consume food)
         // Shift + right-click = split stack in half
@@ -316,6 +313,16 @@ namespace InventorySystem.UI
             {
                 _manager.CloseSplitSlider();
                 return;
+            }
+
+            // --- Left-click on hotbar slot = select it (works even if empty) ---
+            if (eventData.button == PointerEventData.InputButton.Left && IsHotbarSlot)
+            {
+                if (!_manager.IsCtrlHeld)
+                {
+                    _manager.SelectHotbarSlot(SlotIndex);
+                    return;
+                }
             }
 
             var slot = _manager.GetSlotData(SlotIndex);
