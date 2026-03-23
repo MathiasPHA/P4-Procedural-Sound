@@ -126,7 +126,7 @@ namespace ProceduralMusic.Bridge
                         Strings = LayerRange.From(0.35f),
                         Bass = LayerRange.From(0.5f),
                         Percussion = LayerRange.Off,
-                        MusicStyleSetting = MusicStyle.Folk
+                        MusicStyleSetting = MusicStyle.Folk,
                     };
 
                 case GameMusicState.Exploring2:
@@ -331,6 +331,8 @@ namespace ProceduralMusic.Bridge
     [RequireComponent(typeof(AudioSource))]
     public class ProceduralMusicController : MonoBehaviour
     {
+        public static ProceduralMusicController Instance { get; private set; }
+
         [Header("Musical Settings")]
         [Tooltip("Root note of the starting key")]
         public PitchClass StartingKey = PitchClass.C;
@@ -389,6 +391,14 @@ namespace ProceduralMusic.Bridge
 
         void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
             _sampleRate = AudioSettings.outputSampleRate;
             Initialize();
         }
