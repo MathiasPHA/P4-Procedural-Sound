@@ -358,7 +358,17 @@ namespace InventorySystem.UI
         // Hotbar
         // =====================================================================
 
-        private void OnHotbarKeyPressed(int index) => _inventory.HotbarUse(index);
+        private void OnHotbarKeyPressed(int index) => _inventory.SelectHotbar(index);
+
+        /// <summary>
+        /// Stardew-style hotbar selection. Called by InventorySlotUI on left-click
+        /// and by scroll. Selects the slot and auto-equips tools/buildables.
+        /// </summary>
+        public void SelectHotbarSlot(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= Inventory.HotbarSize) return;
+            _inventory.SelectHotbar(slotIndex);
+        }
 
         private void OnScrollHotbar(float scrollValue)
         {
@@ -366,7 +376,7 @@ namespace InventorySystem.UI
             current = scrollValue > 0
                 ? (current - 1 + Inventory.HotbarSize) % Inventory.HotbarSize
                 : (current + 1) % Inventory.HotbarSize;
-            _inventory.SetActiveHotbar(current);
+            _inventory.SelectHotbar(current);
         }
 
         private void UpdateHotbarSelection(int activeIndex)
@@ -410,12 +420,12 @@ namespace InventorySystem.UI
         {
             if (worldItemPrefab == null || playerTransform == null) return;
 
-            Vector2 dropPos = (Vector2)playerTransform.position
-                + (Vector2)(playerTransform.right * dropDistance);
+            Vector2 dropDir = (Vector2)playerTransform.right;
+            Vector2 dropPos = (Vector2)playerTransform.position + dropDir * dropDistance;
 
             var go = Instantiate(worldItemPrefab, dropPos, Quaternion.identity);
             var worldItem = go.GetComponent<WorldItem>();
-            worldItem?.Initialise(instance, quantity);
+            worldItem?.Initialise(instance, quantity, dropDir);
         }
 
         // =====================================================================

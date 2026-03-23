@@ -15,9 +15,13 @@ namespace InventorySystem.UI
     public class WorldItem : MonoBehaviour
     {
         [Header("Settings")]
-        [SerializeField] private float pickupDelay = 0.3f;
+        [SerializeField] private float pickupDelay = 1.5f;
         [SerializeField] private float bobAmplitude = 0.1f;
         [SerializeField] private float bobSpeed = 2f;
+
+        [Header("Drop Physics")]
+        [SerializeField] private float dropImpulse = 3f;
+        [SerializeField] private float randomSpread = 0.5f;
 
         public ItemInstance Instance { get; private set; }
         public int Quantity { get; private set; }
@@ -26,7 +30,7 @@ namespace InventorySystem.UI
         private float _spawnTime;
         private Vector3 _basePosition;
 
-        public void Initialise(ItemInstance instance, int quantity)
+        public void Initialise(ItemInstance instance, int quantity, Vector2 launchDirection = default)
         {
             Instance = instance;
             Quantity = quantity;
@@ -36,14 +40,21 @@ namespace InventorySystem.UI
 
             _spawnTime = Time.time;
 
-            // Small random impulse so items spread out when dropped
             var rb = GetComponent<Rigidbody2D>();
             if (rb != null)
             {
                 rb.gravityScale = 0.5f;
                 rb.linearDamping = 3f;
-                var randomDir = Random.insideUnitCircle * 1.5f;
-                rb.AddForce(randomDir, ForceMode2D.Impulse);
+
+                // Use provided direction or fall back to random
+                Vector2 dir = launchDirection.sqrMagnitude > 0.01f
+                    ? launchDirection.normalized
+                    : Random.insideUnitCircle.normalized;
+
+                // Add a bit of random spread so multiple drops fan out
+                dir += Random.insideUnitCircle * randomSpread;
+
+                rb.AddForce(dir * dropImpulse, ForceMode2D.Impulse);
             }
         }
 
