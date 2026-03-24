@@ -356,6 +356,61 @@ namespace InventorySystem.Data
         }
 
         /// <summary>
+        /// Stardew-style hotbar selection: highlights the slot and auto-equips
+        /// Tools/Buildables, but does NOT consume Consumables or affect Materials.
+        /// Used by left-click on hotbar slots and mouse scroll.
+        /// </summary>
+        public void SelectHotbar(int hotbarIndex)
+        {
+            if (hotbarIndex < 0 || hotbarIndex >= HotbarSize) return;
+
+            int previousEquipped = EquippedSlotIndex;
+            ActiveHotbarIndex = hotbarIndex;
+
+            var slot = Slots[hotbarIndex];
+            if (slot.IsEmpty)
+            {
+                // Selected an empty slot — unequip whatever was equipped
+                if (previousEquipped >= 0)
+                {
+                    EquippedSlotIndex = -1;
+                    NotifySlotChanged(previousEquipped);
+                    OnEquippedChanged?.Invoke(-1);
+                }
+            }
+            else
+            {
+                switch (slot.ItemData.category)
+                {
+                    case ItemCategory.Tool:
+                    case ItemCategory.Buildable:
+                        if (EquippedSlotIndex != hotbarIndex)
+                        {
+                            EquippedSlotIndex = hotbarIndex;
+
+                            if (previousEquipped >= 0) NotifySlotChanged(previousEquipped);
+                            NotifySlotChanged(hotbarIndex);
+                            OnEquippedChanged?.Invoke(hotbarIndex);
+                        }
+                        break;
+
+                    case ItemCategory.Consumable:
+                    case ItemCategory.Material:
+                        if (previousEquipped >= 0)
+                        {
+                            EquippedSlotIndex = -1;
+                            NotifySlotChanged(previousEquipped);
+                            OnEquippedChanged?.Invoke(-1);
+                        }
+                        break;
+                }
+            }
+
+            // Fire selection event LAST so visuals see the correct equip state
+            OnHotbarSelectionChanged?.Invoke(hotbarIndex);
+        }
+
+        /// <summary>
         /// The ItemInstance currently selected on the hotbar. May be null.
         /// </summary>
         public ItemInstance ActiveHotbarItem =>
