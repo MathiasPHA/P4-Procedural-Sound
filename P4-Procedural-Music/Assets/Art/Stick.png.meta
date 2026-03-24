@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 4034f726fb350774d91cc7df0a70fac3
+guid: b56ac9f6c9612a4419cf93f72b21eb72
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3591475534189650280
-    second: Campfire_0
-  - first:
-      213: -4704261264892754323
-    second: Campfire_1
+      213: -7907951331658488048
+    second: Stick_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Campfire_0
+      name: Stick_0
       rect:
         serializedVersion: 2
-        x: 869
-        y: 1348
-        width: 138
-        height: 217
+        x: 115
+        y: 71
+        width: 509
+        height: 488
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -118,30 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 89e9e15b704882ec0800000000000000
-      internalID: -3591475534189650280
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Campfire_1
-      rect:
-        serializedVersion: 2
-        x: 402
-        y: 82
-        width: 812
-        height: 1195
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d660077cd4b17beb0800000000000000
-      internalID: -4704261264892754323
+      spriteID: 0172b677920514290800000000000000
+      internalID: -7907951331658488048
       vertices: []
       indices: 
       edges: []
@@ -160,8 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Campfire_0: -3591475534189650280
-      Campfire_1: -4704261264892754323
+      Stick_0: -7907951331658488048
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
