@@ -34,7 +34,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Ambience
+  m_Name: SFX
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 1490a51e52b1e4207880ee70b224eb8c
   m_Children:
@@ -102,8 +102,8 @@ AudioMixerController:
     - 1c8bbd8582fe24965a13ad1ad8d206ea
     - b7cf0530a8537476d85e3331cfc69b86
     - 7b322136851104051af35d14caee6165
-    name: Ambience
-  m_CurrentViewIndex: 1
+    name: SFX
+  m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
 --- !u!243 &24300002
 AudioMixerGroupController:
@@ -153,7 +153,7 @@ AudioMixerSnapshotController:
     8bf5df6000a264076bf29aac73d37924: 0
     02648d83cd7ae425390143cc5031674c: 12.587963
     62d58f372f0ec44c3910a604d7e69663: 20
-    9295da874c6004b51997564d29d9abbb: -3.5090396
+    9295da874c6004b51997564d29d9abbb: -0.16685188
     2db27ee75574d4fdbbfcc529a7340c55: 1
     5d6ca61b3cf7948339fb14bbd53344dc: 0.8
     393e201cd6c17456585117748a64fc1e: -32.77572
