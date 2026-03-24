@@ -10,8 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2972819932874030993}
   - component: {fileID: 7852800770308967991}
-  - component: {fileID: 8310699643716559879}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Campfire_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.06, y: 0.09000003, z: 0}
-  m_LocalScale: {x: 0.62, y: 0.62, z: 0.62}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2737738783036177952}
@@ -82,7 +81,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3591475534189650280, guid: f66044fd0bbe6064092016fda955e907, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4034f726fb350774d91cc7df0a70fac3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -92,59 +91,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &8310699643716559879
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1095060366654119204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.ShadowCaster2D
-  m_ShadowGroup: 0
-  m_Priority: 0
-  m_ComponentVersion: 5
-  m_HasRenderer: 1
-  m_UseRendererSilhouette: 1
-  m_CastsShadows: 1
-  m_SelfShadows: 0
-  m_AlphaCutoff: 0.127
-  m_ApplyToSortingLayers: 00000000
-  m_ShapePath:
-  - {x: -1.305, y: -0.8799999, z: 0}
-  - {x: -1.305, y: 0.88000023, z: 0}
-  - {x: 1.305, y: 0.88000023, z: 0}
-  - {x: 1.305, y: -0.8799999, z: 0}
-  m_ShapePathHash: 0
-  m_InstanceId: 0
-  m_ShadowShape2DComponent: {fileID: 7852800770308967991}
-  m_ShadowShape2DProvider:
-    rid: 1495081146503135307
-  m_ShadowCastingSource: 2
-  m_ShadowMesh:
-    m_Mesh: {fileID: 0}
-    m_LocalBounds:
-      m_Center: {x: 0, y: 0, z: 0}
-      m_Extent: {x: 0, y: 0, z: 0}
-    m_EdgeProcessing: 1
-    m_TrimEdge: 1.03
-    m_FlipX: 0
-    m_FlipY: 0
-    m_InitialTrim: 0
-  m_CastingOption: 1
-  m_PreviousTrimEdge: 1.03
-  m_PreviousEdgeProcessing: 1
-  m_PreviousShadowCastingSource: 2
-  m_PreviousShadowShape2DSource: {fileID: 7852800770308967991}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1495081146503135307
-      type: {class: ShadowShape2DProvider_SpriteRenderer, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
-      data: 
 --- !u!1 &7393102421888571362
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,7 +107,7 @@ GameObject:
   - component: {fileID: 7775883068081880350}
   - component: {fileID: 6379968897288913679}
   - component: {fileID: 1146854011689539404}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Campfire_World
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,8 +170,8 @@ MonoBehaviour:
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
-  m_PointLightInnerRadius: 2.12
-  m_PointLightOuterRadius: 7
+  m_PointLightInnerRadius: 9.73
+  m_PointLightOuterRadius: 42.03
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -249,22 +195,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TorchFlicker
   torchLight: {fileID: 0}
-  minIntensity: 0.8
-  maxIntensity: 1.5
-  baseIntensity: 1
-  flickerSpeed: 3
+  minIntensity: 1.75
+  maxIntensity: 3
+  baseIntensity: 2.28
+  flickerSpeed: 0.6
   varyRange: 1
-  minOuterRadius: 8
-  maxOuterRadius: 10
-  baseOuterRadius: 9
+  minOuterRadius: 37
+  maxOuterRadius: 45
+  baseOuterRadius: 42.03
   varyInnerRadius: 1
-  minInnerRadius: 3
-  maxInnerRadius: 5
-  baseInnerRadius: 4
+  minInnerRadius: 8
+  maxInnerRadius: 9.7
+  baseInnerRadius: 9.73
   usePerlinNoise: 1
   noiseScale: 1
   addRandomSpikes: 1
-  spikeChance: 0.02
+  spikeChance: 0.001
 --- !u!82 &1626463313000977171
 AudioSource:
   m_ObjectHideFlags: 0
@@ -406,7 +352,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ComfortInfluenceSource
   comfortValue: 0.8
   weight: 1
-  radius: 10
+  radius: 22.3
   influenceName: Campfire
 --- !u!61 &1146854011689539404
 BoxCollider2D:
