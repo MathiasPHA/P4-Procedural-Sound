@@ -169,6 +169,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8809c5583cd6a94c9f808db0dbc6b66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.UI.WorldItem
-  pickupDelay: 0.3
-  bobAmplitude: 0.1
+  pickupDelay: 0.5
+  bobAmplitude: 0.18
   bobSpeed: 2
+  dropImpulse: 30
+  randomSpread: 0.12

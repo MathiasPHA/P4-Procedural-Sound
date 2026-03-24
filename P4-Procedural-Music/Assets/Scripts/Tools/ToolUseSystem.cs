@@ -179,7 +179,8 @@ namespace InventorySystem.Tools
                 }
                 else
                 {
-                    // Notify inventory so UI updates the durability bar
+                    // Notify the specific slot so the durability bar updates
+                    _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
                     _inventory.NotifyChanged();
                 }
             }
