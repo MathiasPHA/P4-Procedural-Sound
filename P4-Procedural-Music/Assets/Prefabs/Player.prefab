@@ -141,6 +141,8 @@ GameObject:
   - component: {fileID: 1106152198793366464}
   - component: {fileID: 4859490917234952540}
   - component: {fileID: 8437715424998398889}
+  - component: {fileID: 5913942603858231884}
+  - component: {fileID: 1591661159947031898}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -159,7 +161,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.140964, y: -0.2458044, z: 0.009166524}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1489269463399578993}
   - {fileID: 1603329111665028624}
@@ -260,6 +262,48 @@ MonoBehaviour:
   happinessTensionWeight: 0.7
   comfortTensionWeight: 0.3
   showDebugGUI: 1
+--- !u!114 &5913942603858231884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82b1851245cedbf439f77f3d769ef9c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.ItemMagnet
+  magnetRadius: 3
+  pullSpeed: 5
+  acceleration: 3
+  collectDistance: 0.4
+--- !u!114 &1591661159947031898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ff8aa3650ed5c244b272d4abd7f73ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacementSystem
+  mainCamera: {fileID: 0}
+  placeables:
+  - {fileID: 11400000, guid: 9bb0b9522cbff8147af80d40c66aa4bf, type: 2}
+  gridSize: 1
+  skipGroundCheck: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  validColour: {r: 0.2, g: 1, b: 0.2, a: 0.5}
+  invalidColour: {r: 1, g: 0.2, b: 0.2, a: 0.5}
+  ghostSortingOrder: 100
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0
