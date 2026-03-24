@@ -521,7 +521,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 40
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: f532b04a2ca9b164989a5fd7e395ec17, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1090,6 +1090,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4368935485830263750, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
+      propertyPath: currentTime
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4368935485830263750, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
       propertyPath: dayLengthMinutes
       value: 1
       objectReference: {fileID: 0}
@@ -1256,6 +1260,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5751236447002726307, guid: 278af8a3309f7af45879c9dea76576ca, type: 3}
+      propertyPath: m_Intensity
+      value: 23.55
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1337,7 +1345,7 @@ MonoBehaviour:
     m_Bits: 8
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   validColour: {r: 0.2, g: 1, b: 0.2, a: 0.5}
   invalidColour: {r: 1, g: 0.2, b: 0.2, a: 0.5}
   ghostSortingOrder: 100
@@ -1526,7 +1534,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 18
   m_MaskInteraction: 0
   m_Sprite: {fileID: 3084696591817005911, guid: 04f533d857f5b844abf7dde60b577d06, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
