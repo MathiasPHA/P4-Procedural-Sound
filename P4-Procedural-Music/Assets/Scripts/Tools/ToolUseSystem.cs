@@ -33,7 +33,10 @@ namespace InventorySystem.Tools
         [Tooltip("Layer(s) that harvestable resources are on.")]
         [SerializeField] private LayerMask resourceLayer;
 
-        [Tooltip("Offset from player center to the detection point, scaled by tool range.")]
+        [Tooltip("Radius of the interaction circle in front of the player.")]
+        [SerializeField] private float interactRadius = 1.5f;
+
+        [Tooltip("Offset from player center to the detection point.")]
         [SerializeField] private float detectionOffset = 0.5f;
 
         // Runtime
@@ -65,6 +68,10 @@ namespace InventorySystem.Tools
                 if (playerStateManager == null)
                     Debug.LogError("[ToolUseSystem] PlayerStateManager not found!");
             }
+
+            Debug.Log($"[ToolUseSystem] Init: {_toolLookup.Count} tools registered, " +
+                      $"inventory={(_inventory != null ? "OK" : "NULL")}, " +
+                      $"resourceLayer={resourceLayer.value}");
         }
 
         private void Update()
@@ -78,7 +85,11 @@ namespace InventorySystem.Tools
 
             // Don't process tool input when over UI
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+                    Debug.Log("[ToolUse] Click blocked — pointer is over UI element.");
                 return;
+            }
 
             // Check for left-click
             var mouse = Mouse.current;
@@ -89,28 +100,59 @@ namespace InventorySystem.Tools
 
         private void TryUseTool()
         {
-            if (_inventory == null) return;
+            if (_inventory == null)
+            {
+                Debug.LogWarning("[ToolUse] No inventory found.");
+                return;
+            }
 
             // Get equipped item
             var equippedInstance = _inventory.EquippedItem;
-            if (equippedInstance == null) return;
-            if (equippedInstance.Data.category != ItemCategory.Tool) return;
+            if (equippedInstance == null)
+            {
+                Debug.Log("[ToolUse] No item equipped.");
+                return;
+            }
+
+            if (equippedInstance.Data.category != ItemCategory.Tool)
+            {
+                Debug.Log($"[ToolUse] Equipped item '{equippedInstance.Data.displayName}' is not a Tool.");
+                return;
+            }
 
             // Look up tool data
-            if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData)) return;
+            if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
+            {
+                Debug.LogWarning($"[ToolUse] No ToolData found for '{equippedInstance.Data.id}'. " +
+                                 "Is it in the Tool Database list?");
+                return;
+            }
 
             // Get facing direction from PlayerStateManager
             Vector2 facingDir = GetFacingDirection();
-            if (facingDir == Vector2.zero) return;
+            if (facingDir == Vector2.zero)
+            {
+                Debug.Log($"[ToolUse] No facing direction. playerDir = '{playerStateManager?.playerDir}'");
+                return;
+            }
 
             // Detect harvestable resources in front of the player
             Vector2 origin = (Vector2)transform.position + facingDir * detectionOffset;
-            var hit = Physics2D.OverlapCircle(origin, toolData.range, resourceLayer);
+            var hit = Physics2D.OverlapCircle(origin, interactRadius, resourceLayer);
 
-            if (hit == null) return;
+            if (hit == null)
+            {
+                Debug.Log($"[ToolUse] No resource found. Origin={origin}, Range={interactRadius}, " +
+                          $"Layer={resourceLayer.value}, Dir={facingDir}");
+                return;
+            }
 
             var resource = hit.GetComponent<HarvestableResource>();
-            if (resource == null || resource.IsDepleted) return;
+            if (resource == null || resource.IsDepleted)
+            {
+                Debug.Log($"[ToolUse] Hit '{hit.name}' but no HarvestableResource component (or depleted).");
+                return;
+            }
 
             // Check tool type matches
             if (resource.RequiredToolType != toolData.toolType)
@@ -173,16 +215,8 @@ namespace InventorySystem.Tools
 
             Vector2 origin = (Vector2)transform.position + dir * detectionOffset;
 
-            // Show detection range (uses a default range if no tool equipped)
-            float range = 1.5f;
-            if (Application.isPlaying && _inventory?.EquippedItem != null)
-            {
-                if (_toolLookup.TryGetValue(_inventory.EquippedItem.Data.id, out var td))
-                    range = td.range;
-            }
-
             Gizmos.color = new Color(1f, 0.6f, 0.2f, 0.4f);
-            Gizmos.DrawWireSphere(origin, range);
+            Gizmos.DrawWireSphere(origin, interactRadius);
 
             // Show facing direction
             Gizmos.color = Color.yellow;
