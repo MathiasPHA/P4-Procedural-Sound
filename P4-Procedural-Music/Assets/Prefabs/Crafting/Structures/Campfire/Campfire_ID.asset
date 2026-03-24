@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Campfire
   description: A pit of fire
   loreNote: '"nice and cozy!"'
-  icon: {fileID: -3591475534189650280, guid: f66044fd0bbe6064092016fda955e907, type: 3}
+  icon: {fileID: -4704261264892754323, guid: 4034f726fb350774d91cc7df0a70fac3, type: 3}
   category: 3
   maxStackSize: 1
   isDroppable: 1
