@@ -43,6 +43,12 @@ namespace InventorySystem.Harvesting
         [Tooltip("Optional prefab to spawn in place when destroyed (e.g. a tree stump).")]
         [SerializeField] private GameObject depletedPrefab;
 
+        [Header("Audio")]
+        [Tooltip("Sound to play when hit with the correct tool.")]
+        [SerializeField] private AudioClip hitSound;
+        [Tooltip("Sound to play when fully depleted.")]
+        [SerializeField] private AudioClip depleteSound;
+
         [Header("Feedback")]
         [Tooltip("How much to shake on hit. Set to 0 to disable.")]
         [SerializeField] private float shakeIntensity = 0.1f;
@@ -99,6 +105,10 @@ namespace InventorySystem.Harvesting
             _shakeTimer = shakeDuration;
             _originalPosition = transform.position;
 
+            // Play hit sound
+            if (hitSound != null)
+                AudioSource.PlayClipAtPoint(hitSound, transform.position);
+
             OnHit?.Invoke(_currentHealth, maxHealth);
 
             if (_currentHealth <= 0)
@@ -117,6 +127,10 @@ namespace InventorySystem.Harvesting
             {
                 SpawnDrops(dropAmount, hitDirection);
             }
+
+            // Play deplete sound
+            if (depleteSound != null)
+                AudioSource.PlayClipAtPoint(depleteSound, transform.position);
 
             OnDepleted?.Invoke();
 
