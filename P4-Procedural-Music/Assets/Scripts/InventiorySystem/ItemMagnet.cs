@@ -40,6 +40,18 @@ namespace InventorySystem
         [Tooltip("Distance at which items are actually picked up into inventory.")]
         [SerializeField] private float collectDistance = 0.4f;
 
+        [Header("Pickup Sound")]
+        [Tooltip("Sound played when an item is collected.")]
+        [SerializeField] private AudioClip pickupClip;
+
+        [Tooltip("Base volume for the pickup sound.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float pickupVolume = 0.5f;
+
+        [Tooltip("How much the pitch varies randomly each pickup (e.g. 0.15 = ±15%).")]
+        [Range(0f, 0.5f)]
+        [SerializeField] private float pitchVariation = 0.15f;
+
         // Items currently being pulled
         private readonly List<UI.WorldItem> _pulledItems = new();
 
@@ -47,6 +59,7 @@ namespace InventorySystem
         private readonly HashSet<UI.WorldItem> _rejected = new();
 
         private CircleCollider2D _triggerCollider;
+        private AudioSource _audioSource;
 
         private void Start()
         {
@@ -60,6 +73,14 @@ namespace InventorySystem
             }
 
             _triggerCollider.radius = magnetRadius;
+
+            // Find or create an AudioSource for pickup sounds
+            _audioSource = GetComponent<AudioSource>();
+            if (_audioSource == null)
+                _audioSource = gameObject.AddComponent<AudioSource>();
+
+            _audioSource.playOnAwake = false;
+            _audioSource.spatialBlend = 0f; // 2D sound
         }
 
         /// <summary>
@@ -107,6 +128,7 @@ namespace InventorySystem
                         // TryPickUp destroys the GameObject, which triggers
                         // OnTriggerExit2D and removes it from _pulledItems.
                         // Don't RemoveAt here — the list has already been modified.
+                        PlayPickupSound();
                         continue;
                     }
                     else
@@ -163,6 +185,18 @@ namespace InventorySystem
             // If a rejected item leaves the radius, allow it to be pulled again
             // next time it enters (player may have freed up inventory space)
             _rejected.Remove(worldItem);
+        }
+
+        // =====================================================================
+        // Audio
+        // =====================================================================
+
+        private void PlayPickupSound()
+        {
+            if (pickupClip == null || _audioSource == null) return;
+
+            _audioSource.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
+            _audioSource.PlayOneShot(pickupClip, pickupVolume);
         }
 
         // =====================================================================

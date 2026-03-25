@@ -32,7 +32,7 @@ namespace InventorySystem.Harvesting
         [SerializeField] private ItemData dropItem;
 
         [Tooltip("How many items drop when the resource is destroyed.")]
-        [Min(1)] [SerializeField] private int dropAmount = 3;
+        [Min(1)][SerializeField] private int dropAmount = 3;
 
         [Header("World Drop")]
         [Tooltip("Prefab with WorldItem, SpriteRenderer, Collider2D, Rigidbody2D. " +
@@ -44,10 +44,10 @@ namespace InventorySystem.Harvesting
         [SerializeField] private GameObject depletedPrefab;
 
         [Header("Audio")]
-        [Tooltip("Sound to play when hit with the correct tool.")]
+        [Tooltip("Audio clip to play when the resource is hit.")]
         [SerializeField] private AudioClip hitSound;
-        [Tooltip("Sound to play when fully depleted.")]
-        [SerializeField] private AudioClip depleteSound;
+        [Tooltip("Audio clip to play when the resource is depleted.")]
+        [SerializeField] private AudioClip depletedSound;
 
         [Header("Feedback")]
         [Tooltip("How much to shake on hit. Set to 0 to disable.")]
@@ -104,10 +104,11 @@ namespace InventorySystem.Harvesting
             // Shake feedback
             _shakeTimer = shakeDuration;
             _originalPosition = transform.position;
-
+            
             // Play hit sound
             if (hitSound != null)
                 AudioSource.PlayClipAtPoint(hitSound, transform.position);
+            
 
             OnHit?.Invoke(_currentHealth, maxHealth);
 
@@ -127,17 +128,30 @@ namespace InventorySystem.Harvesting
             {
                 SpawnDrops(dropAmount, hitDirection);
             }
-
-            // Play deplete sound
-            if (depleteSound != null)
-                AudioSource.PlayClipAtPoint(depleteSound, transform.position);
+            // Play depleted sound
+            if (depletedSound != null)
+                AudioSource.PlayClipAtPoint(depletedSound, transform.position);
 
             OnDepleted?.Invoke();
 
             // Swap to stump or destroy
             if (depletedPrefab != null)
             {
-                Instantiate(depletedPrefab, transform.position, transform.rotation);
+                // Spawn at the bottom of this sprite so the stump sits at the base
+                var sr = GetComponent<SpriteRenderer>();
+                Vector3 spawnPos = transform.position;
+
+                if (sr != null)
+                {
+                    spawnPos.y = sr.bounds.min.y;
+                }
+
+                Debug.Log($"[Harvestable] Spawning depleted prefab '{depletedPrefab.name}' at {spawnPos}");
+                Instantiate(depletedPrefab, spawnPos, transform.rotation);
+            }
+            else
+            {
+                Debug.Log("[Harvestable] No depleted prefab assigned.");
             }
 
             Destroy(gameObject);
