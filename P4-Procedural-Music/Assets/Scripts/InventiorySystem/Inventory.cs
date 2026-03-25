@@ -599,7 +599,12 @@ namespace InventorySystem.Data
             OnInventoryChanged?.Invoke();
         }
 
-        private void NotifySlotChanged(int index)
+        /// <summary>
+        /// Fires the slot changed event for a specific slot.
+        /// Use when modifying item instance state (e.g. durability)
+        /// without adding or removing items from inventory.
+        /// </summary>
+        public void NotifySlotChanged(int index)
         {
             OnSlotChanged?.Invoke(index);
         }

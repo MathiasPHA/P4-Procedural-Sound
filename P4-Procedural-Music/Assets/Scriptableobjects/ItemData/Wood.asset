@@ -16,9 +16,10 @@ MonoBehaviour:
   displayName: Wood
   description: Its Wood
   loreNote: Smell like wood
-  icon: {fileID: 21300000, guid: 23a24802ef71fd04586802a12428f5e8, type: 3}
+  icon: {fileID: -5034061168752090764, guid: beaac54fbc8a91749b38e9cc4b03cfde, type: 3}
   category: 0
   maxStackSize: 64
   isDroppable: 1
   hasInstanceState: 0
   maxDurability: 0
+  displayStats: []
