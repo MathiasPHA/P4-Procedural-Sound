@@ -5,15 +5,16 @@ TagManager:
   serializedVersion: 3
   tags:
   - Mob
+  - TimeInteractive
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
-  - 
-  - 
+  - Structures
+  - Resource
   - 
   - 
   - 
