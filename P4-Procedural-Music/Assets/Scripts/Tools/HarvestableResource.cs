@@ -34,20 +34,36 @@ namespace InventorySystem.Harvesting
         [Tooltip("How many items drop when the resource is destroyed.")]
         [Min(1)][SerializeField] private int dropAmount = 3;
 
+        [Tooltip("If true, items go straight into inventory instead of spawning as world drops.")]
+        [SerializeField] private bool directToInventory = false;
+
         [Header("World Drop")]
         [Tooltip("Prefab with WorldItem, SpriteRenderer, Collider2D, Rigidbody2D. " +
-                 "Same prefab used for inventory drops.")]
+                 "Not needed if directToInventory is true.")]
         [SerializeField] private GameObject worldItemPrefab;
+
+        [Header("Audio")]
+        [Tooltip("Sound played on each hit (e.g. axe chop or pickaxe strike).")]
+        [SerializeField] private AudioClip hitSound;
+        [Range(0f, 1f)]
+        [SerializeField] private float hitVolume = 0.5f;
+
+        [Tooltip("Sound played when the resource is fully depleted (e.g. tree falling).")]
+        [SerializeField] private AudioClip depleteSound;
+        [Range(0f, 1f)]
+        [SerializeField] private float depleteVolume = 0.5f;
+
+        [Tooltip("Sound played when harvesting with directToInventory.")]
+        [SerializeField] private AudioClip pickupSound;
+        [Range(0f, 1f)]
+        [SerializeField] private float pickupVolume = 0.5f;
+        [Tooltip("How much the pitch varies randomly each pickup (e.g. 0.15 = ±15%).")]
+        [Range(0f, 0.5f)]
+        [SerializeField] private float pitchVariation = 0.15f;
 
         [Header("Visuals")]
         [Tooltip("Optional prefab to spawn in place when destroyed (e.g. a tree stump).")]
         [SerializeField] private GameObject depletedPrefab;
-
-        [Header("Audio")]
-        [Tooltip("Audio clip to play when the resource is hit.")]
-        [SerializeField] private AudioClip hitSound;
-        [Tooltip("Audio clip to play when the resource is depleted.")]
-        [SerializeField] private AudioClip depletedSound;
 
         [Header("Feedback")]
         [Tooltip("How much to shake on hit. Set to 0 to disable.")]
@@ -104,13 +120,12 @@ namespace InventorySystem.Harvesting
             // Shake feedback
             _shakeTimer = shakeDuration;
             _originalPosition = transform.position;
-            
-            // Play hit sound
-            if (hitSound != null)
-                AudioSource.PlayClipAtPoint(hitSound, transform.position);
-            
 
             OnHit?.Invoke(_currentHealth, maxHealth);
+
+            // Play hit sound
+            if (hitSound != null)
+                PlaySoundWithPitch(hitSound, transform.position, hitVolume);
 
             if (_currentHealth <= 0)
             {
@@ -123,35 +138,45 @@ namespace InventorySystem.Harvesting
 
         private void Deplete(Vector2 hitDirection)
         {
-            // Spawn drops
-            if (dropItem != null && worldItemPrefab != null)
+            if (dropItem != null)
             {
-                SpawnDrops(dropAmount, hitDirection);
+                if (directToInventory)
+                {
+                    // Add straight to player inventory
+                    var inventory = InventoryBootstrap.PlayerInventory;
+                    if (inventory != null)
+                    {
+                        int overflow = inventory.AddItem(dropItem, dropAmount);
+                        if (overflow > 0)
+                            Debug.LogWarning($"[Harvestable] {overflow}x {dropItem.displayName} didn't fit.");
+                    }
+
+                    // Play sound with pitch variation (survives Destroy)
+                    if (pickupSound != null)
+                        PlaySoundWithPitch(pickupSound, transform.position, pickupVolume);
+                }
+                else if (worldItemPrefab != null)
+                {
+                    SpawnDrops(dropAmount, hitDirection);
+                }
             }
-            // Play depleted sound
-            if (depletedSound != null)
-                AudioSource.PlayClipAtPoint(depletedSound, transform.position);
 
             OnDepleted?.Invoke();
+
+            // Play deplete sound
+            if (depleteSound != null)
+                PlaySoundWithPitch(depleteSound, transform.position, depleteVolume);
 
             // Swap to stump or destroy
             if (depletedPrefab != null)
             {
-                // Spawn at the bottom of this sprite so the stump sits at the base
                 var sr = GetComponent<SpriteRenderer>();
                 Vector3 spawnPos = transform.position;
 
                 if (sr != null)
-                {
                     spawnPos.y = sr.bounds.min.y;
-                }
 
-                Debug.Log($"[Harvestable] Spawning depleted prefab '{depletedPrefab.name}' at {spawnPos}");
                 Instantiate(depletedPrefab, spawnPos, transform.rotation);
-            }
-            else
-            {
-                Debug.Log("[Harvestable] No depleted prefab assigned.");
             }
 
             Destroy(gameObject);
@@ -169,6 +194,23 @@ namespace InventorySystem.Harvesting
                 Vector2 scatterDir = -hitDirection.normalized + UnityEngine.Random.insideUnitCircle * 0.8f;
                 worldItem?.Initialise(instance, 1, scatterDir);
             }
+        }
+
+        private void PlaySoundWithPitch(AudioClip clip, Vector3 position, float volume = -1f)
+        {
+            if (volume < 0f) volume = pickupVolume;
+
+            var go = new GameObject("PickupSound");
+            go.transform.position = position;
+
+            var source = go.AddComponent<AudioSource>();
+            source.clip = clip;
+            source.volume = volume;
+            source.pitch = 1f + UnityEngine.Random.Range(-pitchVariation, pitchVariation);
+            source.spatialBlend = 0f;
+            source.Play();
+
+            Destroy(go, clip.length / Mathf.Max(source.pitch, 0.1f));
         }
 
 #if UNITY_EDITOR

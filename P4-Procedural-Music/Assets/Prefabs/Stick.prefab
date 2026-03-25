@@ -155,9 +155,10 @@ MonoBehaviour:
   maxHealth: 1
   dropItem: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
   dropAmount: 1
+  directToInventory: 1
   worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
+  pickupSound: {fileID: 8300000, guid: 0fa6545b998569c488a78ea6d7f66301, type: 3}
+  pickupVolume: 0.5
   depletedPrefab: {fileID: 0}
-  hitSound: {fileID: 0}
-  depletedSound: {fileID: 0}
   shakeIntensity: 0.1
   shakeDuration: 0.15
