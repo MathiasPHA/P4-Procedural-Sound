@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
-  m_Name: Strawberry_ID
+  m_Name: Blueberry_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: strawberry
-  displayName: Strawberry
-  description: A jummy red berry. Useful for jam and cakes!
-  loreNote: My granddaughters favourite
-  icon: {fileID: 1669490993913548592, guid: 50a582239fdb25d428ffd50f5bafdb2d, type: 3}
+  id: blueberry
+  displayName: Blueberry
+  description: A blue berry, used for hair dye in the past
+  loreNote: '"Mmhh delicious"'
+  icon: {fileID: 3579979325370944529, guid: 15ffa4a3a73d3ed49973cd9da1518901, type: 3}
   category: 2
   maxStackSize: 64
   isDroppable: 1
