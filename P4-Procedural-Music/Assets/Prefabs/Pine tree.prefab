@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6689274444726695282}
   - component: {fileID: 7580627953573228894}
   m_Layer: 7
-  m_Name: Pine (1)
+  m_Name: Pine tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
   maxHealth: 10
   dropItem: {fileID: 11400000, guid: 9d78585a34684a9449ac55e5637cfdce, type: 2}
   dropAmount: 3
-  worldItemPrefab: {fileID: 0}
+  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
   depletedPrefab: {fileID: 0}
   shakeIntensity: 3.95
   shakeDuration: 0.15
