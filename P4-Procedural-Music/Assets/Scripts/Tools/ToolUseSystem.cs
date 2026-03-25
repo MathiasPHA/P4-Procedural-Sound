@@ -36,8 +36,9 @@ namespace InventorySystem.Tools
         [Tooltip("Radius of the interaction circle in front of the player.")]
         [SerializeField] private float interactRadius = 1.5f;
 
-        [Tooltip("Offset from player center to the detection point.")]
-        [SerializeField] private float detectionOffset = 0.5f;
+        [Tooltip("Offset from player center to the detection origin. " +
+                 "X shifts along the facing direction, Y shifts vertically (e.g. to align with feet).")]
+        [SerializeField] private Vector2 detectionOffset = new Vector2(0.5f, 0f);
 
         [Header("Hand Harvesting")]
         [Tooltip("Damage dealt per hand-gather action (for resources with requiredToolType = None).")]
@@ -102,7 +103,24 @@ namespace InventorySystem.Tools
             var mouse = Mouse.current;
             if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
 
+            // Check if active hotbar item is a consumable — eat it
+            if (TryConsumeHotbarItem()) return;
+
             TryUseTool();
+        }
+
+        private bool TryConsumeHotbarItem()
+        {
+            if (_inventory == null) return false;
+
+            int hotbarIndex = _inventory.ActiveHotbarIndex;
+            var slot = _inventory.Slots[hotbarIndex];
+
+            if (slot.IsEmpty || slot.ItemData.category != ItemCategory.Consumable)
+                return false;
+
+            _inventory.UseSlot(hotbarIndex);
+            return true;
         }
 
         private void TryUseTool()
@@ -114,7 +132,7 @@ namespace InventorySystem.Tools
             if (facingDir == Vector2.zero) return;
 
             // Detect harvestable resources in front of the player
-            Vector2 origin = (Vector2)transform.position + facingDir * detectionOffset;
+            Vector2 origin = (Vector2)transform.position + facingDir * detectionOffset.x + Vector2.up * detectionOffset.y;
             var hit = Physics2D.OverlapCircle(origin, interactRadius, resourceLayer);
 
             if (hit == null) return;
@@ -196,7 +214,7 @@ namespace InventorySystem.Tools
             Vector2 dir = GetFacingDirection();
             if (dir == Vector2.zero) dir = Vector2.right;
 
-            Vector2 origin = (Vector2)transform.position + dir * detectionOffset;
+            Vector2 origin = (Vector2)transform.position + dir * detectionOffset.x + Vector2.up * detectionOffset.y;
 
             Gizmos.color = new Color(1f, 0.6f, 0.2f, 0.4f);
             Gizmos.DrawWireSphere(origin, interactRadius);

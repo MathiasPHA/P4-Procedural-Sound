@@ -38,6 +38,12 @@ namespace InventorySystem.Data
         [Min(0)]
         public int maxDurability = 100;
 
+        [Header("Consumable Effects")]
+        [Tooltip("How much happiness this item gives when consumed (0–1 range). " +
+                 "Only applies to Consumable category items.")]
+        [Range(0f, 1f)]
+        public float happinessBoost = 0f;
+
         [Header("Display Stats")]
         [Tooltip("Stats/properties shown in the crafting detail pane and tooltip. " +
                  "Each entry is a label + value pair. Order here = order in UI.")]
