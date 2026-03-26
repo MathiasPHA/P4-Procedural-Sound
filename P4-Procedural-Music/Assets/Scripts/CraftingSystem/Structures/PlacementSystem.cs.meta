@@ -1,2 +1,14 @@
 fileFormatVersion: 2
 guid: 3ff8aa3650ed5c244b272d4abd7f73ff
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - mainCamera: {instanceID: 0}
+  - audioSource: {instanceID: 0}
+  - placementSound: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

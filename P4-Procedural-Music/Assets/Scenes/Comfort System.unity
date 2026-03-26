@@ -1977,6 +1977,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5548861199716356723, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: craftSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 31102935334ec10459fc866508a52e62, type: 3}
+    - target: {fileID: 5548861199716356723, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: craftVolume
+      value: 0.712
+      objectReference: {fileID: 0}
     - target: {fileID: 5750511888308149230, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
@@ -2537,7 +2545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5751236447002726307, guid: 278af8a3309f7af45879c9dea76576ca, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5751236447002726307, guid: 278af8a3309f7af45879c9dea76576ca, type: 3}
       propertyPath: m_Intensity
