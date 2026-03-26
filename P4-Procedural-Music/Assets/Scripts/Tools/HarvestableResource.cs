@@ -176,7 +176,7 @@ namespace InventorySystem.Harvesting
                 if (sr != null)
                     spawnPos.y = sr.bounds.min.y;
 
-                Instantiate(depletedPrefab, spawnPos, transform.rotation);
+                Instantiate(depletedPrefab, spawnPos, transform.rotation, transform.parent);
             }
 
             Destroy(gameObject);

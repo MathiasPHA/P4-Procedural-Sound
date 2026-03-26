@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdb283b4b88f8d479f3c5a005bead57, type: 3}
+  m_Name: TilesetRef
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralTerrain.TilesetReference
+  entries:
+  - tsxTileId: 1
+    tile: {fileID: -8233164315484998913, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 2
+    tile: {fileID: 4137630831157016445, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 3
+    tile: {fileID: 8737692336923636280, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 4
+    tile: {fileID: 6983490444741213875, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 5
+    tile: {fileID: -7664712436652099614, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 6
+    tile: {fileID: 6987783569182606836, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 7
+    tile: {fileID: -1487749573131443510, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 8
+    tile: {fileID: 7928479933479104820, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 9
+    tile: {fileID: -7970634315375714328, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 10
+    tile: {fileID: 780541779165655932, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 11
+    tile: {fileID: 6797177928399186383, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 12
+    tile: {fileID: -4043956599745533731, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 13
+    tile: {fileID: -286318827469982967, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 15
+    tile: {fileID: 6278042565004373600, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 17
+    tile: {fileID: 5331126285306583818, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 18
+    tile: {fileID: -498403883233535712, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 19
+    tile: {fileID: -6235548221758575216, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 20
+    tile: {fileID: 471093059786096050, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 21
+    tile: {fileID: 6348196939200685956, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 22
+    tile: {fileID: 601742334202867805, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 23
+    tile: {fileID: 6912248941671176311, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 24
+    tile: {fileID: -313107530929281168, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 25
+    tile: {fileID: -5567017499014348782, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 26
+    tile: {fileID: 5344844926284368553, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 43
+    tile: {fileID: -3236297061090822484, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 44
+    tile: {fileID: -984942784024755255, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 45
+    tile: {fileID: 6709138061726578269, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 46
+    tile: {fileID: 910532151568201570, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 47
+    tile: {fileID: 1977491189070221830, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 48
+    tile: {fileID: -7985272138673629045, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 49
+    tile: {fileID: 3372450945806324215, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 50
+    tile: {fileID: 2473245270782961070, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 51
+    tile: {fileID: 6715003280106389056, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 52
+    tile: {fileID: 6225729005974894155, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 53
+    tile: {fileID: 2902663159305304588, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 54
+    tile: {fileID: 3087797762478646578, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 55
+    tile: {fileID: 1409117052145572964, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 56
+    tile: {fileID: 7488468846162705283, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 57
+    tile: {fileID: -3318223212825946256, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 58
+    tile: {fileID: -4655373332224281126, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 59
+    tile: {fileID: -4208252505504645157, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 64
+    tile: {fileID: -5551134740676164658, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 65
+    tile: {fileID: 7812969586636349213, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 66
+    tile: {fileID: 8842033634155482128, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 67
+    tile: {fileID: -568736687079705646, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 68
+    tile: {fileID: -2889115001763643895, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 69
+    tile: {fileID: 6829078840164382605, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 70
+    tile: {fileID: -1463386722318190901, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  - tsxTileId: 71
+    tile: {fileID: -1460204593746757170, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
+  fallbackTile: {fileID: -8233164315484998913, guid: a2282a3e670d97047bc23396f0481a87, type: 3}
