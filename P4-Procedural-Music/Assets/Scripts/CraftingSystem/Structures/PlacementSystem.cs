@@ -63,6 +63,9 @@ namespace InventorySystem.Building
          [Header("Audio")]
          [SerializeField] private AudioSource audioSource;
          [SerializeField] private AudioClip placementSound;
+         [Tooltip("Base volume for the placement sound.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float placementVolume = 0.5f;
 
         // =====================================================================
         // Runtime state
@@ -365,10 +368,7 @@ namespace InventorySystem.Building
             );
 
             // Play placement audio
-            if (audioSource != null && placementSound !=null)
-            {
-                audioSource.PlayOneShot(placementSound);
-            }
+            PlayPLacementSound();
 
             // Tag it with a reference back to its data
             var structure = go.GetComponent<PlacedStructure>();
@@ -389,6 +389,14 @@ namespace InventorySystem.Building
 
             // Out of items — exit placement mode
             ExitPlacement();
+        }
+
+        private void PlayPLacementSound()
+        {
+           if (audioSource != null && placementSound !=null)
+            {
+                audioSource.PlayOneShot(placementSound, placementVolume);
+            }
         }
 
         // =====================================================================

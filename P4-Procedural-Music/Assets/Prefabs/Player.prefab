@@ -311,6 +311,7 @@ MonoBehaviour:
   ghostSortingOrder: 100
   audioSource: {fileID: -1374152125123140291}
   placementSound: {fileID: 8300000, guid: 8e17a6d1d3180bd4784e2fbca7536105, type: 3}
+  placementVolume: 1
 --- !u!114 &527060532823837240
 MonoBehaviour:
   m_ObjectHideFlags: 0
