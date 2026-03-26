@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
-  m_Name: Wood
+  m_Name: Stick_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: wood
-  displayName: Wood
-  description: Its Wood
-  loreNote: Smell like wood
-  icon: {fileID: -5034061168752090764, guid: beaac54fbc8a91749b38e9cc4b03cfde, type: 3}
+  id: stick
+  displayName: Stick
+  description: A solid stick.
+  loreNote: Snaps quite easy
+  icon: {fileID: 21300000, guid: b56ac9f6c9612a4419cf93f72b21eb72, type: 3}
   category: 0
-  maxStackSize: 64
+  maxStackSize: 100
   isDroppable: 1
   hasInstanceState: 0
-  maxDurability: 0
+  maxDurability: 100
   displayStats: []

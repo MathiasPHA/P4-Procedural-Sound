@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 7bb9b3b7b2bb60641970dce9da40daed
+guid: 15ffa4a3a73d3ed49973cd9da1518901
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3085182027182435255
-    second: healthbar_bg_0
+      213: 3579979325370944529
+    second: blueberry_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: healthbar_bg_0
+      name: blueberry_0
       rect:
         serializedVersion: 2
-        x: 651
-        y: 1299
-        width: 2251
-        height: 593
+        x: 84
+        y: 84
+        width: 146
+        height: 122
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7bbe0ad25b4c0da20800000000000000
-      internalID: 3085182027182435255
+      spriteID: 11c4af79a34aea130800000000000000
+      internalID: 3579979325370944529
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      healthbar_bg_0: 3085182027182435255
+      blueberry_0: 3579979325370944529
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

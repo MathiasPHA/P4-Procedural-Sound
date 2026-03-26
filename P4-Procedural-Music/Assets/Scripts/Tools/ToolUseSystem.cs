@@ -36,8 +36,16 @@ namespace InventorySystem.Tools
         [Tooltip("Radius of the interaction circle in front of the player.")]
         [SerializeField] private float interactRadius = 1.5f;
 
-        [Tooltip("Offset from player center to the detection point.")]
-        [SerializeField] private float detectionOffset = 0.5f;
+        [Tooltip("Offset from player center to the detection origin. " +
+                 "X shifts along the facing direction, Y shifts vertically (e.g. to align with feet).")]
+        [SerializeField] private Vector2 detectionOffset = new Vector2(0.5f, 0f);
+
+        [Header("Hand Harvesting")]
+        [Tooltip("Damage dealt per hand-gather action (for resources with requiredToolType = None).")]
+        [Min(1)][SerializeField] private int handDamage = 1;
+
+        [Tooltip("Seconds between hand-gather actions.")]
+        [Min(0.1f)][SerializeField] private float handCooldown = 0.8f;
 
         // Runtime
         private Dictionary<string, ToolData> _toolLookup = new();
@@ -95,66 +103,60 @@ namespace InventorySystem.Tools
             var mouse = Mouse.current;
             if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
 
+            // Check if active hotbar item is a consumable — eat it
+            if (TryConsumeHotbarItem()) return;
+
             TryUseTool();
+        }
+
+        private bool TryConsumeHotbarItem()
+        {
+            if (_inventory == null) return false;
+
+            int hotbarIndex = _inventory.ActiveHotbarIndex;
+            var slot = _inventory.Slots[hotbarIndex];
+
+            if (slot.IsEmpty || slot.ItemData.category != ItemCategory.Consumable)
+                return false;
+
+            _inventory.UseSlot(hotbarIndex);
+            return true;
         }
 
         private void TryUseTool()
         {
-            if (_inventory == null)
-            {
-                Debug.LogWarning("[ToolUse] No inventory found.");
-                return;
-            }
-
-            // Get equipped item
-            var equippedInstance = _inventory.EquippedItem;
-            if (equippedInstance == null)
-            {
-                Debug.Log("[ToolUse] No item equipped.");
-                return;
-            }
-
-            if (equippedInstance.Data.category != ItemCategory.Tool)
-            {
-                Debug.Log($"[ToolUse] Equipped item '{equippedInstance.Data.displayName}' is not a Tool.");
-                return;
-            }
-
-            // Look up tool data
-            if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
-            {
-                Debug.LogWarning($"[ToolUse] No ToolData found for '{equippedInstance.Data.id}'. " +
-                                 "Is it in the Tool Database list?");
-                return;
-            }
+            if (_inventory == null) return;
 
             // Get facing direction from PlayerStateManager
             Vector2 facingDir = GetFacingDirection();
-            if (facingDir == Vector2.zero)
-            {
-                Debug.Log($"[ToolUse] No facing direction. playerDir = '{playerStateManager?.playerDir}'");
-                return;
-            }
+            if (facingDir == Vector2.zero) return;
 
             // Detect harvestable resources in front of the player
-            Vector2 origin = (Vector2)transform.position + facingDir * detectionOffset;
+            Vector2 origin = (Vector2)transform.position + facingDir * detectionOffset.x + Vector2.up * detectionOffset.y;
             var hit = Physics2D.OverlapCircle(origin, interactRadius, resourceLayer);
 
-            if (hit == null)
-            {
-                Debug.Log($"[ToolUse] No resource found. Origin={origin}, Range={interactRadius}, " +
-                          $"Layer={resourceLayer.value}, Dir={facingDir}");
-                return;
-            }
+            if (hit == null) return;
 
             var resource = hit.GetComponent<HarvestableResource>();
-            if (resource == null || resource.IsDepleted)
+            if (resource == null || resource.IsDepleted) return;
+
+            // --- Hand harvesting (no tool needed) ---
+            if (resource.RequiredToolType == ToolType.None)
             {
-                Debug.Log($"[ToolUse] Hit '{hit.name}' but no HarvestableResource component (or depleted).");
+                Vector2 hitDir = ((Vector2)resource.transform.position - (Vector2)transform.position).normalized;
+                resource.TakeDamage(handDamage, hitDir);
+                _cooldownTimer = handCooldown;
                 return;
             }
 
-            // Check tool type matches
+            // --- Tool harvesting ---
+            var equippedInstance = _inventory.EquippedItem;
+            if (equippedInstance == null || equippedInstance.Data.category != ItemCategory.Tool)
+                return;
+
+            if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
+                return;
+
             if (resource.RequiredToolType != toolData.toolType)
             {
                 Debug.Log($"[ToolUse] {toolData.toolType} can't harvest " +
@@ -163,8 +165,8 @@ namespace InventorySystem.Tools
             }
 
             // Swing — apply damage
-            Vector2 hitDir = ((Vector2)resource.transform.position - (Vector2)transform.position).normalized;
-            resource.TakeDamage(toolData.damage, hitDir);
+            Vector2 toolHitDir = ((Vector2)resource.transform.position - (Vector2)transform.position).normalized;
+            resource.TakeDamage(toolData.damage, toolHitDir);
 
             // Reduce durability
             if (equippedInstance.Data.hasInstanceState && toolData.durabilityCost > 0)
@@ -174,12 +176,11 @@ namespace InventorySystem.Tools
                 if (broke)
                 {
                     Debug.Log($"[ToolUse] {equippedInstance.Data.displayName} broke!");
-                    // Remove the broken tool from inventory
                     _inventory.RemoveItem(equippedInstance.Data.id, 1);
                 }
                 else
                 {
-                    // Notify inventory so UI updates the durability bar
+                    _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
                     _inventory.NotifyChanged();
                 }
             }
@@ -213,7 +214,7 @@ namespace InventorySystem.Tools
             Vector2 dir = GetFacingDirection();
             if (dir == Vector2.zero) dir = Vector2.right;
 
-            Vector2 origin = (Vector2)transform.position + dir * detectionOffset;
+            Vector2 origin = (Vector2)transform.position + dir * detectionOffset.x + Vector2.up * detectionOffset.y;
 
             Gizmos.color = new Color(1f, 0.6f, 0.2f, 0.4f);
             Gizmos.DrawWireSphere(origin, interactRadius);

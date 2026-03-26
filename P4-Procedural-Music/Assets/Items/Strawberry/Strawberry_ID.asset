@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
-  m_Name: Wood
+  m_Name: Strawberry_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: wood
-  displayName: Wood
-  description: Its Wood
-  loreNote: Smell like wood
-  icon: {fileID: -5034061168752090764, guid: beaac54fbc8a91749b38e9cc4b03cfde, type: 3}
-  category: 0
+  id: strawberry
+  displayName: Strawberry
+  description: A jummy red berry. Useful for jam and cakes!
+  loreNote: My granddaughters favourite
+  icon: {fileID: 1669490993913548592, guid: 50a582239fdb25d428ffd50f5bafdb2d, type: 3}
+  category: 2
   maxStackSize: 64
   isDroppable: 1
   hasInstanceState: 0
-  maxDurability: 0
+  maxDurability: 100
+  happinessBoost: 0.05
   displayStats: []
