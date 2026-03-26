@@ -46,6 +46,15 @@ namespace InventorySystem.UI
                  "Attach a HandCraftingStation component to a persistent GameObject and assign it here.")]
         [SerializeField] private BaseCraftingStation handCraftingStation;
 
+        [Header("Audio")]
+        [SerializeField] private AudioClip craftSound;
+        [Range(0f, 1f)]
+        [SerializeField] private float craftVolume = 0.5f;
+        [Range(0f, 0.5f)]
+        [SerializeField] private float craftPitchVariation = 0.1f;
+
+        private AudioSource _audioSource;
+
         // --- Runtime state ---
         private Inventory _inventory;
         private ICraftingStation _activeStation;
@@ -81,6 +90,13 @@ namespace InventorySystem.UI
             craftingPanel.SetActive(false);
             _isOpen = false;
             _initialized = true;
+
+            // Audio setup
+            _audioSource = GetComponent<AudioSource>();
+            if (_audioSource == null)
+                _audioSource = gameObject.AddComponent<AudioSource>();
+            _audioSource.playOnAwake = false;
+            _audioSource.spatialBlend = 0f;
 
             Debug.Log("[CraftingUIManager] Initialized successfully.");
         }
@@ -326,6 +342,13 @@ namespace InventorySystem.UI
             {
                 Debug.Log($"[Crafting] Crafted {_selectedRecipe.resultAmount}x " +
                           $"{_selectedRecipe.result.displayName}");
+
+                // Play craft sound
+                if (craftSound != null && _audioSource != null)
+                {
+                    _audioSource.pitch = 1f + Random.Range(-craftPitchVariation, craftPitchVariation);
+                    _audioSource.PlayOneShot(craftSound, craftVolume);
+                }
 
                 // Refresh everything — inventory events will also fire,
                 // but we refresh immediately for snappy feedback
