@@ -81,7 +81,7 @@ namespace InventorySystem.UI
                 textRect.anchorMin = new Vector2(1f, 0f);
                 textRect.anchorMax = new Vector2(1f, 0f);
                 textRect.pivot = new Vector2(1f, 0f);
-                textRect.anchoredPosition = new Vector2(-2f, 2f);
+                textRect.anchoredPosition = new Vector2(-9f, 5f);
                 textRect.sizeDelta = new Vector2(40f, 20f);
                 quantityText.fontSize = 14;
                 quantityText.alignment = TMPro.TextAlignmentOptions.BottomRight;

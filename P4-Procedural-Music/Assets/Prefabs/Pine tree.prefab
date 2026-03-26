@@ -81,7 +81,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 40
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: f532b04a2ca9b164989a5fd7e395ec17, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -155,7 +155,15 @@ MonoBehaviour:
   maxHealth: 10
   dropItem: {fileID: 11400000, guid: 9d78585a34684a9449ac55e5637cfdce, type: 2}
   dropAmount: 3
+  directToInventory: 0
   worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
-  depletedPrefab: {fileID: 0}
+  hitSound: {fileID: 8300000, guid: f2664fd48b2be884c9d14902040c0ecf, type: 3}
+  hitVolume: 0.2
+  depleteSound: {fileID: 8300000, guid: e557858a880f73c4aab819f9840b1988, type: 3}
+  depleteVolume: 0.2
+  pickupSound: {fileID: 0}
+  pickupVolume: 0.2
+  pitchVariation: 0.15
+  depletedPrefab: {fileID: 8946883767646482474, guid: c512959c9a01793409ed4039bc3325a3, type: 3}
   shakeIntensity: 3.95
   shakeDuration: 0.15

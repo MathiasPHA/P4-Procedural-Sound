@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using InventorySystem;
+using InventorySystem.Data;
 
 /// <summary>
 /// Drives musical tension through two interacting floats:
@@ -114,6 +116,31 @@ public class ComfortSystem : MonoBehaviour
     }
 
     // ───────────────────────── Core Loop ─────────────────────────
+
+    private void Start()
+    {
+        var inventory = InventoryBootstrap.PlayerInventory;
+        if (inventory != null)
+            inventory.OnItemConsumed += OnItemConsumed;
+    }
+
+    private void OnDestroy()
+    {
+        var inventory = InventoryBootstrap.PlayerInventory;
+        if (inventory != null)
+            inventory.OnItemConsumed -= OnItemConsumed;
+    }
+
+    private void OnItemConsumed(ItemInstance consumed)
+    {
+        if (consumed == null) return;
+        if (consumed.Data.category != ItemCategory.Consumable) return;
+        if (consumed.Data.happinessBoost <= 0f) return;
+
+        AdjustHappiness(consumed.Data.happinessBoost);
+        Debug.Log($"[Comfort] {consumed.Data.displayName} gave +{consumed.Data.happinessBoost:F2} happiness " +
+                  $"(now {happiness:F2})");
+    }
 
     private void Update()
     {
