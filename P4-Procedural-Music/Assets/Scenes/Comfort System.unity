@@ -1984,7 +1984,7 @@ PrefabInstance:
     - target: {fileID: 5548861199716356723, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: craftSound
       value: 
-      objectReference: {fileID: 8300000, guid: 31102935334ec10459fc866508a52e62, type: 3}
+      objectReference: {fileID: 8300000, guid: e7ff5fbd5fe194a4a90632391a17df64, type: 3}
     - target: {fileID: 5548861199716356723, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: craftVolume
       value: 0.712
