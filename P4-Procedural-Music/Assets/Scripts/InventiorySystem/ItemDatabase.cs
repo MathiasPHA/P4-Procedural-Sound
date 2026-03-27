@@ -88,5 +88,30 @@ namespace InventorySystem.Data
         }
 
         public IReadOnlyList<ItemData> AllItems => allItems;
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Finds every ItemData asset in the project and populates allItems automatically.
+        /// Click "Auto-Populate From Project" in the Inspector to run this.
+        /// </summary>
+        [ContextMenu("Auto-Populate From Project")]
+        private void AutoPopulate()
+        {
+            allItems.Clear();
+
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ItemData");
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var item = UnityEditor.AssetDatabase.LoadAssetAtPath<ItemData>(path);
+                if (item != null)
+                    allItems.Add(item);
+            }
+
+            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.AssetDatabase.SaveAssets();
+            UnityEngine.Debug.Log($"[ItemDatabase] Auto-populated {allItems.Count} items.");
+        }
+#endif
     }
 }

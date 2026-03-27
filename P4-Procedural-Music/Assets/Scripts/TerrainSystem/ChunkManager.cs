@@ -44,6 +44,9 @@ namespace ProceduralTerrain
         [Tooltip("Configuration for spawning trees, rocks, props, etc. Leave empty to skip object spawning.")]
         public ObjectSpawnConfig objectSpawnConfig;
 
+        // Runtime seed — overrides generationConfig.seed without touching the asset
+        private int _runtimeSeed;
+
         // Exposed so SaveSystemManager can access them
         internal Dictionary<Vector2Int, ChunkData> LoadedChunks => _loadedChunks;
         internal Dictionary<Vector2Int, ObjectSpawner.ChunkObjects> LoadedObjects => _loadedObjects;
@@ -72,15 +75,12 @@ namespace ProceduralTerrain
                 return;
             }
 
-            // Override seed from GameSettings if available
-            if (GameSettings.Instance != null)
-            {
-                generationConfig.seed = GameSettings.Instance.seed;
-            }
-            else
-            {
-                Debug.LogWarning("[ChunkManager] GameSettings not found — using fallback seed from generationConfig.");
-            }
+            // Override seed from GameSettings if available, without modifying the ScriptableObject asset
+            _runtimeSeed = GameSettings.Instance != null
+                ? GameSettings.Instance.seed
+                : generationConfig.seed;
+
+            Debug.Log($"[ChunkManager] Using seed: {_runtimeSeed}");
 
             _grid = groundTilemap.layoutGrid;
             if (_grid == null)
@@ -242,7 +242,10 @@ namespace ProceduralTerrain
 
         private void LoadChunk(Vector2Int coord)
         {
-            var baseGrid = TerrainGenerator.GenerateChunk(coord, chunkSize, generationConfig);
+            // Use runtime seed so we never mutate the ScriptableObject asset
+            var configWithSeed = generationConfig;
+            configWithSeed.seed = _runtimeSeed;
+            var baseGrid = TerrainGenerator.GenerateChunk(coord, chunkSize, configWithSeed);
             var chunk = new ChunkData(coord, chunkSize, baseGrid);
 
             int waterCount = 0;
@@ -274,7 +277,7 @@ namespace ProceduralTerrain
 
                 var chunkObjects = ObjectSpawner.SpawnChunk(
                     coord, chunkSize, chunk, objectSpawnConfig,
-                    generationConfig.seed, chunkParent, cellSize, removedIds, depletedIds);
+                    _runtimeSeed, chunkParent, cellSize, removedIds, depletedIds);
 
                 _loadedObjects[coord] = chunkObjects;
             }

@@ -35,6 +35,21 @@ public class SaveSystemManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        // Load inventory once everything is initialized
+        if (InventorySaveSystem.Instance != null)
+            InventorySaveSystem.Instance.LoadInventory(worldName);
+        else
+            Debug.LogWarning("[SaveSystemManager] InventorySaveSystem not found — inventory not loaded.");
+
+        // Load player position and happiness
+        if (PlayerSaveSystem.Instance != null)
+            PlayerSaveSystem.Instance.LoadPlayer(worldName);
+        else
+            Debug.LogWarning("[SaveSystemManager] PlayerSaveSystem not found — player not loaded.");
+    }
+
     private void Update()
     {
         if (autoSaveInterval > 0)
@@ -75,6 +90,18 @@ public class SaveSystemManager : MonoBehaviour
             ChunkManager.Instance.LoadedObjects,
             worldName
         );
+
+        // Save inventory
+        if (InventorySaveSystem.Instance != null)
+            InventorySaveSystem.Instance.SaveInventory(worldName);
+        else
+            Debug.LogWarning("[SaveSystemManager] InventorySaveSystem not found — inventory not saved.");
+
+        // Save player position and happiness
+        if (PlayerSaveSystem.Instance != null)
+            PlayerSaveSystem.Instance.SavePlayer(worldName);
+        else
+            Debug.LogWarning("[SaveSystemManager] PlayerSaveSystem not found — player not saved.");
 
         // Keep lastPlayed timestamp fresh in the metadata file
         if (GameSettings.Instance != null)

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: TerrainGenConfig
   m_EditorClassIdentifier: Assembly-CSharp:ProceduralTerrain:TerrainGenerationConfig
-  seed: 78
+  seed: 42
   noiseScale: 0.03
   octaves: 3
   persistence: 0.5
   lacunarity: 2
-  waterThreshold: 0.453
+  waterThreshold: 0.255
