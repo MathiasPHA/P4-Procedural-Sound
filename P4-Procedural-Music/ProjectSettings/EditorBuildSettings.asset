@@ -11,6 +11,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/InventorySystem.unity
     guid: e96349860f4bb4e4ebb673fd66eba85b
+  - enabled: 1
+    path: Assets/Scenes/Main Menu.unity
+    guid: d12442a489ec02f4e84c2195fc5ba64e
+  - enabled: 1
+    path: Assets/Scenes/Comfort System.unity
+    guid: b3d3fba8d205e254c9921ccc392ad366
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
