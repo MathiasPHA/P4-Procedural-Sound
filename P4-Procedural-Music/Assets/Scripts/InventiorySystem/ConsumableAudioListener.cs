@@ -43,11 +43,12 @@ namespace InventorySystem.Audio
             if (consumedItem == null || consumedItem.Data == null) return;
 
             AudioClip soundToPlay = consumedItem.Data.consumeSound;
+            float volume = consumedItem.Data.consumeSoundVolume; // Get the volume from the item
             
             if (soundToPlay != null)
             {
-                // PlayOneShot allows multiple sounds to overlap without cutting each other off
-                _audioSource.PlayOneShot(soundToPlay);
+                // Pass the volume slider value directly into PlayOneShot
+                _audioSource.PlayOneShot(soundToPlay, volume);
             }
         }
     }
