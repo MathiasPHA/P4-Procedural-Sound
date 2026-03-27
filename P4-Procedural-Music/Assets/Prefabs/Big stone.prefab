@@ -157,7 +157,7 @@ MonoBehaviour:
   dropAmount: 5
   directToInventory: 0
   worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
-  hitSound: {fileID: 0}
+  hitSound: {fileID: 8300000, guid: 5c046bd014cc2684ba8f6bea4394ff88, type: 3}
   hitVolume: 0.5
   depleteSound: {fileID: 0}
   depleteVolume: 0.5

@@ -107,6 +107,7 @@ GameObject:
   - component: {fileID: 7775883068081880350}
   - component: {fileID: 6379968897288913679}
   - component: {fileID: 1146854011689539404}
+  - component: {fileID: -8538655097096910356}
   m_Layer: 6
   m_Name: Campfire_World
   m_TagString: Untagged
@@ -400,3 +401,31 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 8.231978, y: 5.83825}
   m_EdgeRadius: 0
+--- !u!114 &-8538655097096910356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e705c3c11fe791646b2de9f5b4e9df68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Harvesting.HarvestableResource
+  requiredToolType: 1
+  maxHealth: 10
+  dropItem: {fileID: 11400000, guid: 0576000b88c22c04f9bd4868ac2161b1, type: 2}
+  dropAmount: 1
+  directToInventory: 0
+  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
+  hitSound: {fileID: 0}
+  hitVolume: 0.5
+  depleteSound: {fileID: 0}
+  depleteVolume: 0.5
+  pickupSound: {fileID: 0}
+  pickupVolume: 0.5
+  pitchVariation: 0.15
+  depletedPrefab: {fileID: 0}
+  shakeIntensity: 0.45
+  shakeDuration: 0.15
