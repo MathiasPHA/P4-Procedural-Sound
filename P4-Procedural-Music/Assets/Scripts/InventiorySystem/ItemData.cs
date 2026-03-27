@@ -45,6 +45,9 @@ namespace InventorySystem.Data
         public float happinessBoost = 0f;
         [Tooltip("The sound to play when this item is consumed.")]
         public AudioClip consumeSound;
+        [Tooltip("Volume multiplier for the consume sound.")]
+        [Range(0f, 1f)]
+        public float consumeSoundVolume = 1f;
 
         [Header("Display Stats")]
         [Tooltip("Stats/properties shown in the crafting detail pane and tooltip. " +
