@@ -43,6 +43,8 @@ namespace InventorySystem.Data
                  "Only applies to Consumable category items.")]
         [Range(0f, 1f)]
         public float happinessBoost = 0f;
+        [Tooltip("The sound to play when this item is consumed.")]
+        public AudioClip consumeSound;
 
         [Header("Display Stats")]
         [Tooltip("Stats/properties shown in the crafting detail pane and tooltip. " +

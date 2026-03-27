@@ -52,6 +52,9 @@ namespace InventorySystem.UI
         [SerializeField] private float craftVolume = 0.5f;
         [Range(0f, 0.5f)]
         [SerializeField] private float craftPitchVariation = 0.1f;
+        [Tooltip("Minimum time (in seconds) between playing the craft sound")]
+        [SerializeField] private float craftSoundCooldown = 0.15f;
+        private float lastCraftSoundTime;
 
         private AudioSource _audioSource;
 
@@ -344,8 +347,9 @@ namespace InventorySystem.UI
                           $"{_selectedRecipe.result.displayName}");
 
                 // Play craft sound
-                if (craftSound != null && _audioSource != null)
+                if (craftSound != null && _audioSource != null && Time.time >= lastCraftSoundTime + craftSoundCooldown)
                 {
+                    lastCraftSoundTime = Time.time;
                     _audioSource.pitch = 1f + Random.Range(-craftPitchVariation, craftPitchVariation);
                     _audioSource.PlayOneShot(craftSound, craftVolume);
                 }
