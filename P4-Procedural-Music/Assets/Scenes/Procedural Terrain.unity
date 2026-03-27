@@ -324,7 +324,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5751236447002726307, guid: 278af8a3309f7af45879c9dea76576ca, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5751236447002726307, guid: 278af8a3309f7af45879c9dea76576ca, type: 3}
       propertyPath: m_Intensity
@@ -768,8 +768,6 @@ MonoBehaviour:
   chunkSize: 1
   loadRadius: 5
   unloadRadius: 7
-  worldName: default
-  autoSaveInterval: 60
   objectSpawnConfig: {fileID: 11400000, guid: 39d8fa6ea8ba68f48ae4fc45ccde9267, type: 2}
 --- !u!4 &884177757
 Transform:
@@ -800,6 +798,11 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!20 &892208754 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 3537779781170470357, guid: 6af3322d69c99264d8cd0c902d4f1d85, type: 3}
+  m_PrefabInstance: {fileID: 562396229}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &961445390
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1053,6 +1056,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1092971608 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4859490917234952540, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+  m_PrefabInstance: {fileID: 1304071100}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9f5b5f0856411a43bb45d24b8b98f78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStateManager
 --- !u!1 &1105228300
 GameObject:
   m_ObjectHideFlags: 0
@@ -1257,6 +1271,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Day Night System
       objectReference: {fileID: 0}
+    - target: {fileID: 8804788307281323027, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
+      propertyPath: dayNightMaster
+      value: 
+      objectReference: {fileID: 1867885749}
+    - target: {fileID: 8804788307281323027, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
+      propertyPath: timeMilestoneManager
+      value: 
+      objectReference: {fileID: 1867885748}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1265,6 +1287,52 @@ PrefabInstance:
       addedObject: {fileID: 1126684506}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
+--- !u!1 &1290884954
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1290884956}
+  - component: {fileID: 1290884955}
+  m_Layer: 0
+  m_Name: Save System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1290884955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1290884954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f20c49045c2b140b7ef3b54a9511d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  worldName: default
+  autoSaveInterval: 60
+--- !u!4 &1290884956
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1290884954}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 314.1657, y: 105.42236, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1296062198
 GameObject:
   m_ObjectHideFlags: 0
@@ -1400,6 +1468,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: detectionOffset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: detectionOffset.y
+      value: -1.91
+      objectReference: {fileID: 0}
+    - target: {fileID: 1591661159947031898, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 892208754}
     - target: {fileID: 4968789950358026991, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1447,7 +1527,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1977541768594217689, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1648507439}
   m_SourcePrefab: {fileID: 100100000, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
 --- !u!114 &1348436023 stripped
 MonoBehaviour:
@@ -1546,11 +1629,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+--- !u!1 &1648507434 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1977541768594217689, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+  m_PrefabInstance: {fileID: 1304071100}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1648507439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1648507434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 404b8073f2ee2944dbcfaa215ac72a9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationEvents
+  playerStateManager: {fileID: 1092971608}
 --- !u!4 &1867885746 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 399625584005341228, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
   m_PrefabInstance: {fileID: 1130893952}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1867885748 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7230665982664784449, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
+  m_PrefabInstance: {fileID: 1130893952}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99960994ffc650d4bab0d2176844a70a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimeMilestoneManager
+--- !u!114 &1867885749 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4368935485830263750, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
+  m_PrefabInstance: {fileID: 1130893952}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa36e6443b1e47143af019dc7a328a0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DayNightMaster
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1564,3 +1687,4 @@ SceneRoots:
   - {fileID: 991531832}
   - {fileID: 773878942}
   - {fileID: 961445390}
+  - {fileID: 1290884956}

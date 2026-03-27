@@ -24,7 +24,7 @@ public class SaveSystemManager : MonoBehaviour
 
         Instance = this;
 
-        // Override worldName from GameSettings if available
+        // Read worldName and seed from GameSettings if available
         if (GameSettings.Instance != null)
         {
             worldName = GameSettings.Instance.worldName;
@@ -75,6 +75,10 @@ public class SaveSystemManager : MonoBehaviour
             ChunkManager.Instance.LoadedObjects,
             worldName
         );
+
+        // Keep lastPlayed timestamp fresh in the metadata file
+        if (GameSettings.Instance != null)
+            GameSettings.Instance.UpdateLastPlayed(worldName);
     }
 
     /// <summary>
