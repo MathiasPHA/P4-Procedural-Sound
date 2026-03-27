@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5900998373117836824}
   - component: {fileID: 8281955197893536232}
   - component: {fileID: 379414710095164773}
+  - component: {fileID: 8967226347290604368}
   m_Layer: 7
   m_Name: Big stone
   m_TagString: Untagged
@@ -167,3 +168,15 @@ MonoBehaviour:
   depletedPrefab: {fileID: 0}
   shakeIntensity: 0.19
   shakeDuration: 0.15
+--- !u!114 &8967226347290604368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5511241277875091019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e6748cc4ef6c2b40bc2f2c0848567a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralTerrain.SpawnedObjectTracker
