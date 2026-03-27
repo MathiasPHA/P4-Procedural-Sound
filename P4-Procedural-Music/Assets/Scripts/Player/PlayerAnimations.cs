@@ -58,5 +58,29 @@ public class PlayerAnimations : MonoBehaviour
                 playerAnimator.Play("PlayerIdleBack");
             }
         }
+
+        if (animationQue == "HarvestAxe")
+        {
+            if (playerStateManager.playerDir == "Left")
+                playerAnimator.Play("PlayerHarvestAxeLeft");
+            else if (playerStateManager.playerDir == "Right")
+                playerAnimator.Play("PlayerHarvestAxeRight");
+        }
+
+        if (animationQue == "HarvestPickaxe")
+        {
+            if (playerStateManager.playerDir == "Left")
+                playerAnimator.Play("PlayerHarvestPickaxeLeft");
+            else if (playerStateManager.playerDir == "Right")
+                playerAnimator.Play("PlayerHarvestPickaxeRight");
+        }
+
+        if (animationQue == "HarvestHand")
+        {
+            if (playerStateManager.playerDir == "Left")
+                playerAnimator.Play("PlayerHarvestHandLeft");
+            else if (playerStateManager.playerDir == "Right")
+                playerAnimator.Play("PlayerHarvestHandRight");
+        }
     }
 }

@@ -10,6 +10,8 @@ namespace ProceduralTerrain
     /// </summary>
     public class ChunkManager : MonoBehaviour
     {
+        public static ChunkManager Instance { get; private set; }
+
         [Header("References")]
         [Tooltip("The player (or camera) Transform to track.")]
         public Transform player;
@@ -38,23 +40,28 @@ namespace ProceduralTerrain
         [Range(2, 10)]
         public int unloadRadius = 5;
 
-        [Header("Save")]
-        [Tooltip("World name for save files.")]
-        public string worldName = "default";
-
-        [Tooltip("Auto-save interval in seconds. 0 = manual only.")]
-        public float autoSaveInterval = 60f;
-
         [Header("Object Spawning")]
         [Tooltip("Configuration for spawning trees, rocks, props, etc. Leave empty to skip object spawning.")]
         public ObjectSpawnConfig objectSpawnConfig;
 
-        // Loaded chunks
+        // Exposed so SaveSystemManager can access them
+        internal Dictionary<Vector2Int, ChunkData> LoadedChunks => _loadedChunks;
+        internal Dictionary<Vector2Int, ObjectSpawner.ChunkObjects> LoadedObjects => _loadedObjects;
+
         private Dictionary<Vector2Int, ChunkData> _loadedChunks = new Dictionary<Vector2Int, ChunkData>();
         private Dictionary<Vector2Int, ObjectSpawner.ChunkObjects> _loadedObjects = new Dictionary<Vector2Int, ObjectSpawner.ChunkObjects>();
         private Vector2Int _lastPlayerChunk;
-        private float _saveTimer;
         private Grid _grid;
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+        }
 
         private void Start()
         {
@@ -65,7 +72,16 @@ namespace ProceduralTerrain
                 return;
             }
 
-            // Get the Grid component (parent of the Tilemaps) to handle coordinate conversion
+            // Override seed from GameSettings if available
+            if (GameSettings.Instance != null)
+            {
+                generationConfig.seed = GameSettings.Instance.seed;
+            }
+            else
+            {
+                Debug.LogWarning("[ChunkManager] GameSettings not found — using fallback seed from generationConfig.");
+            }
+
             _grid = groundTilemap.layoutGrid;
             if (_grid == null)
             {
@@ -76,7 +92,6 @@ namespace ProceduralTerrain
 
             Debug.Log($"[ChunkManager] Grid cell size: {_grid.cellSize}");
 
-            // Clear any leftover tiles from previous runs
             groundTilemap.ClearAllTiles();
             waterTilemap.ClearAllTiles();
 
@@ -89,39 +104,15 @@ namespace ProceduralTerrain
         {
             Vector2Int currentChunk = WorldToChunkCoord(player.position);
 
-            // Only update chunks when the player moves to a new chunk
             if (currentChunk != _lastPlayerChunk)
             {
                 _lastPlayerChunk = currentChunk;
                 UpdateChunks(currentChunk);
             }
-
-            // Auto-save
-            if (autoSaveInterval > 0)
-            {
-                _saveTimer += Time.deltaTime;
-                if (_saveTimer >= autoSaveInterval)
-                {
-                    _saveTimer = 0f;
-                    SaveModifiedChunks();
-                }
-            }
-        }
-
-        private void OnApplicationQuit()
-        {
-            SaveModifiedChunks();
-        }
-
-        private void OnApplicationPause(bool paused)
-        {
-            if (paused)
-                SaveModifiedChunks();
         }
 
         /// <summary>
         /// Convert a world position to chunk coordinate.
-        /// Uses the Grid component to handle cell size automatically.
         /// </summary>
         public Vector2Int WorldToChunkCoord(Vector3 worldPos)
         {
@@ -134,7 +125,6 @@ namespace ProceduralTerrain
 
         /// <summary>
         /// Modify a tile at a world position. Handles persistence automatically.
-        /// Call this when the player digs, builds, etc.
         /// </summary>
         public void ModifyTerrain(Vector3 worldPos, TerrainType newType)
         {
@@ -153,13 +143,10 @@ namespace ProceduralTerrain
                 return;
             }
 
-            // Convert to local coordinates
             int localX = ((tileX % chunkSize) + chunkSize) % chunkSize;
             int localY = ((tileY % chunkSize) + chunkSize) % chunkSize;
 
             chunk.SetTerrain(localX, localY, newType);
-
-            // Re-render this chunk and adjacent chunks (for border bitmask updates)
             RerenderChunkAndNeighbors(chunkCoord);
         }
 
@@ -184,32 +171,11 @@ namespace ProceduralTerrain
                 return chunk.GetTerrain(localX, localY);
             }
 
-            // Fall back to generator for unloaded chunks
             return TerrainGenerator.SampleAt(tileX, tileY, generationConfig);
         }
 
         /// <summary>
-        /// Force save all modified chunks now.
-        /// </summary>
-        public void SaveModifiedChunks()
-        {
-            ChunkPersistence.SaveModifiedChunks(_loadedChunks, _loadedObjects, worldName);
-        }
-
-        /// <summary>
-        /// Delete all save data and regenerate. Use if world is corrupted.
-        /// Available from Inspector right-click menu.
-        /// </summary>
-        [ContextMenu("Clear Save Data")]
-        public void ClearSaveData()
-        {
-            ChunkPersistence.DeleteWorld(worldName);
-            Debug.Log($"[ChunkManager] Cleared save data for world '{worldName}'");
-        }
-
-        /// <summary>
         /// Fully remove a spawned object — it will never come back.
-        /// Use for pickups: twigs, mushrooms, etc.
         /// </summary>
         public void RemoveSpawnedObject(Vector3 objectWorldPos, int spawnId)
         {
@@ -221,8 +187,7 @@ namespace ProceduralTerrain
         }
 
         /// <summary>
-        /// Mark a spawned object as depleted — on next chunk load, the stump/depleted prefab
-        /// spawns in its place. Use for harvestable resources: trees, rocks, etc.
+        /// Mark a spawned object as depleted.
         /// </summary>
         public void DepleteSpawnedObject(Vector3 objectWorldPos, int spawnId)
         {
@@ -235,7 +200,6 @@ namespace ProceduralTerrain
 
         /// <summary>
         /// Helper to extract spawnId from an object spawned by the system.
-        /// Objects are named "RuleName_spawnId". Returns 0 if parsing fails.
         /// </summary>
         public static int GetSpawnIdFromObject(GameObject obj)
         {
@@ -251,20 +215,16 @@ namespace ProceduralTerrain
 
         private void UpdateChunks(Vector2Int centerChunk)
         {
-            // Load chunks within radius
             for (int dy = -loadRadius; dy <= loadRadius; dy++)
             {
                 for (int dx = -loadRadius; dx <= loadRadius; dx++)
                 {
                     Vector2Int coord = new Vector2Int(centerChunk.x + dx, centerChunk.y + dy);
                     if (!_loadedChunks.ContainsKey(coord))
-                    {
                         LoadChunk(coord);
-                    }
                 }
             }
 
-            // Unload chunks beyond unload radius
             var toUnload = new List<Vector2Int>();
             foreach (var coord in _loadedChunks.Keys)
             {
@@ -273,24 +233,18 @@ namespace ProceduralTerrain
                     Mathf.Abs(coord.y - centerChunk.y)
                 );
                 if (dist > unloadRadius)
-                {
                     toUnload.Add(coord);
-                }
             }
 
             foreach (var coord in toUnload)
-            {
                 UnloadChunk(coord);
-            }
         }
 
         private void LoadChunk(Vector2Int coord)
         {
-            // Generate base terrain
             var baseGrid = TerrainGenerator.GenerateChunk(coord, chunkSize, generationConfig);
             var chunk = new ChunkData(coord, chunkSize, baseGrid);
 
-            // Count water tiles for debug
             int waterCount = 0;
             for (int y = 0; y < chunkSize; y++)
                 for (int x = 0; x < chunkSize; x++)
@@ -300,25 +254,19 @@ namespace ProceduralTerrain
             int cellStartY = coord.y * chunkSize;
             Debug.Log($"[ChunkManager] Loading chunk {coord} → cells ({cellStartX},{cellStartY}) to ({cellStartX + chunkSize - 1},{cellStartY + chunkSize - 1}), water: {waterCount}/{chunkSize * chunkSize}");
 
-            // Apply saved modifications if any
-            var mods = ChunkPersistence.LoadChunkModifications(coord, worldName);
+            var mods = ChunkPersistence.LoadChunkModifications(coord, SaveSystemManager.Instance.worldName);
             if (mods != null)
-            {
                 chunk.ApplyModifications(mods);
-            }
 
             _loadedChunks[coord] = chunk;
 
-            // Render terrain
             ChunkRenderer.RenderChunk(chunk, groundTilemap, waterTilemap, tileset, generationConfig, chunkSize);
 
-            // Spawn objects
             if (objectSpawnConfig != null && objectSpawnConfig.rules.Count > 0)
             {
-                var removedIds = ChunkPersistence.LoadRemovedObjectIds(coord, worldName);
-                var depletedIds = ChunkPersistence.LoadDepletedObjectIds(coord, worldName);
+                var removedIds = ChunkPersistence.LoadRemovedObjectIds(coord, SaveSystemManager.Instance.worldName);
+                var depletedIds = ChunkPersistence.LoadDepletedObjectIds(coord, SaveSystemManager.Instance.worldName);
 
-                // Create a parent GameObject for this chunk's objects
                 var chunkParent = new GameObject($"Chunk_{coord.x}_{coord.y}_Objects").transform;
                 chunkParent.SetParent(transform);
 
@@ -336,20 +284,15 @@ namespace ProceduralTerrain
         {
             if (_loadedChunks.TryGetValue(coord, out var chunk))
             {
-                // Save if modified before unloading
                 if (chunk.IsDirty)
-                {
-                    ChunkPersistence.SaveModifiedChunks(_loadedChunks, _loadedObjects, worldName);
-                }
+                    SaveSystemManager.Instance.SaveModifiedChunks();
 
-                // Despawn objects
                 if (_loadedObjects.TryGetValue(coord, out var chunkObjects))
                 {
                     ObjectSpawner.DespawnChunk(chunkObjects);
                     _loadedObjects.Remove(coord);
                 }
 
-                // Clear tilemap
                 ChunkRenderer.ClearChunk(coord, groundTilemap, waterTilemap, chunkSize);
                 _loadedChunks.Remove(coord);
             }
@@ -363,9 +306,7 @@ namespace ProceduralTerrain
                 {
                     var coord = new Vector2Int(center.x + dx, center.y + dy);
                     if (_loadedChunks.TryGetValue(coord, out var chunk))
-                    {
                         ChunkRenderer.RenderChunk(chunk, groundTilemap, waterTilemap, tileset, generationConfig, chunkSize);
-                    }
                 }
             }
         }
@@ -382,21 +323,16 @@ namespace ProceduralTerrain
             float sx = chunkSize * cellX;
             float sy = chunkSize * cellY;
 
-            // Draw load radius
             Gizmos.color = new Color(0, 1, 0, 0.2f);
             for (int dy = -loadRadius; dy <= loadRadius; dy++)
-            {
                 for (int dx = -loadRadius; dx <= loadRadius; dx++)
                 {
                     var pos = new Vector3((center.x + dx) * sx + sx * 0.5f, (center.y + dy) * sy + sy * 0.5f, 0);
                     Gizmos.DrawWireCube(pos, new Vector3(sx, sy, 0));
                 }
-            }
 
-            // Draw unload radius
             Gizmos.color = new Color(1, 0, 0, 0.15f);
             for (int dy = -unloadRadius; dy <= unloadRadius; dy++)
-            {
                 for (int dx = -unloadRadius; dx <= unloadRadius; dx++)
                 {
                     int dist = Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy));
@@ -406,7 +342,6 @@ namespace ProceduralTerrain
                         Gizmos.DrawWireCube(pos, new Vector3(sx, sy, 0));
                     }
                 }
-            }
         }
 #endif
     }
