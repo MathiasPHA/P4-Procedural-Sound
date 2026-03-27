@@ -60,6 +60,13 @@ namespace InventorySystem.Building
         [Tooltip("Sorting order for the placement ghost so it renders above the world.")]
         [SerializeField] private int ghostSortingOrder = 100;
 
+         [Header("Audio")]
+         [SerializeField] private AudioSource audioSource;
+         [SerializeField] private AudioClip placementSound;
+         [Tooltip("Base volume for the placement sound.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float placementVolume = 0.5f;
+
         // =====================================================================
         // Runtime state
         // =====================================================================
@@ -360,6 +367,9 @@ namespace InventorySystem.Building
                 Quaternion.identity
             );
 
+            // Play placement audio
+            PlayPLacementSound();
+
             // Tag it with a reference back to its data
             var structure = go.GetComponent<PlacedStructure>();
             if (structure != null)
@@ -379,6 +389,14 @@ namespace InventorySystem.Building
 
             // Out of items — exit placement mode
             ExitPlacement();
+        }
+
+        private void PlayPLacementSound()
+        {
+           if (audioSource != null && placementSound !=null)
+            {
+                audioSource.PlayOneShot(placementSound, placementVolume);
+            }
         }
 
         // =====================================================================
