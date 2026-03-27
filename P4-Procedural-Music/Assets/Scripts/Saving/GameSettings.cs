@@ -38,11 +38,12 @@ public class GameSettings : MonoBehaviour
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Create a brand new save with a random seed and immediately start the game.
+    /// Create a brand new save and immediately start the game.
+    /// Pass a seed for a specific world, or leave it null to generate a random one.
     /// </summary>
-    public void CreateSave(string world)
+    public void CreateSave(string world, int? seed = null)
     {
-        int newSeed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        int newSeed = seed ?? UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         SaveMetadata(world, newSeed);
         StartGame(world, newSeed);
     }
