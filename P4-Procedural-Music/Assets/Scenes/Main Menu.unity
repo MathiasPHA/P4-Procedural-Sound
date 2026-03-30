@@ -3077,6 +3077,7 @@ MonoBehaviour:
   slotContainer: {fileID: 1906164062}
   slotButtonPrefab: {fileID: 2899081779214528543, guid: dcd4faec9acc3504dbf5d558988f2381, type: 3}
   noSavesMessage: {fileID: 1296615431}
+  deleteButtonPrefab: {fileID: 6918609241694471188, guid: 3b0afaef904d9144999fd6206ce5dc90, type: 3}
 --- !u!1 &1906164061
 GameObject:
   m_ObjectHideFlags: 0

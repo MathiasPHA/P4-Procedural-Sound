@@ -48,6 +48,10 @@ public class SaveSystemManager : MonoBehaviour
             PlayerSaveSystem.Instance.LoadPlayer(worldName);
         else
             Debug.LogWarning("[SaveSystemManager] PlayerSaveSystem not found — player not loaded.");
+
+        // Load time of day
+        if (DayNightMaster.Instance != null)
+            DayNightMaster.Instance.LoadTime(worldName);
     }
 
     private void Update()
@@ -103,6 +107,14 @@ public class SaveSystemManager : MonoBehaviour
         else
             Debug.LogWarning("[SaveSystemManager] PlayerSaveSystem not found — player not saved.");
 
+        // Save player-placed structures
+        if (PlacedStructureManager.Instance != null)
+            PlacedStructureManager.Instance.SaveAll();
+
+        // Save time of day
+        if (DayNightMaster.Instance != null)
+            DayNightMaster.Instance.SaveTime(worldName);
+
         // Keep lastPlayed timestamp fresh in the metadata file
         if (GameSettings.Instance != null)
             GameSettings.Instance.UpdateLastPlayed(worldName);
@@ -116,6 +128,10 @@ public class SaveSystemManager : MonoBehaviour
     public void ClearSaveData()
     {
         ChunkPersistence.DeleteWorld(worldName);
+
+        if (PlacedStructureManager.Instance != null)
+            PlacedStructureManager.Instance.ClearAll(worldName);
+
         Debug.Log($"[SaveSystemManager] Cleared save data for world '{worldName}'");
     }
 }

@@ -7,8 +7,9 @@ namespace InventorySystem.Building
     /// Used by PlacementSystem for overlap detection (structures must be
     /// on a layer included in the obstacle mask).
     ///
-    /// Add gameplay data here later: health, decay timer, comfort
-    /// contribution, snapping points, etc.
+    /// Automatically tracked by PlacedStructureManager for save/load persistence.
+    /// Structures loaded from save data have wasSaveLoaded = true to prevent
+    /// double-registration.
     ///
     /// PREFAB SETUP:
     ///   1. Create your structure prefab (e.g. Campfire)
@@ -21,12 +22,30 @@ namespace InventorySystem.Building
     /// </summary>
     public class PlacedStructure : MonoBehaviour
     {
-        [Tooltip("Optional reference back to the placeable data that spawned this.")]
+        [Tooltip("Reference back to the placeable data that spawned this. Required for saving.")]
         public PlaceableData sourceData;
+
+        [HideInInspector]
+        [Tooltip("Set to true when this structure was spawned by the save system, " +
+                 "so it doesn't register itself again.")]
+        public bool wasSaveLoaded = false;
 
         // Future fields:
         // public float health;
         // public float decayRate;
         // public bool isLit;  // for campfires
+
+        /// <summary>
+        /// Call this to demolish/remove the structure.
+        /// Unregisters from save system and destroys the GameObject.
+        /// </summary>
+        public void Demolish()
+        {
+            var manager = ProceduralTerrain.PlacedStructureManager.Instance;
+            if (manager != null)
+                manager.UnregisterStructure(this);
+
+            Destroy(gameObject);
+        }
     }
 }
