@@ -1262,7 +1262,7 @@ PrefabInstance:
     - target: {fileID: 7230665982664784449, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
       propertyPath: comfortSystem
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1304071101}
     - target: {fileID: 7230665982664784449, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
       propertyPath: comfortMusicBridge
       value: 

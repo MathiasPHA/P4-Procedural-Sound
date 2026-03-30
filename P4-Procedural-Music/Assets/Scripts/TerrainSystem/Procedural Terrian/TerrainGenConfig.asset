@@ -17,4 +17,4 @@ MonoBehaviour:
   octaves: 3
   persistence: 0.5
   lacunarity: 2
-  waterThreshold: 0.255
+  waterThreshold: 0.38
