@@ -364,7 +364,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 376cf5d7ede9795458ba4e9bb660604a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameStateManager
-  comfortMusicBridge: {fileID: 0}
+  comfortMusicBridge: {fileID: 1531113791}
   defaultOverrideTimeout: 0
   showDebugGUI: 1
 --- !u!4 &161854660
