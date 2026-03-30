@@ -143,6 +143,8 @@ namespace InventorySystem.Tools
             // --- Hand harvesting (no tool needed) ---
             if (resource.RequiredToolType == ToolType.None)
             {
+                playerStateManager.animationQue = "HarvestHand";
+                playerStateManager.StartHarvest();
                 Vector2 hitDir = ((Vector2)resource.transform.position - (Vector2)transform.position).normalized;
                 resource.TakeDamage(handDamage, hitDir);
                 _cooldownTimer = handCooldown;
@@ -163,6 +165,10 @@ namespace InventorySystem.Tools
                           $"this {resource.RequiredToolType} resource.");
                 return;
             }
+
+            // Trigger harvest animation before swinging
+            playerStateManager.animationQue = $"Harvest{toolData.toolType}";
+            playerStateManager.StartHarvest();
 
             // Swing — apply damage
             Vector2 toolHitDir = ((Vector2)resource.transform.position - (Vector2)transform.position).normalized;

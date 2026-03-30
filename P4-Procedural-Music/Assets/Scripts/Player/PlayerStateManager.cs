@@ -1,3 +1,4 @@
+using InventorySystem.Data;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,6 +8,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerIdleState idleState = new PlayerIdleState();
     public PlayerRunState runState = new PlayerRunState();
     public PlayerInventoryState inventoryState = new PlayerInventoryState();
+    public PlayerHarvestState harvestState = new PlayerHarvestState();
 
     public string animationQue;
 
@@ -39,6 +41,16 @@ public class PlayerStateManager : MonoBehaviour
     {
         currentState = state;
         currentState.EnterState(this);
+    }
+
+    public void StartHarvest()
+    {
+        SwitchState(harvestState);
+    }
+
+    public void OnHarvestAnimationComplete()
+    {
+        SwitchState(idleState);
     }
 
     private void OnMove(InputValue value)
