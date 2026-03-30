@@ -51,10 +51,21 @@ public class HappinessBar : MonoBehaviour
     /// <summary>
     /// Called by ComfortSystem every frame with the total comfort delta for this tick.
     /// A positive value raises happiness; negative lowers it.
+    /// Scaled by Time.deltaTime internally — pass a per-second rate.
     /// </summary>
     public void ApplyComfortDelta(float delta)
     {
         targetHappiness = Mathf.Clamp(targetHappiness + delta * Time.deltaTime, 0f, maxHappiness);
+    }
+
+    /// <summary>
+    /// Apply an instant one-shot change to happiness (not time-scaled).
+    /// Use for discrete events: mob hits, eating food, picking up items.
+    /// Negative values reduce happiness, positive values restore it.
+    /// </summary>
+    public void ApplyInstantDelta(float delta)
+    {
+        targetHappiness = Mathf.Clamp(targetHappiness + delta, 0f, maxHappiness);
     }
 
     /// <summary>
