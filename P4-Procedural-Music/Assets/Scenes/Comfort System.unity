@@ -1528,6 +1528,18 @@ PrefabInstance:
       propertyPath: resourceLayer.m_Bits
       value: 448
       objectReference: {fileID: 0}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: toolDatabase.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: 'toolDatabase.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: f2e6fc4287afe094d966b8c9e5adad27, type: 2}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: 'toolDatabase.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: badd5b9eb08a47d4f98a5d4c7934daa2, type: 2}
     - target: {fileID: 1591661159947031898, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: mainCamera
       value: 
