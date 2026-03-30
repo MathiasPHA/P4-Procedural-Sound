@@ -518,7 +518,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Reset
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1128,13 +1128,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1062834241}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1062834244}
+        m_TargetAssemblyTypeName: MixerVolumeController, Assembly-CSharp
+        m_MethodName: ResetAll
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1461,19 +1461,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1062834243}
-        m_TargetAssemblyTypeName: MixerVolumeController, Assembly-CSharp
-        m_MethodName: SetSFXVolume
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1001 &782689192
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2700,19 +2688,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1062834241}
-        m_TargetAssemblyTypeName: MixerVolumeController, Assembly-CSharp
-        m_MethodName: 
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Master
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!4 &1299836853 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3838707475039465987, guid: a75f513147ebe404eb0d8dba442c6449, type: 3}
@@ -3098,19 +3074,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1062834243}
-        m_TargetAssemblyTypeName: MixerVolumeController, Assembly-CSharp
-        m_MethodName: SetPlacementVolume
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &1620572801
 GameObject:
   m_ObjectHideFlags: 0
@@ -3380,19 +3344,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1062834243}
-        m_TargetAssemblyTypeName: MixerVolumeController, Assembly-CSharp
-        m_MethodName: SetMusicVolume
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &1890597373
 GameObject:
   m_ObjectHideFlags: 0
@@ -4236,6 +4188,22 @@ PrefabInstance:
     - target: {fileID: 7209356534962995888, guid: 6af3322d69c99264d8cd0c902d4f1d85, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7239907691715302994, guid: 6af3322d69c99264d8cd0c902d4f1d85, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6.480964
+      objectReference: {fileID: 0}
+    - target: {fileID: 7239907691715302994, guid: 6af3322d69c99264d8cd0c902d4f1d85, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.3358042
+      objectReference: {fileID: 0}
+    - target: {fileID: 8381619288447059526, guid: 6af3322d69c99264d8cd0c902d4f1d85, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6.480964
+      objectReference: {fileID: 0}
+    - target: {fileID: 8381619288447059526, guid: 6af3322d69c99264d8cd0c902d4f1d85, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.3358042
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
