@@ -20,7 +20,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Placement sound
+  m_Name: Sound effects
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 729bfffbb175f48758135f49c96b04d3
   m_Children: []
@@ -67,7 +67,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SFX
+  m_Name: Ambiance
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 1490a51e52b1e4207880ee70b224eb8c
   m_Children:
@@ -90,7 +90,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Procedural Music
+  m_Name: Music
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 7f3d797a09ad6497b8eeaf77cab81e6f
   m_Children: []
@@ -123,11 +123,11 @@ AudioMixerController:
   - guid: 7f9dfa7c63b5b4dd0b9a8bb58d32001e
     name: Exposed Master
   - guid: 7ff8c9ac8a2e94b66a38338dcc685241
-    name: Exposed Placement sound
+    name: Exposed Sound effects
   - guid: 9295da874c6004b51997564d29d9abbb
     name: Exposed Music
   - guid: 8bf5df6000a264076bf29aac73d37924
-    name: Exposed SFX
+    name: Exposed Ambiance
   m_AudioMixerGroupViews:
   - guids:
     - 0792b13b1677444d98c81ae2c60f9163
@@ -144,10 +144,10 @@ AudioMixerController:
     - 1c8bbd8582fe24965a13ad1ad8d206ea
     - b7cf0530a8537476d85e3331cfc69b86
     - 7b322136851104051af35d14caee6165
-    name: SFX
+    name: Ambiance
   - guids:
     - 729bfffbb175f48758135f49c96b04d3
-    name: Placement sound
+    name: Sound effects
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
 --- !u!243 &24300002

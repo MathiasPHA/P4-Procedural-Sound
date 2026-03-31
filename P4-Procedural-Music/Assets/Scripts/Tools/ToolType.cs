@@ -11,6 +11,7 @@ namespace InventorySystem.Data
         Pickaxe,
         Shovel,
         Hoe,
-        Hammer
+        Hammer,
+        Spear
     }
 }
