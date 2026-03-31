@@ -161,6 +161,7 @@ GameObject:
   - component: {fileID: -1374152125123140291}
   - component: {fileID: -3029696075308403882}
   - component: {fileID: 8828182713097135120}
+  - component: {fileID: 1568970434306919238}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -473,6 +474,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveSystem
   playerTransform: {fileID: 6496137450566507929}
   comfortSystem: {fileID: 8437715424998398889}
+--- !u!114 &1568970434306919238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2f3e410ceac3da4abf19108a169dbe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::YSortable
+  sortingGroup: {fileID: 0}
+  spriteRenderer: {fileID: 3043719320757778836}
+  ordersPerUnit: 100
+  staticOrderOffset: 0
+  randomOffsetRange: 0.01
+  referenceMode: 0
+  feetCollider: {fileID: 0}
+  customPivot: {fileID: 0}
+  additionalYOffset: 0
+  unifySortingLayer: 1
+  unifiedSortingLayerName: World
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0

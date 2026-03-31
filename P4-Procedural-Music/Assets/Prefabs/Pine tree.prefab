@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6689274444726695282}
   - component: {fileID: 7580627953573228894}
   - component: {fileID: 1828994288715957585}
+  - component: {fileID: 3135014998427476470}
   m_Layer: 7
   m_Name: Pine tree
   m_TagString: Untagged
@@ -80,8 +81,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1209571973
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: f532b04a2ca9b164989a5fd7e395ec17, type: 3}
@@ -128,7 +129,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.8301163, y: -13.637461}
+  m_Offset: {x: -0.8301163, y: -14.246117}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -138,7 +139,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 5.968033, y: 10.711521}
+  m_Size: {x: 5.968033, y: 7.516074}
   m_EdgeRadius: 0
 --- !u!114 &7580627953573228894
 MonoBehaviour:
@@ -180,3 +181,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e6748cc4ef6c2b40bc2f2c0848567a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralTerrain.SpawnedObjectTracker
+--- !u!114 &3135014998427476470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1046357200212330553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2f3e410ceac3da4abf19108a169dbe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::YSortable
+  sortingGroup: {fileID: 0}
+  spriteRenderer: {fileID: 7498855218257199596}
+  ordersPerUnit: 100
+  staticOrderOffset: 0
+  randomOffsetRange: 0.01
+  referenceMode: 0
+  feetCollider: {fileID: 0}
+  customPivot: {fileID: 0}
+  additionalYOffset: 0
+  unifySortingLayer: 1
+  unifiedSortingLayerName: World
