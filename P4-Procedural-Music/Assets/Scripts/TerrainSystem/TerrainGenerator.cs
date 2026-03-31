@@ -49,13 +49,16 @@ namespace ProceduralTerrain
         /// chunkCoord is in chunk-space (e.g. (0,0), (1,0), (-1,2)).
         /// Returns a chunkSize x chunkSize array of TerrainType.
         /// </summary>
-        public static TerrainType[,] GenerateChunk(Vector2Int chunkCoord, int chunkSize, TerrainGenerationConfig config)
+        public static TerrainType[,] GenerateChunk(Vector2Int chunkCoord, int chunkSize, TerrainGenerationConfig config, int? seedOverride = null)
         {
             var grid = new TerrainType[chunkSize, chunkSize];
 
+            // Use override seed if provided, otherwise fall back to config
+            int activeSeed = seedOverride ?? config.seed;
+
             // Deterministic offset from seed so different seeds give different worlds
-            float seedOffsetX = config.seed * 17.3f;
-            float seedOffsetY = config.seed * 31.7f;
+            float seedOffsetX = activeSeed * 17.3f;
+            float seedOffsetY = activeSeed * 31.7f;
 
             for (int y = 0; y < chunkSize; y++)
             {
@@ -87,10 +90,11 @@ namespace ProceduralTerrain
         /// Sample a single terrain type at a world-space tile position.
         /// Useful for querying neighbors across chunk boundaries.
         /// </summary>
-        public static TerrainType SampleAt(int worldX, int worldY, TerrainGenerationConfig config)
+        public static TerrainType SampleAt(int worldX, int worldY, TerrainGenerationConfig config, int? seedOverride = null)
         {
-            float seedOffsetX = config.seed * 17.3f;
-            float seedOffsetY = config.seed * 31.7f;
+            int activeSeed = seedOverride ?? config.seed;
+            float seedOffsetX = activeSeed * 17.3f;
+            float seedOffsetY = activeSeed * 31.7f;
 
             float noiseValue = SampleNoise(
                 worldX + seedOffsetX,
