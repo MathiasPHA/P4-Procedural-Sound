@@ -14,10 +14,40 @@ public class LoadGame : MonoBehaviour
     [Tooltip("Shown when there are no saves to display.")]
     [SerializeField] private GameObject noSavesMessage;
 
+    [Header("Delete")]
+    [Tooltip("Prefab for the delete button spawned next to each slot. " +
+             "Needs a Button component. If left empty, no delete buttons are shown.")]
+    [SerializeField] private GameObject deleteButtonPrefab;
+
+    [Tooltip("The confirmation popup panel. Should contain a text field, a Yes button, and a No/Cancel button.")]
+    [SerializeField] private GameObject confirmPopup;
+
+    [Tooltip("Text on the confirmation popup (e.g. 'Are you sure you want to delete MyWorld?').")]
+    [SerializeField] private TMP_Text confirmText;
+
+    [Tooltip("The Yes button on the confirmation popup.")]
+    [SerializeField] private Button confirmYesButton;
+
+    [Tooltip("The No/Cancel button on the confirmation popup.")]
+    [SerializeField] private Button confirmNoButton;
+
+    // The world name queued for deletion
+    private string _worldToDelete;
+
     private void OnEnable()
     {
-        // Refresh the list every time this panel is opened
         PopulateSlots();
+        HideConfirmPopup();
+    }
+
+    private void Start()
+    {
+        // Wire up the popup buttons once — they never change
+        if (confirmYesButton != null)
+            confirmYesButton.onClick.AddListener(OnConfirmYes);
+
+        if (confirmNoButton != null)
+            confirmNoButton.onClick.AddListener(HideConfirmPopup);
     }
 
     private void PopulateSlots()
@@ -35,7 +65,7 @@ public class LoadGame : MonoBehaviour
         {
             var buttonObj = Instantiate(slotButtonPrefab, slotContainer);
 
-            // Set label — e.g. "MyWorld — last played 27/03/2026 14:32"
+            // Set label
             var label = buttonObj.GetComponentInChildren<TMP_Text>();
             if (label != null)
                 label.text = $"{slot.worldName}\n<size=70%>Last played: {slot.lastPlayed:dd/MM/yyyy HH:mm}</size>";
@@ -44,8 +74,21 @@ public class LoadGame : MonoBehaviour
             var button = buttonObj.GetComponent<Button>();
             if (button != null)
             {
-                string worldName = slot.worldName; // capture for lambda
+                string worldName = slot.worldName;
                 button.onClick.AddListener(() => LoadSlot(worldName));
+            }
+
+            // Add delete button if prefab is assigned
+            if (deleteButtonPrefab != null)
+            {
+                var deleteObj = Instantiate(deleteButtonPrefab, buttonObj.transform);
+
+                var deleteButton = deleteObj.GetComponent<Button>();
+                if (deleteButton != null)
+                {
+                    string worldName = slot.worldName;
+                    deleteButton.onClick.AddListener(() => ShowConfirmPopup(worldName));
+                }
             }
         }
     }
@@ -55,5 +98,40 @@ public class LoadGame : MonoBehaviour
         bool success = GameSettings.Instance.LoadSave(worldName);
         if (!success)
             Debug.LogWarning($"[LoadGame] Could not load save '{worldName}'.");
+    }
+
+    // =====================================================================
+    // Confirmation popup
+    // =====================================================================
+
+    private void ShowConfirmPopup(string worldName)
+    {
+        _worldToDelete = worldName;
+
+        if (confirmText != null)
+            confirmText.text = $"Are you sure you want to delete \"{worldName}\"?";
+
+        if (confirmPopup != null)
+            confirmPopup.SetActive(true);
+    }
+
+    private void HideConfirmPopup()
+    {
+        _worldToDelete = null;
+
+        if (confirmPopup != null)
+            confirmPopup.SetActive(false);
+    }
+
+    private void OnConfirmYes()
+    {
+        if (!string.IsNullOrEmpty(_worldToDelete))
+        {
+            GameSettings.Instance.DeleteSave(_worldToDelete);
+            Debug.Log($"[LoadGame] Deleted save '{_worldToDelete}'.");
+        }
+
+        HideConfirmPopup();
+        PopulateSlots();
     }
 }

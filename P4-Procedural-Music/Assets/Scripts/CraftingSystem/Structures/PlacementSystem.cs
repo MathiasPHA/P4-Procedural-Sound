@@ -60,10 +60,10 @@ namespace InventorySystem.Building
         [Tooltip("Sorting order for the placement ghost so it renders above the world.")]
         [SerializeField] private int ghostSortingOrder = 100;
 
-         [Header("Audio")]
-         [SerializeField] private AudioSource audioSource;
-         [SerializeField] private AudioClip placementSound;
-         [Tooltip("Base volume for the placement sound.")]
+        [Header("Audio")]
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip placementSound;
+        [Tooltip("Base volume for the placement sound.")]
         [Range(0f, 1f)]
         [SerializeField] private float placementVolume = 0.5f;
 
@@ -377,6 +377,13 @@ namespace InventorySystem.Building
                 structure.sourceData = _activePlaceable;
             }
 
+            // Register with save system
+            var structureManager = ProceduralTerrain.PlacedStructureManager.Instance;
+            if (structureManager != null && structure != null)
+            {
+                structureManager.RegisterStructure(structure);
+            }
+
             // Consume one from inventory
             _inventory.RemoveItem(_activePlaceable.item.id, 1);
 
@@ -393,7 +400,7 @@ namespace InventorySystem.Building
 
         private void PlayPLacementSound()
         {
-           if (audioSource != null && placementSound !=null)
+            if (audioSource != null && placementSound != null)
             {
                 audioSource.PlayOneShot(placementSound, placementVolume);
             }

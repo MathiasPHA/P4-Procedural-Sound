@@ -101,6 +101,19 @@ namespace InventorySystem
         {
             if (InventoryBootstrap.PlayerInventory == null) return;
 
+            // --- Overlap scan: catch items that spawned inside the radius ---
+            // OnTriggerEnter2D doesn't fire for items already overlapping,
+            // so we do a quick physics query each frame to find stragglers.
+            var hits = Physics2D.OverlapCircleAll(transform.position, magnetRadius);
+            foreach (var hit in hits)
+            {
+                var wi = hit.GetComponent<UI.WorldItem>();
+                if (wi == null) continue;
+                if (_rejected.Contains(wi)) continue;
+                if (!_pulledItems.Contains(wi))
+                    _pulledItems.Add(wi);
+            }
+
             // Iterate backwards so we can remove while iterating
             for (int i = _pulledItems.Count - 1; i >= 0; i--)
             {

@@ -19,15 +19,16 @@ namespace ProceduralTerrain
             Tilemap waterTilemap,
             TilesetReference tileset,
             TerrainGenerationConfig genConfig,
-            int chunkSize)
+            int chunkSize,
+            int? seedOverride = null)
         {
             int worldOffsetX = chunk.ChunkCoord.x * chunkSize;
             int worldOffsetY = chunk.ChunkCoord.y * chunkSize;
 
             var groundPositions = new Vector3Int[chunkSize * chunkSize];
-            var waterPositions  = new Vector3Int[chunkSize * chunkSize];
-            var groundTiles     = new TileBase[chunkSize * chunkSize];
-            var waterTiles      = new TileBase[chunkSize * chunkSize];
+            var waterPositions = new Vector3Int[chunkSize * chunkSize];
+            var groundTiles = new TileBase[chunkSize * chunkSize];
+            var waterTiles = new TileBase[chunkSize * chunkSize];
 
             TileBase grassTile = tileset.GetTile(WaterBitmaskResolver.GRASS_TILE_ID);
 
@@ -54,7 +55,7 @@ namespace ProceduralTerrain
                     {
                         // Sample 8 neighbors to build bitmask
                         // Use chunk data for in-bounds, generator for cross-boundary
-                        int bitmask = BuildBitmaskAt(lx, ly, chunk, chunkSize, genConfig);
+                        int bitmask = BuildBitmaskAt(lx, ly, chunk, chunkSize, genConfig, seedOverride);
                         int tsxId = WaterBitmaskResolver.Resolve(bitmask);
 
                         groundTiles[idx] = null;
@@ -96,7 +97,7 @@ namespace ProceduralTerrain
             waterTilemap.SetTiles(positions, nullTiles);
         }
 
-        private static int BuildBitmaskAt(int lx, int ly, ChunkData chunk, int chunkSize, TerrainGenerationConfig genConfig)
+        private static int BuildBitmaskAt(int lx, int ly, ChunkData chunk, int chunkSize, TerrainGenerationConfig genConfig, int? seedOverride = null)
         {
             int wx = chunk.ChunkCoord.x * chunkSize + lx;
             int wy = chunk.ChunkCoord.y * chunkSize + ly;
@@ -111,18 +112,18 @@ namespace ProceduralTerrain
                     return chunk.GetTerrain(nlx, nly) == TerrainType.Water;
 
                 // Otherwise, sample the generator (base terrain only for cross-boundary)
-                return TerrainGenerator.SampleAt(wx + offsetX, wy + offsetY, genConfig) == TerrainType.Water;
+                return TerrainGenerator.SampleAt(wx + offsetX, wy + offsetY, genConfig, seedOverride) == TerrainType.Water;
             }
 
             return WaterBitmaskResolver.BuildBitmask(
-                nw: IsWater(-1,  1),
-                n:  IsWater( 0,  1),
-                ne: IsWater( 1,  1),
-                w:  IsWater(-1,  0),
-                e:  IsWater( 1,  0),
+                nw: IsWater(-1, 1),
+                n: IsWater(0, 1),
+                ne: IsWater(1, 1),
+                w: IsWater(-1, 0),
+                e: IsWater(1, 0),
                 sw: IsWater(-1, -1),
-                s:  IsWater( 0, -1),
-                se: IsWater( 1, -1)
+                s: IsWater(0, -1),
+                se: IsWater(1, -1)
             );
         }
     }
