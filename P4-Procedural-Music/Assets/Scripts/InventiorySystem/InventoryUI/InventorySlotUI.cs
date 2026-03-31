@@ -72,6 +72,14 @@ namespace InventorySystem.UI
                 iconImage.preserveAspect = true;
             }
 
+            // Force durability bar to use Filled mode so it visually shrinks
+            if (durabilityBar != null)
+            {
+            durabilityBar.type = Image.Type.Filled;
+            durabilityBar.fillMethod = Image.FillMethod.Horizontal;
+            durabilityBar.fillOrigin = (int)Image.OriginHorizontal.Left;
+            }
+
             DisableChildRaycastTargets();
 
             // Anchor quantity text to bottom-right
