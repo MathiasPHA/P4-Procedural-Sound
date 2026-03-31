@@ -171,7 +171,7 @@ namespace ProceduralTerrain
                 return chunk.GetTerrain(localX, localY);
             }
 
-            return TerrainGenerator.SampleAt(tileX, tileY, generationConfig);
+            return TerrainGenerator.SampleAt(tileX, tileY, generationConfig, _runtimeSeed);
         }
 
         /// <summary>
@@ -242,10 +242,8 @@ namespace ProceduralTerrain
 
         private void LoadChunk(Vector2Int coord)
         {
-            // Use runtime seed so we never mutate the ScriptableObject asset
-            var configWithSeed = generationConfig;
-            configWithSeed.seed = _runtimeSeed;
-            var baseGrid = TerrainGenerator.GenerateChunk(coord, chunkSize, configWithSeed);
+            // Pass runtime seed as override — never mutate the ScriptableObject asset
+            var baseGrid = TerrainGenerator.GenerateChunk(coord, chunkSize, generationConfig, _runtimeSeed);
             var chunk = new ChunkData(coord, chunkSize, baseGrid);
 
             int waterCount = 0;
@@ -263,7 +261,7 @@ namespace ProceduralTerrain
 
             _loadedChunks[coord] = chunk;
 
-            ChunkRenderer.RenderChunk(chunk, groundTilemap, waterTilemap, tileset, generationConfig, chunkSize);
+            ChunkRenderer.RenderChunk(chunk, groundTilemap, waterTilemap, tileset, generationConfig, chunkSize, _runtimeSeed);
 
             if (objectSpawnConfig != null && objectSpawnConfig.rules.Count > 0)
             {
@@ -281,6 +279,12 @@ namespace ProceduralTerrain
 
                 _loadedObjects[coord] = chunkObjects;
             }
+
+            // Spawn saved player-placed structures
+            if (PlacedStructureManager.Instance != null)
+            {
+                PlacedStructureManager.Instance.LoadStructuresForChunk(coord);
+            }
         }
 
         private void UnloadChunk(Vector2Int coord)
@@ -296,6 +300,12 @@ namespace ProceduralTerrain
                     _loadedObjects.Remove(coord);
                 }
 
+                // Clean up placed structures in this chunk
+                if (PlacedStructureManager.Instance != null)
+                {
+                    PlacedStructureManager.Instance.UnloadStructuresForChunk(coord);
+                }
+
                 ChunkRenderer.ClearChunk(coord, groundTilemap, waterTilemap, chunkSize);
                 _loadedChunks.Remove(coord);
             }
@@ -309,7 +319,7 @@ namespace ProceduralTerrain
                 {
                     var coord = new Vector2Int(center.x + dx, center.y + dy);
                     if (_loadedChunks.TryGetValue(coord, out var chunk))
-                        ChunkRenderer.RenderChunk(chunk, groundTilemap, waterTilemap, tileset, generationConfig, chunkSize);
+                        ChunkRenderer.RenderChunk(chunk, groundTilemap, waterTilemap, tileset, generationConfig, chunkSize, _runtimeSeed);
                 }
             }
         }
