@@ -43,19 +43,19 @@ public class PlayerAnimations : MonoBehaviour
         {
             if (playerStateManager.playerDir == "Down")
             {
-                playerAnimator.Play("PlayerIdleFront");
+                playerAnimator.Play("PlayerRunFront");
             }
             else if (playerStateManager.playerDir == "Left")
             {
-                playerAnimator.Play("PlayerIdleLeft");
+                playerAnimator.Play("PlayerRunLeft");
             }
             else if (playerStateManager.playerDir == "Right")
             {
-                playerAnimator.Play("PlayerIdleRight");
+                playerAnimator.Play("PlayerRunRight");
             }
             else if (playerStateManager.playerDir == "Up")
             {
-                playerAnimator.Play("PlayerIdleBack");
+                playerAnimator.Play("PlayerRunBack");
             }
         }
 
