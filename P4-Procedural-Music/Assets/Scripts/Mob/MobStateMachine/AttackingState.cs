@@ -83,7 +83,10 @@ namespace MobSystem.States
             // ── Deal damage to player ──
             if (PlayerHealth.Instance != null)
             {
-                PlayerHealth.Instance.TakeDamage(mob.Data.attackDamage, mob.transform.position);
+                PlayerHealth.Instance.TakeDamage(
+                    mob.Data.attackDamage,
+                    mob.Data.happinessPenalty,
+                    mob.transform.position);
             }
             else
             {

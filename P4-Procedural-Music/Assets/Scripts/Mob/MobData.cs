@@ -96,6 +96,13 @@ namespace MobSystem.Data
         [Min(0.1f)]
         public float attackCooldown = 1.5f;
 
+        [Tooltip("Happiness lost per hit (0–1 scale). Overrides the generic damage calculation " +
+                 "in PlayerHealth when set above 0. Use this to make specific mobs feel more or " +
+                 "less threatening independent of their combat damage. " +
+                 "0 = use default formula (attackDamage × PlayerHealth.happinessLossPerDamage).")]
+        [Range(0f, 0.5f)]
+        public float happinessPenalty = 0f;
+
         // ───────────────────────── Searching ─────────────────────────
 
         [Header("Searching")]

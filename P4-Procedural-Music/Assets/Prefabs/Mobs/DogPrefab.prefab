@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 4127059687574487428}
   - component: {fileID: 1961291383053150006}
   - component: {fileID: 1166625518335583833}
+  - component: {fileID: -3280185337142015998}
+  - component: {fileID: 7828388250186036567}
   m_Layer: 10
   m_Name: DogPrefab
   m_TagString: Untagged
@@ -156,3 +158,41 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 4.62
+--- !u!114 &-3280185337142015998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7533120962837240174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c700e3d9e7ec0418befcbb1db0494b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobHitFeedback
+  shakeIntensity: 0.08
+  shakeDuration: 0.15
+  flashColor: {r: 0.9528302, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+--- !u!114 &7828388250186036567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7533120962837240174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c02ed322f491bd4cbec1a9e2e7dbe17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobHealthBar
+  barWidth: 0.8
+  barHeight: 0.08
+  verticalPadding: 0.15
+  showDuration: 3
+  fadeDuration: 0.5
+  backgroundColor: {r: 0.15, g: 0.15, b: 0.15, a: 0.8}
+  healthyColor: {r: 0.3, g: 0.9, b: 0.3, a: 1}
+  hurtColor: {r: 0.9, g: 0.9, b: 0.2, a: 1}
+  criticalColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+  sortingOrder: 100

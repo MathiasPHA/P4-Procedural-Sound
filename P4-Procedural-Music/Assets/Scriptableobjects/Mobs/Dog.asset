@@ -26,6 +26,7 @@ MonoBehaviour:
   attackRange: 1.2
   attackDamage: 50
   attackCooldown: 1.5
+  happinessPenalty: 0
   searchDuration: 4
   searchRadius: 3
   roamRadius: 5
@@ -40,7 +41,7 @@ MonoBehaviour:
   ambientVolume: 0.3
   hitSound: {fileID: 0}
   hitVolume: 0.5
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
   deathVolume: 0.5
   attackSound: {fileID: 0}
   attackVolume: 0.5

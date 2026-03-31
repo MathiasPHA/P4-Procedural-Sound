@@ -1,58 +1,55 @@
 using UnityEngine;
+using ProceduralMusic.Bridge;
 
 namespace MobSystem
 {
     /// <summary>
-    /// Handles the player's response to mob combat through the happiness system.
+    /// Handles the player's response to mob combat through the ComfortSystem.
     /// Two effects:
     ///
     ///   1. PASSIVE DRAIN — while GameStateManager is in Combat state, happiness
-    ///      decreases slowly every frame. This creates ambient stress from being
-    ///      in danger, even between individual mob attacks.
+    ///      decreases slowly every frame via ComfortSystem.AdjustHappiness().
     ///
     ///   2. HIT DAMAGE — when a mob lands an attack, happiness drops instantly
-    ///      by a scaled amount. This is the direct punishment for getting hit.
+    ///      by a scaled amount. Bigger hits = bigger drops.
     ///
-    /// Both effects feed through HappinessBar, which smoothly lerps the displayed
-    /// value — so a big hit causes a visible dip, and the passive drain creates
-    /// a slow downward pressure that the player can feel building.
+    /// Both effects go through ComfortSystem.AdjustHappiness(), which modifies
+    /// the 0–1 happiness value directly. That value feeds into UpdateTension(),
+    /// which feeds ComfortMusicBridge → ProceduralMusicController. So mob damage
+    /// directly drives musical tension.
     ///
     /// SETUP:
-    ///   1. Attach to the Player GameObject
-    ///   2. Assign the HappinessBar reference (auto-finds if left empty)
-    ///   3. Tune the drain rate and damage multiplier in the inspector
-    ///
-    /// Mobs call PlayerHealth.TakeDamage() from AttackingState. The GameStateManager
-    /// combat state is triggered by ChasingState.EnterState() and released by
-    /// FleeingState/SearchingState.ExitState() — no extra wiring needed.
+    ///   1. Attach to the Player GameObject (same object as ComfortSystem)
+    ///   2. ComfortSystem auto-finds if left empty
+    ///   3. Tune drain rate and damage scaling in the inspector
     /// </summary>
     public class PlayerHealth : MonoBehaviour
     {
         public static PlayerHealth Instance { get; private set; }
 
         [Header("References")]
-        [Tooltip("The HappinessBar component. Auto-finds if left empty.")]
-        [SerializeField] private HappinessBar happinessBar;
+        [Tooltip("The ComfortSystem on the player. Auto-finds if left empty.")]
+        [SerializeField] private ComfortSystem comfortSystem;
 
         [Header("Passive Combat Drain")]
-        [Tooltip("Happiness drained per second while in combat state. " +
-                 "Keeps pressure on the player even between individual hits.")]
+        [Tooltip("Happiness drained per second while in combat state (0–1 scale). " +
+                 "0.03 = 3% per second, so 10 seconds of combat = 30% happiness lost.")]
         [Min(0f)]
-        [SerializeField] private float combatDrainRate = 3f;
+        [SerializeField] private float combatDrainPerSecond = 0.03f;
 
         [Header("Hit Damage")]
-        [Tooltip("Multiplier converting mob attack damage to happiness reduction. " +
-                 "A mob dealing 4 damage with a multiplier of 2.5 = -10 happiness.")]
+        [Tooltip("Happiness lost per point of mob damage (0–1 scale). " +
+                 "A wolf dealing 4 damage at 0.025 per point = 0.10 = 10% happiness lost.")]
         [Min(0f)]
-        [SerializeField] private float damageToHappinessMultiplier = 2.5f;
+        [SerializeField] private float happinessLossPerDamage = 0.025f;
 
-        [Tooltip("Minimum happiness lost per hit, regardless of mob damage. " +
+        [Tooltip("Minimum happiness lost per hit regardless of damage (0–1 scale). " +
                  "Ensures even weak mobs feel threatening.")]
         [Min(0f)]
-        [SerializeField] private float minimumHitPenalty = 3f;
+        [SerializeField] private float minimumHitPenalty = 0.03f;
 
         [Header("Audio")]
-        [Tooltip("Sound played when the player takes a hit.")]
+        [Tooltip("Sound played when the player takes a hit from a mob.")]
         [SerializeField] private AudioClip hitSound;
         [Range(0f, 1f)]
         [SerializeField] private float hitVolume = 0.6f;
@@ -75,42 +72,62 @@ namespace MobSystem
 
         private void Start()
         {
-            if (happinessBar == null)
-                happinessBar = FindObjectOfType<HappinessBar>();
+            if (comfortSystem == null)
+                comfortSystem = GetComponent<ComfortSystem>();
 
-            if (happinessBar == null)
-                Debug.LogWarning("[PlayerHealth] No HappinessBar found. " +
-                                 "Happiness effects won't work.");
+            if (comfortSystem == null)
+                comfortSystem = FindObjectOfType<ComfortSystem>();
+
+            if (comfortSystem == null)
+                Debug.LogWarning("[PlayerHealth] No ComfortSystem found! " +
+                                 "Mob damage won't affect happiness.");
         }
 
         private void Update()
         {
-            // Check combat state
+            // Check combat state from GameStateManager
             _inCombat = GameStateManager.Instance != null
                      && GameStateManager.Instance.CurrentState == GameMusicState.Combat;
 
             // Passive drain while in combat
-            if (_inCombat && happinessBar != null && combatDrainRate > 0f)
+            if (_inCombat && comfortSystem != null && combatDrainPerSecond > 0f)
             {
-                happinessBar.ApplyComfortDelta(-combatDrainRate);
+                comfortSystem.AdjustHappiness(-combatDrainPerSecond * Time.deltaTime);
             }
         }
 
         // ───────────────────────── Public API ─────────────────────────
 
         /// <summary>
-        /// Called by MobController's AttackingState when a mob lands a hit.
-        /// Applies an instant happiness reduction scaled by the mob's damage.
+        /// Called by AttackingState when a mob lands a hit.
+        /// If the mob's MobData.happinessPenalty is set (> 0), uses that directly.
+        /// Otherwise falls back to the generic formula: damage × happinessLossPerDamage.
         /// </summary>
-        /// <param name="damage">The mob's attack damage value (from MobData.attackDamage).</param>
-        /// <param name="attackerPosition">World position of the mob, for directional feedback.</param>
-        public void TakeDamage(int damage, Vector3 attackerPosition)
+        /// <param name="damage">The mob's attackDamage value.</param>
+        /// <param name="happinessPenaltyOverride">MobData.happinessPenalty — 0 means use default formula.</param>
+        /// <param name="attackerPosition">World position of the mob.</param>
+        public void TakeDamage(int damage, float happinessPenaltyOverride, Vector3 attackerPosition)
         {
-            if (happinessBar == null) return;
+            if (comfortSystem != null)
+            {
+                float loss;
 
-            // Calculate happiness loss: damage * multiplier, with a minimum floor
-            float happinessLoss = Mathf.Max(damage * damageToHappinessMultiplier, minimumHitPenalty);
-            happinessBar.ApplyInstantDelta(-happinessLoss);
+                if (happinessPenaltyOverride > 0f)
+                {
+                    // Per-mob override: use the exact value from MobData
+                    loss = happinessPenaltyOverride;
+                }
+                else
+                {
+                    // Default formula: scale by damage, with a minimum floor
+                    loss = Mathf.Max(damage * happinessLossPerDamage, minimumHitPenalty);
+                }
+
+                comfortSystem.AdjustHappiness(-loss);
+
+                Debug.Log($"[PlayerHealth] Hit for {damage} dmg → " +
+                          $"-{loss:F3} happiness (now {comfortSystem.Happiness:F2})");
+            }
 
             // Play hit sound
             if (hitSound != null)
@@ -118,15 +135,16 @@ namespace MobSystem
                 AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
             }
 
-            Debug.Log($"[PlayerHealth] Hit for {damage} → -{happinessLoss:F0} happiness " +
-                      $"(now {happinessBar.CurrentHappiness:F0}/{happinessBar.MaxHappiness})");
+            // Visual feedback — red flash on player sprite
+            if (PlayerHitFeedback.Instance != null)
+                PlayerHitFeedback.Instance.TriggerHit();
         }
 
         // ───────────────────────── Debug GUI ─────────────────────────
 
         private void OnGUI()
         {
-            if (!showDebugGUI) return;
+            if (!showDebugGUI || comfortSystem == null) return;
 
             float x = 10f;
             float y = 700f;
@@ -144,16 +162,13 @@ namespace MobSystem
             {
                 GUI.color = Color.yellow;
                 GUI.Label(new Rect(x, y, 300, 20),
-                    $"Draining: -{combatDrainRate:F1}/sec");
+                    $"Draining: -{combatDrainPerSecond:F3}/sec");
                 y += 18f;
             }
 
-            if (happinessBar != null)
-            {
-                GUI.color = Color.white;
-                GUI.Label(new Rect(x, y, 300, 20),
-                    $"Happiness: {happinessBar.CurrentHappiness:F0} / {happinessBar.MaxHappiness}");
-            }
+            GUI.color = Color.white;
+            GUI.Label(new Rect(x, y, 300, 20),
+                $"Happiness: {comfortSystem.Happiness:F2} / 1.00");
 
             GUI.color = Color.white;
         }

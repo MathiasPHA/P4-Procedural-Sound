@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MobSystem.Data.MobSpawnConfig
   globalMobCap: 30
   minSpawnSpacing: 5
-  minPlayerDistance: 8
-  maxPlayerDistance: 30
-  spawnInterval: 5
+  minPlayerDistance: 50
+  maxPlayerDistance: 500
+  spawnInterval: 15.5
   maxSpawnsPerTick: 3
   rules:
   - name: Dog
     mobData: {fileID: 11400000, guid: 8c97474543bee084e85d89858e483a7c, type: 2}
-    typeCap: 10
+    typeCap: 3
     spawnChance: 1
     activeTimeMultiplier: 5
     strictTimeWindow: 0
