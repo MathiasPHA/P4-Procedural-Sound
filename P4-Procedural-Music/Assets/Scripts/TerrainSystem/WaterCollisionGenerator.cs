@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace ProceduralTerrain
 {
@@ -30,6 +31,11 @@ namespace ProceduralTerrain
             // Clean up existing collision for this chunk if any
             ClearChunkCollision(chunk.ChunkCoord);
 
+            // Read tile anchor from the Tilemap component to match sprite positioning
+            var tilemap = parent.GetComponent<Tilemap>();
+            float anchorX = tilemap != null ? tilemap.tileAnchor.x : 0f;
+            float anchorY = tilemap != null ? tilemap.tileAnchor.y : 0f;
+
             int worldOffsetX = chunk.ChunkCoord.x * chunkSize;
             int worldOffsetY = chunk.ChunkCoord.y * chunkSize;
 
@@ -51,7 +57,8 @@ namespace ProceduralTerrain
                     int tsxId = WaterBitmaskResolver.Resolve(bitmask);
 
                     // Get collision paths for this tile variant
-                    Vector2[][] tilePaths = WaterCollisionData.GetCollisionPaths(tsxId);
+                    // Skip W_Mid (tile 15) — fully surrounded water doesn't need collision
+                    Vector2[][] tilePaths = tsxId == 15 ? null : WaterCollisionData.GetCollisionPaths(tsxId);
                     if (tilePaths == null)
                         continue;
 
@@ -62,10 +69,10 @@ namespace ProceduralTerrain
                         for (int i = 0; i < path.Length; i++)
                         {
                             // path vertices are normalized (0-1), Y-up
-                            // Scale by cellSize and offset by cell world position
+                            // Scale by cellSize, offset by cell position + tile anchor
                             worldPath[i] = new Vector2(
-                                (wx + path[i].x) * cellSize,
-                                (wy + path[i].y) * cellSize
+                                (wx + path[i].x + anchorX) * cellSize,
+                                (wy + path[i].y + anchorY) * cellSize
                             );
                         }
                         allPaths.Add(worldPath);
