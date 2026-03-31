@@ -263,6 +263,12 @@ namespace ProceduralTerrain
 
             ChunkRenderer.RenderChunk(chunk, groundTilemap, waterTilemap, tileset, generationConfig, chunkSize, _runtimeSeed);
 
+            // Generate water collision shapes from .tsx collision data
+            float collisionCellSize = _grid != null ? _grid.cellSize.x : 1f;
+            WaterCollisionGenerator.GenerateChunkCollision(
+                chunk, chunkSize, collisionCellSize,
+                generationConfig, _runtimeSeed, waterTilemap.transform);
+
             if (objectSpawnConfig != null && objectSpawnConfig.rules.Count > 0)
             {
                 var removedIds = ChunkPersistence.LoadRemovedObjectIds(coord, SaveSystemManager.Instance.worldName);
@@ -307,19 +313,27 @@ namespace ProceduralTerrain
                 }
 
                 ChunkRenderer.ClearChunk(coord, groundTilemap, waterTilemap, chunkSize);
+                WaterCollisionGenerator.ClearChunkCollision(coord);
                 _loadedChunks.Remove(coord);
             }
         }
 
         private void RerenderChunkAndNeighbors(Vector2Int center)
         {
+            float collisionCellSize = _grid != null ? _grid.cellSize.x : 1f;
+
             for (int dy = -1; dy <= 1; dy++)
             {
                 for (int dx = -1; dx <= 1; dx++)
                 {
                     var coord = new Vector2Int(center.x + dx, center.y + dy);
                     if (_loadedChunks.TryGetValue(coord, out var chunk))
+                    {
                         ChunkRenderer.RenderChunk(chunk, groundTilemap, waterTilemap, tileset, generationConfig, chunkSize, _runtimeSeed);
+                        WaterCollisionGenerator.GenerateChunkCollision(
+                            chunk, chunkSize, collisionCellSize,
+                            generationConfig, _runtimeSeed, waterTilemap.transform);
+                    }
                 }
             }
         }
