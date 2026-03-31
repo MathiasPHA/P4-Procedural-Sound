@@ -77,8 +77,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: -1269940031
-  m_SortingLayer: 3
+  m_SortingLayerID: 1209571973
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 4034f726fb350774d91cc7df0a70fac3, type: 3}
@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 6379968897288913679}
   - component: {fileID: 1146854011689539404}
   - component: {fileID: -8538655097096910356}
+  - component: {fileID: 3578511633562600573}
   m_Layer: 6
   m_Name: Campfire_World
   m_TagString: Untagged
@@ -339,6 +340,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacedStructure
   sourceData: {fileID: 0}
+  wasSaveLoaded: 0
 --- !u!114 &6379968897288913679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,3 +431,26 @@ MonoBehaviour:
   depletedPrefab: {fileID: 0}
   shakeIntensity: 0.45
   shakeDuration: 0.15
+--- !u!114 &3578511633562600573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2f3e410ceac3da4abf19108a169dbe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::YSortable
+  sortingGroup: {fileID: 0}
+  spriteRenderer: {fileID: 7852800770308967991}
+  ordersPerUnit: 100
+  staticOrderOffset: 0
+  randomOffsetRange: 0.01
+  referenceMode: 0
+  feetCollider: {fileID: 0}
+  customPivot: {fileID: 0}
+  additionalYOffset: 0
+  unifySortingLayer: 1
+  unifiedSortingLayerName: World
