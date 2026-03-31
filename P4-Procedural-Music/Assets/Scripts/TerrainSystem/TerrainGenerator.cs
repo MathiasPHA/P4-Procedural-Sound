@@ -2,46 +2,10 @@ using UnityEngine;
 
 namespace ProceduralTerrain
 {
-    public enum TerrainType
-    {
-        Grass = 0,
-        Water = 1,
-        // Future: Forest = 2, Path = 3, Rock = 4, etc.
-    }
-
     /// <summary>
     /// Generates a terrain-type grid for a chunk using layered Perlin noise.
     /// Deterministic: same seed + chunk coord = same terrain every time.
     /// </summary>
-    [CreateAssetMenu(fileName = "TerrainGenConfig", menuName = "Procedural Terrain/Generation Config")]
-    public class TerrainGenerationConfig : ScriptableObject
-    {
-        [Header("Noise Settings")]
-        [Tooltip("World seed. Same seed = same world.")]
-        public int seed = 42;
-
-        [Tooltip("Scale of the primary noise. Smaller = larger features.")]
-        [Range(0.005f, 0.1f)]
-        public float noiseScale = 0.03f;
-
-        [Tooltip("Number of noise octaves for detail.")]
-        [Range(1, 6)]
-        public int octaves = 3;
-
-        [Tooltip("How much each octave contributes relative to the last.")]
-        [Range(0f, 1f)]
-        public float persistence = 0.5f;
-
-        [Tooltip("How much the frequency increases per octave.")]
-        [Range(1f, 4f)]
-        public float lacunarity = 2f;
-
-        [Header("Water")]
-        [Tooltip("Noise values below this become water.")]
-        [Range(0f, 1f)]
-        public float waterThreshold = 0.38f;
-    }
-
     public static class TerrainGenerator
     {
         /// <summary>
