@@ -4,21 +4,23 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using InventorySystem.Data;
 using InventorySystem.Harvesting;
+using MobSystem;
 
 namespace InventorySystem.Tools
 {
     /// <summary>
-    /// Handles tool usage: detects harvestable resources in the player's
+    /// Handles tool usage: detects harvestable resources AND mobs in the player's
     /// facing direction and applies damage with the equipped tool on left-click.
     ///
-    /// Reads the player's facing direction from PlayerStateManager.playerDir
-    /// and the equipped item from the Inventory.
+    /// Priority: consumable → mob → resource.
+    /// Mobs are checked first so a wolf in front of a tree gets hit, not the tree.
     ///
     /// SETUP:
     ///   1. Attach to the Player GameObject
     ///   2. Create ToolData assets for each tool and add them to the toolDatabase list
     ///   3. Set the resource layer mask to the layer your trees/rocks are on
-    ///   4. Assign the PlayerStateManager reference
+    ///   4. Set the mob layer mask to the layer your mobs are on
+    ///   5. Assign the PlayerStateManager reference
     /// </summary>
     public class ToolUseSystem : MonoBehaviour
     {
@@ -33,6 +35,10 @@ namespace InventorySystem.Tools
         [Tooltip("Layer(s) that harvestable resources are on.")]
         [SerializeField] private LayerMask resourceLayer;
 
+        [Tooltip("Layer(s) that mobs are on. Checked before resources — " +
+                 "hitting a wolf takes priority over the tree behind it.")]
+        [SerializeField] private LayerMask mobLayer;
+
         [Tooltip("Radius of the interaction circle in front of the player.")]
         [SerializeField] private float interactRadius = 1.5f;
 
@@ -46,6 +52,13 @@ namespace InventorySystem.Tools
 
         [Tooltip("Seconds between hand-gather actions.")]
         [Min(0.1f)][SerializeField] private float handCooldown = 0.8f;
+
+        [Header("Mob Combat")]
+        [Tooltip("Damage dealt to mobs when hitting with bare hands.")]
+        [Min(1)][SerializeField] private int handMobDamage = 1;
+
+        [Tooltip("Seconds between bare-hand mob attacks.")]
+        [Min(0.1f)][SerializeField] private float handMobCooldown = 0.6f;
 
         // Runtime
         private Dictionary<string, ToolData> _toolLookup = new();
@@ -79,7 +92,8 @@ namespace InventorySystem.Tools
 
             Debug.Log($"[ToolUseSystem] Init: {_toolLookup.Count} tools registered, " +
                       $"inventory={(_inventory != null ? "OK" : "NULL")}, " +
-                      $"resourceLayer={resourceLayer.value}");
+                      $"resourceLayer={resourceLayer.value}, " +
+                      $"mobLayer={mobLayer.value}");
         }
 
         private void Update()
@@ -106,8 +120,12 @@ namespace InventorySystem.Tools
             // Check if active hotbar item is a consumable — eat it
             if (TryConsumeHotbarItem()) return;
 
+            // Priority: mob → resource
+            if (TryHitMob()) return;
             TryUseTool();
         }
+
+        // ───────────────────────── Consumable ─────────────────────────
 
         private bool TryConsumeHotbarItem()
         {
@@ -122,6 +140,77 @@ namespace InventorySystem.Tools
             _inventory.UseSlot(hotbarIndex);
             return true;
         }
+
+        // ───────────────────────── Mob Combat ─────────────────────────
+
+        private bool TryHitMob()
+        {
+            if (mobLayer.value == 0) return false; // No mob layer configured
+
+            Vector2 facingDir = GetFacingDirection();
+            if (facingDir == Vector2.zero) return false;
+
+            Vector2 origin = (Vector2)transform.position
+                             + facingDir * detectionOffset.x
+                             + Vector2.up * detectionOffset.y;
+
+            var hit = Physics2D.OverlapCircle(origin, interactRadius, mobLayer);
+            if (hit == null) return false;
+
+            var mob = hit.GetComponent<MobController>();
+            if (mob == null) return false;
+
+            // Direction from player to mob (for knockback/scatter direction)
+            Vector2 hitDir = ((Vector2)mob.transform.position - (Vector2)transform.position).normalized;
+
+            // ── Check equipped tool ──
+            var equippedInstance = _inventory != null ? _inventory.EquippedItem : null;
+            ToolData toolData = null;
+
+            if (equippedInstance != null && equippedInstance.Data.category == ItemCategory.Tool)
+                _toolLookup.TryGetValue(equippedInstance.Data.id, out toolData);
+
+            if (toolData != null)
+            {
+                // ── Tool attack ──
+                playerStateManager.animationQue = $"Harvest{toolData.toolType}";
+                playerStateManager.StartHarvest();
+
+                mob.TakeDamage(toolData.damage, transform.position);
+
+                // Reduce durability
+                if (equippedInstance.Data.hasInstanceState && toolData.durabilityCost > 0)
+                {
+                    bool broke = equippedInstance.ReduceDurability(toolData.durabilityCost);
+
+                    if (broke)
+                    {
+                        Debug.Log($"[ToolUse] {equippedInstance.Data.displayName} broke!");
+                        _inventory.RemoveItem(equippedInstance.Data.id, 1);
+                    }
+                    else
+                    {
+                        _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                        _inventory.NotifyChanged();
+                    }
+                }
+
+                _cooldownTimer = toolData.cooldown;
+            }
+            else
+            {
+                // ── Bare-hand attack ──
+                playerStateManager.animationQue = "HarvestHand";
+                playerStateManager.StartHarvest();
+
+                mob.TakeDamage(handMobDamage, transform.position);
+                _cooldownTimer = handMobCooldown;
+            }
+
+            return true;
+        }
+
+        // ───────────────────────── Resource Harvesting ─────────────────────────
 
         private void TryUseTool()
         {

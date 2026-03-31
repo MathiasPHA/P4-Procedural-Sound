@@ -161,7 +161,8 @@ GameObject:
   - component: {fileID: -1374152125123140291}
   - component: {fileID: -3029696075308403882}
   - component: {fileID: 8828182713097135120}
-  - component: {fileID: 1568970434306919238}
+  - component: {fileID: 8506979196779420666}
+  - component: {fileID: 1784580168925146788}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -347,10 +348,15 @@ MonoBehaviour:
   resourceLayer:
     serializedVersion: 2
     m_Bits: 448
+  mobLayer:
+    serializedVersion: 2
+    m_Bits: 1024
   interactRadius: 7.36
   detectionOffset: {x: 0, y: -1.91}
   handDamage: 1
   handCooldown: 0.1
+  handMobDamage: 1
+  handMobCooldown: 0.6
 --- !u!82 &-1374152125123140291
 AudioSource:
   m_ObjectHideFlags: 0
@@ -474,7 +480,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveSystem
   playerTransform: {fileID: 6496137450566507929}
   comfortSystem: {fileID: 8437715424998398889}
---- !u!114 &1568970434306919238
+--- !u!114 &8506979196779420666
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -483,20 +489,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 4968789950358026991}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2f3e410ceac3da4abf19108a169dbe7, type: 3}
+  m_Script: {fileID: 11500000, guid: 545da188e22263e4d85d721361666671, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::YSortable
-  sortingGroup: {fileID: 0}
-  spriteRenderer: {fileID: 3043719320757778836}
-  ordersPerUnit: 100
-  staticOrderOffset: 0
-  randomOffsetRange: 0.01
-  referenceMode: 0
-  feetCollider: {fileID: 0}
-  customPivot: {fileID: 0}
-  additionalYOffset: 0
-  unifySortingLayer: 1
-  unifiedSortingLayerName: World
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.PlayerHealth
+  comfortSystem: {fileID: 8437715424998398889}
+  combatDrainPerSecond: 0.03
+  happinessLossPerDamage: 0.025
+  minimumHitPenalty: 3
+  hitSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
+  hitVolume: 0.6
+  showDebugGUI: 1
+--- !u!114 &1784580168925146788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e57ce76be754b3449b60ef50831ca19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.PlayerHitFeedback
+  hitColor: {r: 1, g: 0.3, b: 0.3, a: 1}
+  flashDuration: 0.2
+  playerSprite: {fileID: 3043719320757778836}
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0
