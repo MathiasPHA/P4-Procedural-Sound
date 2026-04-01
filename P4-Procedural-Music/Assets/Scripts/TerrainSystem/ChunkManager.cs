@@ -98,6 +98,8 @@ namespace ProceduralTerrain
             _lastPlayerChunk = WorldToChunkCoord(player.position);
             Debug.Log($"[ChunkManager] Player at {player.position}, cell {groundTilemap.WorldToCell(player.position)}, chunk {_lastPlayerChunk}");
             UpdateChunks(_lastPlayerChunk);
+
+            EnsureSafeSpawn();
         }
 
         private void Update()
@@ -211,6 +213,78 @@ namespace ProceduralTerrain
                     return id;
             }
             return 0;
+        }
+
+        /// <summary>
+        /// If the player spawned on water, spiral outward to find the nearest land tile and teleport there.
+        /// </summary>
+        private void EnsureSafeSpawn()
+        {
+            TerrainType spawnTerrain = GetTerrainAt(player.position);
+            if (spawnTerrain != TerrainType.Water)
+            {
+                Debug.Log($"[ChunkManager] Player spawn terrain: {spawnTerrain} — no relocation needed.");
+                return;
+            }
+
+            Debug.LogWarning("[ChunkManager] Player spawned on water! Searching for nearby land...");
+
+            Vector3Int startCell = groundTilemap.WorldToCell(player.position);
+            float cellSizeX = _grid.cellSize.x;
+            float cellSizeY = _grid.cellSize.y;
+            int maxSearchRadius = chunkSize * loadRadius;
+
+            // Spiral outward from spawn cell
+            for (int radius = 1; radius <= maxSearchRadius; radius++)
+            {
+                for (int dx = -radius; dx <= radius; dx++)
+                {
+                    for (int dy = -radius; dy <= radius; dy++)
+                    {
+                        // Only check the outer ring of this radius
+                        if (Mathf.Abs(dx) != radius && Mathf.Abs(dy) != radius)
+                            continue;
+
+                        int testX = startCell.x + dx;
+                        int testY = startCell.y + dy;
+
+                        Vector2Int chunkCoord = new Vector2Int(
+                            Mathf.FloorToInt((float)testX / chunkSize),
+                            Mathf.FloorToInt((float)testY / chunkSize)
+                        );
+
+                        TerrainType terrain;
+                        if (_loadedChunks.TryGetValue(chunkCoord, out var chunk))
+                        {
+                            int localX = ((testX % chunkSize) + chunkSize) % chunkSize;
+                            int localY = ((testY % chunkSize) + chunkSize) % chunkSize;
+                            terrain = chunk.GetTerrain(localX, localY);
+                        }
+                        else
+                        {
+                            terrain = TerrainGenerator.SampleAt(testX, testY, generationConfig, _runtimeSeed);
+                        }
+
+                        if (terrain != TerrainType.Water)
+                        {
+                            // Convert cell back to world position (center of the tile)
+                            Vector3 safePos = groundTilemap.CellToWorld(new Vector3Int(testX, testY, 0));
+                            safePos += new Vector3(cellSizeX * 0.5f, cellSizeY * 0.5f, 0f);
+                            safePos.z = player.position.z;
+
+                            Debug.Log($"[ChunkManager] Relocating player from water to {terrain} at cell ({testX},{testY}), world {safePos}");
+                            player.position = safePos;
+
+                            // Re-evaluate chunks from the new position
+                            _lastPlayerChunk = WorldToChunkCoord(player.position);
+                            UpdateChunks(_lastPlayerChunk);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            Debug.LogError("[ChunkManager] Could not find land within search radius! Player remains on water.");
         }
 
         private void UpdateChunks(Vector2Int centerChunk)
