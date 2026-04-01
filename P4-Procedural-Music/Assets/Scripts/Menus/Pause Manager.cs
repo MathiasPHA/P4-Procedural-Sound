@@ -1,22 +1,20 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PauseManager : MonoBehaviour
 {
     public static bool isPaused = false;
     public GameObject pauseMenuUI;
 
-    void Update()
+    private void OnPause(InputValue value)
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (isPaused)
         {
-            if (isPaused)
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
+            Resume();
+        }
+        else
+        {
+            Pause();
         }
     }
     public void Resume()
