@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 8828182713097135120}
   - component: {fileID: 8506979196779420666}
   - component: {fileID: 1784580168925146788}
-  - component: {fileID: 9203351957513065997}
+  - component: {fileID: 3721937245322308527}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -517,7 +517,7 @@ MonoBehaviour:
   hitColor: {r: 1, g: 0.3, b: 0.3, a: 1}
   flashDuration: 0.2
   playerSprite: {fileID: 3043719320757778836}
---- !u!114 &9203351957513065997
+--- !u!114 &3721937245322308527
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
