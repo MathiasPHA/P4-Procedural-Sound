@@ -61,9 +61,18 @@ namespace InventorySystem.UI
             if (highlightBorder != null)
                 highlightBorder.enabled = false;
 
-            // Force icon to stretch-fill with padding
+            // Force icon to stretch-fill with padding.
+            // If a slotBackground image exists and is smaller than the slot
+            // RectTransform (e.g. hotbar painted boxes), re-parent the icon
+            // under the background so it scales to the visible area instead
+            // of the full layout cell.
             if (iconImage != null)
             {
+                if (slotBackground != null && slotBackground.transform != transform)
+                {
+                    iconImage.rectTransform.SetParent(slotBackground.transform, false);
+                }
+
                 var iconRect = iconImage.rectTransform;
                 iconRect.anchorMin = Vector2.zero;
                 iconRect.anchorMax = Vector2.one;
@@ -72,19 +81,16 @@ namespace InventorySystem.UI
                 iconImage.preserveAspect = true;
             }
 
-            // Force durability bar to use Filled mode so it visually shrinks
-            if (durabilityBar != null)
-            {
-            durabilityBar.type = Image.Type.Filled;
-            durabilityBar.fillMethod = Image.FillMethod.Horizontal;
-            durabilityBar.fillOrigin = (int)Image.OriginHorizontal.Left;
-            }
-
             DisableChildRaycastTargets();
 
-            // Anchor quantity text to bottom-right
+            // Anchor quantity text to bottom-right of the visible slot area
             if (quantityText != null)
             {
+                if (slotBackground != null && slotBackground.transform != transform)
+                {
+                    quantityText.rectTransform.SetParent(slotBackground.transform, false);
+                }
+
                 var textRect = quantityText.rectTransform;
                 textRect.anchorMin = new Vector2(1f, 0f);
                 textRect.anchorMax = new Vector2(1f, 0f);
