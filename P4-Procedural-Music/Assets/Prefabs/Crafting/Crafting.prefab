@@ -701,6 +701,8 @@ MonoBehaviour:
   recipeDatabase:
   - {fileID: 11400000, guid: 89ccd0954437c8d418a4b4b167338d3a, type: 2}
   - {fileID: 11400000, guid: a619de73b22ceab42a3f43c5299a342a, type: 2}
+  - {fileID: 11400000, guid: 9e8a0ac6e5208914f8fd0326f5eab248, type: 2}
+  - {fileID: 11400000, guid: 20599ac605c4e314d9fdd593fe7e6427, type: 2}
   discoverAllOnStart: 1
 --- !u!1 &2142305890418808367
 GameObject:
