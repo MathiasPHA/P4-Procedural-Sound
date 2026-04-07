@@ -3756,6 +3756,14 @@ PrefabInstance:
       propertyPath: comfortMusicBridge
       value: 
       objectReference: {fileID: 1531113791}
+    - target: {fileID: 7230665982664784449, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
+      propertyPath: 'timeMilestoneTimes.Array.data[0]'
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7230665982664784449, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
+      propertyPath: 'timeMilestoneTimes.Array.data[8]'
+      value: 23
+      objectReference: {fileID: 0}
     - target: {fileID: 8031143485192898488, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
       propertyPath: m_Name
       value: Day Night System
