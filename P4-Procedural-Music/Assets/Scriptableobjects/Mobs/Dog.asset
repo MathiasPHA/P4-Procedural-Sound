@@ -39,7 +39,7 @@ MonoBehaviour:
   prefab: {fileID: 7533120962837240174, guid: f5e0da7755236d841996db9af255473b, type: 3}
   ambientSound: {fileID: 0}
   ambientVolume: 0.3
-  hitSound: {fileID: 0}
+  hitSound: {fileID: 8300000, guid: 5fdbe4f6c61f3174a99af8fd98773e97, type: 3}
   hitVolume: 0.5
   deathSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
   deathVolume: 0.5
