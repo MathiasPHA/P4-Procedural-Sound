@@ -163,6 +163,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "ReleaseClick",
+                    "type": "Button",
+                    "id": "d178c494-193b-49e1-854b-31db77f0958e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=1)",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "RightClick",
                     "type": "Button",
                     "id": "5637970b-5759-49c0-894b-ce30d9d0cbf7",
@@ -420,6 +429,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2fe72915-cb30-46b2-b70f-4f5bfdcabac6",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ReleaseClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
