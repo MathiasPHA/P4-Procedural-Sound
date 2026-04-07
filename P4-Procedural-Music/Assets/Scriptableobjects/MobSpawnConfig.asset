@@ -15,8 +15,8 @@ MonoBehaviour:
   globalMobCap: 30
   minSpawnSpacing: 5
   minPlayerDistance: 50
-  maxPlayerDistance: 500
-  spawnInterval: 15.5
+  maxPlayerDistance: 200
+  spawnInterval: 2.1
   maxSpawnsPerTick: 3
   rules:
   - name: Dog
