@@ -3,8 +3,8 @@ guid: 69f423e115d7f9a45a1f4d9a49e57362
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3719612805471857579
-    second: Cursor_Click 1_0
+      213: -6827313092743526907
+    second: Cursor_Click_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -24,7 +24,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -57,7 +57,7 @@ TextureImporter:
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 8
+  textureType: 7
   textureShape: 1
   singleChannelComponent: 0
   flipbookRows: 1
@@ -100,11 +100,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Cursor_Click 1_0
+      name: Cursor_Click_0
       rect:
         serializedVersion: 2
-        x: 419
-        y: 263
+        x: 169
+        y: 13
         width: 257
         height: 354
       alignment: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: babe424a328be9330800000000000000
-      internalID: 3719612805471857579
+      spriteID: 50606a03ae28041a0800000000000000
+      internalID: -6827313092743526907
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Cursor_Click 1_0: 3719612805471857579
+      Cursor_Click_0: -6827313092743526907
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
