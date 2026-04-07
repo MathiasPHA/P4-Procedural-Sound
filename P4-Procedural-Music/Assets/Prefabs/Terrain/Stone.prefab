@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5887650523722338755}
   - component: {fileID: 2746608715140692157}
   - component: {fileID: 8838825112406955203}
-  - component: {fileID: 6473266650450658351}
+  - component: {fileID: 5361530935983334088}
   m_Layer: 8
   m_Name: Stone
   m_TagString: Untagged
@@ -139,7 +139,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 5.9, y: 5}
   m_EdgeRadius: 0
---- !u!114 &6473266650450658351
+--- !u!114 &5361530935983334088
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,17 +148,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 478931609876907041}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e705c3c11fe791646b2de9f5b4e9df68, type: 3}
+  m_Script: {fileID: 11500000, guid: c987f697403a68440ba69785be603b2c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Harvesting.HarvestableResource
-  requiredToolType: 0
-  maxHealth: 1
-  dropItem: {fileID: 11400000, guid: ea53e826b3bb6f74dbf5978079446cc6, type: 2}
-  dropAmount: 1
-  directToInventory: 1
-  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.PickupInteractable
+  actionVerb: Pick up!
+  interactRange: 1.5
+  promptOffset: {x: 0, y: 1.2}
+  itemData: {fileID: 11400000, guid: ea53e826b3bb6f74dbf5978079446cc6, type: 2}
+  amount: 1
   pickupSound: {fileID: 8300000, guid: 0fa6545b998569c488a78ea6d7f66301, type: 3}
-  pickupVolume: 0.5
-  depletedPrefab: {fileID: 0}
-  shakeIntensity: 0.1
-  shakeDuration: 0.15
+  volume: 0.5
+  pitchVariation: 0.15

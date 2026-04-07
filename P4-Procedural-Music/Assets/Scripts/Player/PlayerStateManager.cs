@@ -1,14 +1,17 @@
 using InventorySystem.Data;
+using InteractionSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerStateManager : MonoBehaviour
 {
     PlayerBaseState currentState;
+    public PlayerBaseState CurrentState => currentState;
     public PlayerIdleState idleState = new PlayerIdleState();
     public PlayerRunState runState = new PlayerRunState();
     public PlayerInventoryState inventoryState = new PlayerInventoryState();
     public PlayerHarvestState harvestState = new PlayerHarvestState();
+    public PlayerMoveToInteractState moveToInteractState = new PlayerMoveToInteractState();
 
     public string animationQue;
 
@@ -33,11 +36,14 @@ public class PlayerStateManager : MonoBehaviour
 
     void Update()
     {
-        GetDircetion(moveInput.x, moveInput.y);
+        // Don't update facing direction during harvest — prevents animation restart
+        if (currentState != harvestState)
+            GetDircetion(moveInput.x, moveInput.y);
+
         currentState.UpdateState(this);
     }
 
-    public void SwitchState(PlayerBaseState state) 
+    public void SwitchState(PlayerBaseState state)
     {
         currentState = state;
         currentState.EnterState(this);
@@ -62,22 +68,18 @@ public class PlayerStateManager : MonoBehaviour
         if (x < 0)
         {
             playerDir = "Left";
-            //Debug.Log("Left");
         }
         else if (x > 0)
         {
             playerDir = "Right";
-            //Debug.Log("Right");
         }
         else if (y < 0)
         {
             playerDir = "Down";
-            //Debug.Log("Down");
         }
         else if (y > 0)
         {
             playerDir = "Up";
-            //Debug.Log("Up");
         }
     }
 }
