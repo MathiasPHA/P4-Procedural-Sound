@@ -46,7 +46,7 @@ MonoBehaviour:
     prefabs:
     - {fileID: 415707547045968234, guid: ad4e71926bf32b84aa630283843df4a5, type: 3}
     - {fileID: 8693388746157213851, guid: b0e30a9464f44ef4a8ff2f50cbb3976e, type: 3}
-    baseChance: 0.1
+    baseChance: 0.022
     densityNoiseScale: 0.045
     densityCutoff: 0.125
     densityMultiplier: 1

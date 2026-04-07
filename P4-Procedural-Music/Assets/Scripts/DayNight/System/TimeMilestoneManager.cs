@@ -22,31 +22,31 @@ public class TimeMilestoneManager : MonoBehaviour
     [SerializeField] private ComfortMusicBridge comfortMusicBridge;
 
     // Det her er lort, men det virker ikke hvis man bruger et array, da de ikke kan være sat til at være const
-    private const int DawnTime = 5;         // Dawn starts at 5:00
+    private const int DawnTime = 3;         // Dawn starts at 3:00
     private const int SunriseTime = 6;      // Sunrise at 6:00
-    private const int MorningTime = 7;      // Morning starts at 8:00
+    private const int MorningTime = 7;      // Morning starts at 7:00
     private const int MiddayTime = 11;      // Midday starts at 11:00
     private const int NoonTime = 12;        // Noon at 12:00
-    private const int AfternoonTime = 14;   // Afternoon starts at 13:00
+    private const int AfternoonTime = 14;   // Afternoon starts at 14:00
     private const int SunsetTime = 18;      // Sunset at 18:00
-    private const int DuskTime = 19;        // Dusk starts at 18:00
-    private const int NightTime = 22;       // Night starts at 22
+    private const int DuskTime = 19;        // Dusk starts at 19:00
+    private const int NightTime = 23;       // Night starts at 23:00
     private const int MidnightTime24 = 24;  // Midnight at 24:00 - Kun gjordt for ikke at misse den ved uheld
     private const int MidnightTime0 = 0;    // Midnight at 00:00 - Kun gjordt for ikke at misse den ved uheld
 
     public int[] timeMilestoneTimes = new int[]
     {
-        DawnTime,       
-        SunriseTime,    
-        MorningTime,    
-        NoonTime,       
-        MiddayTime,     
-        AfternoonTime,  
-        SunsetTime,     
-        DuskTime,       
-        NightTime,      
-        MidnightTime24, 
-        MidnightTime0,  
+        DawnTime,       // 0    
+        SunriseTime,    // 1
+        MorningTime,    // 2
+        NoonTime,       // 3
+        MiddayTime,     // 4
+        AfternoonTime,  // 5
+        SunsetTime,     // 6
+        DuskTime,       // 7
+        NightTime,      // 8
+        MidnightTime24, // 9
+        MidnightTime0,  // 10
     };
 
 
@@ -110,11 +110,11 @@ public class TimeMilestoneManager : MonoBehaviour
             case DuskTime:
                 // 19:00 - 20:59 is Dusk
                 currentTimeMilestone = timeMilestones[8];
+                comfortSystem.SetDayNightValue(0); // 0 = night
                 break;
             case NightTime:
-                // 21:00 - 23:59 is Night
+                // 23:00 - 23:59 is Night
                 currentTimeMilestone = timeMilestones[9];
-                comfortSystem.SetDayNightValue(0); // 0 = night
                 break;
             case MidnightTime24:
                 // 24:00 - 0:59 is Midnight
