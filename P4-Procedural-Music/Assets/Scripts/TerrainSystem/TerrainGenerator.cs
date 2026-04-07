@@ -2,46 +2,10 @@ using UnityEngine;
 
 namespace ProceduralTerrain
 {
-    public enum TerrainType
-    {
-        Grass = 0,
-        Water = 1,
-        // Future: Forest = 2, Path = 3, Rock = 4, etc.
-    }
-
     /// <summary>
     /// Generates a terrain-type grid for a chunk using layered Perlin noise.
     /// Deterministic: same seed + chunk coord = same terrain every time.
     /// </summary>
-    [CreateAssetMenu(fileName = "TerrainGenConfig", menuName = "Procedural Terrain/Generation Config")]
-    public class TerrainGenerationConfig : ScriptableObject
-    {
-        [Header("Noise Settings")]
-        [Tooltip("World seed. Same seed = same world.")]
-        public int seed = 42;
-
-        [Tooltip("Scale of the primary noise. Smaller = larger features.")]
-        [Range(0.005f, 0.1f)]
-        public float noiseScale = 0.03f;
-
-        [Tooltip("Number of noise octaves for detail.")]
-        [Range(1, 6)]
-        public int octaves = 3;
-
-        [Tooltip("How much each octave contributes relative to the last.")]
-        [Range(0f, 1f)]
-        public float persistence = 0.5f;
-
-        [Tooltip("How much the frequency increases per octave.")]
-        [Range(1f, 4f)]
-        public float lacunarity = 2f;
-
-        [Header("Water")]
-        [Tooltip("Noise values below this become water.")]
-        [Range(0f, 1f)]
-        public float waterThreshold = 0.38f;
-    }
-
     public static class TerrainGenerator
     {
         /// <summary>
@@ -49,13 +13,16 @@ namespace ProceduralTerrain
         /// chunkCoord is in chunk-space (e.g. (0,0), (1,0), (-1,2)).
         /// Returns a chunkSize x chunkSize array of TerrainType.
         /// </summary>
-        public static TerrainType[,] GenerateChunk(Vector2Int chunkCoord, int chunkSize, TerrainGenerationConfig config)
+        public static TerrainType[,] GenerateChunk(Vector2Int chunkCoord, int chunkSize, TerrainGenerationConfig config, int? seedOverride = null)
         {
             var grid = new TerrainType[chunkSize, chunkSize];
 
+            // Use override seed if provided, otherwise fall back to config
+            int activeSeed = seedOverride ?? config.seed;
+
             // Deterministic offset from seed so different seeds give different worlds
-            float seedOffsetX = config.seed * 17.3f;
-            float seedOffsetY = config.seed * 31.7f;
+            float seedOffsetX = activeSeed * 17.3f;
+            float seedOffsetY = activeSeed * 31.7f;
 
             for (int y = 0; y < chunkSize; y++)
             {
@@ -87,10 +54,11 @@ namespace ProceduralTerrain
         /// Sample a single terrain type at a world-space tile position.
         /// Useful for querying neighbors across chunk boundaries.
         /// </summary>
-        public static TerrainType SampleAt(int worldX, int worldY, TerrainGenerationConfig config)
+        public static TerrainType SampleAt(int worldX, int worldY, TerrainGenerationConfig config, int? seedOverride = null)
         {
-            float seedOffsetX = config.seed * 17.3f;
-            float seedOffsetY = config.seed * 31.7f;
+            int activeSeed = seedOverride ?? config.seed;
+            float seedOffsetX = activeSeed * 17.3f;
+            float seedOffsetY = activeSeed * 31.7f;
 
             float noiseValue = SampleNoise(
                 worldX + seedOffsetX,

@@ -72,6 +72,21 @@ namespace InventorySystem.UI
                 iconImage.preserveAspect = true;
             }
 
+           // Force durability bar to bottom-anchored filled bar
+            if (durabilityBar != null)
+            {
+                durabilityBar.type = Image.Type.Filled;
+                durabilityBar.fillMethod = Image.FillMethod.Horizontal;
+                durabilityBar.fillOrigin = (int)Image.OriginHorizontal.Left;
+
+                var barRect = durabilityBar.rectTransform;
+                barRect.anchorMin        = new Vector2(0f, 0f);
+                barRect.anchorMax        = new Vector2(1f, 0f);
+                barRect.pivot            = new Vector2(0.5f, 0f);
+                barRect.anchoredPosition = new Vector2(0f, 3f);
+                barRect.sizeDelta        = new Vector2(-8f, 3f);
+            }
+
             DisableChildRaycastTargets();
 
             // Anchor quantity text to bottom-right

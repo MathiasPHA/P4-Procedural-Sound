@@ -61,18 +61,18 @@ public class PlayerAnimations : MonoBehaviour
 
         if (animationQue == "HarvestAxe")
         {
-            if (playerStateManager.playerDir == "Left")
-                playerAnimator.Play("PlayerHarvestAxeLeft");
-            else if (playerStateManager.playerDir == "Right")
-                playerAnimator.Play("PlayerHarvestAxeRight");
+            if (playerStateManager.playerDir == "Left" || playerStateManager.playerDir == "Up")
+                playerAnimator.Play("PlayerAxeSwingLeft");
+            else if (playerStateManager.playerDir == "Right" || playerStateManager.playerDir == "Down")
+                playerAnimator.Play("PlayerAxeSwingRight");
         }
 
         if (animationQue == "HarvestPickaxe")
         {
-            if (playerStateManager.playerDir == "Left"||playerStateManager.playerDir == "Up")
-                playerAnimator.Play("PlayerHarvestPickaxeLeft");
-            else if (playerStateManager.playerDir == "Right"||playerStateManager.playerDir == "Down")
-                playerAnimator.Play("PlayerHarvestPickaxeRight");
+            if (playerStateManager.playerDir == "Left"|| playerStateManager.playerDir == "Up")
+                playerAnimator.Play("PlayerPickaxeSwingLeft");
+            else if (playerStateManager.playerDir == "Right"|| playerStateManager.playerDir == "Down")
+                playerAnimator.Play("PlayerPickaxeSwingRight");
         }
 
         if (animationQue == "HarvestHand")

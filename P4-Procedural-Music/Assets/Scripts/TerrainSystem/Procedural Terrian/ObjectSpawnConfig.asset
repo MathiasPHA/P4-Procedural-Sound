@@ -14,54 +14,58 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralTerrain.ObjectSpawnConfig
   rules:
   - name: Trees
+    enabled: 1
     prefabs:
     - {fileID: 1046357200212330553, guid: d1fafc1925db82347a1792f88c658d54, type: 3}
-    baseChance: 0.15
-    densityNoiseScale: 0.04
-    densityCutoff: 0
+    baseChance: 0.35
+    densityNoiseScale: 0.05
+    densityCutoff: 0.05
     densityMultiplier: 1
-    minSpacing: 1
+    minSpacing: 0
     positionJitter: 0.45
     allowedTerrain: 00000000
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 8946883767646482474, guid: c512959c9a01793409ed4039bc3325a3, type: 3}
+  - name: Big stone
+    enabled: 1
+    prefabs:
+    - {fileID: 5511241277875091019, guid: 24b2adab2d184f44e935f55a55e7bcce, type: 3}
+    baseChance: 0.05
+    densityNoiseScale: 0.005
+    densityCutoff: 0.02
+    densityMultiplier: 1
+    minSpacing: 0.5
+    positionJitter: 0.45
+    allowedTerrain: 00000000
+    sortingOrderOffset: 0
+    seedOffset: 0
+    depletedPrefab: {fileID: 0}
   - name: Berries
+    enabled: 1
     prefabs:
     - {fileID: 415707547045968234, guid: ad4e71926bf32b84aa630283843df4a5, type: 3}
     - {fileID: 8693388746157213851, guid: b0e30a9464f44ef4a8ff2f50cbb3976e, type: 3}
-    baseChance: 0.351
-    densityNoiseScale: 0.0964893
-    densityCutoff: 0
+    baseChance: 0.1
+    densityNoiseScale: 0.045
+    densityCutoff: 0.125
     densityMultiplier: 1
-    minSpacing: 1.75
+    minSpacing: 2.5
     positionJitter: 0.45
     allowedTerrain: 00000000
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
   - name: Sticks & stones
+    enabled: 1
     prefabs:
     - {fileID: 478931609876907041, guid: 34cf77f38678fe04aafc64668bbb5e50, type: 3}
     - {fileID: 1756571045538511056, guid: de9fd63849243324fbb117809e9088ba, type: 3}
-    baseChance: 0.351
-    densityNoiseScale: 0.0964893
-    densityCutoff: 0
+    baseChance: 0.3
+    densityNoiseScale: 0.05
+    densityCutoff: 0.35
     densityMultiplier: 1
-    minSpacing: 1.75
-    positionJitter: 0.45
-    allowedTerrain: 00000000
-    sortingOrderOffset: 0
-    seedOffset: 0
-    depletedPrefab: {fileID: 0}
-  - name: Big stone
-    prefabs:
-    - {fileID: 5511241277875091019, guid: 24b2adab2d184f44e935f55a55e7bcce, type: 3}
-    baseChance: 0.351
-    densityNoiseScale: 0.0964893
-    densityCutoff: 0
-    densityMultiplier: 1
-    minSpacing: 1.75
+    minSpacing: 3
     positionJitter: 0.45
     allowedTerrain: 00000000
     sortingOrderOffset: 0
