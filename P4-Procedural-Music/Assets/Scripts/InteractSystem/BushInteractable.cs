@@ -43,6 +43,14 @@ namespace InteractionSystem
             if (_harvested) return;
             _harvested = true;
 
+            // Face left or right toward the bush
+            float xDiff = transform.position.x - player.transform.position.x;
+            player.playerDir = xDiff < 0 ? "Left" : "Right";
+
+            // Play pickup animation
+            player.animationQue = "PickUp";
+            player.StartHarvest();
+
             // Spawn world drops
             if (dropItem != null && worldItemPrefab != null)
             {
