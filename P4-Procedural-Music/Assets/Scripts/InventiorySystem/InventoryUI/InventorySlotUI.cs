@@ -83,8 +83,8 @@ namespace InventorySystem.UI
                 barRect.anchorMin        = new Vector2(0f, 0f);
                 barRect.anchorMax        = new Vector2(1f, 0f);
                 barRect.pivot            = new Vector2(0.5f, 0f);
-                barRect.anchoredPosition = new Vector2(0f, 3f);
-                barRect.sizeDelta        = new Vector2(-8f, 3f);
+                barRect.anchoredPosition = new Vector2(0f, 12f);
+                barRect.sizeDelta        = new Vector2(-8f, 8f);
             }
 
             DisableChildRaycastTargets();
