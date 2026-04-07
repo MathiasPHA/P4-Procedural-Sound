@@ -131,12 +131,15 @@ AudioMixerController:
   m_AudioMixerGroupViews:
   - guids:
     - 0792b13b1677444d98c81ae2c60f9163
-    - 1490a51e52b1e4207880ee70b224eb8c
     - 7f3d797a09ad6497b8eeaf77cab81e6f
+    - 1490a51e52b1e4207880ee70b224eb8c
     - 729bfffbb175f48758135f49c96b04d3
     name: Master
   - guids:
+    - 0792b13b1677444d98c81ae2c60f9163
     - 7f3d797a09ad6497b8eeaf77cab81e6f
+    - 1490a51e52b1e4207880ee70b224eb8c
+    - 729bfffbb175f48758135f49c96b04d3
     name: Music
   - guids:
     - 1490a51e52b1e4207880ee70b224eb8c
@@ -148,7 +151,7 @@ AudioMixerController:
   - guids:
     - 729bfffbb175f48758135f49c96b04d3
     name: Sound effects
-  m_CurrentViewIndex: 0
+  m_CurrentViewIndex: 1
   m_TargetSnapshot: {fileID: 24500006}
 --- !u!243 &24300002
 AudioMixerGroupController:
