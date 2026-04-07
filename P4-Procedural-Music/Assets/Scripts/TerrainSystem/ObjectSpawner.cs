@@ -98,6 +98,7 @@ namespace ProceduralTerrain
             for (int ruleIdx = 0; ruleIdx < config.rules.Count; ruleIdx++)
             {
                 var rule = config.rules[ruleIdx];
+                if (!rule.enabled) continue;
                 if (rule.prefabs == null || rule.prefabs.Count == 0) continue;
 
                 // Track positions for minimum spacing within this rule
