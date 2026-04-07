@@ -82,5 +82,13 @@ public class PlayerAnimations : MonoBehaviour
             else if (playerStateManager.playerDir == "Right"||playerStateManager.playerDir == "Down")
                 playerAnimator.Play("PlayerHarvestHandRight");
         }
+
+        if (animationQue == "PickUp")
+        {
+            if (playerStateManager.playerDir == "Left" || playerStateManager.playerDir == "Up")
+                playerAnimator.Play("PlayerHarvestHandLeft");
+            else
+                playerAnimator.Play("PlayerHarvestHandRight");
+        }
     }
 }

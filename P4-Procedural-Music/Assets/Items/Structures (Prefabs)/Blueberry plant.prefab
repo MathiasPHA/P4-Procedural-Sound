@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2347701310003711094}
   - component: {fileID: 8742374092893415099}
   - component: {fileID: 1856559873834934828}
+  - component: {fileID: 4632026036573499104}
   m_Layer: 8
   m_Name: Blueberry plant
   m_TagString: Untagged
@@ -146,7 +147,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 415707547045968234}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e705c3c11fe791646b2de9f5b4e9df68, type: 3}
   m_Name: 
@@ -167,3 +168,27 @@ MonoBehaviour:
   depletedPrefab: {fileID: 0}
   shakeIntensity: 0.1
   shakeDuration: 0.15
+--- !u!114 &4632026036573499104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 415707547045968234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca15f71e044cdc4985221eb33a847fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.BushInteractable
+  actionVerb: Pick
+  interactRange: 1.5
+  promptOffset: {x: 0, y: 1.2}
+  dropItem: {fileID: 11400000, guid: bc57268a814562d4ab0830c30d608949, type: 2}
+  dropAmount: 3
+  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
+  depletedSprite: {fileID: 0}
+  depletedPrefab: {fileID: 0}
+  destroyOnHarvest: 1
+  harvestSound: {fileID: 8300000, guid: 0fa6545b998569c488a78ea6d7f66301, type: 3}
+  volume: 0.5
+  pitchVariation: 0.15
