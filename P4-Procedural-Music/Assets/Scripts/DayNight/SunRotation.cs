@@ -47,7 +47,7 @@ public class SunRotation : MonoBehaviour
             light.intensity = lightIntensity * t;
             light.color = Color.Lerp(nightColor, dayColor, t);
         }
-        else if (timeReference.time >= timeReference.timeReferenceArray[3] && timeReference.time < timeReference.timeReferenceArray[5])
+        else if (timeReference.time >= timeReference.timeReferenceArray[2] && timeReference.time < timeReference.timeReferenceArray[5])
         {
             // Morning to Afternoon (7:00 - 14:00): Full intensity, dayColor
             light.intensity = lightIntensity;
