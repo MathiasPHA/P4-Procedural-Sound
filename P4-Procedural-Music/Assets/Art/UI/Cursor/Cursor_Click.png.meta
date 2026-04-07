@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 69f423e115d7f9a45a1f4d9a49e57362
+guid: caea47b27b642b54089099aced44a24c
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -103,10 +103,10 @@ TextureImporter:
       name: Cursor_Click_0
       rect:
         serializedVersion: 2
-        x: 169
-        y: 13
-        width: 257
-        height: 354
+        x: 178
+        y: 118
+        width: 148
+        height: 267
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
