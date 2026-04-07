@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f430a87255dbe144c87206c3879406e0
+guid: 0288499a722130644b90e3307688ab28
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -857270020218531044
-    second: Cursor 1_0
+      213: 7289466651938832814
+    second: Hubert_Shrug2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Cursor 1_0
+      name: Hubert_Shrug2_0
       rect:
         serializedVersion: 2
-        x: 419
-        y: 263
-        width: 257
-        height: 354
+        x: 515
+        y: 58
+        width: 969
+        height: 1784
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c135848657d5a14f0800000000000000
-      internalID: -857270020218531044
+      spriteID: ea1ced67c43692560800000000000000
+      internalID: 7289466651938832814
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Cursor 1_0: -857270020218531044
+      Hubert_Shrug2_0: 7289466651938832814
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
