@@ -16,6 +16,10 @@ namespace ProceduralTerrain
             [Tooltip("Name for debugging.")]
             public string name = "Tree";
 
+            [Header("Toggle")]
+            [Tooltip("Enable/disable this rule. Disabled rules won't spawn objects.")]
+            public bool enabled = true;
+
             [Tooltip("Prefab(s) to spawn. Picks randomly if multiple.")]
             public List<GameObject> prefabs = new List<GameObject>();
 
