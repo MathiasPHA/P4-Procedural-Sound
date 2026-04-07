@@ -74,7 +74,7 @@ public class TimeMilestoneManager : MonoBehaviour
         switch (roundedTime)
         {
             case DawnTime:
-                // 5:00 - 5:59 is Dawn
+                // 3:00 - 5:59 is Dawn
                 currentTimeMilestone = timeMilestones[1];
                 break;
             case SunriseTime:
@@ -125,7 +125,7 @@ public class TimeMilestoneManager : MonoBehaviour
                 currentTimeMilestone = timeMilestones[0];
                 break;
             case MidnightTime0 + 1:
-                // 1:00 - 4:59 is still Night
+                // 1:00 - 2:59 is still Night
                 currentTimeMilestone = timeMilestones[9];
                 break;
         }
