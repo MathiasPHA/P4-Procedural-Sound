@@ -13,7 +13,6 @@ public class TimeReference : MonoBehaviour
     public DayNightMaster dayNightMaster;
 
 
-
     [Header("Variables")]
     // Variables used to create the reference system
     public string timeOfDay;
