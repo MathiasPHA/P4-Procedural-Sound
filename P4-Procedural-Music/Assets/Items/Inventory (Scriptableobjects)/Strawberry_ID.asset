@@ -22,7 +22,7 @@ MonoBehaviour:
   isDroppable: 1
   hasInstanceState: 0
   maxDurability: 100
-  happinessBoost: 0.05
+  happinessBoost: 0.005
   consumeSound: {fileID: 8300000, guid: 2c78bea2e4210c746a24116cd503d40f, type: 3}
   consumeSoundVolume: 0.5
   displayStats: []

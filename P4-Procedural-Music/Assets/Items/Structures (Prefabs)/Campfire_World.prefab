@@ -114,7 +114,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!1 &7393102421888571362
+--- !u!1 &2319465394022386072
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,46 +122,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2737738783036177952}
-  - component: {fileID: 2920082180707628336}
-  - component: {fileID: 9122419163685939560}
-  - component: {fileID: 1626463313000977171}
-  - component: {fileID: 4589884889179511114}
-  - component: {fileID: 7775883068081880350}
-  - component: {fileID: 6379968897288913679}
-  - component: {fileID: 1146854011689539404}
-  - component: {fileID: -8538655097096910356}
-  - component: {fileID: 3578511633562600573}
+  - component: {fileID: 2821298236368990213}
+  - component: {fileID: 2830128335011259928}
   m_Layer: 6
-  m_Name: Campfire_World
+  m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2737738783036177952
+--- !u!4 &2821298236368990213
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
+  m_GameObject: {fileID: 2319465394022386072}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.06, y: -1.77, z: 0}
+  m_LocalPosition: {x: 0, y: -3.54, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2972819932874030993}
-  m_Father: {fileID: 0}
+  m_Children: []
+  m_Father: {fileID: 2737738783036177952}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2920082180707628336
+--- !u!114 &2830128335011259928
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
+  m_GameObject: {fileID: 2319465394022386072}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
@@ -195,7 +186,7 @@ MonoBehaviour:
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
-  m_PointLightInnerRadius: 9.73
+  m_PointLightInnerRadius: 9.19
   m_PointLightOuterRadius: 42.03
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
@@ -207,6 +198,48 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
+--- !u!1 &7393102421888571362
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2737738783036177952}
+  - component: {fileID: 9122419163685939560}
+  - component: {fileID: 1626463313000977171}
+  - component: {fileID: 4589884889179511114}
+  - component: {fileID: 7775883068081880350}
+  - component: {fileID: 6379968897288913679}
+  - component: {fileID: 1146854011689539404}
+  - component: {fileID: -8538655097096910356}
+  - component: {fileID: 3578511633562600573}
+  - component: {fileID: 4861363729842834169}
+  m_Layer: 6
+  m_Name: Campfire_World
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2737738783036177952
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.06, y: -1.77, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2972819932874030993}
+  - {fileID: 2821298236368990213}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9122419163685939560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bff17bfc65d6cb41be268f29682687e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TorchFlicker
-  torchLight: {fileID: 0}
+  torchLight: {fileID: 2830128335011259928}
   minIntensity: 1.75
   maxIntensity: 3
   baseIntensity: 2.28
@@ -477,3 +510,18 @@ MonoBehaviour:
   additionalYOffset: 0
   unifySortingLayer: 1
   unifiedSortingLayerName: World
+--- !u!114 &4861363729842834169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67fd9947978f09b41955464610c850f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
+  actionVerb: Interact
+  interactRange: 9
+  promptOffset: {x: 0, y: 1.2}
