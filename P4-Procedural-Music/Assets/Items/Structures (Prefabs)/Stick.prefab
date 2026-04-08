@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7254229436529974650}
   - component: {fileID: 8588717315165073258}
   - component: {fileID: 2565324798976352916}
-  - component: {fileID: 6716890281935541932}
+  - component: {fileID: 7128928794174920161}
   m_Layer: 8
   m_Name: Stick
   m_TagString: Untagged
@@ -127,7 +127,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.22, y: -0.29}
+  m_Offset: {x: 0.19308281, y: -0.24961829}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -137,9 +137,9 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 3.22, y: 2.57}
+  m_Size: {x: 5.8582726, y: 5.558245}
   m_EdgeRadius: 0
---- !u!114 &6716890281935541932
+--- !u!114 &7128928794174920161
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,17 +148,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1756571045538511056}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e705c3c11fe791646b2de9f5b4e9df68, type: 3}
+  m_Script: {fileID: 11500000, guid: c987f697403a68440ba69785be603b2c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Harvesting.HarvestableResource
-  requiredToolType: 0
-  maxHealth: 1
-  dropItem: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
-  dropAmount: 1
-  directToInventory: 1
-  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.PickupInteractable
+  actionVerb: Pick up
+  interactRange: 1.5
+  promptOffset: {x: 0, y: 1.2}
+  itemData: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
+  amount: 1
   pickupSound: {fileID: 8300000, guid: 0fa6545b998569c488a78ea6d7f66301, type: 3}
-  pickupVolume: 0.5
-  depletedPrefab: {fileID: 0}
-  shakeIntensity: 0.1
-  shakeDuration: 0.15
+  volume: 0.5
+  pitchVariation: 0.15
