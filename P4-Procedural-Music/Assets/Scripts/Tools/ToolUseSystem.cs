@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using InventorySystem.Data;
 using InventorySystem.Harvesting;
+using InteractionSystem;
 using MobSystem;
 
 namespace InventorySystem.Tools
@@ -12,6 +13,7 @@ namespace InventorySystem.Tools
     {
         [Header("References")]
         [SerializeField] private PlayerStateManager playerStateManager;
+        [SerializeField] private InteractionDetector interactionDetector;
 
         [Header("Tool Database")]
         [SerializeField] private List<ToolData> toolDatabase = new();
@@ -55,6 +57,11 @@ namespace InventorySystem.Tools
                 if (playerStateManager == null)
                     Debug.LogError("[ToolUseSystem] PlayerStateManager not found!");
             }
+
+            if (interactionDetector == null)
+            {
+                interactionDetector = GetComponent<InteractionDetector>();
+            }
         }
 
         private void Update()
@@ -72,6 +79,16 @@ namespace InventorySystem.Tools
             if (PauseManager.isPaused) return;
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
+            // ── Interaction priority: if hovering an interactable, walk to it ──
+            if (interactionDetector != null && interactionDetector.CurrentTarget != null)
+            {
+                var target = interactionDetector.CurrentTarget;
+                playerStateManager.moveToInteractState.SetTarget(target);
+                playerStateManager.SwitchState(playerStateManager.moveToInteractState);
+                return;
+            }
+
+            // ── Otherwise: existing tool/combat logic ──
             if (TryHitMob()) return;
             TryUseTool();
         }
@@ -160,6 +177,55 @@ namespace InventorySystem.Tools
         }
 
         // ───────────── Resource Harvesting ─────────────
+
+        /// <summary>
+        /// Public entry point for the interaction system. Hits a specific resource
+        /// without needing OverlapCircle detection — the player is already in range.
+        /// </summary>
+        public void HarvestResource(HarvestableResource resource)
+        {
+            if (resource == null || resource.IsDepleted) return;
+            if (_cooldownTimer > 0f) return;
+            if (_inventory == null) return;
+
+            Vector2 hitDir = ((Vector2)resource.transform.position - (Vector2)transform.position).normalized;
+
+            if (resource.RequiredToolType == ToolType.None)
+            {
+                playerStateManager.animationQue = "HarvestHand";
+                playerStateManager.StartHarvest();
+                resource.TakeDamage(handDamage, hitDir);
+                _cooldownTimer = handCooldown;
+                return;
+            }
+
+            var equippedInstance = _inventory.EquippedItem;
+            if (equippedInstance == null || equippedInstance.Data.category != ItemCategory.Tool)
+                return;
+
+            if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
+                return;
+
+            if (resource.RequiredToolType != toolData.toolType) return;
+
+            playerStateManager.animationQue = $"Harvest{toolData.toolType}";
+            playerStateManager.StartHarvest();
+            resource.TakeDamage(toolData.damage, hitDir);
+
+            if (equippedInstance.Data.hasInstanceState && toolData.durabilityCost > 0)
+            {
+                bool broke = equippedInstance.ReduceDurability(toolData.durabilityCost);
+                if (broke)
+                    _inventory.RemoveItem(equippedInstance.Data.id, 1);
+                else
+                {
+                    _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                    _inventory.NotifyChanged();
+                }
+            }
+
+            _cooldownTimer = toolData.cooldown;
+        }
 
         private void TryUseTool()
         {
