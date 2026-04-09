@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2951d61a32b8454c979693dbe827797, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomCursor
-  cursorTexture: {fileID: 2800000, guid: e590e124e28a8024c9cbfa7e7e4210d6, type: 3}
-  cursorTextureClicked: {fileID: 2800000, guid: caea47b27b642b54089099aced44a24c, type: 3}
+  cursorTexture: {fileID: 2800000, guid: f430a87255dbe144c87206c3879406e0, type: 3}
+  cursorTextureClicked: {fileID: 2800000, guid: 69f423e115d7f9a45a1f4d9a49e57362, type: 3}
 --- !u!114 &6904511747776676920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,6 +74,6 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: 745bf8a9-d13d-4f62-9c06-d8671e9e5de5
+  m_DefaultActionMap: UI
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

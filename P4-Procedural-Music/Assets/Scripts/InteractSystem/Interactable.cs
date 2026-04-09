@@ -1,0 +1,59 @@
+using UnityEngine;
+
+namespace InteractionSystem
+{
+    /// <summary>
+    /// Base component for anything the player can interact with in the world.
+    /// Attach a subclass (PickupInteractable, HarvestInteractable, etc.) to
+    /// the GameObject alongside a Collider2D on the "Interactable" layer.
+    ///
+    /// The InteractionDetector on the player finds these via mouse hover,
+    /// shows the action prompt, and triggers Interact() after walking in range.
+    /// </summary>
+    public abstract class Interactable : MonoBehaviour
+    {
+        [Header("Interaction Settings")]
+        [Tooltip("Verb shown in the prompt above this object (e.g. 'Pick Up', 'Chop', 'Open').")]
+        [SerializeField] private string actionVerb = "Interact";
+
+        [Tooltip("How close the player must be to perform the interaction.")]
+        [SerializeField] private float interactRange = 1.5f;
+
+        [Tooltip("Offset from pivot where the prompt appears (world space, added to transform.position).")]
+        [SerializeField] private Vector2 promptOffset = new Vector2(0f, 1.2f);
+
+        /// <summary>The verb displayed in the UI prompt.</summary>
+        public string ActionVerb => actionVerb;
+
+        /// <summary>Max distance from player to interact.</summary>
+        public float InteractRange => interactRange;
+
+        /// <summary>World position where the prompt UI should appear.</summary>
+        public Vector3 PromptPosition => transform.position + (Vector3)promptOffset;
+
+        /// <summary>
+        /// Called when the player arrives in range and completes the interaction.
+        /// Implement per-type logic (pickup, harvest, open UI, etc.).
+        /// </summary>
+        /// <param name="player">The player's state manager.</param>
+        public abstract void Interact(PlayerStateManager player);
+
+        /// <summary>
+        /// Override to return false if this object can no longer be interacted with
+        /// (e.g. depleted resource, already picked up). The detector will skip it.
+        /// </summary>
+        public virtual bool CanInteract() => true;
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = new Color(0f, 1f, 0.5f, 0.3f);
+            Gizmos.DrawWireSphere(transform.position, interactRange);
+
+            // Prompt position
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(PromptPosition, 0.08f);
+        }
+#endif
+    }
+}

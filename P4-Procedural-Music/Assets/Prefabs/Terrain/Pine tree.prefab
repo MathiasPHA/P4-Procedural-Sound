@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7580627953573228894}
   - component: {fileID: 1828994288715957585}
   - component: {fileID: 3135014998427476470}
+  - component: {fileID: 1029091525035382191}
   m_Layer: 7
   m_Name: Pine tree
   m_TagString: Untagged
@@ -204,3 +205,18 @@ MonoBehaviour:
   additionalYOffset: 0
   unifySortingLayer: 1
   unifiedSortingLayerName: World
+--- !u!114 &1029091525035382191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1046357200212330553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67fd9947978f09b41955464610c850f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
+  actionVerb: Chop
+  interactRange: 6
+  promptOffset: {x: 0, y: 1.2}

@@ -215,6 +215,7 @@ GameObject:
   - component: {fileID: 1146854011689539404}
   - component: {fileID: -8538655097096910356}
   - component: {fileID: 3578511633562600573}
+  - component: {fileID: 4861363729842834169}
   m_Layer: 6
   m_Name: Campfire_World
   m_TagString: Untagged
@@ -509,3 +510,18 @@ MonoBehaviour:
   additionalYOffset: 0
   unifySortingLayer: 1
   unifiedSortingLayerName: World
+--- !u!114 &4861363729842834169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67fd9947978f09b41955464610c850f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
+  actionVerb: Interact
+  interactRange: 9
+  promptOffset: {x: 0, y: 1.2}
