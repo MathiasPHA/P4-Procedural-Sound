@@ -94,6 +94,7 @@ namespace InventorySystem.Data
             if (remaining < amount)
             {
                 OnInventoryChanged?.Invoke();
+                TryAutoEquipIfActiveSlot(ActiveHotbarIndex);
             }
 
             return remaining;
@@ -116,6 +117,7 @@ namespace InventorySystem.Data
                 Slots[emptyIndex].Set(instance, 1);
                 NotifySlotChanged(emptyIndex);
                 OnInventoryChanged?.Invoke();
+                TryAutoEquipIfActiveSlot(emptyIndex);
                 return true;
             }
 
@@ -563,11 +565,38 @@ namespace InventorySystem.Data
 
             ActiveHotbarIndex = data.activeHotbarIndex;
             OnInventoryChanged?.Invoke();
+            TryAutoEquipIfActiveSlot(ActiveHotbarIndex);
+            OnHotbarSelectionChanged?.Invoke(ActiveHotbarIndex);
         }
 
         // =====================================================================
         // Internals
         // =====================================================================
+
+        /// <summary>
+        /// If the given slot is the active hotbar slot, re-run equip logic
+        /// so a newly added tool/buildable gets equipped automatically.
+        /// </summary>
+        private void TryAutoEquipIfActiveSlot(int slotIndex)
+        {
+            if (slotIndex != ActiveHotbarIndex) return;
+            if (slotIndex >= HotbarSize) return;
+
+            var slot = Slots[slotIndex];
+            if (slot.IsEmpty) return;
+
+            if ((slot.ItemData.category == ItemCategory.Tool ||
+                 slot.ItemData.category == ItemCategory.Buildable) &&
+                EquippedSlotIndex != slotIndex)
+            {
+                int prev = EquippedSlotIndex;
+                EquippedSlotIndex = slotIndex;
+
+                if (prev >= 0) NotifySlotChanged(prev);
+                NotifySlotChanged(slotIndex);
+                OnEquippedChanged?.Invoke(slotIndex);
+            }
+        }
 
         private int FindFirstEmptySlot()
         {
