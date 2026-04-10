@@ -98,15 +98,16 @@ namespace InventorySystem.Tools
             if (!value.isPressed) return;
             if (_cooldownTimer > 0f) return;
             if (PauseManager.isPaused) return;
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
-            // ── If hovering a campfire, walk to it and add fuel ──
+            // ── Campfire fueling: check BEFORE UI block so hotbar UI doesn't intercept ──
             if (interactionDetector != null && interactionDetector.CurrentTarget is CampfireInteractable)
             {
                 playerStateManager.moveToInteractState.SetTarget(interactionDetector.CurrentTarget);
                 playerStateManager.SwitchState(playerStateManager.moveToInteractState);
                 return;
             }
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
             TryConsumeHotbarItem();
         }
