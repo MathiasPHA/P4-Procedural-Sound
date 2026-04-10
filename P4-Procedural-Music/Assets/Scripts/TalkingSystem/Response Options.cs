@@ -14,6 +14,20 @@ namespace InteractionSystem
         [Header("Typewriter")]
         [SerializeField] private float characterDelay = 0.05f;
 
+        [Header("Audio")]
+        [SerializeField] private AudioClip wrongToolSound;
+        [Range(0f, 1f)][SerializeField] private float volume = 0.5f;
+        [Range(0f, 0.5f)][SerializeField] private float pitchVariation = 0.1f;
+
+        private AudioSource _audioSource;
+
+        private void Awake()
+        {
+            _audioSource = GetComponent<AudioSource>();
+        }
+
+        
+
         private Coroutine _activeCoroutine;
 
         private readonly Dictionary<(string equipped, string required), string> _responses = new()
@@ -43,6 +57,12 @@ namespace InteractionSystem
             // Stop any running typewriter or hide timer
             if (_activeCoroutine != null)
                 StopCoroutine(_activeCoroutine);
+            
+            if (_audioSource != null && wrongToolSound != null)
+                {
+                    _audioSource.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
+                    _audioSource.PlayOneShot(wrongToolSound, volume);
+                }
 
             responseText.gameObject.SetActive(true);
             _activeCoroutine = StartCoroutine(TypewriterRoutine(message));
