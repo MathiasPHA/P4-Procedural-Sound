@@ -216,7 +216,7 @@ namespace ProceduralMusic.Bridge
                         Kantele = LayerRange.Until(0.4f),  // Drops out as fear builds
                         Melody = LayerRange.From(0.2f),
                         Strings = LayerRange.From(0.3f),
-                        Bass = LayerRange.From(0.5f),
+                        Bass = LayerRange.From(0.7f),
                         Percussion = LayerRange.Off,
                         MusicStyleSetting = MusicStyle.Sparse,
                         FMModIndexMultiplier = 2f
