@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 91cd0b9161034234089bf7dcfa496119
+guid: 86aab90d0fbc2dd47a718714c0ce0b96
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6468416657920843082
-    second: Treestump_0
+      213: -4487646349703917849
+    second: strawberry-plant_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Treestump_0
+      name: strawberry-plant_0
       rect:
         serializedVersion: 2
-        x: 122
-        y: 105
-        width: 844
-        height: 447
+        x: 36
+        y: 13
+        width: 471
+        height: 547
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6b2a86d12519b36a0800000000000000
-      internalID: -6468416657920843082
+      spriteID: 7eec158eb6da8b1c0800000000000000
+      internalID: -4487646349703917849
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Treestump_0: -6468416657920843082
+      strawberry-plant_0: -4487646349703917849
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
