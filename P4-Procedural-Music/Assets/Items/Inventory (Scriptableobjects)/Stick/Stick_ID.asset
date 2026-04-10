@@ -22,4 +22,9 @@ MonoBehaviour:
   isDroppable: 1
   hasInstanceState: 0
   maxDurability: 100
+  happinessBoost: 0
+  consumeSound: {fileID: 0}
+  consumeSoundVolume: 1
+  isFuel: 1
+  burnFuelValue: 5
   displayStats: []
