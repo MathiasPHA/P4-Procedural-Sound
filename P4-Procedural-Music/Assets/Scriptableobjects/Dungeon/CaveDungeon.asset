@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6931f2376040f334aa270de68be03cbe, type: 3}
+  m_Name: CaveDungeon
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonConfig
+  dungeonName: Cave
+  dungeonType: 0
+  minRooms: 3
+  maxRooms: 10
+  minRoomWidth: 5
+  maxRoomWidth: 12
+  minRoomHeight: 7
+  maxRoomHeight: 12
+  corridorWidth: 2
+  entranceHallwayLength: 6
+  wallThickness: 4
+  gridWidth: 60
+  gridHeight: 60
+  difficultyTier: 1
+  enemyDensity: 0.3
+  lootDensity: 0.2
+  roomSpawns:
+  - prefab: {fileID: 5511241277875091019, guid: 24b2adab2d184f44e935f55a55e7bcce, type: 3}
+    density: 0.071
+    maxCount: 0
+    minSpacing: 0
+    wallPadding: 0
+  corridorSpawns:
+  - prefab: {fileID: 478931609876907041, guid: 34cf77f38678fe04aafc64668bbb5e50, type: 3}
+    density: 0.084
+    maxCount: 0
+    minSpacing: 0
+    wallPadding: 2
+  happinessModifier: -0.3
+  dungeonComfortValue: 0.15
+  threshold1Max: 0.3
+  threshold2Min: 0.55
+  threshold3Min: 0.8
+  stateLow: 4
+  stateMid: 2
+  stateHigh: 5
+  stateMax: 5

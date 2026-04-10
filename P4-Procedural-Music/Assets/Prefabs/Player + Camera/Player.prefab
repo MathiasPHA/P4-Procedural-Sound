@@ -164,6 +164,7 @@ GameObject:
   - component: {fileID: 8506979196779420666}
   - component: {fileID: 1784580168925146788}
   - component: {fileID: 3721937245322308527}
+  - component: {fileID: 7465066579430091896}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -242,7 +243,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Movement
+  m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &4859490917234952540
@@ -274,15 +275,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08b961b239d0c9d4eb11568e3c7203ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComfortSystem
-  happinessRiseRate: 0.08
-  happinessFallRate: 0.12
+  happinessRiseRate: 1
+  happinessFallRate: 1
   happinessSmoothTime: 0.5
   dayBaselineComfort: 0.55
   nightBaselineComfort: 0.3
   comfortSmoothTime: 0.3
   happinessTensionWeight: 0.3
   comfortTensionWeight: 0.7
-  showDebugGUI: 1
+  showDebugGUI: 0
 --- !u!114 &5913942603858231884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -295,10 +296,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82b1851245cedbf439f77f3d769ef9c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.ItemMagnet
-  magnetRadius: 14.73
+  magnetRadius: 18.8
   pullSpeed: 9.4
   acceleration: 3
-  collectDistance: 3.93
+  collectDistance: 7.93
   pickupClip: {fileID: 8300000, guid: 0fa6545b998569c488a78ea6d7f66301, type: 3}
   pickupVolume: 0.5
   pitchVariation: 0.15
@@ -317,14 +318,14 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   placeables:
   - {fileID: 11400000, guid: 9bb0b9522cbff8147af80d40c66aa4bf, type: 2}
-  gridSize: 1
+  gridSize: 2
   skipGroundCheck: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 448
   validColour: {r: 0.2, g: 1, b: 0.2, a: 0.5}
   invalidColour: {r: 1, g: 0.2, b: 0.2, a: 0.5}
   ghostSortingOrder: 100
@@ -344,18 +345,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Tools.ToolUseSystem
   playerStateManager: {fileID: 4859490917234952540}
+  interactionDetector: {fileID: 7465066579430091896}
   toolDatabase:
   - {fileID: 11400000, guid: 7c765aba3eb9eb24abc56d54164e2e8c, type: 2}
-  - {fileID: 11400000, guid: badd5b9eb08a47d4f98a5d4c7934daa2, type: 2}
   - {fileID: 11400000, guid: f2e6fc4287afe094d966b8c9e5adad27, type: 2}
+  - {fileID: 11400000, guid: badd5b9eb08a47d4f98a5d4c7934daa2, type: 2}
   resourceLayer:
     serializedVersion: 2
     m_Bits: 448
   mobLayer:
     serializedVersion: 2
     m_Bits: 1024
-  interactRadius: 7.36
-  detectionOffset: {x: 0, y: -1.91}
+  interactRadius: 6.92
+  detectionOffset: {x: 0, y: 0}
   handDamage: 1
   handCooldown: 0.1
   handMobDamage: 1
@@ -501,7 +503,7 @@ MonoBehaviour:
   minimumHitPenalty: 3
   hitSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
   hitVolume: 0.6
-  showDebugGUI: 1
+  showDebugGUI: 0
 --- !u!114 &1784580168925146788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -540,6 +542,24 @@ MonoBehaviour:
   additionalYOffset: 0
   unifySortingLayer: 1
   unifiedSortingLayerName: World
+--- !u!114 &7465066579430091896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd71b530260e7f4198bdc5233b3c3e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.InteractionDetector
+  promptUI: {fileID: 0}
+  mainCamera: {fileID: 0}
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 448
+  detectionRadius: 0.2
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0

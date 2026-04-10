@@ -6,7 +6,10 @@ using ProceduralMusic.Bridge;
 /// Attach this to any convenient GameObject (the player, the music object, or its own).
 ///
 /// Each frame it reads ComfortSystem.Tension and calls SetTension() on the music controller.
-/// Optionally maps tension ranges to game music states for structural changes.
+/// Maps tension ranges to game music states using three threshold sets:
+///   - Day:     Cozy → Exploring → Pressure
+///   - Night:   Cozy → Night → Spooky → Horror
+///   - Dungeon: Defined per-dungeon via DungeonConfig SO
 /// </summary>
 public class ComfortMusicBridge : MonoBehaviour
 {
@@ -48,6 +51,10 @@ public class ComfortMusicBridge : MonoBehaviour
     private bool useExploring2;
     private bool wasNight;
 
+    // Dungeon mode
+    private bool inDungeonMode;
+    private DungeonConfig activeDungeonConfig;
+
     private ProceduralMusicController Music => ProceduralMusicController.Instance;
 
     private void Start()
@@ -83,36 +90,44 @@ public class ComfortMusicBridge : MonoBehaviour
 
     private void UpdateAutoState(float tension)
     {
-        bool isNight = comfortSystem != null && comfortSystem.DayNightValue < nightThreshold;
-
-        // Reset to Exploring when night falls
-        if (isNight && !wasNight)
-            useExploring2 = false;
-        wasNight = isNight;
-
         GameMusicState suggestedState;
 
-        if (isNight)
+        if (inDungeonMode && activeDungeonConfig != null)
         {
-            // Night: Cozy (0–0.2) → Night (0.2–0.6) → Spooky (0.6–0.8) → Horror (0.8–1)
-            if (tension >= nightHorrorMin)
-                suggestedState = GameMusicState.Horror;
-            else if (tension >= nightSpookyMin)
-                suggestedState = GameMusicState.Spooky;
-            else if (tension <= nightCozyMax)
-                suggestedState = GameMusicState.Cozy;
-            else
-                suggestedState = GameMusicState.Night;
+            // Dungeon: thresholds defined per-dungeon on the DungeonConfig SO
+            suggestedState = activeDungeonConfig.EvaluateState(tension);
         }
         else
         {
-            // Day: Cozy (0–0.15) → Exploring/Exploring2 (0.15–0.6) → Pressure (0.6–1)
-            if (tension >= dayPressureMin)
-                suggestedState = GameMusicState.Pressure;
-            else if (tension <= dayCozyMax)
-                suggestedState = GameMusicState.Cozy;
+            bool isNight = comfortSystem != null && comfortSystem.DayNightValue < nightThreshold;
+
+            // Reset to Exploring when night falls
+            if (isNight && !wasNight)
+                useExploring2 = false;
+            wasNight = isNight;
+
+            if (isNight)
+            {
+                // Night: Cozy (0–0.2) → Night (0.2–0.6) → Spooky (0.6–0.8) → Horror (0.8–1)
+                if (tension >= nightHorrorMin)
+                    suggestedState = GameMusicState.Horror;
+                else if (tension >= nightSpookyMin)
+                    suggestedState = GameMusicState.Spooky;
+                else if (tension <= nightCozyMax)
+                    suggestedState = GameMusicState.Cozy;
+                else
+                    suggestedState = GameMusicState.Night;
+            }
             else
-                suggestedState = useExploring2 ? GameMusicState.Exploring2 : GameMusicState.Exploring;
+            {
+                // Day: Cozy (0–0.15) → Exploring/Exploring2 (0.15–0.6) → Pressure (0.6–1)
+                if (tension >= dayPressureMin)
+                    suggestedState = GameMusicState.Pressure;
+                else if (tension <= dayCozyMax)
+                    suggestedState = GameMusicState.Cozy;
+                else
+                    suggestedState = useExploring2 ? GameMusicState.Exploring2 : GameMusicState.Exploring;
+            }
         }
 
         // Hysteresis: require the suggested state to hold for stateChangeDelay
@@ -134,6 +149,39 @@ public class ComfortMusicBridge : MonoBehaviour
     }
 
     // ───────────────────────── Public API ─────────────────────────
+
+    /// <summary>
+    /// Enter dungeon mode: tension thresholds are read from the DungeonConfig SO.
+    /// Each dungeon type defines its own state progression.
+    /// Called by DungeonAtmosphere on dungeon entry.
+    /// </summary>
+    public void EnterDungeonMode(DungeonConfig config)
+    {
+        inDungeonMode = true;
+        activeDungeonConfig = config;
+        stateTimer = 0f;
+
+        // Immediately evaluate so music doesn't lag behind
+        if (Music != null && comfortSystem != null)
+        {
+            float tension = tensionCurve.Evaluate(comfortSystem.Tension);
+            GameMusicState initialState = config.EvaluateState(tension);
+            currentMusicState = initialState;
+            pendingState = initialState;
+            Music.SetGameState(initialState);
+        }
+    }
+
+    /// <summary>
+    /// Exit dungeon mode: return to day/night threshold switching.
+    /// Called by DungeonAtmosphere.OnDestroy().
+    /// </summary>
+    public void ExitDungeonMode()
+    {
+        inDungeonMode = false;
+        activeDungeonConfig = null;
+        stateTimer = 0f;
+    }
 
     /// <summary>
     /// Manually override the game music state (e.g. for cutscenes, dialogue).
