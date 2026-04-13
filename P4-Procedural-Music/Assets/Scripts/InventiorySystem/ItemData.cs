@@ -49,6 +49,15 @@ namespace InventorySystem.Data
         [Range(0f, 1f)]
         public float consumeSoundVolume = 1f;
 
+        [Header("Fuel")]
+        [Tooltip("Can this item be used as campfire fuel?")]
+        public bool isFuel = false;
+
+        [Tooltip("How much fuel this item adds to the campfire per unit. " +
+                 "Only used when isFuel is true.")]
+        [Min(0f)]
+        public float burnFuelValue = 0f;
+
         [Header("Display Stats")]
         [Tooltip("Stats/properties shown in the crafting detail pane and tooltip. " +
                  "Each entry is a label + value pair. Order here = order in UI.")]

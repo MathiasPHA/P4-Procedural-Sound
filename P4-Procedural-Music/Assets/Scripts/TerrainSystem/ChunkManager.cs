@@ -44,6 +44,10 @@ namespace ProceduralTerrain
         [Tooltip("Configuration for spawning trees, rocks, props, etc. Leave empty to skip object spawning.")]
         public ObjectSpawnConfig objectSpawnConfig;
 
+        [Header("Debug")]
+        [Tooltip("Enable verbose ChunkManager logs in the Console.")]
+        public bool enableDebugLogs = false;
+
         // Runtime seed — overrides generationConfig.seed without touching the asset
         private int _runtimeSeed;
 
@@ -55,6 +59,18 @@ namespace ProceduralTerrain
         private Dictionary<Vector2Int, ObjectSpawner.ChunkObjects> _loadedObjects = new Dictionary<Vector2Int, ObjectSpawner.ChunkObjects>();
         private Vector2Int _lastPlayerChunk;
         private Grid _grid;
+
+        private void Log(string message)
+        {
+            if (enableDebugLogs)
+                Debug.Log(message);
+        }
+
+        private void LogWarning(string message)
+        {
+            if (enableDebugLogs)
+                Debug.LogWarning(message);
+        }
 
         private void Awake()
         {
@@ -80,7 +96,7 @@ namespace ProceduralTerrain
                 ? GameSettings.Instance.seed
                 : generationConfig.seed;
 
-            Debug.Log($"[ChunkManager] Using seed: {_runtimeSeed}");
+            Log($"[ChunkManager] Using seed: {_runtimeSeed}");
 
             _grid = groundTilemap.layoutGrid;
             if (_grid == null)
@@ -90,13 +106,13 @@ namespace ProceduralTerrain
                 return;
             }
 
-            Debug.Log($"[ChunkManager] Grid cell size: {_grid.cellSize}");
+            Log($"[ChunkManager] Grid cell size: {_grid.cellSize}");
 
             groundTilemap.ClearAllTiles();
             waterTilemap.ClearAllTiles();
 
             _lastPlayerChunk = WorldToChunkCoord(player.position);
-            Debug.Log($"[ChunkManager] Player at {player.position}, cell {groundTilemap.WorldToCell(player.position)}, chunk {_lastPlayerChunk}");
+            Log($"[ChunkManager] Player at {player.position}, cell {groundTilemap.WorldToCell(player.position)}, chunk {_lastPlayerChunk}");
             UpdateChunks(_lastPlayerChunk);
 
             EnsureSafeSpawn();
@@ -141,7 +157,7 @@ namespace ProceduralTerrain
 
             if (!_loadedChunks.TryGetValue(chunkCoord, out var chunk))
             {
-                Debug.LogWarning($"[ChunkManager] Cannot modify unloaded chunk {chunkCoord}");
+                LogWarning($"[ChunkManager] Cannot modify unloaded chunk {chunkCoord}");
                 return;
             }
 
@@ -223,11 +239,11 @@ namespace ProceduralTerrain
             TerrainType spawnTerrain = GetTerrainAt(player.position);
             if (spawnTerrain != TerrainType.Water)
             {
-                Debug.Log($"[ChunkManager] Player spawn terrain: {spawnTerrain} — no relocation needed.");
+                Log($"[ChunkManager] Player spawn terrain: {spawnTerrain} - no relocation needed.");
                 return;
             }
 
-            Debug.LogWarning("[ChunkManager] Player spawned on water! Searching for nearby land...");
+            LogWarning("[ChunkManager] Player spawned on water! Searching for nearby land...");
 
             Vector3Int startCell = groundTilemap.WorldToCell(player.position);
             float cellSizeX = _grid.cellSize.x;
@@ -272,7 +288,7 @@ namespace ProceduralTerrain
                             safePos += new Vector3(cellSizeX * 0.5f, cellSizeY * 0.5f, 0f);
                             safePos.z = player.position.z;
 
-                            Debug.Log($"[ChunkManager] Relocating player from water to {terrain} at cell ({testX},{testY}), world {safePos}");
+                            Log($"[ChunkManager] Relocating player from water to {terrain} at cell ({testX},{testY}), world {safePos}");
                             player.position = safePos;
 
                             // Re-evaluate chunks from the new position
@@ -327,7 +343,7 @@ namespace ProceduralTerrain
 
             int cellStartX = coord.x * chunkSize;
             int cellStartY = coord.y * chunkSize;
-            Debug.Log($"[ChunkManager] Loading chunk {coord} → cells ({cellStartX},{cellStartY}) to ({cellStartX + chunkSize - 1},{cellStartY + chunkSize - 1}), water: {waterCount}/{chunkSize * chunkSize}");
+            Log($"[ChunkManager] Loading chunk {coord} -> cells ({cellStartX},{cellStartY}) to ({cellStartX + chunkSize - 1},{cellStartY + chunkSize - 1}), water: {waterCount}/{chunkSize * chunkSize}");
 
             var mods = ChunkPersistence.LoadChunkModifications(coord, SaveSystemManager.Instance.worldName);
             if (mods != null)

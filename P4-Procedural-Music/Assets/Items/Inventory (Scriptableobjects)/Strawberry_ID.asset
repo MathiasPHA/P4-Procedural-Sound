@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Strawberry
   description: A jummy red berry. Useful for jam and cakes!
   loreNote: My granddaughters favourite
-  icon: {fileID: 1669490993913548592, guid: 50a582239fdb25d428ffd50f5bafdb2d, type: 3}
+  icon: {fileID: 21300000, guid: 50a582239fdb25d428ffd50f5bafdb2d, type: 3}
   category: 2
   maxStackSize: 64
   isDroppable: 1

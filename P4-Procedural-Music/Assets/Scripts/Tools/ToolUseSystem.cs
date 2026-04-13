@@ -35,6 +35,15 @@ namespace InventorySystem.Tools
         private Dictionary<string, ToolData> _toolLookup = new();
         private Inventory _inventory;
         private float _cooldownTimer;
+        private UnityEngine.Rendering.Universal.Light2D _playerLight2D;
+
+        private float _drainTimer = 0f;
+        private bool _drainingDurability = false;
+        private ToolData _equippedToolData = null;
+        private float _baseLightIntensity = 1f;
+
+        [Header("Torch Light Fade")]
+        [SerializeField] private float minLightIntensity = 0.1f; // intensity at 0 durability
 
         private void Start()
         {
@@ -50,6 +59,16 @@ namespace InventorySystem.Tools
             }
 
             _inventory = InventoryBootstrap.PlayerInventory;
+
+            // Grab the Light2D directly on this GameObject and make sure it starts off
+            _playerLight2D = GetComponent<UnityEngine.Rendering.Universal.Light2D>();
+            if (_playerLight2D == null)
+                Debug.LogWarning("[ToolUseSystem] No Light2D found on Player!");
+            else
+                _playerLight2D.enabled = false;
+
+            // Subscribe to equip/unequip event
+            _inventory.OnEquippedChanged += OnEquippedChanged;
 
             if (playerStateManager == null)
             {
@@ -68,6 +87,89 @@ namespace InventorySystem.Tools
         {
             if (_cooldownTimer > 0f)
                 _cooldownTimer -= Time.deltaTime;
+
+            // ── Passive durability drain ──
+            if (_drainingDurability && _equippedToolData != null && _inventory != null)
+            {
+                _drainTimer -= Time.deltaTime;
+                if (_drainTimer <= 0f)
+                {
+                    _drainTimer = _equippedToolData.drainInterval;
+
+                    var equipped = _inventory.EquippedItem;
+                    if (equipped != null && equipped.Data.hasInstanceState)
+                    {
+                        bool broke = equipped.ReduceDurability(_equippedToolData.drainAmount);
+                        if (broke)
+                        {
+                            Debug.Log($"[ToolUseSystem] '{equipped.Data.id}' broke from passive drain — removing.");
+                            _drainingDurability = false;
+                            _equippedToolData = null;
+                            if (_playerLight2D != null) _playerLight2D.enabled = false;
+                            _inventory.RemoveItem(equipped.Data.id, 1);
+                        }
+                        else
+                        {
+                            // Scale light intensity with remaining durability
+                            if (_playerLight2D != null)
+                            {
+                                float t = equipped.DurabilityNormalized;
+                                _playerLight2D.intensity = Mathf.Lerp(minLightIntensity, _baseLightIntensity, t);
+                            }
+
+                            _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                            _inventory.NotifyChanged();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_inventory != null)
+                _inventory.OnEquippedChanged -= OnEquippedChanged;
+        }
+
+        private void OnEquippedChanged(int equippedSlotIndex)
+        {
+            var item = _inventory.EquippedItem;
+            Debug.Log($"[ToolUseSystem] OnEquippedChanged fired — slot={equippedSlotIndex}, item={item?.Data?.id ?? "none"}");
+
+            bool holdingTorch = (item != null && item.Data.id == "Torch");
+
+            // Toggle light
+            if (_playerLight2D != null)
+            {
+                _playerLight2D.enabled = holdingTorch;
+                if (holdingTorch)
+                    _baseLightIntensity = _playerLight2D.intensity; // store full intensity
+                else
+                    _playerLight2D.intensity = _baseLightIntensity; // reset when unequipped
+            }
+
+            // Look up ToolData for the newly equipped item
+            _equippedToolData = null;
+            if (item != null && _toolLookup.TryGetValue(item.Data.id, out var toolData))
+                _equippedToolData = toolData;
+
+            if (item != null)
+                Debug.Log($"[ToolUseSystem] ToolData lookup for '{item.Data.id}': {(_equippedToolData != null ? "FOUND" : "NOT FOUND — check Tool Database list in Inspector")}");
+
+            // Start passive drain only if the ToolData says so
+            if (_equippedToolData != null && _equippedToolData.drainsOverTime)
+            {
+                _drainingDurability = true;
+                _drainTimer = _equippedToolData.drainInterval;
+                Debug.Log($"[ToolUseSystem] Drain started — interval={_equippedToolData.drainInterval}s, amount={_equippedToolData.drainAmount}");
+            }
+            else
+            {
+                _drainingDurability = false;
+                _drainTimer = 0f;
+                if (_equippedToolData != null)
+                    Debug.Log($"[ToolUseSystem] ToolData found but drainsOverTime=false — no passive drain.");
+            }
         }
 
         // ───────────── Input System Callbacks ─────────────
@@ -98,6 +200,21 @@ namespace InventorySystem.Tools
             if (!value.isPressed) return;
             if (_cooldownTimer > 0f) return;
             if (PauseManager.isPaused) return;
+
+            // ── Campfire fueling: check BEFORE UI block so hotbar UI doesn't intercept ──
+            // Use GetComponent because InteractionDetector may return HarvestInteractable first
+            // when multiple Interactable components exist on the same GameObject.
+            if (interactionDetector != null && interactionDetector.CurrentTarget != null)
+            {
+                var campfire = interactionDetector.CurrentTarget.GetComponent<CampfireInteractable>();
+                if (campfire != null)
+                {
+                    playerStateManager.moveToInteractState.SetTarget(campfire);
+                    playerStateManager.SwitchState(playerStateManager.moveToInteractState);
+                    return;
+                }
+            }
+
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
             TryConsumeHotbarItem();
@@ -178,10 +295,6 @@ namespace InventorySystem.Tools
 
         // ───────────── Resource Harvesting ─────────────
 
-        /// <summary>
-        /// Public entry point for the interaction system. Hits a specific resource
-        /// without needing OverlapCircle detection — the player is already in range.
-        /// </summary>
         public void HarvestResource(HarvestableResource resource)
         {
             if (resource == null || resource.IsDepleted) return;

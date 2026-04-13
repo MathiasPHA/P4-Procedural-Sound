@@ -30,5 +30,15 @@ namespace InventorySystem.Data
 
         [Tooltip("Durability cost per swing. Only applies to items with hasInstanceState.")]
         [Min(0)] public int durabilityCost = 1;
+
+        [Header("Passive Durability Drain")]
+        [Tooltip("Should this item lose durability over time while equipped?")]
+        public bool drainsOverTime = false;
+
+        [Tooltip("Seconds between each passive durability tick.")]
+        [Min(0.1f)] public float drainInterval = 5f;
+
+        [Tooltip("How much durability is lost per tick.")]
+        [Min(1)] public int drainAmount = 1;
     }
 }
