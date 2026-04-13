@@ -25,4 +25,6 @@ MonoBehaviour:
   happinessBoost: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
+  isFuel: 1
+  burnFuelValue: 25
   displayStats: []

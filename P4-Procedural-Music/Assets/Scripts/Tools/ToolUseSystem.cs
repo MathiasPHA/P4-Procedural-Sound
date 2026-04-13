@@ -15,10 +15,6 @@ namespace InventorySystem.Tools
         [SerializeField] private PlayerStateManager playerStateManager;
         [SerializeField] private InteractionDetector interactionDetector;
 
-         [Header("Wrong Tool Feedback")]
-        [SerializeField] private ResponseOptions wrongToolFeedback;
-
-
         [Header("Tool Database")]
         [SerializeField] private List<ToolData> toolDatabase = new();
 
@@ -102,6 +98,21 @@ namespace InventorySystem.Tools
             if (!value.isPressed) return;
             if (_cooldownTimer > 0f) return;
             if (PauseManager.isPaused) return;
+
+            // ── Campfire fueling: check BEFORE UI block so hotbar UI doesn't intercept ──
+            // Use GetComponent because InteractionDetector may return HarvestInteractable first
+            // when multiple Interactable components exist on the same GameObject.
+            if (interactionDetector != null && interactionDetector.CurrentTarget != null)
+            {
+                var campfire = interactionDetector.CurrentTarget.GetComponent<CampfireInteractable>();
+                if (campfire != null)
+                {
+                    playerStateManager.moveToInteractState.SetTarget(campfire);
+                    playerStateManager.SwitchState(playerStateManager.moveToInteractState);
+                    return;
+                }
+            }
+
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
             TryConsumeHotbarItem();
@@ -182,10 +193,6 @@ namespace InventorySystem.Tools
 
         // ───────────── Resource Harvesting ─────────────
 
-        /// <summary>
-        /// Public entry point for the interaction system. Hits a specific resource
-        /// without needing OverlapCircle detection — the player is already in range.
-        /// </summary>
         public void HarvestResource(HarvestableResource resource)
         {
             if (resource == null || resource.IsDepleted) return;
@@ -204,26 +211,13 @@ namespace InventorySystem.Tools
             }
 
             var equippedInstance = _inventory.EquippedItem;
-
-            // No tool equipped at all
             if (equippedInstance == null || equippedInstance.Data.category != ItemCategory.Tool)
-            {
-                wrongToolFeedback?.TryShowWrongToolMessage("Hand", resource.RequiredToolType.ToString());
                 return;
-            }
 
             if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
                 return;
 
-            // Wrong tool type equipped
-            if (resource.RequiredToolType != toolData.toolType)
-            {
-                wrongToolFeedback?.TryShowWrongToolMessage(
-                    toolData.toolType.ToString(),
-                    resource.RequiredToolType.ToString()
-                );
-                return;
-            }
+            if (resource.RequiredToolType != toolData.toolType) return;
 
             playerStateManager.animationQue = $"Harvest{toolData.toolType}";
             playerStateManager.StartHarvest();
