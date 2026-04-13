@@ -28,18 +28,64 @@ MonoBehaviour:
   difficultyTier: 1
   enemyDensity: 0.3
   lootDensity: 0.2
+  maxTotalRoomSpawns: 120
   roomSpawns:
-  - prefab: {fileID: 5511241277875091019, guid: 24b2adab2d184f44e935f55a55e7bcce, type: 3}
-    density: 0.071
+  - enabled: 1
+    prefab: {fileID: 5511241277875091019, guid: 24b2adab2d184f44e935f55a55e7bcce, type: 3}
+    density: 0.244
     maxCount: 0
     minSpacing: 0
     wallPadding: 0
-  corridorSpawns:
-  - prefab: {fileID: 478931609876907041, guid: 34cf77f38678fe04aafc64668bbb5e50, type: 3}
-    density: 0.084
+    useNoise: 1
+    noiseScale: 0.669
+    noiseThreshold: 0.148
+  - enabled: 1
+    prefab: {fileID: 6315253869175331180, guid: ce9b34fc55a1f2a47980aa3156cb9c24, type: 3}
+    density: 0.277
+    maxCount: 0
+    minSpacing: 0
+    wallPadding: 0
+    useNoise: 1
+    noiseScale: 0.317
+    noiseThreshold: 0.472
+  - enabled: 1
+    prefab: {fileID: 478931609876907041, guid: 34cf77f38678fe04aafc64668bbb5e50, type: 3}
+    density: 0.259
     maxCount: 0
     minSpacing: 0
     wallPadding: 2
+    useNoise: 1
+    noiseScale: 0.42
+    noiseThreshold: 0.229
+  maxTotalCorridorSpawns: 120
+  corridorSpawns:
+  - enabled: 1
+    prefab: {fileID: 6315253869175331180, guid: ce9b34fc55a1f2a47980aa3156cb9c24, type: 3}
+    density: 0.277
+    maxCount: 0
+    minSpacing: 0
+    wallPadding: 0
+    useNoise: 1
+    noiseScale: 0.898
+    noiseThreshold: 0.565
+  - enabled: 1
+    prefab: {fileID: 5511241277875091019, guid: 24b2adab2d184f44e935f55a55e7bcce, type: 3}
+    density: 0.214
+    maxCount: 0
+    minSpacing: 0
+    wallPadding: 2
+    useNoise: 1
+    noiseScale: 0.317
+    noiseThreshold: 0.545
+  - enabled: 1
+    prefab: {fileID: 478931609876907041, guid: 34cf77f38678fe04aafc64668bbb5e50, type: 3}
+    density: 0.259
+    maxCount: 0
+    minSpacing: 0
+    wallPadding: 2
+    useNoise: 1
+    noiseScale: 0.42
+    noiseThreshold: 0.229
   happinessModifier: -0.3
   dungeonComfortValue: 0.15
   threshold1Max: 0.3

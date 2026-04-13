@@ -421,6 +421,9 @@ public class DungeonGenerator : MonoBehaviour
         if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight)
         {
             grid[x, y] = val;
+            // Don't downgrade Room to Corridor
+            if (val == 1 && cellTypes[x, y] == CellType.Room && type == CellType.Corridor)
+                return;
             if (val == 1) cellTypes[x, y] = type;
         }
     }

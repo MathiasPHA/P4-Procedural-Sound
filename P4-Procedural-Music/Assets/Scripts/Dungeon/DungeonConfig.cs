@@ -29,10 +29,16 @@ public class DungeonConfig : ScriptableObject
     [Range(0f, 1f)] public float lootDensity = 0.2f;
 
     [Header("Object Spawning — Rooms")]
+    [Tooltip("Max total objects across all room spawn entries (0 = unlimited)")]
+    public int maxTotalRoomSpawns = 0;
+
     [Tooltip("Objects that can spawn inside rooms")]
     public DungeonSpawnEntry[] roomSpawns;
 
     [Header("Object Spawning — Corridors")]
+    [Tooltip("Max total objects across all corridor spawn entries (0 = unlimited)")]
+    public int maxTotalCorridorSpawns = 0;
+
     [Tooltip("Objects that can spawn inside corridors")]
     public DungeonSpawnEntry[] corridorSpawns;
 
@@ -89,6 +95,9 @@ public enum DungeonType
 [System.Serializable]
 public class DungeonSpawnEntry
 {
+    [Tooltip("Enable/disable this spawn entry for testing")]
+    public bool enabled = true;
+
     [Tooltip("Prefab to spawn")]
     public GameObject prefab;
 
@@ -103,4 +112,16 @@ public class DungeonSpawnEntry
 
     [Tooltip("Keep away from walls — minimum tiles from nearest wall")]
     [Range(0, 5)] public int wallPadding = 1;
+
+    [Header("Noise Scatter")]
+    [Tooltip("Enable Perlin noise clustering instead of uniform random.")]
+    public bool useNoise = true;
+
+    [Range(0.01f, 1f)]
+    [Tooltip("Lower = larger clusters, higher = smaller/tighter clusters.")]
+    public float noiseScale = 0.15f;
+
+    [Range(0f, 1f)]
+    [Tooltip("Cells below this noise value won't spawn. Higher = sparser clusters.")]
+    public float noiseThreshold = 0.45f;
 }
