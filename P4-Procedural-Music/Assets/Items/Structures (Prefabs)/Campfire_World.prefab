@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2972819932874030993}
   - component: {fileID: 7852800770308967991}
   - component: {fileID: 4347026185079805041}
+  - component: {fileID: 8730877989820528652}
   m_Layer: 6
   m_Name: Animations
   m_TagString: Untagged
@@ -114,6 +115,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8730877989820528652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095060366654119204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ec554f0c203f4e4ba76268ea6900b0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CampfireAnimations
+  campfireController: {fileID: 3875033480923864871}
 --- !u!1 &2319465394022386072
 GameObject:
   m_ObjectHideFlags: 0
