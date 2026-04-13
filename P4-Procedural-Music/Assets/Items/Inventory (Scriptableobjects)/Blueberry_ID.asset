@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Blueberry
   description: A blue berry, used for hair dye in the past
   loreNote: '"Mmhh delicious"'
-  icon: {fileID: 3579979325370944529, guid: 15ffa4a3a73d3ed49973cd9da1518901, type: 3}
+  icon: {fileID: 21300000, guid: 15ffa4a3a73d3ed49973cd9da1518901, type: 3}
   category: 2
   maxStackSize: 64
   isDroppable: 1
