@@ -4749,6 +4749,46 @@ PrefabInstance:
       propertyPath: obstacleLayer.m_Bits
       value: 448
       objectReference: {fileID: 0}
+    - target: {fileID: 1700032735596827980, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: m_text
+      value: If you can see this something has gone terribly wrong
+      objectReference: {fileID: 0}
+    - target: {fileID: 1700032735596827980, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1700032735596827980, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: m_fontSize
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 1700032735596827980, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
+    - target: {fileID: 1700032735596827980, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 1700032735596827980, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1700032735596827980, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952490527162336135, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3992355802180553610, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: wrongToolSound
+      value: 
+      objectReference: {fileID: 8300000, guid: d4de340d8b20f9946b22f968fdcb8b2b, type: 3}
+    - target: {fileID: 3992355802180553610, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: displayDuration
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 4968789950358026991, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: m_Name
       value: Player

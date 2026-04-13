@@ -66,6 +66,9 @@ namespace InventorySystem.Tools
             {
                 interactionDetector = GetComponent<InteractionDetector>();
             }
+
+             if (wrongToolFeedback == null)
+                wrongToolFeedback = GetComponentInChildren<ResponseOptions>(true);
         }
 
         private void Update()
