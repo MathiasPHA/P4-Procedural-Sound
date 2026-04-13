@@ -89,10 +89,6 @@ namespace InventorySystem.Tools
                 _cooldownTimer -= Time.deltaTime;
 
             // ── Passive durability drain ──
-            if (!_drainingDurability && _equippedToolData == null) { } // silent — not draining
-            else if (!_drainingDurability || _equippedToolData == null || _inventory == null)
-                Debug.LogWarning($"[ToolUseSystem] Drain stalled — drainingDurability={_drainingDurability}, toolData={_equippedToolData != null}, inventory={_inventory != null}");
-
             if (_drainingDurability && _equippedToolData != null && _inventory != null)
             {
                 _drainTimer -= Time.deltaTime;
@@ -114,8 +110,6 @@ namespace InventorySystem.Tools
                         }
                         else
                         {
-                            Debug.Log($"[ToolUseSystem] Passive drain tick — '{equipped.Data.id}' durability: {equipped.CurrentDurability}/{equipped.Data.maxDurability}");
-
                             // Scale light intensity with remaining durability
                             if (_playerLight2D != null)
                             {

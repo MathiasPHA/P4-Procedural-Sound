@@ -2710,6 +2710,7 @@ MonoBehaviour:
   loadRadius: 5
   unloadRadius: 7
   objectSpawnConfig: {fileID: 11400000, guid: 39d8fa6ea8ba68f48ae4fc45ccde9267, type: 2}
+  enableDebugLogs: 0
 --- !u!4 &884177757
 Transform:
   m_ObjectHideFlags: 0
