@@ -15,6 +15,10 @@ namespace InventorySystem.Tools
         [SerializeField] private PlayerStateManager playerStateManager;
         [SerializeField] private InteractionDetector interactionDetector;
 
+         [Header("Wrong Tool Feedback")]
+        [SerializeField] private ResponseOptions wrongToolFeedback;
+
+
         [Header("Tool Database")]
         [SerializeField] private List<ToolData> toolDatabase = new();
 
@@ -200,13 +204,26 @@ namespace InventorySystem.Tools
             }
 
             var equippedInstance = _inventory.EquippedItem;
+
+            // No tool equipped at all
             if (equippedInstance == null || equippedInstance.Data.category != ItemCategory.Tool)
+            {
+                wrongToolFeedback?.TryShowWrongToolMessage("Hand", resource.RequiredToolType.ToString());
                 return;
+            }
 
             if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
                 return;
 
-            if (resource.RequiredToolType != toolData.toolType) return;
+            // Wrong tool type equipped
+            if (resource.RequiredToolType != toolData.toolType)
+            {
+                wrongToolFeedback?.TryShowWrongToolMessage(
+                    toolData.toolType.ToString(),
+                    resource.RequiredToolType.ToString()
+                );
+                return;
+            }
 
             playerStateManager.animationQue = $"Harvest{toolData.toolType}";
             playerStateManager.StartHarvest();
