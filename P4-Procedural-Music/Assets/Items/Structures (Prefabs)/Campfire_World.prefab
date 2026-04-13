@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7852800770308967991}
   - component: {fileID: 4347026185079805041}
   m_Layer: 6
-  m_Name: Campfire_0
+  m_Name: Animations
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
