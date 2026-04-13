@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 50a582239fdb25d428ffd50f5bafdb2d
+guid: ebe4af7c42482044ebecbfe0ab38bb1d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1669490993913548592
-    second: strawberry_0
+      213: -6306471896493589467
+    second: Hubert_Munch_F1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -53,7 +53,7 @@ TextureImporter:
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WindowsStoreApps
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: strawberry_0
+      name: Hubert_Munch_F1_0
       rect:
         serializedVersion: 2
-        x: 140
-        y: 170
-        width: 278
-        height: 246
+        x: 588
+        y: 58
+        width: 824
+        height: 1776
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 03f4eefa6393b2710800000000000000
-      internalID: 1669490993913548592
+      spriteID: 52cf3872939ea78a0800000000000000
+      internalID: -6306471896493589467
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      strawberry_0: 1669490993913548592
+      Hubert_Munch_F1_0: -6306471896493589467
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
