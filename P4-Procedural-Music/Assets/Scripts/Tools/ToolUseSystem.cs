@@ -40,6 +40,10 @@ namespace InventorySystem.Tools
         private float _drainTimer = 0f;
         private bool _drainingDurability = false;
         private ToolData _equippedToolData = null;
+        private float _baseLightIntensity = 1f;
+
+        [Header("Torch Light Fade")]
+        [SerializeField] private float minLightIntensity = 0.1f; // intensity at 0 durability
 
         private void Start()
         {
@@ -85,6 +89,10 @@ namespace InventorySystem.Tools
                 _cooldownTimer -= Time.deltaTime;
 
             // ── Passive durability drain ──
+            if (!_drainingDurability && _equippedToolData == null) { } // silent — not draining
+            else if (!_drainingDurability || _equippedToolData == null || _inventory == null)
+                Debug.LogWarning($"[ToolUseSystem] Drain stalled — drainingDurability={_drainingDurability}, toolData={_equippedToolData != null}, inventory={_inventory != null}");
+
             if (_drainingDurability && _equippedToolData != null && _inventory != null)
             {
                 _drainTimer -= Time.deltaTime;
@@ -98,12 +106,23 @@ namespace InventorySystem.Tools
                         bool broke = equipped.ReduceDurability(_equippedToolData.drainAmount);
                         if (broke)
                         {
+                            Debug.Log($"[ToolUseSystem] '{equipped.Data.id}' broke from passive drain — removing.");
                             _drainingDurability = false;
                             _equippedToolData = null;
+                            if (_playerLight2D != null) _playerLight2D.enabled = false;
                             _inventory.RemoveItem(equipped.Data.id, 1);
                         }
                         else
                         {
+                            Debug.Log($"[ToolUseSystem] Passive drain tick — '{equipped.Data.id}' durability: {equipped.CurrentDurability}/{equipped.Data.maxDurability}");
+
+                            // Scale light intensity with remaining durability
+                            if (_playerLight2D != null)
+                            {
+                                float t = equipped.DurabilityNormalized;
+                                _playerLight2D.intensity = Mathf.Lerp(minLightIntensity, _baseLightIntensity, t);
+                            }
+
                             _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
                             _inventory.NotifyChanged();
                         }
@@ -121,33 +140,41 @@ namespace InventorySystem.Tools
         private void OnEquippedChanged(int equippedSlotIndex)
         {
             var item = _inventory.EquippedItem;
+            Debug.Log($"[ToolUseSystem] OnEquippedChanged fired — slot={equippedSlotIndex}, item={item?.Data?.id ?? "none"}");
+
             bool holdingTorch = (item != null && item.Data.id == "Torch");
 
             // Toggle light
             if (_playerLight2D != null)
+            {
                 _playerLight2D.enabled = holdingTorch;
+                if (holdingTorch)
+                    _baseLightIntensity = _playerLight2D.intensity; // store full intensity
+                else
+                    _playerLight2D.intensity = _baseLightIntensity; // reset when unequipped
+            }
 
             // Look up ToolData for the newly equipped item
             _equippedToolData = null;
             if (item != null && _toolLookup.TryGetValue(item.Data.id, out var toolData))
                 _equippedToolData = toolData;
 
-            if (item != null && _equippedToolData == null)
-                Debug.LogWarning($"[ToolUseSystem] No ToolData found for '{item.Data.id}' — make sure it's added to the Tool Database list.");
-            else if (_equippedToolData != null)
-                Debug.Log($"[ToolUseSystem] ToolData found for '{item.Data.id}' | drainsOverTime={_equippedToolData.drainsOverTime} | interval={_equippedToolData.drainInterval} | amount={_equippedToolData.drainAmount}");
+            if (item != null)
+                Debug.Log($"[ToolUseSystem] ToolData lookup for '{item.Data.id}': {(_equippedToolData != null ? "FOUND" : "NOT FOUND — check Tool Database list in Inspector")}");
 
             // Start passive drain only if the ToolData says so
             if (_equippedToolData != null && _equippedToolData.drainsOverTime)
             {
                 _drainingDurability = true;
                 _drainTimer = _equippedToolData.drainInterval;
-                Debug.Log($"[ToolUseSystem] Passive drain started — every {_equippedToolData.drainInterval}s.");
+                Debug.Log($"[ToolUseSystem] Drain started — interval={_equippedToolData.drainInterval}s, amount={_equippedToolData.drainAmount}");
             }
             else
             {
                 _drainingDurability = false;
                 _drainTimer = 0f;
+                if (_equippedToolData != null)
+                    Debug.Log($"[ToolUseSystem] ToolData found but drainsOverTime=false — no passive drain.");
             }
         }
 

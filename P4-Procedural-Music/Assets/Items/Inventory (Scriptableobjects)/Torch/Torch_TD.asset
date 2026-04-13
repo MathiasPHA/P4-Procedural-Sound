@@ -19,5 +19,5 @@ MonoBehaviour:
   range: 1
   durabilityCost: 5
   drainsOverTime: 1
-  drainInterval: 10
+  drainInterval: 0.9
   drainAmount: 1

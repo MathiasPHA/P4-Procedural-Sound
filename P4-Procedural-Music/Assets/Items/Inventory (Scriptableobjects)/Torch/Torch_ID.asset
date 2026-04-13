@@ -28,6 +28,6 @@ MonoBehaviour:
   isFuel: 0
   burnFuelValue: 0
   displayStats:
-  - label: 
-    value: 
+  - label: Burn power
+    value: 10
     colour: 0
