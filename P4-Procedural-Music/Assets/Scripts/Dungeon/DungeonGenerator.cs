@@ -190,6 +190,10 @@ public class DungeonGenerator : MonoBehaviour
         // Exit at the entrance tip (way out), player a few tiles inward
         SpawnExitAt(entrance.playerPos);
         SpawnPlayerAt(entrance.exitPos);
+
+        // Mark exit and player spawn area as Wall type so no objects spawn on them
+        MarkSpawnExclusion(entrance.playerPos, 0);
+        MarkSpawnExclusion(entrance.exitPos, 0);
     }
 
     // ===================== Bitmask Resolution =====================
@@ -421,9 +425,6 @@ public class DungeonGenerator : MonoBehaviour
         if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight)
         {
             grid[x, y] = val;
-            // Don't downgrade Room to Corridor
-            if (val == 1 && cellTypes[x, y] == CellType.Room && type == CellType.Corridor)
-                return;
             if (val == 1) cellTypes[x, y] = type;
         }
     }
@@ -529,6 +530,21 @@ public class DungeonGenerator : MonoBehaviour
 
     private Vector2Int RoomCenterInt(RectInt r) =>
         new Vector2Int(r.xMin + r.width / 2, r.yMin + r.height / 2);
+
+    /// <summary>
+    /// Marks cells around a position as Wall type (in cellTypes only, not grid)
+    /// so the object spawner won't place anything there.
+    /// </summary>
+    private void MarkSpawnExclusion(Vector2Int center, int radius)
+    {
+        for (int dx = -radius; dx <= radius; dx++)
+            for (int dy = -radius; dy <= radius; dy++)
+            {
+                int x = center.x + dx, y = center.y + dy;
+                if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight)
+                    cellTypes[x, y] = CellType.Wall;
+            }
+    }
 
     /// <summary>The floor tilemap transform — use as parent for spawned objects.</summary>
     public Transform FloorTilemapTransform => floorTilemap.transform;

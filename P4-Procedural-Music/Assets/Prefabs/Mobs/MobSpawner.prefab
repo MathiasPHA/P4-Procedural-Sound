@@ -50,7 +50,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   timeReference: {fileID: 0}
-  cullDistance: 45
+  cullDistance: 210
   cullInterval: 5
   maxSpawnAttempts: 8
   showDebugGUI: 0

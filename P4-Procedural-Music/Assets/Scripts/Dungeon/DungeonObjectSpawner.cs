@@ -4,6 +4,7 @@ using UnityEngine;
 public class DungeonObjectSpawner : MonoBehaviour
 {
     [SerializeField] private DungeonGenerator generator;
+    [SerializeField] private DungeonDeltaTracker deltaTracker;
 
     [Range(0f, 0.5f)]
     [Tooltip("How far objects scatter from cell center (fraction of cell size). 0 = grid-locked, 0.5 = full cell width.")]
@@ -46,6 +47,38 @@ public class DungeonObjectSpawner : MonoBehaviour
         // One sync + cleanup pass instead of per-object
         Physics2D.SyncTransforms();
         RemoveOverlapping();
+
+        // Assign indices to surviving objects and apply saved delta
+        AssignIndicesAndApplyDelta();
+    }
+
+    private void AssignIndicesAndApplyDelta()
+    {
+        // Load delta from previous visits
+        if (deltaTracker == null)
+            deltaTracker = GetComponent<DungeonDeltaTracker>();
+
+        int seed = generator.ActiveSeed;
+        DungeonSaveData delta = deltaTracker != null ? deltaTracker.Initialize(seed) : null;
+        HashSet<int> removedSet = null;
+        if (delta != null && delta.removedIndices.Count > 0)
+            removedSet = new HashSet<int>(delta.removedIndices);
+
+        // Tag each surviving child with its spawn index
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            var child = transform.GetChild(i).gameObject;
+            var tracker = child.AddComponent<DungeonSpawnedObject>();
+            tracker.SpawnIndex = i;
+
+            // Remove if it was destroyed in a previous visit
+            if (removedSet != null && removedSet.Contains(i))
+                Destroy(child);
+        }
+
+        // Re-place structures saved from previous visits
+        if (deltaTracker != null)
+            deltaTracker.RePlaceStructures();
     }
 
     private struct SpawnCandidate

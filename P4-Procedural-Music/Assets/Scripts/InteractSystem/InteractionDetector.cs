@@ -36,6 +36,9 @@ namespace InteractionSystem
         {
             if (mainCamera == null)
                 mainCamera = Camera.main;
+
+            if (promptUI == null)
+                promptUI = FindObjectOfType<InteractionPromptUI>();
         }
 
         private void Update()

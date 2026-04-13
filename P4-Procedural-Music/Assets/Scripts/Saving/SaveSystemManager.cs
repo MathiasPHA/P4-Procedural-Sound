@@ -83,17 +83,15 @@ public class SaveSystemManager : MonoBehaviour
     /// </summary>
     public void SaveModifiedChunks()
     {
-        if (ChunkManager.Instance == null)
+        // Save chunks (only if ChunkManager exists — won't in dungeon scenes)
+        if (ChunkManager.Instance != null)
         {
-            Debug.LogWarning("[SaveSystemManager] Cannot save — ChunkManager.Instance is null.");
-            return;
+            ChunkPersistence.SaveModifiedChunks(
+                ChunkManager.Instance.LoadedChunks,
+                ChunkManager.Instance.LoadedObjects,
+                worldName
+            );
         }
-
-        ChunkPersistence.SaveModifiedChunks(
-            ChunkManager.Instance.LoadedChunks,
-            ChunkManager.Instance.LoadedObjects,
-            worldName
-        );
 
         // Save inventory
         if (InventorySaveSystem.Instance != null)

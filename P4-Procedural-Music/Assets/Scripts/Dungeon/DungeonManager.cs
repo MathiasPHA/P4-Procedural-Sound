@@ -43,12 +43,15 @@ public class DungeonManager : MonoBehaviour
         DungeonSeed = GenerateSeed(entranceWorldPos);
         returnSceneName = SceneManager.GetActiveScene().name;
         returnPlayerPosition = playerPos;
-        IsInDungeon = true;
 
-        // Force-save overworld before leaving
+        // Force-save overworld BEFORE setting IsInDungeon,
+        // otherwise PlayerSaveSystem skips the position save
         if (SaveSystemManager.Instance != null)
             SaveSystemManager.Instance.SaveModifiedChunks();
 
+        IsInDungeon = true;
+
+        SceneManager.sceneLoaded += OnDungeonLoaded;
         SceneManager.LoadScene(dungeonSceneName);
     }
 
@@ -58,11 +61,27 @@ public class DungeonManager : MonoBehaviour
     /// </summary>
     public void ExitDungeon()
     {
-        IsInDungeon = false;
+        // Save dungeon changes (removed objects, placed structures)
+        if (DungeonDeltaTracker.Instance != null)
+            DungeonDeltaTracker.Instance.SaveDelta();
+
+        // Save inventory so dungeon loot carries back
+        SaveInventory();
+
+        // Keep IsInDungeon true until OnOverworldLoaded —
+        // prevents PlayerSaveSystem from overwriting the return position
         ActiveConfig = null;
 
         SceneManager.sceneLoaded += OnOverworldLoaded;
         SceneManager.LoadScene(returnSceneName);
+    }
+
+    private void OnDungeonLoaded(Scene scene, LoadSceneMode mode)
+    {
+        SceneManager.sceneLoaded -= OnDungeonLoaded;
+
+        // Restore inventory into the dungeon scene's player
+        LoadInventory();
     }
 
     private void OnOverworldLoaded(Scene scene, LoadSceneMode mode)
@@ -72,6 +91,43 @@ public class DungeonManager : MonoBehaviour
         var player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
             player.transform.position = returnPlayerPosition;
+
+        // Restore inventory (with any dungeon loot) into the overworld player
+        LoadInventory();
+
+        // Now safe to clear dungeon state
+        IsInDungeon = false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Inventory helpers — uses InventorySaveSystem if available,
+    // waits one frame so scene singletons have initialized.
+    // -------------------------------------------------------------------------
+
+    private void SaveInventory()
+    {
+        string worldName = GameSettings.Instance != null ? GameSettings.Instance.worldName : "default";
+
+        if (InventorySaveSystem.Instance != null)
+            InventorySaveSystem.Instance.SaveInventory(worldName);
+    }
+
+    private void LoadInventory()
+    {
+        StartCoroutine(LoadInventoryNextFrame());
+    }
+
+    private System.Collections.IEnumerator LoadInventoryNextFrame()
+    {
+        // Wait a frame so the new scene's InventorySaveSystem.Awake() has run
+        yield return null;
+
+        string worldName = GameSettings.Instance != null ? GameSettings.Instance.worldName : "default";
+
+        if (InventorySaveSystem.Instance != null)
+            InventorySaveSystem.Instance.LoadInventory(worldName);
+        else
+            Debug.LogWarning("[DungeonManager] InventorySaveSystem not found in scene — inventory not loaded.");
     }
 
     /// <summary>

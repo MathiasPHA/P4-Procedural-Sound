@@ -9,12 +9,12 @@ public class DungeonConfig : ScriptableObject
     public DungeonType dungeonType = DungeonType.Cave;
 
     [Header("Generation Settings")]
-    [Range(3, 20)] public int minRooms = 5;
-    [Range(3, 20)] public int maxRooms = 10;
-    [Range(5, 30)] public int minRoomWidth = 7;
-    [Range(5, 30)] public int maxRoomWidth = 14;
-    [Range(5, 30)] public int minRoomHeight = 7;
-    [Range(5, 30)] public int maxRoomHeight = 12;
+    [Range(1, 20)] public int minRooms = 5;
+    [Range(1, 20)] public int maxRooms = 10;
+    [Range(3, 30)] public int minRoomWidth = 7;
+    [Range(3, 30)] public int maxRoomWidth = 14;
+    [Range(3, 30)] public int minRoomHeight = 7;
+    [Range(3, 30)] public int maxRoomHeight = 12;
     [Range(1, 5)] public int corridorWidth = 2;
     [Range(3, 15)] public int entranceHallwayLength = 8;
     [Range(1, 10)] public int wallThickness = 3;

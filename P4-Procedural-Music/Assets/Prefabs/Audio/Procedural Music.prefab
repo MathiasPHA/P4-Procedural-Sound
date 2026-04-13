@@ -149,6 +149,6 @@ MonoBehaviour:
   Tension: 0.3
   CurrentState: 0
   MasterVolume: 0.7
-  ShowDebugInfo: 0
+  ShowDebugInfo: 1
   CurrentChordName: 
   CurrentKeyName: 

@@ -39,6 +39,10 @@ public class PlayerSaveSystem : MonoBehaviour
 
     public void SavePlayer(string worldName)
     {
+        // Don't overwrite overworld position while in a dungeon
+        if (DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon)
+            return;
+
         if (playerTransform == null)
         {
             Debug.LogWarning("[PlayerSaveSystem] No player Transform — nothing to save.");
@@ -58,6 +62,10 @@ public class PlayerSaveSystem : MonoBehaviour
 
     public void LoadPlayer(string worldName)
     {
+        // Don't restore overworld position when in a dungeon
+        if (DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon)
+            return;
+
         string path = GetSavePath(worldName);
         if (!File.Exists(path))
         {

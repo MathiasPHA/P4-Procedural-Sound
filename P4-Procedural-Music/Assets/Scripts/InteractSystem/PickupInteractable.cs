@@ -74,9 +74,11 @@ namespace InteractionSystem
             player.StartHarvest();
 
             // Remove the world object
-            var tracker = GetComponent<SpawnedObjectTracker>();
-            if (tracker != null)
-                tracker.Remove();
+            // Overworld: notify ChunkManager so it stays gone on reload
+            // Dungeon: DungeonSpawnedObject.OnDestroy handles tracking automatically
+            int spawnId = ChunkManager.GetSpawnIdFromObject(gameObject);
+            if (spawnId != 0 && ChunkManager.Instance != null)
+                ChunkManager.Instance.RemoveSpawnedObject(transform.position, spawnId);
             else
                 Destroy(gameObject);
         }

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DungeonConfig
   dungeonName: Cave
   dungeonType: 0
-  minRooms: 3
+  minRooms: 1
   maxRooms: 10
-  minRoomWidth: 5
-  maxRoomWidth: 12
+  minRoomWidth: 3
+  maxRoomWidth: 9
   minRoomHeight: 7
   maxRoomHeight: 12
   corridorWidth: 2
