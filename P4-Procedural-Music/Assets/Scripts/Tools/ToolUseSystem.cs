@@ -35,6 +35,11 @@ namespace InventorySystem.Tools
         private Dictionary<string, ToolData> _toolLookup = new();
         private Inventory _inventory;
         private float _cooldownTimer;
+        private UnityEngine.Rendering.Universal.Light2D _playerLight2D;
+
+        private float _drainTimer = 0f;
+        private bool _drainingDurability = false;
+        private ToolData _equippedToolData = null;
 
         private void Start()
         {
@@ -50,6 +55,16 @@ namespace InventorySystem.Tools
             }
 
             _inventory = InventoryBootstrap.PlayerInventory;
+
+            // Grab the Light2D directly on this GameObject and make sure it starts off
+            _playerLight2D = GetComponent<UnityEngine.Rendering.Universal.Light2D>();
+            if (_playerLight2D == null)
+                Debug.LogWarning("[ToolUseSystem] No Light2D found on Player!");
+            else
+                _playerLight2D.enabled = false;
+
+            // Subscribe to equip/unequip event
+            _inventory.OnEquippedChanged += OnEquippedChanged;
 
             if (playerStateManager == null)
             {
@@ -68,6 +83,72 @@ namespace InventorySystem.Tools
         {
             if (_cooldownTimer > 0f)
                 _cooldownTimer -= Time.deltaTime;
+
+            // ── Passive durability drain ──
+            if (_drainingDurability && _equippedToolData != null && _inventory != null)
+            {
+                _drainTimer -= Time.deltaTime;
+                if (_drainTimer <= 0f)
+                {
+                    _drainTimer = _equippedToolData.drainInterval;
+
+                    var equipped = _inventory.EquippedItem;
+                    if (equipped != null && equipped.Data.hasInstanceState)
+                    {
+                        bool broke = equipped.ReduceDurability(_equippedToolData.drainAmount);
+                        if (broke)
+                        {
+                            _drainingDurability = false;
+                            _equippedToolData = null;
+                            _inventory.RemoveItem(equipped.Data.id, 1);
+                        }
+                        else
+                        {
+                            _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                            _inventory.NotifyChanged();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_inventory != null)
+                _inventory.OnEquippedChanged -= OnEquippedChanged;
+        }
+
+        private void OnEquippedChanged(int equippedSlotIndex)
+        {
+            var item = _inventory.EquippedItem;
+            bool holdingTorch = (item != null && item.Data.id == "Torch");
+
+            // Toggle light
+            if (_playerLight2D != null)
+                _playerLight2D.enabled = holdingTorch;
+
+            // Look up ToolData for the newly equipped item
+            _equippedToolData = null;
+            if (item != null && _toolLookup.TryGetValue(item.Data.id, out var toolData))
+                _equippedToolData = toolData;
+
+            if (item != null && _equippedToolData == null)
+                Debug.LogWarning($"[ToolUseSystem] No ToolData found for '{item.Data.id}' — make sure it's added to the Tool Database list.");
+            else if (_equippedToolData != null)
+                Debug.Log($"[ToolUseSystem] ToolData found for '{item.Data.id}' | drainsOverTime={_equippedToolData.drainsOverTime} | interval={_equippedToolData.drainInterval} | amount={_equippedToolData.drainAmount}");
+
+            // Start passive drain only if the ToolData says so
+            if (_equippedToolData != null && _equippedToolData.drainsOverTime)
+            {
+                _drainingDurability = true;
+                _drainTimer = _equippedToolData.drainInterval;
+                Debug.Log($"[ToolUseSystem] Passive drain started — every {_equippedToolData.drainInterval}s.");
+            }
+            else
+            {
+                _drainingDurability = false;
+                _drainTimer = 0f;
+            }
         }
 
         // ───────────── Input System Callbacks ─────────────
