@@ -105,6 +105,15 @@ namespace InventorySystem.Tools
             if (!value.isPressed) return;
             if (_cooldownTimer > 0f) return;
             if (PauseManager.isPaused) return;
+
+            // ── Campfire fueling: check BEFORE UI block so hotbar UI doesn't intercept ──
+            if (interactionDetector != null && interactionDetector.CurrentTarget is CampfireInteractable)
+            {
+                playerStateManager.moveToInteractState.SetTarget(interactionDetector.CurrentTarget);
+                playerStateManager.SwitchState(playerStateManager.moveToInteractState);
+                return;
+            }
+
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
             TryConsumeHotbarItem();
@@ -185,10 +194,6 @@ namespace InventorySystem.Tools
 
         // ───────────── Resource Harvesting ─────────────
 
-        /// <summary>
-        /// Public entry point for the interaction system. Hits a specific resource
-        /// without needing OverlapCircle detection — the player is already in range.
-        /// </summary>
         public void HarvestResource(HarvestableResource resource)
         {
             if (resource == null || resource.IsDepleted) return;

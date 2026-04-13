@@ -212,10 +212,12 @@ GameObject:
   - component: {fileID: 4589884889179511114}
   - component: {fileID: 7775883068081880350}
   - component: {fileID: 6379968897288913679}
-  - component: {fileID: 1146854011689539404}
   - component: {fileID: -8538655097096910356}
   - component: {fileID: 3578511633562600573}
   - component: {fileID: 4861363729842834169}
+  - component: {fileID: 3875033480923864871}
+  - component: {fileID: 151770259482907043}
+  - component: {fileID: 5264495890279824989}
   m_Layer: 6
   m_Name: Campfire_World
   m_TagString: Untagged
@@ -290,7 +292,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 14.672138
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
@@ -413,52 +415,6 @@ MonoBehaviour:
   weight: 1
   radius: 22.3
   influenceName: Campfire
---- !u!61 &1146854011689539404
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: -0.1911273, y: -4.269032}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 8.231978, y: 5.83825}
-  m_EdgeRadius: 0
 --- !u!114 &-8538655097096910356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -525,3 +481,90 @@ MonoBehaviour:
   actionVerb: Interact
   interactRange: 9
   promptOffset: {x: 0, y: 1.2}
+--- !u!114 &3875033480923864871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5305c2fa94a6447da860132a6ff90ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CampfireController
+  bigThreshold: 60
+  mediumThreshold: 25
+  maxFuel: 100
+  burnRateBig: 3
+  burnRateMedium: 2
+  burnRateLow: 1
+  flameParticlesBig: {fileID: 0}
+  flameParticlesMedium: {fileID: 0}
+  flameParticlesLow: {fileID: 0}
+  smokeParticles: {fileID: 0}
+  fireLight: {fileID: 2830128335011259928}
+  torchFlicker: {fileID: 9122419163685939560}
+  flickerMinBig: 1.2
+  flickerMaxBig: 2.2
+  flickerMinMedium: 0.8
+  flickerMaxMedium: 1.4
+  flickerMinLow: 0.3
+  flickerMaxLow: 0.7
+  audioSource: {fileID: 0}
+  crackleClip: {fileID: 0}
+  extinguishClip: {fileID: 0}
+  currentFuel: 65
+  currentBurnState: 3
+--- !u!114 &151770259482907043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f61ba26ea2d45be8bec6fa2da871a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.CampfireInteractable
+  actionVerb: Interact
+  interactRange: 7
+  promptOffset: {x: 0, y: 0}
+--- !u!70 &5264495890279824989
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.18, y: -2.6}
+  m_Size: {x: 10, y: 1}
+  m_Direction: 0
