@@ -499,11 +499,7 @@ MonoBehaviour:
   burnRateBig: 3
   burnRateMedium: 2
   burnRateLow: 1
-  flameParticlesBig: {fileID: 0}
-  flameParticlesMedium: {fileID: 0}
-  flameParticlesLow: {fileID: 0}
-  smokeParticles: {fileID: 0}
-  fireLight: {fileID: 2830128335011259928}
+  lightChild: {fileID: 2319465394022386072}
   torchFlicker: {fileID: 9122419163685939560}
   flickerMinBig: 1.2
   flickerMaxBig: 2.2
@@ -511,8 +507,7 @@ MonoBehaviour:
   flickerMaxMedium: 1.4
   flickerMinLow: 0.3
   flickerMaxLow: 0.7
-  audioSource: {fileID: 0}
-  crackleClip: {fileID: 0}
+  audioSource: {fileID: 1626463313000977171}
   extinguishClip: {fileID: 0}
   currentFuel: 65
   currentBurnState: 3
@@ -565,6 +560,6 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.18, y: -2.6}
-  m_Size: {x: 10, y: 1}
+  m_Offset: {x: -0.28, y: -3.77}
+  m_Size: {x: 6.35, y: 7.1}
   m_Direction: 0
