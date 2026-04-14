@@ -16,9 +16,9 @@ MonoBehaviour:
   dungeonType: 0
   minRooms: 1
   maxRooms: 10
-  minRoomWidth: 3
-  maxRoomWidth: 9
-  minRoomHeight: 7
+  minRoomWidth: 5
+  maxRoomWidth: 12
+  minRoomHeight: 5
   maxRoomHeight: 12
   corridorWidth: 2
   entranceHallwayLength: 6
@@ -57,6 +57,15 @@ MonoBehaviour:
     useNoise: 1
     noiseScale: 0.42
     noiseThreshold: 0.229
+  - enabled: 1
+    prefab: {fileID: 7533120962837240174, guid: f5e0da7755236d841996db9af255473b, type: 3}
+    density: 0.17
+    maxCount: 20
+    minSpacing: 0
+    wallPadding: 2
+    useNoise: 0
+    noiseScale: 0.42
+    noiseThreshold: 0.717
   maxTotalCorridorSpawns: 120
   corridorSpawns:
   - enabled: 1

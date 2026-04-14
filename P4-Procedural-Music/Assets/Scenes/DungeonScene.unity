@@ -227,7 +227,7 @@ MonoBehaviour:
   cellSize: 20
   dungeonExitPrefab: {fileID: 959634196538878873, guid: 0025b5b3b87829c42b30536f469af777, type: 3}
   testConfig: {fileID: 11400000, guid: 42d3d7f3653d43b4f84910fd3f846c4e, type: 2}
-  testSeed: 14
+  testSeed: 123
 --- !u!4 &1513643
 Transform:
   m_ObjectHideFlags: 0
@@ -2717,7 +2717,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &751130874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6019,7 +6019,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2045197820
 MonoBehaviour:
   m_ObjectHideFlags: 0
