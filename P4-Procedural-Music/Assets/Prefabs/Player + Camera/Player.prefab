@@ -291,7 +291,6 @@ GameObject:
   - component: {fileID: 50687759397478212}
   - component: {fileID: 1106152198793366464}
   - component: {fileID: 4859490917234952540}
-  - component: {fileID: 8437715424998398889}
   - component: {fileID: 5913942603858231884}
   - component: {fileID: 1591661159947031898}
   - component: {fileID: 527060532823837240}
@@ -406,26 +405,6 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0}
   playerDir: 
   moveSpeed: 50
---- !u!114 &8437715424998398889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4968789950358026991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08b961b239d0c9d4eb11568e3c7203ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComfortSystem
-  dayBaselineComfort: 0.55
-  nightBaselineComfort: 0.3
-  comfortSmoothTime: 0.3
-  maxMoodContribution: 0.06
-  dayStartHour: 6
-  dayEndHour: 18
-  transitionHours: 2
-  showDebugGUI: 0
 --- !u!114 &5913942603858231884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -505,6 +484,7 @@ MonoBehaviour:
   handCooldown: 0.1
   handMobDamage: 1
   handMobCooldown: 0.6
+  maxLightIntensity: 1
   minLightIntensity: 0.1
 --- !u!82 &-1374152125123140291
 AudioSource:
