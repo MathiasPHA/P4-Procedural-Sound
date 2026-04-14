@@ -302,7 +302,11 @@ GameObject:
   - component: {fileID: 1784580168925146788}
   - component: {fileID: 3721937245322308527}
   - component: {fileID: 9012754896137519032}
-  - component: {fileID: 1493068208105973605}
+  - component: {fileID: 3340332575720080812}
+  - component: {fileID: 7540234304014331847}
+  - component: {fileID: 5049543004024689469}
+  - component: {fileID: 7459378878359402859}
+  - component: {fileID: 4590042985337584114}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -414,14 +418,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08b961b239d0c9d4eb11568e3c7203ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComfortSystem
-  happinessRiseRate: 0.08
-  happinessFallRate: 0.12
-  happinessSmoothTime: 0.5
   dayBaselineComfort: 0.55
   nightBaselineComfort: 0.3
   comfortSmoothTime: 0.3
-  happinessTensionWeight: 0.3
-  comfortTensionWeight: 0.7
+  maxMoodContribution: 0.06
+  dayStartHour: 6
+  dayEndHour: 18
+  transitionHours: 2
   showDebugGUI: 0
 --- !u!114 &5913942603858231884
 MonoBehaviour:
@@ -484,7 +487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Tools.ToolUseSystem
   playerStateManager: {fileID: 4859490917234952540}
-  interactionDetector: {fileID: 1493068208105973605}
+  interactionDetector: {fileID: 3340332575720080812}
   toolDatabase:
   - {fileID: 11400000, guid: 7c765aba3eb9eb24abc56d54164e2e8c, type: 2}
   - {fileID: 11400000, guid: f2e6fc4287afe094d966b8c9e5adad27, type: 2}
@@ -625,7 +628,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveSystem
   playerTransform: {fileID: 6496137450566507929}
-  comfortSystem: {fileID: 8437715424998398889}
 --- !u!114 &8506979196779420666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -638,7 +640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 545da188e22263e4d85d721361666671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobSystem.PlayerHealth
-  comfortSystem: {fileID: 8437715424998398889}
   combatDrainPerSecond: 0.03
   happinessLossPerDamage: 0.025
   minimumHitPenalty: 3
@@ -735,7 +736,7 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
---- !u!114 &1493068208105973605
+--- !u!114 &3340332575720080812
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -752,7 +753,87 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 448
-  detectionRadius: 0.2
+  detectionRadius: 2
+--- !u!114 &7540234304014331847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a05f6bc5edaf7fa4d95174f25d61cd0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoodSystem
+  startingMood: 0.6
+  moodSmoothTime: 1
+  maxMoodRatePerSecond: 0.2
+  elatedThreshold: 0.8
+  contentThreshold: 0.6
+  neutralThreshold: 0.4
+  uneasyThreshold: 0.2
+  showDebugGUI: 0
+--- !u!114 &5049543004024689469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b46bccf7ea56d41478d98689080da589, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HappinessSystem
+  startingHappiness: 0.7
+  elatedRate: 0.1
+  contentRate: 0.04
+  neutralRate: 0
+  uneasyRate: 0.04
+  miserableRate: 0.1
+  smoothTime: 0.4
+  deathEnabled: 0
+  showDebugGUI: 0
+--- !u!114 &7459378878359402859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72da9d865e74d4d4d927aeddf8ab3674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HungerSystem
+  startingHunger: 0.8
+  drainPerSecond: 0.005
+  satiatedThreshold: 0.7
+  hungryThreshold: 0.3
+  wellFedMoodRate: 0.03
+  starvingMoodRate: 0.08
+  showDebugGUI: 0
+--- !u!114 &4590042985337584114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08b961b239d0c9d4eb11568e3c7203ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ComfortSystem
+  dayBaselineComfort: 0.55
+  nightBaselineComfort: 0.3
+  comfortSmoothTime: 0.3
+  maxMoodContribution: 0.06
+  dayStartHour: 6
+  dayEndHour: 18
+  transitionHours: 2
+  showDebugGUI: 0
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0

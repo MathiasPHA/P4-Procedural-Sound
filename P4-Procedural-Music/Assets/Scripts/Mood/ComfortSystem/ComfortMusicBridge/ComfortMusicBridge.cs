@@ -2,26 +2,40 @@ using UnityEngine;
 using ProceduralMusic.Bridge;
 
 /// <summary>
-/// Bridges the ComfortSystem's tension output to the ProceduralMusicController singleton.
-/// Attach this to any convenient GameObject (the player, the music object, or its own).
+/// Bridges the MoodSystem and HappinessSystem to the ProceduralMusicController.
 ///
-/// Each frame it reads ComfortSystem.Tension and calls SetTension() on the music controller.
+/// Tension is derived from mood and happiness:
+///   Low mood + low happiness = high tension = intense music
+///   High mood + high happiness = low tension = calm music
+///
 /// Maps tension ranges to game music states using three threshold sets:
 ///   - Day:     Cozy → Exploring → Pressure
 ///   - Night:   Cozy → Night → Spooky → Horror
 ///   - Dungeon: Defined per-dungeon via DungeonConfig SO
+///
+/// Day/night state switching reads from ComfortSystem.DayNightValue
+/// (which auto-reads from DayNightMaster).
 /// </summary>
 public class ComfortMusicBridge : MonoBehaviour
 {
     [Header("References")]
-    [Tooltip("Auto-finds if left empty")]
+    [Tooltip("Auto-finds if left empty. Only used for DayNightValue.")]
     [SerializeField] private ComfortSystem comfortSystem;
 
     [Header("Tension Mapping")]
-    [Tooltip("Curve to reshape the comfort tension before sending to music. " +
-             "X = ComfortSystem tension (0–1), Y = music tension (0–1). " +
+    [Tooltip("Curve to reshape tension before sending to music. " +
+             "X = raw tension (0–1), Y = music tension (0–1). " +
              "Leave as default linear if you want 1:1 mapping.")]
     [SerializeField] private AnimationCurve tensionCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+
+    [Header("Tension Weights")]
+    [Tooltip("How much happiness contributes to tension (vs mood)")]
+    [Range(0f, 1f)]
+    [SerializeField] private float happinessWeight = 0.6f;
+
+    [Tooltip("How much mood contributes to tension")]
+    [Range(0f, 1f)]
+    [SerializeField] private float moodWeight = 0.4f;
 
     [Header("Automatic State Switching")]
     [Tooltip("Enable to automatically switch GameMusicState based on tension thresholds")]
@@ -55,15 +69,33 @@ public class ComfortMusicBridge : MonoBehaviour
     private bool inDungeonMode;
     private DungeonConfig activeDungeonConfig;
 
+    // System references
+    private MoodSystem moodSystem;
+    private HappinessSystem happinessSystem;
+
+    private float currentTension;
+
     private ProceduralMusicController Music => ProceduralMusicController.Instance;
+
+    /// <summary>Current computed tension (0–1) after curve mapping. Useful for debug.</summary>
+    public float Tension => currentTension;
 
     private void Start()
     {
         if (comfortSystem == null)
             comfortSystem = FindObjectOfType<ComfortSystem>();
 
-        if (comfortSystem == null)
-            Debug.LogWarning("[ComfortMusicBridge] No ComfortSystem found. Tension won't update.");
+        moodSystem = MoodSystem.Instance;
+        if (moodSystem == null)
+            moodSystem = FindObjectOfType<MoodSystem>();
+
+        happinessSystem = HappinessSystem.Instance;
+        if (happinessSystem == null)
+            happinessSystem = FindObjectOfType<HappinessSystem>();
+
+        if (moodSystem == null && happinessSystem == null)
+            Debug.LogWarning("[ComfortMusicBridge] No MoodSystem or HappinessSystem found. " +
+                             "Tension won't update.");
 
         if (Music == null)
             Debug.LogWarning("[ComfortMusicBridge] ProceduralMusicController.Instance is null. " +
@@ -74,18 +106,39 @@ public class ComfortMusicBridge : MonoBehaviour
 
     private void Update()
     {
-        if (comfortSystem == null || Music == null) return;
+        if (Music == null) return;
+        if (moodSystem == null && happinessSystem == null) return;
 
-        // Read tension from comfort system and remap through the curve
-        float rawTension = comfortSystem.Tension;
-        float mappedTension = tensionCurve.Evaluate(rawTension);
+        // Compute tension from mood and happiness
+        float rawTension = ComputeTension();
+        currentTension = tensionCurve.Evaluate(rawTension);
 
         // Send to music system
-        Music.SetTension(mappedTension);
+        Music.SetTension(currentTension);
 
         // Optionally handle state switching
         if (autoSwitchStates && !manualStateOverride)
-            UpdateAutoState(mappedTension);
+            UpdateAutoState(currentTension);
+    }
+
+    /// <summary>
+    /// Tension = weighted inverse blend of mood and happiness.
+    /// Low values of both = high tension. Same formula as the old
+    /// ComfortSystem.UpdateTension() but reading from the new systems.
+    /// </summary>
+    private float ComputeTension()
+    {
+        float mood = moodSystem != null ? moodSystem.Mood : 0.5f;
+        float happiness = happinessSystem != null ? happinessSystem.Happiness : 0.5f;
+
+        float moodContribution = (1f - mood) * moodWeight;
+        float happinessContribution = (1f - happiness) * happinessWeight;
+
+        float totalWeight = moodWeight + happinessWeight;
+        float raw = (moodContribution + happinessContribution) / Mathf.Max(totalWeight, 0.001f);
+
+        // S-curve for more dramatic extremes: 3t² - 2t³
+        return raw * raw * (3f - 2f * raw);
     }
 
     private void UpdateAutoState(float tension)
@@ -130,7 +183,7 @@ public class ComfortMusicBridge : MonoBehaviour
             }
         }
 
-        // Hysteresis: require the suggested state to hold for stateChangeDelay
+        // Hysteresis
         if (suggestedState != pendingState)
         {
             pendingState = suggestedState;
@@ -162,9 +215,9 @@ public class ComfortMusicBridge : MonoBehaviour
         stateTimer = 0f;
 
         // Immediately evaluate so music doesn't lag behind
-        if (Music != null && comfortSystem != null)
+        if (Music != null)
         {
-            float tension = tensionCurve.Evaluate(comfortSystem.Tension);
+            float tension = tensionCurve.Evaluate(ComputeTension());
             GameMusicState initialState = config.EvaluateState(tension);
             currentMusicState = initialState;
             pendingState = initialState;
@@ -214,7 +267,6 @@ public class ComfortMusicBridge : MonoBehaviour
     /// <summary>
     /// Switch the daytime default between Exploring and Exploring2.
     /// Automatically resets to Exploring when night falls.
-    /// Call from your day/night script when you want the more upbeat variant.
     /// </summary>
     public void SetExploring2(bool active)
     {

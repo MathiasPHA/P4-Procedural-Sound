@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace InventorySystem.Data
 {
@@ -39,10 +40,17 @@ namespace InventorySystem.Data
         public int maxDurability = 100;
 
         [Header("Consumable Effects")]
-        [Tooltip("How much happiness this item gives when consumed (0–1 range). " +
+        [Tooltip("How much hunger this food item restores when consumed (0–1 range). " +
                  "Only applies to Consumable category items.")]
+        [FormerlySerializedAs("happinessBoost")]
         [Range(0f, 1f)]
-        public float happinessBoost = 0f;
+        public float hungerRestore = 0f;
+
+        [Tooltip("How much happiness this item restores directly when consumed (0–1 range). " +
+                 "Use for potions and special items — food should only restore hunger.")]
+        [Range(0f, 1f)]
+        public float happinessRestore = 0f;
+
         [Tooltip("The sound to play when this item is consumed.")]
         public AudioClip consumeSound;
         [Tooltip("Volume multiplier for the consume sound.")]
