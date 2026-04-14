@@ -10,9 +10,11 @@ namespace InventorySystem.Data
         Axe,
         Pickaxe,
         Shovel,
-        Hoe,
+        Flute,
         Hammer,
         Spear,
-        torch,
+        Torch,
+        FishingRod,
+        Net,
     }
 }

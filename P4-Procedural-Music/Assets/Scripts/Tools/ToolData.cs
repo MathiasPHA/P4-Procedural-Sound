@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace InventorySystem.Data
@@ -20,7 +21,7 @@ namespace InventorySystem.Data
 
         [Header("Stats")]
         [Tooltip("Damage dealt per swing to a harvestable resource.")]
-        [Min(1)] public int damage = 1;
+        [Min(0)] public int damage = 1;
 
         [Tooltip("Seconds between swings.")]
         [Min(0.1f)] public float cooldown = 0.5f;
@@ -40,5 +41,18 @@ namespace InventorySystem.Data
 
         [Tooltip("How much durability is lost per tick.")]
         [Min(1)] public int drainAmount = 1;
+
+        [Header("isInstrument")]
+        [Tooltip("If true, this tool behaves like an instrument and plays sounds when used.")]
+        public bool isInstrument = false;
+
+        [Tooltip("Audio clips to play when this tool is used as an instrument.")]
+        public List<AudioClip> instrumentSounds = new();
+
+        [Tooltip("Volume used when playing instrument sounds.")]
+        [Range(0f, 1f)] public float instrumentVolume = 1f;
+
+        [Tooltip("Random pitch variation applied to instrument sounds.")]
+        [Range(0f, 0.5f)] public float instrumentPitchVariation = 0.05f;
     }
 }

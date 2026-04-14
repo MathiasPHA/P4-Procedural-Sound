@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
+  m_Name: Metal_ID
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
+  id: Metal
+  displayName: Metal
+  description: it's Metal
+  loreNote: It's cold to the touch
+  icon: {fileID: 0}
+  category: 0
+  maxStackSize: 64
+  isDroppable: 1
+  hasInstanceState: 0
+  maxDurability: 100
+  hungerRestore: 0
+  happinessRestore: 0
+  consumeSound: {fileID: 0}
+  consumeSoundVolume: 1
+  isFuel: 0
+  burnFuelValue: 0
+  displayStats: []
