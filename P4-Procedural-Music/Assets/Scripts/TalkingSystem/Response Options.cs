@@ -8,7 +8,7 @@ namespace InteractionSystem
     public class ResponseOptions : MonoBehaviour
     {
         [Header("UI Settings")]
-        [SerializeField] private TextMeshProUGUI responseText;
+        [SerializeField] private TextMeshPro responseText;
         [SerializeField] private float displayDuration = 3f;
 
         [Header("Typewriter")]
@@ -26,7 +26,7 @@ namespace InteractionSystem
             _audioSource = GetComponent<AudioSource>();
 
             if (responseText == null)
-                responseText = GetComponentInChildren<TextMeshProUGUI>(true);
+                responseText = GetComponentInChildren<TextMeshPro>(true);
         }
 
         
