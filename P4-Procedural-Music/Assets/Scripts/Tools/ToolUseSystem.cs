@@ -40,9 +40,9 @@ namespace InventorySystem.Tools
         private float _drainTimer = 0f;
         private bool _drainingDurability = false;
         private ToolData _equippedToolData = null;
-        private float _baseLightIntensity = 1f;
 
         [Header("Torch Light Fade")]
+        [SerializeField] private float maxLightIntensity = 1f;   // intensity at full durability
         [SerializeField] private float minLightIntensity = 0.1f; // intensity at 0 durability
 
         private void Start()
@@ -114,7 +114,7 @@ namespace InventorySystem.Tools
                             if (_playerLight2D != null)
                             {
                                 float t = equipped.DurabilityNormalized;
-                                _playerLight2D.intensity = Mathf.Lerp(minLightIntensity, _baseLightIntensity, t);
+                                _playerLight2D.intensity = Mathf.Lerp(minLightIntensity, maxLightIntensity, t);
                             }
 
                             _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
@@ -143,9 +143,11 @@ namespace InventorySystem.Tools
             {
                 _playerLight2D.enabled = holdingTorch;
                 if (holdingTorch)
-                    _baseLightIntensity = _playerLight2D.intensity; // store full intensity
-                else
-                    _playerLight2D.intensity = _baseLightIntensity; // reset when unequipped
+                {
+                    // Restore intensity from the torch's actual current durability
+                    float t = item.DurabilityNormalized;
+                    _playerLight2D.intensity = Mathf.Lerp(minLightIntensity, maxLightIntensity, t);
+                }
             }
 
             // Look up ToolData for the newly equipped item
