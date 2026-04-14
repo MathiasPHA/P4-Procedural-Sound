@@ -12,9 +12,9 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerInventoryState inventoryState = new PlayerInventoryState();
     public PlayerHarvestState harvestState = new PlayerHarvestState();
     public PlayerMoveToInteractState moveToInteractState = new PlayerMoveToInteractState();
+    public PlayerShrugState playerShrugState = new PlayerShrugState();
 
     public string animationQue;
-
     public Rigidbody2D playerRB;
     public Vector2 moveInput;
 
@@ -82,4 +82,9 @@ public class PlayerStateManager : MonoBehaviour
             playerDir = "Up";
         }
     }
+
+    /*public void StartShrug()
+{
+    SwitchState(playerShrugState);
+}*/
 }

@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2318606710162696784
 RectTransform:
   m_ObjectHideFlags: 0
@@ -52,7 +52,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1952490527162336135}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: If you can see this text, something has gone terriby wrong
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -486,6 +486,7 @@ MonoBehaviour:
   handMobCooldown: 0.6
   maxLightIntensity: 1
   minLightIntensity: 0.1
+  wrongToolFeedback: {fileID: 0}
 --- !u!82 &-1374152125123140291
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1009,9 +1010,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.ResponseOptions
   responseText: {fileID: 1700032735596827980}
-  displayDuration: 3
-  characterDelay: 0.05
-  wrongToolSound: {fileID: 0}
+  displayDuration: 1
+  characterDelay: 0.03
+  wrongToolSound: {fileID: 8300000, guid: d4de340d8b20f9946b22f968fdcb8b2b, type: 3}
   volume: 0.5
   pitchVariation: 0.1
 --- !u!82 &1029853646772647912
@@ -1026,7 +1027,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

@@ -90,5 +90,10 @@ public class PlayerAnimations : MonoBehaviour
             else
                 playerAnimator.Play("PlayerHarvestHandRight");
         }
+        
+        if (animationQue == "Shrug")
+        {
+                playerAnimator.Play("PlayerShrug");
+        }
     }
 }
