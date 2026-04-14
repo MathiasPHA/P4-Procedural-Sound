@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff6c2e07d007c7c48997e48695dd906d, type: 3}
-  m_Name: Pot_PD
+  m_Name: Tent_PD
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlaceableData
-  item: {fileID: 11400000, guid: 1631bb5a5190f44f88e4d09104ffc4c1, type: 2}
+  item: {fileID: 11400000, guid: daf4ab576611f4e958bfef56033a26ff, type: 2}
   prefab: {fileID: 0}
   gridCells: {x: 1, y: 1}

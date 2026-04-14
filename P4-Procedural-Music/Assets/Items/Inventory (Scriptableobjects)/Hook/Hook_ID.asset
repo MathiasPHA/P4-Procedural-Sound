@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
   m_Name: Hook_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: 
-  displayName: 
-  description: 
-  loreNote: 
+  id: Hook
+  displayName: Hook
+  description: It's sharp
+  loreNote: It's worm sized
   icon: {fileID: 0}
   category: 0
-  maxStackSize: 1
+  maxStackSize: 16
   isDroppable: 1
   hasInstanceState: 0
   maxDurability: 100

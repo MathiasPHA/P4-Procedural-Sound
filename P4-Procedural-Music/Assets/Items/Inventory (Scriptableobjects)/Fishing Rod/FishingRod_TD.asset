@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 205e307909aad3848b29b5bce337aa3d, type: 3}
   m_Name: FishingRod_TD
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ToolData
-  item: {fileID: 0}
-  toolType: 0
-  damage: 1
+  item: {fileID: 11400000, guid: 26e74268a4794487383ba2c6233c8bb5, type: 2}
+  toolType: 8
+  damage: 0
   cooldown: 0.5
   range: 1.5
   durabilityCost: 1

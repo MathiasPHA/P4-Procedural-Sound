@@ -12,12 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 205e307909aad3848b29b5bce337aa3d, type: 3}
   m_Name: Flute_TD
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ToolData
-  item: {fileID: 0}
-  toolType: 0
-  damage: 1
+  item: {fileID: 11400000, guid: eedb5255e328c4613923f3b8bd8f9259, type: 2}
+  toolType: 4
+  damage: 0
   cooldown: 0.5
-  range: 1.5
+  range: 0.1
   durabilityCost: 1
   drainsOverTime: 0
   drainInterval: 5
   drainAmount: 1
+  isInstrument: 1
+  instrumentSounds: []
+  instrumentVolume: 1
+  instrumentPitchVariation: 0.05

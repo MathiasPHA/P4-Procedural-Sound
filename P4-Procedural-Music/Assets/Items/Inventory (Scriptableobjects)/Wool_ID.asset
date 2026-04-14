@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Wool
   description: it's Wool
   loreNote: It has a warm feel
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 9e809e97467fdb94594e78930ae78546, type: 3}
   category: 0
   maxStackSize: 64
   isDroppable: 1

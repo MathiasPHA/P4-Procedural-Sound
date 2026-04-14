@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: String
   description: It's String
   loreNote: 'A versatile material '
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 218b0c6832a39e543b92bb72558e4d61, type: 3}
   category: 0
   maxStackSize: 64
   isDroppable: 1

@@ -12,20 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
   m_Name: Flute_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: 
-  displayName: 
-  description: 
-  loreNote: 
+  id: Flute
+  displayName: Flute
+  description: it's a Flute
+  loreNote: Plays some sweet note
   icon: {fileID: 0}
-  category: 0
+  category: 1
   maxStackSize: 1
   isDroppable: 1
-  hasInstanceState: 0
-  maxDurability: 100
+  hasInstanceState: 1
+  maxDurability: 200
   hungerRestore: 0
   happinessRestore: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
-  isFuel: 0
+  isFuel: 1
   burnFuelValue: 0
   displayStats: []

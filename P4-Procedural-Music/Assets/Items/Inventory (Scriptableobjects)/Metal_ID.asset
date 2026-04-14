@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Metal
   description: it's Metal
   loreNote: It's cold to the touch
-  icon: {fileID: 0}
+  icon: {fileID: 2851807829157702552, guid: dce47e49f2eeb0d4987449e2f44afcf2, type: 3}
   category: 0
   maxStackSize: 64
   isDroppable: 1

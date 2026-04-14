@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4dbc57ffa34cf544b98aa16558f3ff3, type: 3}
   m_Name: Cloth_RP
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.Recipe
-  recipeId: 
+  recipeId: Cloth
   stationType: 0
-  ingredients: []
-  result: {fileID: 0}
+  ingredients:
+  - item: {fileID: 11400000, guid: 4890e9419b1e34314b84e56c018e1ac0, type: 2}
+    amount: 5
+  result: {fileID: 11400000, guid: abd0d1e2760524ff2a7e5b099df95c5a, type: 2}
   resultAmount: 1
   craftTime: 0

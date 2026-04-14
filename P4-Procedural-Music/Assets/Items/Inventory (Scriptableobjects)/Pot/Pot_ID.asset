@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
   m_Name: Pot_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: 
-  displayName: 
-  description: 
-  loreNote: 
+  id: Pot
+  displayName: Pot
+  description: It's a pot
+  loreNote: It's good for cooking
   icon: {fileID: 0}
-  category: 0
+  category: 3
   maxStackSize: 1
   isDroppable: 1
   hasInstanceState: 0

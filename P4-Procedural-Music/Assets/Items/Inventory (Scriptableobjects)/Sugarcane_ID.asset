@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
   m_Name: Sugarcane_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: 
-  displayName: 
-  description: 
-  loreNote: 
-  icon: {fileID: 0}
+  id: Sugarcane
+  displayName: Sugarcane
+  description: it's Sugarcane
+  loreNote: It's smells sweet
+  icon: {fileID: -6623295586724951948, guid: 3df9029c00ff6bb4d9d74ce1274d2fb1, type: 3}
   category: 0
-  maxStackSize: 1
+  maxStackSize: 64
   isDroppable: 1
   hasInstanceState: 0
   maxDurability: 100
@@ -26,6 +26,6 @@ MonoBehaviour:
   happinessRestore: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
-  isFuel: 0
-  burnFuelValue: 0
+  isFuel: 1
+  burnFuelValue: 3
   displayStats: []

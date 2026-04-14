@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Cloth
   description: it's cloth
   loreNote: It's good for keep warmth
-  icon: {fileID: 0}
+  icon: {fileID: 440033823889434416, guid: da5ce1cd432a7e340a25497d481de05a, type: 3}
   category: 0
   maxStackSize: 64
   isDroppable: 1

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
   m_Name: Tent_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: 
-  displayName: 
-  description: 
-  loreNote: 
-  icon: {fileID: 0}
-  category: 0
+  id: Tent
+  displayName: Tent
+  description: It's shelter
+  loreNote: keep you save and sound
+  icon: {fileID: 21300000, guid: fc429c7a4abbdf4408c9e36313995c9d, type: 3}
+  category: 3
   maxStackSize: 1
   isDroppable: 1
   hasInstanceState: 0
