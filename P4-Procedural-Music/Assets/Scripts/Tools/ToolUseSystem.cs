@@ -44,6 +44,8 @@ namespace InventorySystem.Tools
         [Header("Torch Light Fade")]
         [SerializeField] private float maxLightIntensity = 1f;   // intensity at full durability
         [SerializeField] private float minLightIntensity = 0.1f; // intensity at 0 durability
+        [Header("Wrong Tool Feedback")]
+        [SerializeField] private ResponseOptions wrongToolFeedback;
 
         private void Start()
         {
@@ -81,6 +83,9 @@ namespace InventorySystem.Tools
             {
                 interactionDetector = GetComponent<InteractionDetector>();
             }
+
+             if (wrongToolFeedback == null)
+                wrongToolFeedback = GetComponentInChildren<ResponseOptions>(true);
         }
 
         private void Update()
@@ -316,12 +321,26 @@ namespace InventorySystem.Tools
 
             var equippedInstance = _inventory.EquippedItem;
             if (equippedInstance == null || equippedInstance.Data.category != ItemCategory.Tool)
+            {
+                wrongToolFeedback?.TryShowWrongToolMessage("Hand", resource.RequiredToolType.ToString());
+                playerStateManager.SwitchState(playerStateManager.playerShrugState);
                 return;
+
+            }
 
             if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
                 return;
 
-            if (resource.RequiredToolType != toolData.toolType) return;
+            // Wrong tool type equipped
+            if (resource.RequiredToolType != toolData.toolType)
+            {
+                wrongToolFeedback?.TryShowWrongToolMessage(
+                    toolData.toolType.ToString(),
+                    resource.RequiredToolType.ToString()
+                );
+                playerStateManager.SwitchState(playerStateManager.playerShrugState);
+                return;
+            }
 
             playerStateManager.animationQue = $"Harvest{toolData.toolType}";
             playerStateManager.StartHarvest();
@@ -424,4 +443,5 @@ namespace InventorySystem.Tools
         }
 #endif
     }
+    
 }

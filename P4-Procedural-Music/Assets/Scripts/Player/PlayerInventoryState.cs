@@ -17,19 +17,15 @@ public class PlayerInventoryState : PlayerBaseState
         _player.playerRB.linearVelocity = Vector2.zero;
         _player.moveInput = Vector2.zero;
 
+         _player.animationQue = "Idle";
+
         Debug.Log("I'm in Inventory");
     }
 
     public override void UpdateState(PlayerStateManager player)
     {
-        // Keep velocity zeroed — movement input is disabled at the
-        // input layer (Movement action map is off), but this is a
-        // safety net in case anything leaks through.
+        
         _player.playerRB.linearVelocity = Vector2.zero;
-
-        // State exit is handled externally by InventoryUIManager
-        // calling PlayerStateManager.SwitchState(idleState) when
-        // the inventory closes — not by checking input here.
     }
 
     public override void OnCollisionEnter(PlayerStateManager player)

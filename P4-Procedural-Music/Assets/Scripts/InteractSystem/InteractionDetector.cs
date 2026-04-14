@@ -49,6 +49,13 @@ namespace InteractionSystem
                 return;
             }
 
+            // No mouse connected — nothing to hover
+            if (Mouse.current == null)
+            {
+                ClearTarget();
+                return;
+            }
+
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
                 ClearTarget();
