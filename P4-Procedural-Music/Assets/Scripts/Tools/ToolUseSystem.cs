@@ -217,7 +217,9 @@ namespace InventorySystem.Tools
             if (equippedInstance == null || equippedInstance.Data.category != ItemCategory.Tool)
             {
                 wrongToolFeedback?.TryShowWrongToolMessage("Hand", resource.RequiredToolType.ToString());
+                playerStateManager.SwitchState(playerStateManager.playerShrugState);
                 return;
+
             }
 
             if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
@@ -230,6 +232,7 @@ namespace InventorySystem.Tools
                     toolData.toolType.ToString(),
                     resource.RequiredToolType.ToString()
                 );
+                playerStateManager.SwitchState(playerStateManager.playerShrugState);
                 return;
             }
 
@@ -334,4 +337,5 @@ namespace InventorySystem.Tools
         }
 #endif
     }
+    
 }
