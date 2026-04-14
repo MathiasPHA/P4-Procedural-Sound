@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3efe63c05b2c0354d9fe935fb1028497
+guid: 31c54933871230b4a97a92107a5ac9ed
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5281422124547630143
-    second: Chest_0
+      213: 5393448996881579246
+    second: Hammer_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Chest_0
+      name: Hammer_0
       rect:
         serializedVersion: 2
-        x: 339
-        y: 363
-        width: 813
-        height: 618
+        x: 270
+        y: 226
+        width: 527
+        height: 545
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1cb13755f8e94b6b0800000000000000
-      internalID: -5281422124547630143
+      spriteID: eec3055794169da40800000000000000
+      internalID: 5393448996881579246
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Chest_0: -5281422124547630143
+      Hammer_0: 5393448996881579246
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
