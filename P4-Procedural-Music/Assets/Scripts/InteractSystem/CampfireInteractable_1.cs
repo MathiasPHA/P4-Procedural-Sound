@@ -21,39 +21,16 @@ namespace InteractionSystem
 
         public override void Interact(PlayerStateManager player)
         {
-            Debug.Log("[Campfire] Interact() called.");
-
-            if (_campfire == null)
-            {
-                Debug.LogError("[Campfire] _campfire is null.");
-                return;
-            }
+            if (_campfire == null) return;
 
             Inventory inventory = InventoryBootstrap.PlayerInventory;
-
-            if (inventory == null)
-            {
-                Debug.LogError("[Campfire] PlayerInventory is null — InventoryBootstrap may not have run yet.");
-                return;
-            }
+            if (inventory == null) return;
 
             InventorySlot activeSlot = inventory.Slots[inventory.ActiveHotbarIndex];
-            Debug.Log($"[Campfire] Active hotbar index: {inventory.ActiveHotbarIndex}, slot empty: {activeSlot.IsEmpty}");
-
-            if (activeSlot.IsEmpty)
-            {
-                Debug.Log("[Campfire] No item in active hotbar slot.");
-                return;
-            }
+            if (activeSlot.IsEmpty) return;
 
             ItemData heldItem = activeSlot.ItemData;
-            Debug.Log($"[Campfire] Held item: {heldItem.displayName}, isFuel: {heldItem.isFuel}, burnFuelValue: {heldItem.burnFuelValue}");
-
-            if (!heldItem.isFuel)
-            {
-                Debug.Log($"[Campfire] '{heldItem.displayName}' is not marked as fuel.");
-                return;
-            }
+            if (!heldItem.isFuel) return;
 
             _campfire.AddFuel(heldItem, 1);
             activeSlot.RemoveFromStack(1);

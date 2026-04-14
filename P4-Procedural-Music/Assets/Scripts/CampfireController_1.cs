@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using InventorySystem.Data;
 
 /// <summary>
@@ -26,15 +25,9 @@ public class CampfireController : MonoBehaviour
     public float burnRateMedium = 2f;
     public float burnRateLow    = 1f;
 
-    [Header("Particle Systems")]
-    public ParticleSystem flameParticlesBig;
-    public ParticleSystem flameParticlesMedium;
-    public ParticleSystem flameParticlesLow;
-    public ParticleSystem smokeParticles;
-
     [Header("Light (2D)")]
-    [Tooltip("Assign the Light2D on the campfire. TorchFlicker should also be on the same GameObject.")]
-    public Light2D fireLight;
+    [Tooltip("The child GameObject that holds the Light2D and TorchFlicker (e.g. the 'Light' child).")]
+    public GameObject lightChild;
 
     [Tooltip("TorchFlicker script — its intensity range will be adjusted per burn state.")]
     public TorchFlicker torchFlicker;
@@ -51,9 +44,8 @@ public class CampfireController : MonoBehaviour
     public float flickerMinLow    = 0.3f;
     public float flickerMaxLow    = 0.7f;
 
-    [Header("Audio (optional)")]
+    [Header("Audio")]
     public AudioSource audioSource;
-    public AudioClip   crackleClip;
     public AudioClip   extinguishClip;
 
     [Header("Runtime State (read-only)")]
@@ -65,7 +57,6 @@ public class CampfireController : MonoBehaviour
 
     private void Start()
     {
-        // Auto-grab TorchFlicker if not assigned
         if (torchFlicker == null)
             torchFlicker = GetComponent<TorchFlicker>();
 
@@ -145,9 +136,10 @@ public class CampfireController : MonoBehaviour
     {
         currentBurnState = newState;
 
-        SetParticles(newState);
         ApplyLightSettings(newState);
-        HandleAudio(newState);
+
+        if (newState == BurnState.Out && audioSource != null && extinguishClip != null)
+            audioSource.PlayOneShot(extinguishClip);
 
         Debug.Log($"[Campfire] State changed → {newState}  (fuel: {currentFuel:F1})");
     }
@@ -156,17 +148,14 @@ public class CampfireController : MonoBehaviour
     {
         if (state == BurnState.Out)
         {
-            // Disable flicker and turn off the light
-            if (torchFlicker != null) torchFlicker.EnableFlicker(false);
-            if (fireLight    != null) fireLight.intensity = 0f;
+            if (lightChild != null) lightChild.SetActive(false);
             return;
         }
 
-        // Enable flicker and set intensity range based on burn state
+        if (lightChild != null) lightChild.SetActive(true);
+
         if (torchFlicker != null)
         {
-            torchFlicker.EnableFlicker(true);
-
             switch (state)
             {
                 case BurnState.Big:
@@ -178,41 +167,6 @@ public class CampfireController : MonoBehaviour
                 case BurnState.Low:
                     torchFlicker.SetIntensityRange(flickerMinLow, flickerMaxLow);
                     break;
-            }
-        }
-    }
-
-    private void SetParticles(BurnState state)
-    {
-        SetPS(flameParticlesBig,    state == BurnState.Big);
-        SetPS(flameParticlesMedium, state == BurnState.Medium);
-        SetPS(flameParticlesLow,    state == BurnState.Low);
-        SetPS(smokeParticles,       state == BurnState.Out);
-    }
-
-    private static void SetPS(ParticleSystem ps, bool shouldPlay)
-    {
-        if (ps == null) return;
-        if (shouldPlay  && !ps.isPlaying) ps.Play();
-        if (!shouldPlay &&  ps.isPlaying) ps.Stop();
-    }
-
-    private void HandleAudio(BurnState state)
-    {
-        if (audioSource == null) return;
-
-        if (state == BurnState.Out)
-        {
-            if (audioSource.isPlaying) audioSource.Stop();
-            if (extinguishClip != null) audioSource.PlayOneShot(extinguishClip);
-        }
-        else
-        {
-            if (!audioSource.isPlaying && crackleClip != null)
-            {
-                audioSource.clip = crackleClip;
-                audioSource.loop = true;
-                audioSource.Play();
             }
         }
     }

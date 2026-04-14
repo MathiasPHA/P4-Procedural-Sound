@@ -12,6 +12,7 @@ namespace InventorySystem.Data
         Shovel,
         Hoe,
         Hammer,
-        Spear
+        Spear,
+        torch,
     }
 }

@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 2972819932874030993}
   - component: {fileID: 7852800770308967991}
   - component: {fileID: 4347026185079805041}
+  - component: {fileID: 8730877989820528652}
   m_Layer: 6
-  m_Name: Campfire_0
+  m_Name: Animations
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -114,6 +115,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8730877989820528652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095060366654119204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ec554f0c203f4e4ba76268ea6900b0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CampfireAnimations
+  campfireController: {fileID: 3875033480923864871}
 --- !u!1 &2319465394022386072
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,11 +513,7 @@ MonoBehaviour:
   burnRateBig: 3
   burnRateMedium: 2
   burnRateLow: 1
-  flameParticlesBig: {fileID: 0}
-  flameParticlesMedium: {fileID: 0}
-  flameParticlesLow: {fileID: 0}
-  smokeParticles: {fileID: 0}
-  fireLight: {fileID: 2830128335011259928}
+  lightChild: {fileID: 2319465394022386072}
   torchFlicker: {fileID: 9122419163685939560}
   flickerMinBig: 1.2
   flickerMaxBig: 2.2
@@ -511,8 +521,7 @@ MonoBehaviour:
   flickerMaxMedium: 1.4
   flickerMinLow: 0.3
   flickerMaxLow: 0.7
-  audioSource: {fileID: 0}
-  crackleClip: {fileID: 0}
+  audioSource: {fileID: 1626463313000977171}
   extinguishClip: {fileID: 0}
   currentFuel: 65
   currentBurnState: 3
@@ -565,6 +574,6 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.18, y: -2.6}
-  m_Size: {x: 10, y: 1}
+  m_Offset: {x: -0.28, y: -3.77}
+  m_Size: {x: 6.35, y: 7.1}
   m_Direction: 0

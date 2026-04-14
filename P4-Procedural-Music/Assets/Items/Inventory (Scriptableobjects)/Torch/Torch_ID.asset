@@ -10,21 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
-  m_Name: Wood_ID
+  m_Name: Torch_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: wood
-  displayName: Wood
-  description: Its Wood
-  loreNote: Smell like wood
-  icon: {fileID: 21300000, guid: beaac54fbc8a91749b38e9cc4b03cfde, type: 3}
-  category: 0
-  maxStackSize: 64
+  id: Torch
+  displayName: Torch
+  description: Light up's a small area around you
+  loreNote: It brings a comforting glow, in the dark
+  icon: {fileID: 21300000, guid: f5435909422724a49b65601556a5408f, type: 3}
+  category: 1
+  maxStackSize: 1
   isDroppable: 1
-  hasInstanceState: 0
-  maxDurability: 0
+  hasInstanceState: 1
+  maxDurability: 100
   happinessBoost: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
-  isFuel: 1
-  burnFuelValue: 25
-  displayStats: []
+  isFuel: 0
+  burnFuelValue: 0
+  displayStats:
+  - label: Burn power
+    value: 10
+    colour: 0
