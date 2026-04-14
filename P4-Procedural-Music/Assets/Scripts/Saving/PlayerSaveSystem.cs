@@ -3,8 +3,11 @@ using System.IO;
 using UnityEngine;
 
 /// <summary>
-/// Saves and loads the player's world position and happiness value.
-/// Attach to the player GameObject alongside ComfortSystem.
+/// Saves and loads the player's world position, happiness, hunger, and mood.
+/// Attach to the player GameObject alongside HappinessSystem, HungerSystem, MoodSystem.
+///
+/// Save data is backwards-compatible: old saves without hunger/mood fields
+/// will load with safe defaults (hunger = 0.8, mood = 0.6).
 /// </summary>
 public class PlayerSaveSystem : MonoBehaviour
 {
@@ -13,8 +16,9 @@ public class PlayerSaveSystem : MonoBehaviour
     [Tooltip("The player's Transform to save/restore position from.")]
     [SerializeField] private Transform playerTransform;
 
-    [Tooltip("The ComfortSystem to save/restore happiness from.")]
-    [SerializeField] private ComfortSystem comfortSystem;
+    private HappinessSystem happinessSystem;
+    private HungerSystem hungerSystem;
+    private MoodSystem moodSystem;
 
     private void Awake()
     {
@@ -25,12 +29,23 @@ public class PlayerSaveSystem : MonoBehaviour
         }
         Instance = this;
 
-        // Fall back to this GameObject's own components if not assigned
         if (playerTransform == null)
             playerTransform = transform;
+    }
 
-        if (comfortSystem == null)
-            comfortSystem = GetComponent<ComfortSystem>();
+    private void Start()
+    {
+        happinessSystem = HappinessSystem.Instance;
+        if (happinessSystem == null)
+            happinessSystem = FindObjectOfType<HappinessSystem>();
+
+        hungerSystem = HungerSystem.Instance;
+        if (hungerSystem == null)
+            hungerSystem = FindObjectOfType<HungerSystem>();
+
+        moodSystem = MoodSystem.Instance;
+        if (moodSystem == null)
+            moodSystem = FindObjectOfType<MoodSystem>();
     }
 
     // -------------------------------------------------------------------------
@@ -39,6 +54,10 @@ public class PlayerSaveSystem : MonoBehaviour
 
     public void SavePlayer(string worldName)
     {
+        // Don't overwrite overworld position while in a dungeon
+        if (DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon)
+            return;
+
         if (playerTransform == null)
         {
             Debug.LogWarning("[PlayerSaveSystem] No player Transform — nothing to save.");
@@ -49,19 +68,26 @@ public class PlayerSaveSystem : MonoBehaviour
         {
             positionX = playerTransform.position.x,
             positionY = playerTransform.position.y,
-            happiness = comfortSystem != null ? comfortSystem.Happiness : 0.5f
+            happiness = happinessSystem != null ? happinessSystem.Happiness : 0.5f,
+            hunger    = hungerSystem    != null ? hungerSystem.Hunger       : 0.8f,
+            mood      = moodSystem      != null ? moodSystem.Mood           : 0.6f
         };
 
         File.WriteAllText(GetSavePath(worldName), JsonUtility.ToJson(data, prettyPrint: true));
-        Debug.Log($"[PlayerSaveSystem] Saved player at {playerTransform.position} for world '{worldName}'.");
+        Debug.Log($"[PlayerSaveSystem] Saved player at {playerTransform.position} " +
+                  $"(happiness={data.happiness:F2}, hunger={data.hunger:F2}, mood={data.mood:F2})");
     }
 
     public void LoadPlayer(string worldName)
     {
+        // Don't restore overworld position when in a dungeon
+        if (DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon)
+            return;
+
         string path = GetSavePath(worldName);
         if (!File.Exists(path))
         {
-            Debug.Log($"[PlayerSaveSystem] No player save found for '{worldName}' — using spawn position.");
+            Debug.Log($"[PlayerSaveSystem] No player save found for '{worldName}' — using defaults.");
             return;
         }
 
@@ -75,10 +101,17 @@ public class PlayerSaveSystem : MonoBehaviour
         if (playerTransform != null)
             playerTransform.position = new Vector3(data.positionX, data.positionY, 0f);
 
-        if (comfortSystem != null)
-            comfortSystem.SetHappiness(data.happiness);
+        if (happinessSystem != null)
+            happinessSystem.SetHappiness(data.happiness);
 
-        Debug.Log($"[PlayerSaveSystem] Loaded player at ({data.positionX}, {data.positionY}), happiness {data.happiness:F2}.");
+        if (hungerSystem != null)
+            hungerSystem.SetHunger(data.hunger);
+
+        if (moodSystem != null)
+            moodSystem.SetMood(data.mood);
+
+        Debug.Log($"[PlayerSaveSystem] Loaded player at ({data.positionX:F1}, {data.positionY:F1}), " +
+                  $"happiness={data.happiness:F2}, hunger={data.hunger:F2}, mood={data.mood:F2}");
     }
 
     // -------------------------------------------------------------------------
@@ -102,5 +135,8 @@ public class PlayerSaveSystem : MonoBehaviour
         public float positionX;
         public float positionY;
         public float happiness;
+        // New fields — default values ensure old saves load cleanly
+        public float hunger = 0.8f;
+        public float mood   = 0.6f;
     }
 }

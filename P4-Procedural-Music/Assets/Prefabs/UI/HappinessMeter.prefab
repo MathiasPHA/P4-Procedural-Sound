@@ -266,8 +266,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -642.88, y: 420}
-  m_SizeDelta: {x: 634.25, y: 63.03}
+  m_AnchoredPosition: {x: -747.8, y: 455.2}
+  m_SizeDelta: {x: 1982.861, y: 51.763}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7225642842360560909
 MonoBehaviour:
@@ -387,6 +387,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  happinessWeight: 0.6
+  moodWeight: 0.4
   autoSwitchStates: 1
   dayCozyMax: 0.15
   dayPressureMin: 0.6
@@ -407,14 +409,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc6878f0799fc134188eba55ae55ab74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HappinessMeter
-  comfortSystem: {fileID: 0}
   happinessSlider: {fileID: 7225642842360560909}
-  comfortImage: {fileID: 4097649421943274822}
-  veryComfySprite: {fileID: -5268498569958932384, guid: b179557e175f0494ab26477132fa1d29, type: 3}
-  comfySprite: {fileID: -8835997013476583514, guid: 42267042f6856ed45a6913a9174fd9dd, type: 3}
-  contentSprite: {fileID: 1558143240573847397, guid: f5fa5fa2cfa294d4597f15843e45ee21, type: 3}
+  moodImage: {fileID: 4097649421943274822}
+  elatedSprite: {fileID: -5268498569958932384, guid: b179557e175f0494ab26477132fa1d29, type: 3}
+  contentSprite: {fileID: -8835997013476583514, guid: 42267042f6856ed45a6913a9174fd9dd, type: 3}
+  neutralSprite: {fileID: 1558143240573847397, guid: f5fa5fa2cfa294d4597f15843e45ee21, type: 3}
   uneasySprite: {fileID: 1690827713086069641, guid: e97174c582d476246af578174de03966, type: 3}
-  horrifiedSprite: {fileID: -3604425936499877520, guid: 2a874bcfec52d35418cf554bf0a7b21d, type: 3}
+  miserableSprite: {fileID: -3604425936499877520, guid: 2a874bcfec52d35418cf554bf0a7b21d, type: 3}
 --- !u!1 &7769009739105312065
 GameObject:
   m_ObjectHideFlags: 0

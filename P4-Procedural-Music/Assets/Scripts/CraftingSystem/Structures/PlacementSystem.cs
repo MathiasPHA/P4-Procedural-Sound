@@ -88,12 +88,26 @@ namespace InventorySystem.Building
         /// <summary>True while the player is in placement mode.</summary>
         public bool IsPlacing => _isPlacing;
 
+        public static PlacementSystem Instance { get; private set; }
+
+        /// <summary>
+        /// Look up a PlaceableData by item ID. Used by DungeonDeltaTracker
+        /// to re-place saved structures.
+        /// </summary>
+        public PlaceableData GetPlaceableByItemId(string itemId)
+        {
+            _lookup.TryGetValue(itemId, out var data);
+            return data;
+        }
+
         // =====================================================================
         // Lifecycle
         // =====================================================================
 
         private void Start()
         {
+            Instance = this;
+
             if (mainCamera == null)
                 mainCamera = Camera.main;
 
@@ -382,6 +396,14 @@ namespace InventorySystem.Building
             if (structureManager != null && structure != null)
             {
                 structureManager.RegisterStructure(structure);
+            }
+
+            // Track placement in dungeon for delta save
+            if (DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon)
+            {
+                DungeonDeltaTracker.RecordPlacement(
+                    _activePlaceable.item.id,
+                    go.transform.position);
             }
 
             // Consume one from inventory

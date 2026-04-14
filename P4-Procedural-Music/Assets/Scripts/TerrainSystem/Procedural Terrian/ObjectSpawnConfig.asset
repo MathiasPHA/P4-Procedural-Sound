@@ -71,3 +71,17 @@ MonoBehaviour:
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
+  - name: Dungeon
+    enabled: 1
+    prefabs:
+    - {fileID: 601663009861402173, guid: ea721e79768dea74ba759636cf4bf009, type: 3}
+    baseChance: 0.07
+    densityNoiseScale: 0.2
+    densityCutoff: 0.8
+    densityMultiplier: 1
+    minSpacing: 5
+    positionJitter: 0.45
+    allowedTerrain: 00000000
+    sortingOrderOffset: 0
+    seedOffset: 0
+    depletedPrefab: {fileID: 0}

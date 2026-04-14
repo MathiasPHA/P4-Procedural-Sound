@@ -24,6 +24,9 @@ namespace InteractionSystem
         private void Awake()
         {
             _audioSource = GetComponent<AudioSource>();
+
+            if (responseText == null)
+                responseText = GetComponentInChildren<TextMeshProUGUI>(true);
         }
 
         

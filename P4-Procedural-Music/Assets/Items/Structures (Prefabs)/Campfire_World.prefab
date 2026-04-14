@@ -425,8 +425,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dcd22a650fdccc40ae3815f3f253ec3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComfortInfluenceSource
-  comfortValue: 1
-  weight: 1
+  comfortValue: 0.613
+  weight: 0.587
   radius: 22.3
   influenceName: Campfire
 --- !u!114 &-8538655097096910356

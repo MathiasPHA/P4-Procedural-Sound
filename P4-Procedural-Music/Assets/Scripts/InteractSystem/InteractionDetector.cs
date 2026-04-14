@@ -36,11 +36,21 @@ namespace InteractionSystem
         {
             if (mainCamera == null)
                 mainCamera = Camera.main;
+
+            if (promptUI == null)
+                promptUI = FindObjectOfType<InteractionPromptUI>();
         }
 
         private void Update()
         {
             if (PauseManager.isPaused)
+            {
+                ClearTarget();
+                return;
+            }
+
+            // No mouse connected — nothing to hover
+            if (Mouse.current == null)
             {
                 ClearTarget();
                 return;

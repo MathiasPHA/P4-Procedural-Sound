@@ -412,21 +412,35 @@ namespace InventorySystem.UI
 
         private void OnSplitSliderCancel() { }
 
-        // =====================================================================
-        // World drops
-        // =====================================================================
+      // =====================================================================
+// World drops
+// =====================================================================
 
-        private void SpawnWorldDrop(ItemInstance instance, int quantity)
-        {
-            if (worldItemPrefab == null || playerTransform == null) return;
+private Vector2 GetPlayerFacingDirection()
+{
+    if (playerStateManager == null) return Vector2.down; // safe fallback
 
-            Vector2 dropDir = (Vector2)playerTransform.right;
-            Vector2 dropPos = (Vector2)playerTransform.position + dropDir * dropDistance;
+    return playerStateManager.playerDir switch
+    {
+        "Up"    => Vector2.up,
+        "Down"  => Vector2.down,
+        "Left"  => Vector2.left,
+        "Right" => Vector2.right,
+        _       => Vector2.down
+    };
+}
 
-            var go = Instantiate(worldItemPrefab, dropPos, Quaternion.identity);
-            var worldItem = go.GetComponent<WorldItem>();
-            worldItem?.Initialise(instance, quantity, dropDir);
-        }
+private void SpawnWorldDrop(ItemInstance instance, int quantity)
+{
+    if (worldItemPrefab == null || playerTransform == null) return;
+
+    Vector2 dropDir = GetPlayerFacingDirection();
+    Vector2 dropPos = (Vector2)playerTransform.position + dropDir * dropDistance;
+
+    var go = Instantiate(worldItemPrefab, dropPos, Quaternion.identity);
+    var worldItem = go.GetComponent<WorldItem>();
+    worldItem?.Initialise(instance, quantity, dropDir);
+}
 
         // =====================================================================
         // Refresh

@@ -22,18 +22,18 @@ MonoBehaviour:
   fleeSpeedMultiplier: 1.8
   fleeDistance: 10
   fleeHealthThreshold: 0.2
-  aggroRange: 7
-  attackRange: 1.2
-  attackDamage: 50
+  aggroRange: 20
+  attackRange: 10
+  attackDamage: 17
   attackCooldown: 1.5
   happinessPenalty: 0
   searchDuration: 4
   searchRadius: 3
-  roamRadius: 5
-  roamIdleTime: 1.5
+  roamRadius: 30
+  roamIdleTime: 2
   allowedTerrain: 00000000
-  spawnTimeStart: 18
-  spawnTimeEnd: 6
+  spawnTimeStart: 0
+  spawnTimeEnd: 24
   groupSizeMin: 1
   groupSizeMax: 2
   prefab: {fileID: 7533120962837240174, guid: f5e0da7755236d841996db9af255473b, type: 3}

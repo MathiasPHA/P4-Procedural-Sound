@@ -1,0 +1,105 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Dungeon map.tmx",
+    "expandedProjectPaths": [
+        "Rules",
+        "."
+    ],
+    "fileStates": {
+        "C:/Users/marcu/Pictures/P4/Dungeon Tiles/CaC_map_test.tmx": {
+            "scale": 0.86390625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 639.536986796889,
+                "y": 177.6813166937963
+            }
+        },
+        "C:/Users/marcu/Pictures/P4/Dungeon Tiles/CaC_rules2_test.tmx": {
+            "scale": 8.6390625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 63.95369867968891,
+                "y": 39.992765418701396
+            }
+        },
+        "C:/Users/marcu/Pictures/P4/Dungeon Tiles/CaC_rules_test.tmx": {
+            "scale": 1.01175,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 319.74301952063263,
+                "y": 156.65925376822338
+            }
+        },
+        "C:/Users/marcu/Pictures/P4/Dungeon Tiles/CaC_tileset_test.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/marcu/Pictures/P4/Dungeon Tiles/Forest_Tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "Forest map.tmx": {
+            "scale": 0.015625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 18048,
+                "y": 17824
+            }
+        },
+        "Forest_Map.tmx": {
+            "scale": 0.015625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 32032,
+                "y": 21216
+            }
+        },
+        "Forest_Tileset.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.015625,
+            "scaleInEditor": 0.06
+        },
+        "Rules/Water_Rules.tmx": {
+            "scale": 0.03125,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 13872,
+                "y": 10224
+            }
+        },
+        "Water_Rules.tmx": {
+            "scale": 0.015625,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 29760,
+                "y": 35744
+            }
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/marcu/Pictures/P4/Dungeon Tiles",
+    "last.imagePath": "C:/Users/marcu/Pictures/P4/Dungeon Tiles/Water",
+    "map.height": 60,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 2000,
+    "map.tileWidth": 2000,
+    "map.width": 30,
+    "openFiles": [
+        "Forest_Tileset.tsx",
+        "Forest map.tmx",
+        "Water_Rules.tmx"
+    ],
+    "project": "Hubert Tileset.tiled-project",
+    "recentFiles": [
+        "Forest_Tileset.tsx",
+        "Water_Rules.tmx",
+        "Forest map.tmx",
+        "Rules/Water_Rules.tmx",
+        "Forest_Map.tmx",
+        "C:/Users/marcu/Pictures/P4/Dungeon Tiles/CaC_rules_test.tmx",
+        "C:/Users/marcu/Pictures/P4/Dungeon Tiles/CaC_map_test.tmx",
+        "C:/Users/marcu/Pictures/P4/Dungeon Tiles/CaC_rules2_test.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.type": 1
+}
