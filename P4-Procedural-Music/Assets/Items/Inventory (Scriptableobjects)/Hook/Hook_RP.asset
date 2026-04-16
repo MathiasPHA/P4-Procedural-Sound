@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4dbc57ffa34cf544b98aa16558f3ff3, type: 3}
+  m_Name: Hook_RP
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.Recipe
+  recipeId: Hook
+  stationType: 0
+  ingredients:
+  - item: {fileID: 11400000, guid: 655c34cbdf2d44085891bd8cf65fe554, type: 2}
+    amount: 3
+  result: {fileID: 11400000, guid: c4772fa3923424d42ac93e2f8f51bc9a, type: 2}
+  resultAmount: 1
+  craftTime: 0
