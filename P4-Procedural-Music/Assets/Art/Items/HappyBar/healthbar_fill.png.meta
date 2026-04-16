@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e97174c582d476246af578174de03966
+guid: 449e2d40c65be104bb821b50775564bb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1690827713086069641
-    second: uneasy_smiley_0
+      213: 6608411957600556270
+    second: healthbar_fill_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: uneasy_smiley_0
+      name: healthbar_fill_0
       rect:
         serializedVersion: 2
-        x: 120
-        y: 1280
-        width: 696
-        height: 672
+        x: 758
+        y: 1417
+        width: 1977
+        height: 346
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 98b91eeb8d6077710800000000000000
-      internalID: 1690827713086069641
+      spriteID: ee4993e99abc5bb50800000000000000
+      internalID: 6608411957600556270
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      uneasy_smiley_0: 1690827713086069641
+      healthbar_fill_0: 6608411957600556270
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
