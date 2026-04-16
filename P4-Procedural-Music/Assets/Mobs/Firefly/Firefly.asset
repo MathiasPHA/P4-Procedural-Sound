@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48822c4b9f2eaf542a897f51bd8c20c6, type: 3}
+  m_Name: Firefly
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.Data.MobData
+  id: firefly
+  displayName: Firefly
+  behaviour: 0
+  maxHealth: 5
+  moveSpeed: 2
+  detectionRange: 5
+  detectionInterval: 0.25
+  fleeSpeedMultiplier: 1.5
+  fleeDistance: 8
+  fleeHealthThreshold: 0
+  aggroRange: 6
+  attackRange: 1.2
+  attackDamage: 3
+  attackCooldown: 1.5
+  happinessPenalty: 0
+  searchDuration: 4
+  searchRadius: 3
+  roamRadius: 4
+  roamIdleTime: 2
+  allowedTerrain: 00000000
+  spawnTimeStart: 19
+  spawnTimeEnd: 5
+  groupSizeMin: 3
+  groupSizeMax: 5
+  prefab: {fileID: 7533120962837240174, guid: 1abb9c8faf305d44fa5521289f0778c3, type: 3}
+  ambientSound: {fileID: 0}
+  ambientVolume: 0.3
+  hitSound: {fileID: 0}
+  hitVolume: 0.5
+  deathSound: {fileID: 0}
+  deathVolume: 0.5
+  attackSound: {fileID: 0}
+  attackVolume: 0.5
+  lootTable: {fileID: 0}
+  worldItemPrefab: {fileID: 0}
