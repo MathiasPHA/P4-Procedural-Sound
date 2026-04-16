@@ -10,6 +10,9 @@ namespace MobSystem.Data
     ///
     /// CREATE: Right-click → Create → Mobs → Mob Spawn Config
     ///
+    /// WORLD SCALE: Defaults assume 1 tile = 20 Unity units (100 PPU sprites).
+    /// All distance fields are in Unity units, not tiles.
+    ///
     /// Unlike ObjectSpawnConfig (deterministic, seed-based), mob spawning is
     /// probabilistic and time-dependent — the same chunk won't always have
     /// the same mobs. This is intentional: mobs are dynamic encounters,
@@ -24,20 +27,20 @@ namespace MobSystem.Data
         [Min(1)]
         public int globalMobCap = 30;
 
-        [Tooltip("Minimum distance (tiles) between any two mob spawn points. " +
+        [Tooltip("Minimum distance (units) between any two mob spawn points. " +
                  "Prevents clumping of different mob types on top of each other.")]
         [Min(0f)]
-        public float minSpawnSpacing = 5f;
+        public float minSpawnSpacing = 100f;
 
-        [Tooltip("Minimum distance (tiles) from the player for new spawns. " +
+        [Tooltip("Minimum distance (units) from the player for new spawns. " +
                  "Prevents mobs from popping into existence visibly.")]
-        [Min(3f)]
-        public float minPlayerDistance = 8f;
+        [Min(60f)]
+        public float minPlayerDistance = 160f;
 
-        [Tooltip("Maximum distance (tiles) from the player for new spawns. " +
-                 "Keeps mobs within encounter range — no point spawning them 200 tiles away.")]
-        [Min(5f)]
-        public float maxPlayerDistance = 30f;
+        [Tooltip("Maximum distance (units) from the player for new spawns. " +
+                 "Keeps mobs within encounter range.")]
+        [Min(100f)]
+        public float maxPlayerDistance = 600f;
 
         [Header("Spawn Timing")]
         [Tooltip("Seconds between spawn evaluation ticks. Lower = more responsive " +

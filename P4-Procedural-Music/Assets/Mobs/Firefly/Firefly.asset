@@ -18,7 +18,17 @@ MonoBehaviour:
   maxHealth: 5
   moveSpeed: 2
   detectionRange: 5
+  hearingRange: 160
   detectionInterval: 0.25
+  visualGainRate: 1.5
+  auditoryGainRate: 0.6
+  awarenessDecayRate: 0.4
+  suspiciousThreshold: 0.5
+  separationRadius: 30
+  separationWeight: 1.2
+  avoidanceDistance: 40
+  avoidanceWeight: 1.5
+  wanderStrength: 0.4
   fleeSpeedMultiplier: 1.5
   fleeDistance: 8
   fleeHealthThreshold: 0
@@ -29,8 +39,10 @@ MonoBehaviour:
   happinessPenalty: 0
   searchDuration: 4
   searchRadius: 3
-  roamRadius: 4
+  roamRadius: 20
   roamIdleTime: 2
+  packAlertRadius: 200
+  packAlertBoost: 0.7
   allowedTerrain: 00000000
   spawnTimeStart: 19
   spawnTimeEnd: 5

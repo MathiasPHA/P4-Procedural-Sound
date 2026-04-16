@@ -47,6 +47,9 @@ namespace InventorySystem.Tools
         [Header("Wrong Tool Feedback")]
         [SerializeField] private ResponseOptions wrongToolFeedback;
 
+        [Header("Instrument Audio")]
+        [SerializeField] private AudioSource instrumentAudioSource;
+
         private void Start()
         {
             foreach (var tool in toolDatabase)
@@ -84,7 +87,17 @@ namespace InventorySystem.Tools
                 interactionDetector = GetComponent<InteractionDetector>();
             }
 
-             if (wrongToolFeedback == null)
+            if (instrumentAudioSource == null)
+            {
+                instrumentAudioSource = GetComponent<AudioSource>();
+                if (instrumentAudioSource == null)
+                    instrumentAudioSource = gameObject.AddComponent<AudioSource>();
+            }
+
+            instrumentAudioSource.playOnAwake = false;
+            instrumentAudioSource.spatialBlend = 0f;
+
+            if (wrongToolFeedback == null)
                 wrongToolFeedback = GetComponentInChildren<ResponseOptions>(true);
         }
 
@@ -197,6 +210,8 @@ namespace InventorySystem.Tools
                 return;
             }
 
+            if (TryPlayInstrument()) return;
+
             // ── Otherwise: existing tool/combat logic ──
             if (TryHitMob()) return;
             TryUseTool();
@@ -268,6 +283,9 @@ namespace InventorySystem.Tools
             if (equippedInstance != null && equippedInstance.Data.category == ItemCategory.Tool)
                 _toolLookup.TryGetValue(equippedInstance.Data.id, out toolData);
 
+            if (toolData != null && toolData.isInstrument)
+                return false;
+
             if (toolData != null)
             {
                 playerStateManager.animationQue = $"Harvest{toolData.toolType}";
@@ -331,6 +349,12 @@ namespace InventorySystem.Tools
             if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
                 return;
 
+            if (toolData.isInstrument)
+            {
+                TryPlayInstrument(toolData);
+                return;
+            }
+
             // Wrong tool type equipped
             if (resource.RequiredToolType != toolData.toolType)
             {
@@ -393,6 +417,12 @@ namespace InventorySystem.Tools
             if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
                 return;
 
+            if (toolData.isInstrument)
+            {
+                TryPlayInstrument(toolData);
+                return;
+            }
+
             if (resource.RequiredToolType != toolData.toolType) return;
 
             playerStateManager.animationQue = $"Harvest{toolData.toolType}";
@@ -414,6 +444,40 @@ namespace InventorySystem.Tools
             }
 
             _cooldownTimer = toolData.cooldown;
+        }
+
+        private bool TryPlayInstrument()
+        {
+            if (_equippedToolData == null || !_equippedToolData.isInstrument)
+                return false;
+
+            return TryPlayInstrument(_equippedToolData);
+        }
+
+        private bool TryPlayInstrument(ToolData toolData)
+        {
+            if (toolData == null || !toolData.isInstrument)
+                return false;
+
+            if (instrumentAudioSource == null)
+                return false;
+
+            if (toolData.instrumentSounds == null || toolData.instrumentSounds.Count == 0)
+            {
+                Debug.LogWarning($"[ToolUseSystem] '{toolData.item?.id ?? "Unknown"}' is marked as an instrument but has no instrument sounds assigned.");
+                _cooldownTimer = toolData.cooldown;
+                return true;
+            }
+
+            AudioClip clip = toolData.instrumentSounds[Random.Range(0, toolData.instrumentSounds.Count)];
+            if (clip != null)
+            {
+                instrumentAudioSource.pitch = 1f + Random.Range(-toolData.instrumentPitchVariation, toolData.instrumentPitchVariation);
+                instrumentAudioSource.PlayOneShot(clip, toolData.instrumentVolume);
+            }
+
+            _cooldownTimer = toolData.cooldown;
+            return true;
         }
 
         private Vector2 GetFacingDirection()

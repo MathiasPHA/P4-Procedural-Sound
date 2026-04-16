@@ -10,9 +10,12 @@ namespace MobSystem.Data
     ///
     /// CREATE: Right-click → Create → Mobs → Mob Data
     ///
+    /// WORLD SCALE: Defaults assume 1 tile = 20 Unity units (100 PPU sprites).
+    /// All distance fields are in Unity units, not tiles.
+    ///
     /// The MobBehaviour field determines which states are available at runtime:
-    ///   Passive  → Roaming, Fleeing
-    ///   Hostile  → Roaming, Chasing, Attacking, Searching, Fleeing
+    ///   Passive  → Roaming, Alert, Fleeing
+    ///   Hostile  → Roaming, Alert, Chasing, Attacking, Searching, Fleeing
     ///   Neutral  → Starts passive, gains hostile states when provoked
     ///
     /// Fields under "Hostile Behaviour" and "Searching" are ignored for
@@ -42,21 +45,72 @@ namespace MobSystem.Data
         public int maxHealth = 5;
 
         [Tooltip("Base movement speed (units/sec) while roaming.")]
-        [Min(0.1f)]
-        public float moveSpeed = 2f;
+        [Min(2f)]
+        public float moveSpeed = 40f;
 
-        // ───────────────────────── Detection ─────────────────────────
+        // ───────────────────────── Detection & Awareness ─────────────────────────
 
-        [Header("Detection")]
-        [Tooltip("Radius (tiles) at which this mob notices the player. " +
-                 "For passive mobs this triggers fleeing; for hostile mobs this triggers chasing.")]
-        [Min(0.5f)]
-        public float detectionRange = 5f;
+        [Header("Detection & Awareness")]
+        [Tooltip("Radius (units) at which this mob can visually detect the player.")]
+        [Min(10f)]
+        public float detectionRange = 100f;
 
-        [Tooltip("Seconds between detection checks. Higher = cheaper but less responsive. " +
-                 "Staggered automatically so not all mobs check the same frame.")]
+        [Tooltip("Radius (units) at which this mob can hear combat or loud events. " +
+                 "Works through obstacles unlike visual detection.")]
+        [Min(10f)]
+        public float hearingRange = 160f;
+
+        [Tooltip("Seconds between detection checks. Higher = cheaper but less responsive.")]
         [Range(0.1f, 1f)]
         public float detectionInterval = 0.25f;
+
+        [Tooltip("How fast awareness builds from visual contact (awareness/sec at point-blank). " +
+                 "Higher = more alert and responsive.")]
+        [Range(0.3f, 5f)]
+        public float visualGainRate = 1.5f;
+
+        [Tooltip("How fast awareness builds from auditory stimuli (awareness/sec). " +
+                 "Usually slower than visual.")]
+        [Range(0.1f, 2f)]
+        public float auditoryGainRate = 0.6f;
+
+        [Tooltip("How fast awareness decays when there's no stimulus (awareness/sec). " +
+                 "Lower = longer memory. Should be slower than gain rates.")]
+        [Range(0.1f, 2f)]
+        public float awarenessDecayRate = 0.4f;
+
+        [Tooltip("Awareness level (0–1) that triggers the Alert state — the mob " +
+                 "notices something and turns toward it. Lower = more perceptive.")]
+        [Range(0.1f, 0.9f)]
+        public float suspiciousThreshold = 0.5f;
+
+        // ───────────────────────── Steering ─────────────────────────
+
+        [Header("Steering")]
+        [Tooltip("Radius (units) within which other mobs cause separation force. " +
+                 "Larger = wider spread in groups.")]
+        [Range(10f, 80f)]
+        public float separationRadius = 30f;
+
+        [Tooltip("Strength of separation force pushing mobs apart. " +
+                 "Higher = more aggressive spacing.")]
+        [Range(0f, 3f)]
+        public float separationWeight = 1.2f;
+
+        [Tooltip("CircleCast distance (units) for obstacle avoidance. " +
+                 "Longer = earlier steering around obstacles.")]
+        [Range(10f, 100f)]
+        public float avoidanceDistance = 40f;
+
+        [Tooltip("Strength of obstacle avoidance force. " +
+                 "Higher = harder swerve away from obstacles.")]
+        [Range(0f, 3f)]
+        public float avoidanceWeight = 1.5f;
+
+        [Tooltip("How much random drift affects wander movement (0–1). " +
+                 "Higher = more erratic idle movement.")]
+        [Range(0.1f, 1f)]
+        public float wanderStrength = 0.4f;
 
         // ───────────────────────── Fleeing (Passive + Neutral + low-HP Hostile) ─────────────────────────
 
@@ -65,9 +119,9 @@ namespace MobSystem.Data
         [Range(1f, 3f)]
         public float fleeSpeedMultiplier = 1.5f;
 
-        [Tooltip("Distance (tiles) the mob tries to put between itself and the threat before calming down.")]
-        [Min(1f)]
-        public float fleeDistance = 8f;
+        [Tooltip("Distance (units) the mob tries to put between itself and the threat before calming down.")]
+        [Min(20f)]
+        public float fleeDistance = 160f;
 
         [Tooltip("For hostile mobs: flee when health drops below this fraction of maxHealth. " +
                  "Set to 0 to never flee (fight to the death).")]
@@ -77,16 +131,16 @@ namespace MobSystem.Data
         // ───────────────────────── Hostile Behaviour ─────────────────────────
 
         [Header("Hostile Behaviour")]
-        [Tooltip("Radius (tiles) at which a hostile mob initiates aggro. " +
+        [Tooltip("Radius (units) at which a hostile mob initiates aggro. " +
                  "Usually equal to or slightly less than detectionRange. " +
                  "Ignored for Passive mobs.")]
-        [Min(0.5f)]
-        public float aggroRange = 6f;
+        [Min(10f)]
+        public float aggroRange = 120f;
 
-        [Tooltip("Distance (tiles) within which the mob can deal damage to the player. " +
+        [Tooltip("Distance (units) within which the mob can deal damage to the player. " +
                  "Ignored for Passive mobs.")]
-        [Min(0.1f)]
-        public float attackRange = 1.2f;
+        [Min(2f)]
+        public float attackRange = 24f;
 
         [Tooltip("Damage dealt per attack. Ignored for Passive mobs.")]
         [Min(0)]
@@ -111,20 +165,33 @@ namespace MobSystem.Data
         [Min(0.5f)]
         public float searchDuration = 4f;
 
-        [Tooltip("Radius (tiles) the mob wanders while searching. Ignored for Passive mobs.")]
-        [Min(0.5f)]
-        public float searchRadius = 3f;
+        [Tooltip("Radius (units) the mob wanders while searching. Ignored for Passive mobs.")]
+        [Min(10f)]
+        public float searchRadius = 60f;
 
         // ───────────────────────── Roaming ─────────────────────────
 
         [Header("Roaming")]
-        [Tooltip("Maximum distance (tiles) from spawn point for a random wander target.")]
-        [Min(1f)]
-        public float roamRadius = 4f;
+        [Tooltip("Maximum distance (units) from spawn point for a random wander target.")]
+        [Min(20f)]
+        public float roamRadius = 80f;
 
         [Tooltip("Seconds the mob idles at a waypoint before picking a new one.")]
         [Min(0f)]
         public float roamIdleTime = 2f;
+
+        // ───────────────────────── Pack Coordination ─────────────────────────
+
+        [Header("Pack Coordination")]
+        [Tooltip("Radius (units) within which pack members are alerted when one mob " +
+                 "detects the player. Only same-type mobs are alerted.")]
+        [Min(20f)]
+        public float packAlertRadius = 200f;
+
+        [Tooltip("Awareness boost applied to pack members when alerted (0–1). " +
+                 "Higher = faster group reaction. 0.7 = almost instant alert.")]
+        [Range(0.1f, 1f)]
+        public float packAlertBoost = 0.7f;
 
         // ───────────────────────── Spawning ─────────────────────────
 
@@ -141,8 +208,7 @@ namespace MobSystem.Data
         [Range(0f, 24f)]
         public float spawnTimeEnd = 24f;
 
-        [Tooltip("Min herd/pack size when this mob spawns. " +
-                 "Each group spawns this many individuals clustered together.")]
+        [Tooltip("Min herd/pack size when this mob spawns.")]
         [Min(1)]
         public int groupSizeMin = 1;
 
@@ -186,8 +252,7 @@ namespace MobSystem.Data
         [Tooltip("Loot table evaluated on death. Leave empty for no drops.")]
         public LootTable lootTable;
 
-        [Tooltip("Prefab with WorldItem component for spawning drops. " +
-                 "Same prefab used by HarvestableResource.")]
+        [Tooltip("Prefab with WorldItem component for spawning drops.")]
         public GameObject worldItemPrefab;
 
         // ───────────────────────── Helpers ─────────────────────────
@@ -207,12 +272,10 @@ namespace MobSystem.Data
         {
             if (spawnTimeStart <= spawnTimeEnd)
             {
-                // Simple range: e.g. 5–20
                 return currentHour >= spawnTimeStart && currentHour <= spawnTimeEnd;
             }
             else
             {
-                // Wraps midnight: e.g. 18–6 means 18–24 OR 0–6
                 return currentHour >= spawnTimeStart || currentHour <= spawnTimeEnd;
             }
         }
