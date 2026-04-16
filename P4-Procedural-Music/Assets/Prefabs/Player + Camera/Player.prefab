@@ -306,6 +306,7 @@ GameObject:
   - component: {fileID: 5049543004024689469}
   - component: {fileID: 7459378878359402859}
   - component: {fileID: 4590042985337584114}
+  - component: {fileID: 5360917103592190494}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -472,6 +473,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f2e6fc4287afe094d966b8c9e5adad27, type: 2}
   - {fileID: 11400000, guid: badd5b9eb08a47d4f98a5d4c7934daa2, type: 2}
   - {fileID: 11400000, guid: c9c9ac932e3dc48119a052c57cf376e2, type: 2}
+  - {fileID: 11400000, guid: 1bfb98d5d171a4ed186f1743632d2a1a, type: 2}
   resourceLayer:
     serializedVersion: 2
     m_Bits: 448
@@ -487,6 +489,8 @@ MonoBehaviour:
   maxLightIntensity: 1
   minLightIntensity: 0.1
   wrongToolFeedback: {fileID: 0}
+  fluteTool: {fileID: 5360917103592190494}
+  instrumentAudioSource: {fileID: 0}
 --- !u!82 &-1374152125123140291
 AudioSource:
   m_ObjectHideFlags: 0
@@ -815,6 +819,26 @@ MonoBehaviour:
   dayEndHour: 18
   transitionHours: 2
   showDebugGUI: 0
+--- !u!114 &5360917103592190494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403bd4e1c08c042568a5813ef44ccce8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Tools.FluteTool
+  FluteData: {fileID: 11400000, guid: 1bfb98d5d171a4ed186f1743632d2a1a, type: 2}
+  Player: {fileID: 6496137450566507929}
+  NoteButtonPrefab: {fileID: 4968789950358026991}
+  RingRadius: 1.8
+  StartAngleDeg: 90
+  BaseClipMidiNote: 60
+  BaseOctave: 4
+  AnimationDuration: 0.18
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0
@@ -1009,7 +1033,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32e35309c08ca394aaaff527ef3af7b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.ResponseOptions
-  responseText: {fileID: 1700032735596827980}
+  responseText: {fileID: 0}
   displayDuration: 1
   characterDelay: 0.03
   wrongToolSound: {fileID: 8300000, guid: d4de340d8b20f9946b22f968fdcb8b2b, type: 3}

@@ -47,7 +47,11 @@ namespace InventorySystem.Tools
         [Header("Wrong Tool Feedback")]
         [SerializeField] private ResponseOptions wrongToolFeedback;
 
-        [Header("Instrument Audio")]
+        [Header("Instrument / Flute")]
+        [Tooltip("FluteTool component — handles the note ring UI and pitched playback.")]
+        [SerializeField] private FluteTool fluteTool;
+
+        // Legacy plain audio source kept as fallback for non-flute instruments
         [SerializeField] private AudioSource instrumentAudioSource;
 
         private void Start()
@@ -96,6 +100,11 @@ namespace InventorySystem.Tools
 
             instrumentAudioSource.playOnAwake = false;
             instrumentAudioSource.spatialBlend = 0f;
+
+            if (fluteTool == null)
+                fluteTool = GetComponentInChildren<FluteTool>(includeInactive: true);
+            if (fluteTool == null)
+                fluteTool = FindFirstObjectByType<FluteTool>();
 
             if (wrongToolFeedback == null)
                 wrongToolFeedback = GetComponentInChildren<ResponseOptions>(true);
@@ -151,6 +160,8 @@ namespace InventorySystem.Tools
 
         private void OnEquippedChanged(int equippedSlotIndex)
         {
+            // Close the flute ring whenever the player changes what they're holding
+            fluteTool?.ForceClose();
             var item = _inventory.EquippedItem;
             Debug.Log($"[ToolUseSystem] OnEquippedChanged fired — slot={equippedSlotIndex}, item={item?.Data?.id ?? "none"}");
 
@@ -201,6 +212,9 @@ namespace InventorySystem.Tools
             if (PauseManager.isPaused) return;
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
+            // Instrument use has priority so the note ring opens even when an interactable is nearby.
+            if (TryPlayInstrument()) return;
+
             // ── Interaction priority: if hovering an interactable, walk to it ──
             if (interactionDetector != null && interactionDetector.CurrentTarget != null)
             {
@@ -209,8 +223,6 @@ namespace InventorySystem.Tools
                 playerStateManager.SwitchState(playerStateManager.moveToInteractState);
                 return;
             }
-
-            if (TryPlayInstrument()) return;
 
             // ── Otherwise: existing tool/combat logic ──
             if (TryHitMob()) return;
@@ -459,6 +471,16 @@ namespace InventorySystem.Tools
             if (toolData == null || !toolData.isInstrument)
                 return false;
 
+            // If we have a FluteTool, delegate entirely to it — it handles the note ring and pitched audio
+            if (fluteTool != null)
+            {
+                fluteTool.SetActiveInstrumentData(toolData);
+                fluteTool.OnFluteUsed();
+                _cooldownTimer = toolData.cooldown;
+                return true;
+            }
+
+            // Fallback: plain random-clip playback for instruments without a FluteTool
             if (instrumentAudioSource == null)
                 return false;
 

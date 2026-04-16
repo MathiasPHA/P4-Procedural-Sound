@@ -11,6 +11,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerRunState runState = new PlayerRunState();
     public PlayerInventoryState inventoryState = new PlayerInventoryState();
     public PlayerHarvestState harvestState = new PlayerHarvestState();
+    public PlayerMusicPlayingState musicPlayingState = new PlayerMusicPlayingState();
     public PlayerMoveToInteractState moveToInteractState = new PlayerMoveToInteractState();
     public PlayerShrugState playerShrugState = new PlayerShrugState();
 
@@ -52,6 +53,17 @@ public class PlayerStateManager : MonoBehaviour
     public void StartHarvest()
     {
         SwitchState(harvestState);
+    }
+
+    public void StartMusicPlaying()
+    {
+        SwitchState(musicPlayingState);
+    }
+
+    public void StopMusicPlaying()
+    {
+        if (currentState == musicPlayingState)
+            SwitchState(idleState);
     }
 
     public void OnHarvestAnimationComplete()
