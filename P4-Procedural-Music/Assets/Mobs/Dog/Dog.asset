@@ -16,26 +16,38 @@ MonoBehaviour:
   displayName: Dog
   behaviour: 1
   maxHealth: 15
-  moveSpeed: 3
-  detectionRange: 7
-  detectionInterval: 0.2
+  moveSpeed: 40
+  detectionRange: 15
+  hearingRange: 13.82
+  detectionInterval: 0.1
+  visualGainRate: 1.5
+  auditoryGainRate: 0.6
+  awarenessDecayRate: 0.4
+  suspiciousThreshold: 0.189
+  separationRadius: 10
+  separationWeight: 1.2
+  avoidanceDistance: 10
+  avoidanceWeight: 1.5
+  wanderStrength: 0.5
   fleeSpeedMultiplier: 1.8
-  fleeDistance: 10
+  fleeDistance: 40
   fleeHealthThreshold: 0.2
-  aggroRange: 20
+  aggroRange: 40
   attackRange: 10
   attackDamage: 17
-  attackCooldown: 1.5
-  happinessPenalty: 0
-  searchDuration: 4
-  searchRadius: 3
+  attackCooldown: 5
+  happinessPenalty: 0.093
+  searchDuration: 12
+  searchRadius: 40
   roamRadius: 30
-  roamIdleTime: 2
+  roamIdleTime: 6
+  packAlertRadius: 10
+  packAlertBoost: 0.7
   allowedTerrain: 00000000
-  spawnTimeStart: 0
-  spawnTimeEnd: 24
+  spawnTimeStart: 5.1
+  spawnTimeEnd: 18
   groupSizeMin: 1
-  groupSizeMax: 2
+  groupSizeMax: 6
   prefab: {fileID: 7533120962837240174, guid: f5e0da7755236d841996db9af255473b, type: 3}
   ambientSound: {fileID: 0}
   ambientVolume: 0.3

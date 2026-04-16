@@ -48,6 +48,12 @@ namespace MobSystem
         [Tooltip("Layer mask for the player — passed to MobController for detection.")]
         [SerializeField] private LayerMask playerLayer;
 
+        [Tooltip("Layer mask for obstacles (trees, rocks, water) — used by mob steering avoidance.")]
+        [SerializeField] private LayerMask obstacleMask;
+
+        [Tooltip("Layer mask for other mobs — used by steering separation and pack alerts.")]
+        [SerializeField] private LayerMask mobMask;
+
         [Tooltip("Time system reference for day/night spawn rules. " +
                  "Auto-finds if left empty.")]
         [SerializeField] private TimeReference timeReference;
@@ -55,8 +61,8 @@ namespace MobSystem
         [Header("Culling")]
         [Tooltip("Mobs in Roaming state beyond this distance from the player are despawned. " +
                  "Should be larger than maxPlayerDistance to avoid spawn-then-cull loops.")]
-        [Min(20f)]
-        [SerializeField] private float cullDistance = 45f;
+        [Min(400f)]
+        [SerializeField] private float cullDistance = 900f;
 
         [Tooltip("Seconds between cull sweeps.")]
         [Range(2f, 30f)]
@@ -205,7 +211,7 @@ namespace MobSystem
                         // Offset group members slightly so they don't stack
                         Vector3 offset = i == 0
                             ? Vector3.zero
-                            : (Vector3)(Random.insideUnitCircle * 1.5f);
+                            : (Vector3)(Random.insideUnitCircle * 30f);
 
                         SpawnMob(rule.mobData, spawnPos + offset);
                         spawnsThisTick++;
@@ -288,8 +294,8 @@ namespace MobSystem
             if (controller == null)
                 controller = instance.AddComponent<MobController>();
 
-            // Initialise with data and player layer
-            controller.Initialise(mobData, playerLayer);
+            // Initialise with data and layer masks
+            controller.Initialise(mobData, playerLayer, obstacleMask, mobMask);
 
             // Track
             _activeMobs.Add(controller);
@@ -392,7 +398,7 @@ namespace MobSystem
             if (controller == null)
                 controller = instance.AddComponent<MobController>();
 
-            controller.Initialise(mobData, playerLayer);
+            controller.Initialise(mobData, playerLayer, obstacleMask, mobMask);
             _activeMobs.Add(controller);
             IncrementTypeCount(mobData.id);
             controller.OnDeath += HandleMobDeath;
@@ -483,10 +489,10 @@ namespace MobSystem
                 GUI.color = state switch
                 {
                     "Attacking" => Color.red,
-                    "Chasing"   => new Color(1f, 0.5f, 0f),
+                    "Chasing" => new Color(1f, 0.5f, 0f),
                     "Searching" => Color.yellow,
-                    "Fleeing"   => Color.cyan,
-                    _           => Color.white
+                    "Fleeing" => Color.cyan,
+                    _ => Color.white
                 };
 
                 GUI.Label(new Rect(x, y, 400, 20),
