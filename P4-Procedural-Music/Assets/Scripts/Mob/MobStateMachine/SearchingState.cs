@@ -4,14 +4,16 @@ namespace MobSystem.States
 {
     /// <summary>
     /// Search state for hostile mobs. When the player escapes during a chase,
-    /// the mob moves to the player's last known position, wanders briefly
-    /// within a small radius, then gives up and returns to roaming.
+    /// the mob moves to the player's last known position, wanders briefly,
+    /// then gives up. Uses Steering.Seek() for approach and Steering.Wander()
+    /// for the searching phase.
+    ///
+    /// Now integrates with MobAwareness — if the player is re-detected
+    /// (awareness spikes), the mob transitions back to chasing.
     ///
     /// Transitions:
-    ///   → ChasingState    when the player is re-detected
+    ///   → ChasingState    when awareness reaches full alert (player re-detected)
     ///   → RoamingState    when searchDuration expires (gives up)
-    ///
-    /// On timeout exit, releases combat music back to auto mode.
     /// </summary>
     public class SearchingState : MobBaseState
     {
@@ -20,7 +22,7 @@ namespace MobSystem.States
         private Vector2 _currentTarget;
         private bool _reachedCenter;
 
-        private const float ArrivalThreshold = 0.5f;
+        private const float ArrivalThreshold = 10f;
 
         public override void EnterState(MobController mob)
         {
@@ -35,7 +37,7 @@ namespace MobSystem.States
         public override void UpdateState(MobController mob)
         {
             // ── Re-detected the player? Resume chase ──
-            if (mob.PlayerDetected)
+            if (mob.Awareness.IsFullyAlert)
             {
                 mob.SwitchState(mob.chasingState);
                 return;
@@ -57,29 +59,26 @@ namespace MobSystem.States
             {
                 if (!_reachedCenter)
                 {
-                    // Just arrived at last known position — start wandering
                     _reachedCenter = true;
                     PickSearchWaypoint(mob);
                 }
                 else
                 {
-                    // Arrived at a search waypoint — pick another
                     PickSearchWaypoint(mob);
                 }
             }
 
-            Vector2 direction = (_currentTarget - mobPos).normalized;
-            mob.Rb.linearVelocity = direction * mob.Data.moveSpeed * 0.7f; // Slower — scanning
-            mob.FacingDirection = direction;
+            // Slower movement while searching — scanning the area
+            mob.Steering.Seek(_currentTarget, 0.7f);
             mob.AnimationQueue = "Walk";
         }
 
         public override void ExitState(MobController mob)
         {
-            mob.Rb.linearVelocity = Vector2.zero;
+            mob.Steering.Stop();
 
             // If giving up (not re-detecting), release combat music
-            if (!mob.PlayerDetected)
+            if (!mob.Awareness.IsFullyAlert)
             {
                 if (GameStateManager.Instance != null && GameStateManager.Instance.IsManualOverride)
                     GameStateManager.Instance.ReturnToAuto();
