@@ -103,9 +103,13 @@ namespace ProceduralTerrain
 
                 // Track positions for minimum spacing within this rule
                 var spawnedPositions = new List<Vector2>();
+                int spawnCount = 0;
 
                 foreach (var cell in cellPositions)
                 {
+                    // Check max count cap
+                    if (rule.maxCountPerChunk > 0 && spawnCount >= rule.maxCountPerChunk) break;
+
                     int lx = cell.x;
                     int ly = cell.y;
 
@@ -198,6 +202,7 @@ namespace ProceduralTerrain
 
                     spawnedPositions.Add(candidatePos);
                     occupiedCells.Add(cellKey);
+                    spawnCount++;
                 }
             }
 
