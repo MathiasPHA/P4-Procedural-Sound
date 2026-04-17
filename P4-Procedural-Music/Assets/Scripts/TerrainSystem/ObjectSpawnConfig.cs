@@ -45,6 +45,9 @@ namespace ProceduralTerrain
             [Range(0f, 5f)]
             public float minSpacing = 1.5f;
 
+            [Tooltip("Max instances per chunk (0 = unlimited).")]
+            public int maxCountPerChunk = 0;
+
             [Tooltip("Random offset from tile center (in tile units). Prevents grid look.")]
             [Range(0f, 0.45f)]
             public float positionJitter = 0.3f;

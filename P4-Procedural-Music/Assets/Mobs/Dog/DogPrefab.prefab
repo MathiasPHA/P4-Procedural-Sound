@@ -199,6 +199,12 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 512
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 208
+  mobMask:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!114 &8882316064892624553
 MonoBehaviour:
   m_ObjectHideFlags: 0

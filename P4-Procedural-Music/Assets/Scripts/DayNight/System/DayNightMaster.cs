@@ -65,7 +65,11 @@ public class DayNightMaster : MonoBehaviour
     public void LoadTime(string worldName)
     {
         string path = GetSavePath(worldName);
-        if (!File.Exists(path)) return;
+        if (!File.Exists(path))
+        {
+            currentTime = 5f; // New game starts at 5am — adjust to taste
+            return;
+        }
 
         try
         {

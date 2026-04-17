@@ -22,11 +22,11 @@ public class HappinessMeter : MonoBehaviour
     [SerializeField] private Image moodImage;
 
     [Header("Mood Sprites (mapped to MoodTier)")]
-    [SerializeField] private Sprite elatedSprite;     // MoodTier.Elated
-    [SerializeField] private Sprite contentSprite;    // MoodTier.Content
-    [SerializeField] private Sprite neutralSprite;    // MoodTier.Neutral
+    [SerializeField] private Sprite veryComfySprite;     // MoodTier.Elated
+    [SerializeField] private Sprite comfySprite;    // MoodTier.Content
+    [SerializeField] private Sprite contentSprite;    // MoodTier.Neutral
     [SerializeField] private Sprite uneasySprite;     // MoodTier.Uneasy
-    [SerializeField] private Sprite miserableSprite;  // MoodTier.Miserable
+    [SerializeField] private Sprite horrifiedSprite;  // MoodTier.Miserable
 
     private HappinessSystem happinessSystem;
     private MoodSystem moodSystem;
@@ -64,11 +64,11 @@ public class HappinessMeter : MonoBehaviour
 
         Sprite newSprite = moodSystem.CurrentTier switch
         {
-            MoodTier.Elated    => elatedSprite,
-            MoodTier.Content   => contentSprite,
-            MoodTier.Neutral   => neutralSprite,
+            MoodTier.Elated    => veryComfySprite,
+            MoodTier.Content   => comfySprite,
+            MoodTier.Neutral   => contentSprite,
             MoodTier.Uneasy    => uneasySprite,
-            MoodTier.Miserable => miserableSprite,
+            MoodTier.Miserable => horrifiedSprite,
             _                  => null
         };
 

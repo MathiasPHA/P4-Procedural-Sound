@@ -42,13 +42,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8031143485192898488}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa36e6443b1e47143af019dc7a328a0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DayNightMaster
   dayLengthMinutes: 5
-  currentTime: 9
+  currentTime: 0
 --- !u!114 &7230665982664784449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,7 +74,7 @@ MonoBehaviour:
   - Night
   comfortSystem: {fileID: 0}
   comfortMusicBridge: {fileID: 0}
-  timeMilestoneTimes: 0500000006000000070000000c0000000b0000000e0000001200000013000000160000001800000000000000
+  timeMilestoneTimes: 0300000006000000070000000c0000000b0000000e0000001200000013000000170000001800000000000000
   currentTimeMilestone: 
 --- !u!114 &8804788307281323027
 MonoBehaviour:

@@ -84,10 +84,10 @@ public class CampfireComfortSource : ComfortInfluenceSource
     [SerializeField] private float fuelRemaining;
 
     [Tooltip("Comfort value when fully fueled")]
-    [SerializeField] private float maxComfort = 0.95f;
+    [SerializeField] private float maxComfort = 0.70f;
 
     [Tooltip("Comfort value when nearly burnt out")]
-    [SerializeField] private float minComfort = 0.55f;
+    [SerializeField] private float minComfort = 0.45f;
 
     private void Start()
     {
