@@ -38,19 +38,19 @@ public class HappinessSystem : MonoBehaviour
 
     [Header("Drift Rates (units per second, per mood tier)")]
     [Tooltip("Happiness gain rate when mood is Elated")]
-    [SerializeField] private float elatedRate    =  0.10f;
+    [SerializeField] private float elatedRate    =  0.025f;
 
     [Tooltip("Happiness gain rate when mood is Content")]
-    [SerializeField] private float contentRate   =  0.04f;
+    [SerializeField] private float contentRate   =  0.010f;
 
     [Tooltip("Happiness drift when mood is Neutral (should be 0 or very small)")]
-    [SerializeField] private float neutralRate   =  0.00f;
+    [SerializeField] private float neutralRate   =  0.000f;
 
     [Tooltip("Happiness drain rate when mood is Uneasy (positive number, applied as negative)")]
-    [SerializeField] private float uneasyRate    =  0.04f;
+    [SerializeField] private float uneasyRate    =  0.010f;
 
     [Tooltip("Happiness drain rate when mood is Miserable (positive number, applied as negative)")]
-    [SerializeField] private float miserableRate =  0.10f;
+    [SerializeField] private float miserableRate =  0.025f;
 
     [Header("Smoothing")]
     [Tooltip("Smooth happiness changes so the bar doesn't jitter")]
