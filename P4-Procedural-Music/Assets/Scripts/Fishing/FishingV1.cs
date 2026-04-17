@@ -2,35 +2,75 @@ using UnityEngine;
 
 public class FishingV1 : MonoBehaviour
 {
+    [Header("Fishing Time")]
+    public float fishingTime = 8f;
 
-    public float FishingTime = 10f;
+    [Header("Fish Pos")]
+    private Transform FishT;
+    private Vector3 initialFishPos;
+    public Vector3 fishPos;
+    public Vector3 targetPos;
+    private float posClamp = 3f;
+    [SerializeField] private float deltaDistance;
 
-    [SerializeField] private Transform Fish;
-    [SerializeField] private Transform startFishPos;
-    [SerializeField] private float fishClamp;
-    [SerializeField] private float fishDestination;
-    [SerializeField] private float fishPos;
-    [SerializeField] private float swimSpeed = 1f;
+    [Header("Fish Move")]
+    public bool canFishMove = true;
+    public bool isFishMoving = false;
+    public float fishMoveSpeed = 1.5f;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        FishT = gameObject.transform;
+        initialFishPos = FishT.position;
+        fishPos = FishT.position;
+
+
+        // Randomize the fishing time by adding a random value between -2 and 2 seconds
+        fishingTime += Random.Range(-2f, 2f);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (FishingTime > 0)
+
+        fishPos = FishT.position;
+        deltaDistance = Vector3.Distance(fishPos, targetPos);
+
+        if (canFishMove)
         {
-            FishingTime -= Time.deltaTime;
-            Fishing();
+            targetPos = new Vector3(initialFishPos.y, initialFishPos.y + Random.Range(-posClamp, posClamp), initialFishPos.z);
+            fishMoveSpeed = Random.Range(0.8f, 2f);
+            canFishMove = false;
         }
+        else {
+            MoveFish();
+            isFishMoving = true;
+            if (isFishMoving)
+            {
+                if (deltaDistance < 0.4f)
+                {
+                    canFishMove = true;
+                    isFishMoving = false;
+                }
+            }
+        }
+
+        
+
+
+        FishTimer();
     }
 
-    private void Fishing()
+    private void MoveFish()
     {
-        
+        FishT.position = Vector3.Lerp(fishPos, targetPos, fishMoveSpeed * Time.deltaTime);
+    }
+
+    private void FishTimer()
+    {
+        if (fishingTime >= 0)
+        {
+            fishingTime -= Time.deltaTime;
+        }
 
     }
 
