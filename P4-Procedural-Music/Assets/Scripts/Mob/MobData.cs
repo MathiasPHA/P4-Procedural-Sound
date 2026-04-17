@@ -255,6 +255,9 @@ namespace MobSystem.Data
         [Tooltip("Prefab with WorldItem component for spawning drops.")]
         public GameObject worldItemPrefab;
 
+         [Header("Catchable")]
+            public bool isCatchable = false;
+
         // ───────────────────────── Helpers ─────────────────────────
 
         /// <summary>
@@ -279,5 +282,9 @@ namespace MobSystem.Data
                 return currentHour >= spawnTimeStart || currentHour <= spawnTimeEnd;
             }
         }
+
+       
     }
+            
+
 }
