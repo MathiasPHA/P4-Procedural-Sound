@@ -133,6 +133,24 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
         influences.Remove(influence);
     }
 
+    // ───────────────────────── Debug override (for DevTestConsole) ─────────────────────────
+
+    private bool  debugOverrideActive = false;
+    private float debugOverrideValue  = 0.5f;
+
+    /// <summary>Dev tool only: force comfort to a specific value, bypassing baseline + influences.</summary>
+    public void SetDebugComfortOverride(float value)
+    {
+        debugOverrideActive = true;
+        debugOverrideValue  = Mathf.Clamp01(value);
+    }
+
+    /// <summary>Dev tool only: clear the comfort override and resume normal calculation.</summary>
+    public void ClearDebugComfortOverride()
+    {
+        debugOverrideActive = false;
+    }
+
     // ───────────────────────── Lifecycle ─────────────────────────
 
     private void Start()
@@ -203,6 +221,14 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
 
     private void UpdateComfort()
     {
+        // Dev override short-circuit — still smooth so transitions look natural
+        if (debugOverrideActive)
+        {
+            rawComfort = debugOverrideValue;
+            comfort = Mathf.SmoothDamp(comfort, rawComfort, ref comfortVelocity, comfortSmoothTime);
+            return;
+        }
+
         // Accumulate all active influences
         float totalWeight = 0f;
         float weightedSum = 0f;
