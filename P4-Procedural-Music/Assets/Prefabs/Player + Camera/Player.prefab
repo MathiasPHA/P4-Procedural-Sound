@@ -506,6 +506,7 @@ GameObject:
   - component: {fileID: 5049543004024689469}
   - component: {fileID: 7459378878359402859}
   - component: {fileID: 4590042985337584114}
+  - component: {fileID: 1535754466491286937}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -679,8 +680,8 @@ MonoBehaviour:
   mobLayer:
     serializedVersion: 2
     m_Bits: 1024
-  interactRadius: 6.8
-  detectionOffset: {x: 0, y: -2.77}
+  interactRadius: 6.92
+  detectionOffset: {x: 0, y: 0}
   handDamage: 1
   handCooldown: 0.1
   handMobDamage: 1
@@ -688,6 +689,7 @@ MonoBehaviour:
   maxLightIntensity: 1
   minLightIntensity: 0.1
   wrongToolFeedback: {fileID: 4571617195942478625}
+  instrumentAudioSource: {fileID: 0}
 --- !u!82 &-1374152125123140291
 AudioSource:
   m_ObjectHideFlags: 0
@@ -861,7 +863,7 @@ MonoBehaviour:
   staticOrderOffset: 0
   randomOffsetRange: 0.01
   referenceMode: 0
-  feetCollider: {fileID: 0}
+  feetCollider: {fileID: 3512293782812170453}
   customPivot: {fileID: 0}
   additionalYOffset: 0
   unifySortingLayer: 1
@@ -949,12 +951,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoodSystem
   startingMood: 0.6
-  moodSmoothTime: 1
+  moodSmoothTime: 0.2
   maxMoodRatePerSecond: 0.2
-  elatedThreshold: 0.8
+  elatedThreshold: 0.9
   contentThreshold: 0.6
   neutralThreshold: 0.4
-  uneasyThreshold: 0.2
+  uneasyThreshold: 0.1
   showDebugGUI: 0
 --- !u!114 &5049543004024689469
 MonoBehaviour:
@@ -969,11 +971,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HappinessSystem
   startingHappiness: 0.7
-  elatedRate: 0.1
-  contentRate: 0.04
+  elatedRate: 0.0125
+  contentRate: 0.005
   neutralRate: 0
-  uneasyRate: 0.04
-  miserableRate: 0.1
+  uneasyRate: 0.005
+  miserableRate: 0.0125
   smoothTime: 0.4
   deathEnabled: 0
   showDebugGUI: 0
@@ -990,7 +992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HungerSystem
   startingHunger: 0.8
-  drainPerSecond: 0.005
+  drainPerSecond: 0.0005
   satiatedThreshold: 0.7
   hungryThreshold: 0.3
   wellFedMoodRate: 0.03
@@ -1009,13 +1011,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComfortSystem
   dayBaselineComfort: 0.55
-  nightBaselineComfort: 0.3
+  nightBaselineComfort: 0.25
   comfortSmoothTime: 0.3
-  maxMoodContribution: 0.06
+  comfortNeutralPoint: 0.55
+  maxPositiveMoodRate: 0.06
+  maxNegativeMoodRate: 0.08
   dayStartHour: 6
   dayEndHour: 18
   transitionHours: 2
   showDebugGUI: 0
+--- !u!114 &1535754466491286937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99d4bd3f7a1ae7747a88dbe28e98ef1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.BuildHammerEquipHandler
+  buildHammerStation: {fileID: 0}
+  craftingUI: {fileID: 0}
+  hammerItemId: Hammer
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0

@@ -429,6 +429,7 @@ MonoBehaviour:
   weight: 1
   radius: 50
   influenceName: Influence
+  useFalloff: 0
 --- !u!114 &-8538655097096910356
 MonoBehaviour:
   m_ObjectHideFlags: 0
