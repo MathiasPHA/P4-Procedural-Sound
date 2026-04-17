@@ -445,10 +445,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 873610791549647746, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1624446560024405410, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: m_Name
       value: PauseMenu (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1624446560024405410, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862067803819105686, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: volumeController
+      value: 
+      objectReference: {fileID: 1834961522}
     - target: {fileID: 5314289383621980106, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1319,6 +1331,18 @@ PrefabInstance:
     - target: {fileID: 1658862209704727233, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -176
+      objectReference: {fileID: 0}
+    - target: {fileID: 1733907004063470630, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1733907004063470630, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1733907004063470630, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2113822919990062823, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2207,6 +2231,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1834961522 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4426689256434163322, guid: 7ea49cca455e52d4ba4dbe655b9b0b62, type: 3}
+  m_PrefabInstance: {fileID: 620831795}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c63d748f8160c428690a46dddd188972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Audiosettings2
 --- !u!1 &2045197819
 GameObject:
   m_ObjectHideFlags: 0

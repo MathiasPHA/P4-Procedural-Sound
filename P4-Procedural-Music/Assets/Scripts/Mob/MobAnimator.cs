@@ -132,13 +132,25 @@ namespace MobSystem
             string state = MapAnimationQueue(_mob.AnimationQueue);
             string direction = GetDirectionSuffix();
 
-            // Try full name: Rabbit_Walk_Left
+            // Try full name: Rabbit_AttackWindup_Left
             string fullClip = $"{clipPrefix}_{state}_{direction}";
             if (TryPlay(fullClip)) return;
 
-            // Fallback: Rabbit_Walk (no direction)
+            // Fallback: Rabbit_AttackWindup (no direction)
             string noDir = $"{clipPrefix}_{state}";
             if (TryPlay(noDir)) return;
+
+            // Intermediate fallback for attack phases — if dedicated windup/recovery
+            // clips don't exist, use the regular Attack clip so the mob still
+            // visually acknowledges the attack.
+            if (state == "AttackWindup" || state == "AttackRecovery")
+            {
+                string attackClip = $"{clipPrefix}_Attack_{direction}";
+                if (TryPlay(attackClip)) return;
+
+                string attackNoDir = $"{clipPrefix}_Attack";
+                if (TryPlay(attackNoDir)) return;
+            }
 
             // No matching clip — keep current frame (no spam)
         }
@@ -174,17 +186,20 @@ namespace MobSystem
         /// <summary>
         /// Map MobController.AnimationQueue strings to clip-name state segments.
         /// States set "Idle", "Walk", "Attack" — these map directly.
+        /// AttackWindup and AttackRecovery fall back to Attack → Idle if dedicated clips don't exist.
         /// </summary>
         private string MapAnimationQueue(string queue)
         {
             return queue switch
             {
-                "Idle"   => "Idle",
-                "Walk"   => "Walk",
+                "Idle" => "Idle",
+                "Walk" => "Walk",
                 "Attack" => "Attack",
-                "Hurt"   => "Hurt",
-                "Die"    => "Die",
-                _        => "Idle"
+                "AttackWindup" => "AttackWindup",
+                "AttackRecovery" => "AttackRecovery",
+                "Hurt" => "Hurt",
+                "Die" => "Die",
+                _ => "Idle"
             };
         }
 

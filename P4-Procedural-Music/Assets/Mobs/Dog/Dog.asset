@@ -17,8 +17,8 @@ MonoBehaviour:
   behaviour: 1
   maxHealth: 15
   moveSpeed: 40
-  detectionRange: 15
-  hearingRange: 13.82
+  detectionRange: 60
+  hearingRange: 70
   detectionInterval: 0.1
   visualGainRate: 1.5
   auditoryGainRate: 0.6
@@ -33,21 +33,28 @@ MonoBehaviour:
   fleeDistance: 40
   fleeHealthThreshold: 0.2
   aggroRange: 40
-  attackRange: 10
+  attackRange: 20
   attackDamage: 17
   attackCooldown: 5
   happinessPenalty: 0.093
+  attackWindupDuration: 0.5
+  attackStrikeDuration: 0.25
+  attackRecoveryDuration: 1
+  attackAimLockRatio: 0.5
+  attackHitboxOffset: 8
+  attackHitboxRadius: 7
+  attackLungeSpeed: 80
   searchDuration: 12
   searchRadius: 40
   roamRadius: 30
   roamIdleTime: 6
   packAlertRadius: 10
-  packAlertBoost: 0.7
+  packAlertBoost: 0.8
   allowedTerrain: 00000000
   spawnTimeStart: 5.1
   spawnTimeEnd: 18
   groupSizeMin: 1
-  groupSizeMax: 6
+  groupSizeMax: 3
   prefab: {fileID: 7533120962837240174, guid: f5e0da7755236d841996db9af255473b, type: 3}
   ambientSound: {fileID: 0}
   ambientVolume: 0.3

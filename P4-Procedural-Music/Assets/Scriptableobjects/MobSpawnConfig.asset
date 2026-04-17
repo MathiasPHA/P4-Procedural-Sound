@@ -22,6 +22,6 @@ MonoBehaviour:
   - name: Dog
     mobData: {fileID: 11400000, guid: 8c97474543bee084e85d89858e483a7c, type: 2}
     typeCap: 5
-    spawnChance: 1
-    activeTimeMultiplier: 3
+    spawnChance: 0.21
+    activeTimeMultiplier: 1.11
     strictTimeWindow: 0
