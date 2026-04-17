@@ -248,9 +248,17 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
             float distance = Vector3.Distance(playerTransform.position, inf.Position);
             if (distance > inf.Radius) continue;
 
-            // Falloff: full strength at center, zero at edge
-            float falloff = 1f - Mathf.Clamp01(distance / inf.Radius);
-            falloff = falloff * falloff; // quadratic falloff
+            // Falloff: quadratic by default, flat if the source opts out
+            float falloff;
+            if (inf.UseFalloff)
+            {
+                falloff = 1f - Mathf.Clamp01(distance / inf.Radius);
+                falloff = falloff * falloff; // quadratic falloff
+            }
+            else
+            {
+                falloff = 1f; // full strength anywhere inside radius
+            }
 
             float effectiveWeight = inf.Weight * falloff;
             weightedSum += inf.ComfortValue * effectiveWeight;

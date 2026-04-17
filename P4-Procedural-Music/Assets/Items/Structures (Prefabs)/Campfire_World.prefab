@@ -411,7 +411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8b1b829e8f57af4eac20cf86bd742c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacedStructure
-  sourceData: {fileID: 0}
+  sourceData: {fileID: 11400000, guid: 9bb0b9522cbff8147af80d40c66aa4bf, type: 2}
   wasSaveLoaded: 0
 --- !u!114 &6379968897288913679
 MonoBehaviour:
@@ -427,7 +427,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ComfortInfluenceSource
   comfortValue: 0.8
   weight: 1
-  radius: 10
+  radius: 50
   influenceName: Influence
 --- !u!114 &-8538655097096910356
 MonoBehaviour:

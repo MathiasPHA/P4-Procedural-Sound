@@ -208,69 +208,9 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1567388008812438088, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 3000
-      objectReference: {fileID: 0}
-    - target: {fileID: 1567388008812438088, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 3000
-      objectReference: {fileID: 0}
-    - target: {fileID: 1903091658661201483, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1903091658661201483, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2903809640352597379, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: comfySprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 42267042f6856ed45a6913a9174fd9dd, type: 3}
-    - target: {fileID: 2903809640352597379, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: uneasySprite
-      value: 
-      objectReference: {fileID: 21300000, guid: e97174c582d476246af578174de03966, type: 3}
-    - target: {fileID: 2903809640352597379, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: contentSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: f5fa5fa2cfa294d4597f15843e45ee21, type: 3}
-    - target: {fileID: 2903809640352597379, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: horrifiedSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 2a874bcfec52d35418cf554bf0a7b21d, type: 3}
-    - target: {fileID: 2903809640352597379, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: veryComfySprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b179557e175f0494ab26477132fa1d29, type: 3}
-    - target: {fileID: 3127404396953104810, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 3000
-      objectReference: {fileID: 0}
-    - target: {fileID: 3127404396953104810, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 3000
-      objectReference: {fileID: 0}
-    - target: {fileID: 3127404396953104810, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -797
-      objectReference: {fileID: 0}
-    - target: {fileID: 3127404396953104810, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 356
-      objectReference: {fileID: 0}
     - target: {fileID: 3370708515185586827, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
       propertyPath: m_Name
       value: Happines_HungerMeterUI
-      objectReference: {fileID: 0}
-    - target: {fileID: 6821103207128254393, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6821103207128254393, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7424794445039387837, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
       propertyPath: m_AnchorMax.x
