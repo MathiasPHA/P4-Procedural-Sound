@@ -35,6 +35,7 @@ public class DungeonAtmosphere : MonoBehaviour, IComfortInfluence
     public float Weight => influenceWeight;
     public Vector3 Position => transform.position;
     public string Name => config != null ? config.dungeonName : "Dungeon";
+    public bool UseFalloff => true;
     public bool IsDestroyed => this == null;
 
     private void Start()
