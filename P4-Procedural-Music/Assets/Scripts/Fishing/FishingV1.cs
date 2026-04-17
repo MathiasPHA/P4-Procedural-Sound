@@ -11,12 +11,30 @@ public class FishingV1 : MonoBehaviour
     public Vector3 fishPos;
     public Vector3 targetPos;
     private float posClamp = 3f;
-    [SerializeField] private float deltaDistance;
+    [SerializeField] private float deltaDistance; // Debugger
 
     [Header("Fish Move")]
     public bool canFishMove = true;
     public bool isFishMoving = false;
     public float fishMoveSpeed = 1.5f;
+
+    [Header("Fish Catch")]
+    public bool isFishCaught = false;
+    public float fishingPoints = 0f;
+    public float targetPoints;
+    [SerializeField] private float initialFishingTime;
+    [SerializeField] private float tFraction = 0.7f;
+
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        fishingPoints += 1f * Time.deltaTime;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        fishingPoints += 1f * Time.deltaTime;
+    }
 
     void Start()
     {
@@ -25,39 +43,45 @@ public class FishingV1 : MonoBehaviour
         fishPos = FishT.position;
 
 
+
         // Randomize the fishing time by adding a random value between -2 and 2 seconds
         fishingTime += Random.Range(-2f, 2f);
+        initialFishingTime = fishingTime;
     }
 
     void Update()
     {
-
-        fishPos = FishT.position;
-        deltaDistance = Vector3.Distance(fishPos, targetPos);
-
-        if (canFishMove)
+        if (fishingTime > 0)
         {
-            targetPos = new Vector3(initialFishPos.y, initialFishPos.y + Random.Range(-posClamp, posClamp), initialFishPos.z);
-            fishMoveSpeed = Random.Range(0.8f, 2f);
-            canFishMove = false;
-        }
-        else {
-            MoveFish();
-            isFishMoving = true;
-            if (isFishMoving)
+
+            fishPos = FishT.position;
+            deltaDistance = Vector3.Distance(fishPos, targetPos);
+
+            if (canFishMove)
             {
-                if (deltaDistance < 0.4f)
+                targetPos = new Vector3(initialFishPos.x, initialFishPos.y + Random.Range(-posClamp, posClamp), initialFishPos.z);
+                fishMoveSpeed = Random.Range(0.8f, 2f);
+                canFishMove = false;
+            }
+            else
+            {
+                MoveFish();
+                isFishMoving = true;
+                if (isFishMoving)
                 {
-                    canFishMove = true;
-                    isFishMoving = false;
+                    if (deltaDistance < 0.4f)
+                    {
+                        canFishMove = true;
+                        isFishMoving = false;
+                    }
                 }
             }
+
+
         }
 
-        
-
-
         FishTimer();
+        FishCaught();
     }
 
     private void MoveFish()
@@ -73,5 +97,18 @@ public class FishingV1 : MonoBehaviour
         }
 
     }
+
+    private void FishCaught()
+    {
+        // Have Hook on fish for 70% of the initial fishing time to catch the fish
+        targetPoints = initialFishingTime * tFraction;
+
+        if (fishingPoints >= targetPoints)
+        {
+            isFishCaught = true;
+            Debug.Log("Fish Caught!");
+        }
+    }
+
 
 }
