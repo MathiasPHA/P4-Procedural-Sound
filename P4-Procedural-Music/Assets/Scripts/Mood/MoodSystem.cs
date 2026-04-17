@@ -50,7 +50,7 @@ public class MoodSystem : MonoBehaviour
     [SerializeField] private float neutralThreshold   = 0.40f;
     [Tooltip("Mood >= this = Uneasy")]
     [SerializeField] private float uneasyThreshold    = 0.20f;
-    // Below uneasy = Miserable (implicit)
+    // Below uneasy = Horrified (implicit)
 
     [Header("Debug")]
     [SerializeField] private bool showDebugGUI = false;
