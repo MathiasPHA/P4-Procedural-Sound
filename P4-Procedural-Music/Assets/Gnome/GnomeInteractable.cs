@@ -1,39 +1,22 @@
-/*using UnityEngine;
+using UnityEngine;
+using InteractionSystem;
 
-public class GnomeInteractable : MonoBehaviour
+public class GnomeInteractable : Interactable
 {
-    public string gnomeName = "Gnome Merchant";
+    public string gnomeName = "";
     public TradeOffer[] tradeOffers;
-    private float interactRange = 3f;
+
     private Animator anim;
 
     void Awake() => anim = GetComponent<Animator>();
 
-    void Update()
+    public override void Interact(PlayerStateManager player)
     {
-        if (Input.GetMouseButtonDown(1))
-            TryInteract();
+        TradeUI.Instance.OpenTrade(this);
     }
 
-    void TryInteract()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, 10f))
-        {
-            if (hit.collider.gameObject == gameObject)
-            {
-                float dist = Vector3.Distance(
-                    Camera.main.transform.position,
-                    transform.position);
-                if (dist <= interactRange)
-                    TradeUI.Instance.OpenTrade(this);
-                else
-                    Debug.Log("Too far away!");
-            }
-        }
-    }
+    public override bool CanInteract() => true;
 
     public void StartTalking() => anim?.SetBool("isTalking", true);
-    public void StopTalking() => anim?.SetBool("isTalking", false);
+    public void StopTalking()  => anim?.SetBool("isTalking", false);
 }
-*/
