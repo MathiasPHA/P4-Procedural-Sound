@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Campfire_Recipe
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.Recipe
   recipeId: Campfire
-  stationType: 0
+  stationType: 3
   ingredients:
   - item: {fileID: 11400000, guid: ea53e826b3bb6f74dbf5978079446cc6, type: 2}
     amount: 10

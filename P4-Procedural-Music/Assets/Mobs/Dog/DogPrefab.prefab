@@ -201,7 +201,7 @@ MonoBehaviour:
     m_Bits: 512
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 208
   mobMask:
     serializedVersion: 2
     m_Bits: 1024

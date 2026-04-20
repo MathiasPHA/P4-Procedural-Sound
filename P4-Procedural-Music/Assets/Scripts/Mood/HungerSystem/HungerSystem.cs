@@ -44,7 +44,7 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
 
     [Header("Mood Rates")]
     [Tooltip("Max positive mood rate when completely full (units/sec)")]
-    [SerializeField] private float wellFedMoodRate = 0.03f;
+    [SerializeField] private float wellFedMoodRate = 0.015f;
 
     [Tooltip("Max negative mood rate when completely starving (units/sec)")]
     [SerializeField] private float starvingMoodRate = 0.08f;

@@ -157,6 +157,47 @@ namespace MobSystem.Data
         [Range(0f, 0.5f)]
         public float happinessPenalty = 0f;
 
+        // ───────────────────────── Attack Phases ─────────────────────────
+
+        [Header("Attack Phases")]
+        [Tooltip("Windup duration (sec). The mob stops, telegraphs, and commits to attacking. " +
+                 "This is the player's window to dodge. Longer = easier to dodge.")]
+        [Range(0.1f, 2f)]
+        public float attackWindupDuration = 0.5f;
+
+        [Tooltip("Strike duration (sec). The hitbox is active, and the mob lunges forward. " +
+                 "Very short — this is the commit window where damage can land.")]
+        [Range(0.05f, 0.6f)]
+        public float attackStrikeDuration = 0.25f;
+
+        [Tooltip("Recovery duration (sec). The mob is locked in place, unable to move or attack. " +
+                 "Vulnerable window where the player can counter-attack.")]
+        [Range(0.1f, 1.5f)]
+        public float attackRecoveryDuration = 0.4f;
+
+        [Tooltip("Fraction of windup the mob spends tracking the player (0–1). " +
+                 "After this, direction locks — giving the player a clear 'commit' signal. " +
+                 "0.5 = tracks for first half, then locks. Lower = easier to dodge.")]
+        [Range(0f, 1f)]
+        public float attackAimLockRatio = 0.5f;
+
+        [Tooltip("Distance (units) in front of the mob where the hitbox center is placed. " +
+                 "Should roughly match the mob's 'reach'.")]
+        [Min(2f)]
+        public float attackHitboxOffset = 14f;
+
+        [Tooltip("Radius (units) of the damage hitbox during the strike phase. " +
+                 "Larger = harder to dodge. A player inside this circle when the strike " +
+                 "checks will take damage.")]
+        [Min(2f)]
+        public float attackHitboxRadius = 16f;
+
+        [Tooltip("Speed (units/sec) of the forward lunge during the strike phase. " +
+                 "0 = no lunge (stationary strike). Higher = harder to dodge by running " +
+                 "backward, since the mob catches up mid-strike.")]
+        [Min(0f)]
+        public float attackLungeSpeed = 80f;
+
         // ───────────────────────── Searching ─────────────────────────
 
         [Header("Searching")]

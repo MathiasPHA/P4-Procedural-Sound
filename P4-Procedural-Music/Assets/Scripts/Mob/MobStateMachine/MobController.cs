@@ -55,6 +55,9 @@ namespace MobSystem
         /// <summary>The MobData ScriptableObject driving this mob's stats and behaviour.</summary>
         public MobData Data => data;
 
+        /// <summary>Layer mask for the player — used by AttackingState for hitbox checks.</summary>
+        public LayerMask PlayerLayerMask => playerLayer;
+
         /// <summary>Current health points.</summary>
         public int CurrentHealth { get; private set; }
 
@@ -436,6 +439,19 @@ namespace MobSystem
             {
                 Gizmos.color = new Color(1f, 0f, 0f, 0.4f);
                 Gizmos.DrawWireSphere(transform.position, data.attackRange);
+            }
+
+            // Attack hitbox (placed in front of mob along facing direction)
+            if (data.HasHostileStates && Application.isPlaying)
+            {
+                Vector3 hitboxCenter = transform.position +
+                                       (Vector3)FacingDirection * data.attackHitboxOffset;
+                Gizmos.color = new Color(1f, 0.3f, 0f, 0.5f);
+                Gizmos.DrawWireSphere(hitboxCenter, data.attackHitboxRadius);
+
+                // Line from mob to hitbox center so it's clear where it's aimed
+                Gizmos.color = new Color(1f, 0.3f, 0f, 0.3f);
+                Gizmos.DrawLine(transform.position, hitboxCenter);
             }
 
             // Roam radius from spawn

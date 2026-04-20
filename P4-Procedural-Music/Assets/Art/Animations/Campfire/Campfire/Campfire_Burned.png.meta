@@ -11,6 +11,18 @@ TextureImporter:
   - first:
       213: -2688070601133072683
     second: Campfire_Burned_2
+  - first:
+      213: -7437744745181121314
+    second: Campfire_Burned_3
+  - first:
+      213: 3180564323271487380
+    second: Campfire_Burned_4
+  - first:
+      213: 5131214008980928676
+    second: Campfire_Burned_5
+  - first:
+      213: -4654314081458153218
+    second: Campfire_Burned_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -131,10 +143,10 @@ TextureImporter:
       name: Campfire_Burned_1
       rect:
         serializedVersion: 2
-        x: 842
-        y: 231
-        width: 233
-        height: 311
+        x: 896
+        y: 545
+        width: 177
+        height: 170
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,6 +165,94 @@ TextureImporter:
       name: Campfire_Burned_2
       rect:
         serializedVersion: 2
+        x: 1062
+        y: 571
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5deda40c70e02bad0800000000000000
+      internalID: -2688070601133072683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Campfire_Burned_3
+      rect:
+        serializedVersion: 2
+        x: 842
+        y: 231
+        width: 233
+        height: 311
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed47375af82d7c890800000000000000
+      internalID: -7437744745181121314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Campfire_Burned_4
+      rect:
+        serializedVersion: 2
+        x: 874
+        y: 539
+        width: 33
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49fa0e19662a32c20800000000000000
+      internalID: 3180564323271487380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Campfire_Burned_5
+      rect:
+        serializedVersion: 2
+        x: 1010
+        y: 533
+        width: 30
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a8f0df64fbb53740800000000000000
+      internalID: 5131214008980928676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Campfire_Burned_6
+      rect:
+        serializedVersion: 2
         x: 1037
         y: 357
         width: 306
@@ -165,8 +265,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5deda40c70e02bad0800000000000000
-      internalID: -2688070601133072683
+      spriteID: ef89695a00e886fb0800000000000000
+      internalID: -4654314081458153218
       vertices: []
       indices: 
       edges: []
@@ -188,6 +288,10 @@ TextureImporter:
       Campfire_Burned_0: 3578401086811790830
       Campfire_Burned_1: -2611485276103505238
       Campfire_Burned_2: -2688070601133072683
+      Campfire_Burned_3: -7437744745181121314
+      Campfire_Burned_4: 3180564323271487380
+      Campfire_Burned_5: 5131214008980928676
+      Campfire_Burned_6: -4654314081458153218
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

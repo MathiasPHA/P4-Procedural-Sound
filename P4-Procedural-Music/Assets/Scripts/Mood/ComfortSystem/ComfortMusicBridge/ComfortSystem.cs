@@ -30,15 +30,22 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
     [SerializeField] private float dayBaselineComfort = 0.55f;
 
     [Tooltip("Baseline comfort at full nighttime (no influences nearby)")]
-    [SerializeField] private float nightBaselineComfort = 0.3f;
+    [SerializeField] private float nightBaselineComfort = 0.25f;
 
     [Tooltip("How quickly comfort responds to influence changes (lower = smoother)")]
     [SerializeField] private float comfortSmoothTime = 0.3f;
 
     [Header("Mood Contribution")]
-    [Tooltip("Maximum mood rate (units/sec) when comfort is at 0 or 1. " +
-             "At comfort 0.5 the contribution is zero.")]
-    [SerializeField] private float maxMoodContribution = 0.06f;
+    [Tooltip("Comfort value that produces zero mood contribution. " +
+             "Above this → positive mood, below → negative mood.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float comfortNeutralPoint = 0.55f;
+
+    [Tooltip("Max positive mood rate (units/sec) when comfort is at 1.0")]
+    [SerializeField] private float maxPositiveMoodRate = 0.06f;
+
+    [Tooltip("Max negative mood rate (units/sec) when comfort is at 0.0")]
+    [SerializeField] private float maxNegativeMoodRate = 0.08f;
 
     [Header("Day/Night")]
     [Tooltip("Hours considered 'full day' (comfort uses day baseline at full strength)")]
@@ -73,12 +80,23 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
     {
         get
         {
-            // Map comfort (0–1) to a rate centered on 0.5
-            // comfort 1.0 → +maxMoodContribution
-            // comfort 0.5 → 0
-            // comfort 0.0 → -maxMoodContribution
-            float offset = (comfort - 0.5f) * 2f; // range: -1 to +1
-            return offset * maxMoodContribution;
+            // Map comfort relative to the neutral point
+            // comfort >= neutralPoint → positive mood (scales up to maxPositiveMoodRate)
+            // comfort <  neutralPoint → negative mood (scales down to -maxNegativeMoodRate)
+            if (comfort >= comfortNeutralPoint)
+            {
+                float t = (comfortNeutralPoint < 1f)
+                    ? (comfort - comfortNeutralPoint) / (1f - comfortNeutralPoint)
+                    : 0f;
+                return t * maxPositiveMoodRate;
+            }
+            else
+            {
+                float t = (comfortNeutralPoint > 0f)
+                    ? (comfortNeutralPoint - comfort) / comfortNeutralPoint
+                    : 0f;
+                return -t * maxNegativeMoodRate;
+            }
         }
     }
 
@@ -113,6 +131,24 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
     public void UnregisterInfluence(IComfortInfluence influence)
     {
         influences.Remove(influence);
+    }
+
+    // ───────────────────────── Debug override (for DevTestConsole) ─────────────────────────
+
+    private bool  debugOverrideActive = false;
+    private float debugOverrideValue  = 0.5f;
+
+    /// <summary>Dev tool only: force comfort to a specific value, bypassing baseline + influences.</summary>
+    public void SetDebugComfortOverride(float value)
+    {
+        debugOverrideActive = true;
+        debugOverrideValue  = Mathf.Clamp01(value);
+    }
+
+    /// <summary>Dev tool only: clear the comfort override and resume normal calculation.</summary>
+    public void ClearDebugComfortOverride()
+    {
+        debugOverrideActive = false;
     }
 
     // ───────────────────────── Lifecycle ─────────────────────────
@@ -185,6 +221,14 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
 
     private void UpdateComfort()
     {
+        // Dev override short-circuit — still smooth so transitions look natural
+        if (debugOverrideActive)
+        {
+            rawComfort = debugOverrideValue;
+            comfort = Mathf.SmoothDamp(comfort, rawComfort, ref comfortVelocity, comfortSmoothTime);
+            return;
+        }
+
         // Accumulate all active influences
         float totalWeight = 0f;
         float weightedSum = 0f;
@@ -204,9 +248,17 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
             float distance = Vector3.Distance(playerTransform.position, inf.Position);
             if (distance > inf.Radius) continue;
 
-            // Falloff: full strength at center, zero at edge
-            float falloff = 1f - Mathf.Clamp01(distance / inf.Radius);
-            falloff = falloff * falloff; // quadratic falloff
+            // Falloff: quadratic by default, flat if the source opts out
+            float falloff;
+            if (inf.UseFalloff)
+            {
+                falloff = 1f - Mathf.Clamp01(distance / inf.Radius);
+                falloff = falloff * falloff; // quadratic falloff
+            }
+            else
+            {
+                falloff = 1f; // full strength anywhere inside radius
+            }
 
             float effectiveWeight = inf.Weight * falloff;
             weightedSum += inf.ComfortValue * effectiveWeight;
