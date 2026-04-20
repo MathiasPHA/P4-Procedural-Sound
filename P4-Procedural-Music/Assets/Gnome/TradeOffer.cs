@@ -4,11 +4,11 @@ using InventorySystem.Data;
 [CreateAssetMenu(menuName = "Gnome/Trade Offer")]
 public class TradeOffer : ScriptableObject
 {
-    [Header("Cost — what the player gives")]
+    [Header("Cost ï¿½ what the player gives")]
     public ItemData costItem;
     public int costAmount = 1;
 
-    [Header("Reward — what the player receives")]
+    [Header("Reward ï¿½ what the player receives")]
     public ItemData rewardItem;
     public int rewardAmount = 1;
 
