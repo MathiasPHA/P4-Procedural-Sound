@@ -4,11 +4,17 @@ namespace MobSystem.States
 {
     /// <summary>
     /// Default idle state. The mob picks random waypoints near its spawn
-    /// position, walks to them, pauses, and repeats. On detecting the player:
-    ///   Passive → Fleeing
-    ///   Hostile → Chasing
-    ///   Neutral (unprovoked) → Fleeing
-    ///   Neutral (provoked) → Chasing
+    /// position, walks to them, pauses, and repeats.
+    ///
+    /// Detection is now handled by MobAwareness — this state checks
+    /// IsSuspicious to transition to AlertState instead of jumping
+    /// straight to chasing/fleeing.
+    ///
+    /// Movement goes through MobSteering, so separation and obstacle
+    /// avoidance apply automatically even while roaming.
+    ///
+    /// Transitions:
+    ///   → AlertState    when awareness crosses the suspicious threshold
     /// </summary>
     public class RoamingState : MobBaseState
     {
@@ -16,8 +22,7 @@ namespace MobSystem.States
         private float _idleTimer;
         private bool _isIdling;
 
-        // How close to the waypoint before counting as "arrived" (units)
-        private const float ArrivalThreshold = 0.3f;
+        private const float ArrivalThreshold = 6f;
 
         public override void EnterState(MobController mob)
         {
@@ -25,31 +30,26 @@ namespace MobSystem.States
             _idleTimer = 0f;
             mob.AnimationQueue = "Walk";
 
+            // Reset awareness so we start clean after returning from search/flee
+            mob.Awareness.ResetAwareness();
+
             PickNewWaypoint(mob);
         }
 
         public override void UpdateState(MobController mob)
         {
-            // ── Detection check ──
-            if (mob.PlayerDetected)
+            // ── Awareness check — something caught our attention? ──
+            if (mob.Awareness.IsSuspicious)
             {
-                if (mob.CanUseHostileStates())
-                {
-                    mob.SwitchState(mob.chasingState);
-                    return;
-                }
-                else
-                {
-                    // Passive or unprovoked neutral → flee
-                    mob.SwitchState(mob.fleeingState);
-                    return;
-                }
+                mob.SwitchState(mob.alertState);
+                return;
             }
 
             // ── Idle at waypoint ──
             if (_isIdling)
             {
                 _idleTimer -= Time.deltaTime;
+                mob.Steering.Stop();
                 mob.AnimationQueue = "Idle";
 
                 if (_idleTimer <= 0f)
@@ -61,36 +61,31 @@ namespace MobSystem.States
                 return;
             }
 
-            // ── Move toward waypoint ──
+            // ── Move toward waypoint via steering ──
             Vector2 currentPos = mob.transform.position;
-            Vector2 direction = (_waypoint - currentPos);
-            float distance = direction.magnitude;
+            float distance = Vector2.Distance(currentPos, _waypoint);
 
             if (distance < ArrivalThreshold)
             {
                 // Arrived — start idling
-                mob.Rb.linearVelocity = Vector2.zero;
+                mob.Steering.Stop();
                 _isIdling = true;
                 _idleTimer = mob.Data.roamIdleTime;
                 mob.AnimationQueue = "Idle";
                 return;
             }
 
-            // Move
-            Vector2 moveDir = direction.normalized;
-            mob.Rb.linearVelocity = moveDir * mob.Data.moveSpeed;
-            mob.FacingDirection = moveDir;
+            mob.Steering.Seek(_waypoint);
             mob.AnimationQueue = "Walk";
         }
 
         public override void ExitState(MobController mob)
         {
-            mob.Rb.linearVelocity = Vector2.zero;
+            mob.Steering.Stop();
         }
 
         private void PickNewWaypoint(MobController mob)
         {
-            // Random point within roamRadius of the spawn position
             Vector2 offset = Random.insideUnitCircle * mob.Data.roamRadius;
             _waypoint = (Vector2)mob.SpawnPosition + offset;
         }

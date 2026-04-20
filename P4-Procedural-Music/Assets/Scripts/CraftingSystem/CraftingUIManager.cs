@@ -3,6 +3,7 @@ using UnityEngine;
 using InventorySystem.Data;
 using InventorySystem.Input;
 using InventorySystem.Crafting;
+using InventorySystem.Building;
 
 namespace InventorySystem.UI
 {
@@ -11,6 +12,9 @@ namespace InventorySystem.UI
     /// Opens and closes in sync with the inventory (listens to the same
     /// toggle event) but manages its own panel hierarchy, recipe list,
     /// and detail pane.
+    ///
+    /// Also supports programmatic open/close via OpenBuildMenu() and
+    /// CloseBuildMenu() for the Build Hammer flow.
     ///
     /// Communicates with the inventory purely through the Inventory API
     /// and the crafting station abstraction — no direct coupling to
@@ -67,6 +71,9 @@ namespace InventorySystem.UI
         private readonly List<RecipeEntryUI> _recipeEntries = new();
         private Recipe _selectedRecipe;
 
+        /// <summary>Whether the crafting panel is currently visible.</summary>
+        public bool IsOpen => _isOpen;
+
         // =====================================================================
         // Initialisation (called by InventoryBootstrap.Start)
         // =====================================================================
@@ -94,6 +101,13 @@ namespace InventorySystem.UI
             _isOpen = false;
             _initialized = true;
 
+            // Subscribe to PlacementSystem events for build menu re-open
+            if (PlacementSystem.Instance != null)
+            {
+                PlacementSystem.Instance.OnPlacementCancelled += OnPlacementCancelledOrFinished;
+                PlacementSystem.Instance.OnPlacementFinished += OnPlacementCancelledOrFinished;
+            }
+
             // Audio setup
             _audioSource = GetComponent<AudioSource>();
             if (_audioSource == null)
@@ -114,6 +128,12 @@ namespace InventorySystem.UI
 
             if (recipeDetail != null)
                 recipeDetail.OnCraftClicked -= HandleCraft;
+
+            if (PlacementSystem.Instance != null)
+            {
+                PlacementSystem.Instance.OnPlacementCancelled -= OnPlacementCancelledOrFinished;
+                PlacementSystem.Instance.OnPlacementFinished -= OnPlacementCancelledOrFinished;
+            }
         }
 
         private bool ValidateReferences()
@@ -187,6 +207,58 @@ namespace InventorySystem.UI
         /// The currently active crafting station (never null if handCraftingStation is assigned).
         /// </summary>
         public ICraftingStation ActiveStation => _activeStation;
+
+        // =====================================================================
+        // Build Hammer API — programmatic open/close
+        // =====================================================================
+
+        /// <summary>
+        /// Open the crafting panel programmatically (e.g. when hammer is equipped).
+        /// Does NOT toggle — always opens. Safe to call when already open.
+        /// </summary>
+        public void OpenBuildMenu()
+        {
+            if (!_initialized) return;
+
+            _isOpen = true;
+            craftingPanel.SetActive(true);
+
+            if (_activeStation is BaseCraftingStation baseStation)
+                baseStation.RefreshDiscovery(_inventory);
+
+            RebuildRecipeList();
+            UpdateStationHeader();
+
+            if (_selectedRecipe == null && _recipeEntries.Count > 0)
+                SelectRecipe(_recipeEntries[0].Recipe);
+        }
+
+        /// <summary>
+        /// Close the crafting panel programmatically (e.g. when hammer is unequipped
+        /// or when entering placement mode).
+        /// Does NOT toggle — always closes. Safe to call when already closed.
+        /// </summary>
+        public void CloseBuildMenu()
+        {
+            if (!_initialized) return;
+
+            _isOpen = false;
+            craftingPanel.SetActive(false);
+            ClearSelection();
+        }
+
+        // =====================================================================
+        // PlacementSystem callbacks — re-open build menu after cancel/finish
+        // =====================================================================
+
+        private void OnPlacementCancelledOrFinished()
+        {
+            // Only re-open if the active station is the build hammer
+            if (_activeStation is BuildHammerStation)
+            {
+                OpenBuildMenu();
+            }
+        }
 
         // =====================================================================
         // Toggle (synced with inventory)
@@ -290,6 +362,7 @@ namespace InventorySystem.UI
                 BaseCraftingStation station => station.StationType switch
                 {
                     CraftingStationType.HandCraft => "Crafting",
+                    CraftingStationType.BuildHammer => "Build",
                     _ => station.StationType.ToString()
                 },
                 _ => "Crafting"
@@ -354,8 +427,15 @@ namespace InventorySystem.UI
                     _audioSource.PlayOneShot(craftSound, craftVolume);
                 }
 
-                // Refresh everything — inventory events will also fire,
-                // but we refresh immediately for snappy feedback
+                // If the station is a BuildHammer, close the menu —
+                // PlacementSystem is now in ghost mode
+                if (_activeStation is BuildHammerStation)
+                {
+                    CloseBuildMenu();
+                    return;
+                }
+
+                // Normal crafting — refresh everything
                 OnInventoryChanged();
             }
         }

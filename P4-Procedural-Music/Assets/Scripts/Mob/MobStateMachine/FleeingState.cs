@@ -3,43 +3,37 @@ using UnityEngine;
 namespace MobSystem.States
 {
     /// <summary>
-    /// Flee state. The mob moves directly away from the threat (player)
-    /// at boosted speed until it reaches a safe distance.
+    /// Flee state. The mob moves away from the threat using MobSteering.Flee(),
+    /// which adds slight random drift and blends with separation and avoidance.
     ///
-    /// Used by:
-    ///   Passive mobs      → always flee when player detected
-    ///   Neutral (unprovoked) → flee like passive
-    ///   Hostile (low HP)   → flee when health below threshold
+    /// A group of fleeing rabbits naturally scatters because each one's
+    /// separation force pushes it away from neighbours while all flee
+    /// the same threat — emergent herd scatter with no special code.
     ///
     /// Transitions:
     ///   → RoamingState     when distance to threat exceeds fleeDistance
-    ///
-    /// On exit, releases combat music back to auto mode so the procedural
-    /// music system can return to the ambient tension-based state.
     /// </summary>
     public class FleeingState : MobBaseState
     {
-        private Vector2 _fleeDirection;
         private Vector3 _threatPosition;
 
         public override void EnterState(MobController mob)
         {
             mob.AnimationQueue = "Walk";
 
-            // Determine what we're running from
-            _threatPosition = mob.LastKnownPlayerPos;
+            // What are we running from?
+            _threatPosition = mob.Awareness.LastStimulusPosition;
 
-            // Calculate initial flee direction (away from threat)
-            UpdateFleeDirection(mob);
+            // Alert the pack — rabbits scatter together
+            mob.PackCoordinator.RaiseAlarm(_threatPosition);
         }
 
         public override void UpdateState(MobController mob)
         {
-            // ── Update threat position if player is still detected ──
-            if (mob.PlayerDetected && mob.PlayerTransform != null)
+            // ── Update threat position if player is still visible ──
+            if (mob.Awareness.PlayerInRange && mob.Awareness.PlayerTransform != null)
             {
-                _threatPosition = mob.PlayerTransform.position;
-                UpdateFleeDirection(mob);
+                _threatPosition = mob.Awareness.PlayerTransform.position;
             }
 
             // ── Check if we've reached safety ──
@@ -50,29 +44,18 @@ namespace MobSystem.States
                 return;
             }
 
-            // ── Move away ──
-            float fleeSpeed = mob.Data.moveSpeed * mob.Data.fleeSpeedMultiplier;
-            mob.Rb.linearVelocity = _fleeDirection * fleeSpeed;
-            mob.FacingDirection = _fleeDirection;
+            // ── Flee via steering ──
+            mob.Steering.Flee(_threatPosition, mob.Data.fleeSpeedMultiplier);
             mob.AnimationQueue = "Walk";
         }
 
         public override void ExitState(MobController mob)
         {
-            mob.Rb.linearVelocity = Vector2.zero;
+            mob.Steering.Stop();
 
             // Release combat music — the encounter is over
             if (GameStateManager.Instance != null && GameStateManager.Instance.IsManualOverride)
                 GameStateManager.Instance.ReturnToAuto();
-        }
-
-        private void UpdateFleeDirection(MobController mob)
-        {
-            Vector2 away = ((Vector2)mob.transform.position - (Vector2)_threatPosition).normalized;
-
-            // Add a slight random offset so mobs don't all flee in an identical line
-            away += Random.insideUnitCircle * 0.2f;
-            _fleeDirection = away.normalized;
         }
     }
 }

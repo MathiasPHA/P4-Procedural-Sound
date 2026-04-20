@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Pot_PD
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlaceableData
   item: {fileID: 11400000, guid: 1631bb5a5190f44f88e4d09104ffc4c1, type: 2}
-  prefab: {fileID: 0}
+  prefab: {fileID: 3306544976526998673, guid: e937dd20ff6555d4a82d284b3defda5f, type: 3}
   gridCells: {x: 1, y: 1}

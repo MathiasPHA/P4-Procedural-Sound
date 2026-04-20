@@ -1,5 +1,6 @@
-using UnityEngine;
 using ProceduralMusic.Bridge;
+using ProceduralMusic.Core;
+using UnityEngine;
 
 /// <summary>
 /// Bridges the MoodSystem and HappinessSystem to the ProceduralMusicController.
@@ -245,6 +246,20 @@ public class ComfortMusicBridge : MonoBehaviour
         manualStateOverride = true;
         currentMusicState = state;
         Music?.SetGameState(state);
+    }
+
+    /// <summary>
+    /// Override the game music state and force a specific key.
+    /// SetGameState runs first (applies state config), then ForceModulation
+    /// overwrites the key — preventing the state's default mode from winning.
+    /// Disables auto-switching until you call ReleaseStateOverride().
+    /// </summary>
+    public void OverrideGameState(GameMusicState state, PitchClass root, MusicalMode mode)
+    {
+        manualStateOverride = true;
+        currentMusicState = state;
+        Music?.SetGameState(state);
+        Music?.ForceModulation(root, mode);
     }
 
     /// <summary>

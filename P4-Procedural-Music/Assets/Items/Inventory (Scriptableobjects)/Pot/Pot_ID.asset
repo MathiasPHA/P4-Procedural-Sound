@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Pot
   description: It's a pot
   loreNote: It's good for cooking
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 44a42e7841923854598ec26d30afe9a2, type: 3}
   category: 3
   maxStackSize: 1
   isDroppable: 1

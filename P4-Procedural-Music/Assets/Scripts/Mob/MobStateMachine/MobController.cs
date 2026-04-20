@@ -7,59 +7,59 @@ using InventorySystem.Data;
 namespace MobSystem
 {
     /// <summary>
-    /// Core runtime component for a mob. Drives the state machine, handles
-    /// player detection on a staggered timer, tracks health, and manages death/loot.
+    /// Core runtime component for a mob. Drives the state machine and manages
+    /// health, death, loot, and audio. Delegates detection to MobAwareness,
+    /// movement to MobSteering, and group behaviour to MobPackCoordinator.
     ///
-    /// Equivalent to PlayerStateManager — states call mob.SwitchState() to transition,
-    /// and read mob.Data / mob.PlayerDetected / mob.Rb etc. for decisions.
+    /// Equivalent to PlayerStateManager — states call mob.SwitchState() to
+    /// transition, and use mob.Steering / mob.Awareness / mob.PackCoordinator
+    /// for movement, detection, and group coordination.
+    ///
+    /// COMPONENT ARCHITECTURE:
+    ///   MobController        — state machine, health, death, loot, audio
+    ///   MobSteering          — blended movement (desire + separation + avoidance)
+    ///   MobAwareness         — gradient detection (awareness 0→1 with thresholds)
+    ///   MobPackCoordinator   — alerts nearby same-type mobs on detection
+    ///   MobAnimator          — sprite flipping / Animator.Play (unchanged)
+    ///   MobHealthBar         — health bar above mob (unchanged)
+    ///   MobHitFeedback       — flash + shake on damage (unchanged)
     ///
     /// SETUP:
     ///   Attach to a prefab with SpriteRenderer, Rigidbody2D (Kinematic or Dynamic),
     ///   and a Collider2D. MobSpawnManager sets the Data reference at spawn time.
-    ///   Or assign Data directly in the inspector for testing.
-    ///
-    /// DETECTION:
-    ///   Runs Physics2D.OverlapCircle on a staggered timer (not every frame).
-    ///   Each mob instance gets a random offset so detection checks are distributed
-    ///   across frames — 30 mobs at 0.25s interval = ~2 checks/frame, not 30.
+    ///   Steering, Awareness, and PackCoordinator are added automatically.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(Collider2D))]
     public class MobController : MonoBehaviour
     {
-        // ───────────────────────── Inspector (for testing) ─────────────────────────
+        // ───────────────────────── Inspector ─────────────────────────
 
         [Header("Data (set by MobSpawnManager or inspector)")]
         [Tooltip("The mob type definition. MobSpawnManager assigns this at spawn time.")]
         [SerializeField] private MobData data;
 
         [Header("Detection")]
-        [Tooltip("Layer(s) the player is on. Used for OverlapCircle detection.")]
+        [Tooltip("Layer(s) the player is on. Used for detection OverlapCircle.")]
         [SerializeField] private LayerMask playerLayer;
+
+        [Header("Steering Layers")]
+        [Tooltip("Layer(s) for obstacles (trees, rocks, water). Used by avoidance raycasts.")]
+        [SerializeField] private LayerMask obstacleMask;
+
+        [Tooltip("Layer(s) other mobs are on. Used by separation force.")]
+        [SerializeField] private LayerMask mobMask;
 
         // ───────────────────────── Public Read ─────────────────────────
 
         /// <summary>The MobData ScriptableObject driving this mob's stats and behaviour.</summary>
         public MobData Data => data;
 
+        /// <summary>Layer mask for the player — used by AttackingState for hitbox checks.</summary>
+        public LayerMask PlayerLayerMask => playerLayer;
+
         /// <summary>Current health points.</summary>
         public int CurrentHealth { get; private set; }
-
-        /// <summary>True when the detection check found the player within range.</summary>
-        public bool PlayerDetected { get; private set; }
-
-        /// <summary>
-        /// Cached reference to the player Transform. Null until first detection.
-        /// Remains set even after the player leaves range (used by SearchingState
-        /// to move to last known position).
-        /// </summary>
-        public Transform PlayerTransform { get; private set; }
-
-        /// <summary>
-        /// Last position where the player was detected. Updated every successful
-        /// detection tick. SearchingState uses this when the player escapes.
-        /// </summary>
-        public Vector3 LastKnownPlayerPos { get; private set; }
 
         /// <summary>The world position where this mob was spawned. Roaming uses this as an anchor.</summary>
         public Vector3 SpawnPosition { get; private set; }
@@ -67,17 +67,41 @@ namespace MobSystem
         /// <summary>For Neutral mobs: flips to true on first TakeDamage, unlocking hostile states.</summary>
         public bool IsProvoked { get; private set; }
 
-        /// <summary>Current facing direction — states set this for animation.</summary>
-        public Vector2 FacingDirection { get; set; }
+        /// <summary>
+        /// Current facing direction — set by states or derived from steering.
+        /// MobAnimator reads this for sprite flipping and direction suffixes.
+        /// </summary>
+        public Vector2 FacingDirection
+        {
+            get => _facingDirection;
+            set => _facingDirection = value;
+        }
 
-        /// <summary>Animation state name — set by states, read by MobAnimator (like PlayerStateManager.animationQue).</summary>
+        /// <summary>Animation state name — set by states, read by MobAnimator.</summary>
         public string AnimationQueue { get; set; }
 
-        /// <summary>Physics body — states use this for movement.</summary>
+        /// <summary>Physics body — exposed for states that need direct access.</summary>
         public Rigidbody2D Rb { get; private set; }
 
         /// <summary>Currently active state (for debug display).</summary>
         public MobBaseState CurrentState => _currentState;
+
+        /// <summary>
+        /// Last position where the player was known to be.
+        /// Updated by ChasingState and MobAwareness.
+        /// </summary>
+        public Vector3 LastKnownPlayerPos { get; private set; }
+
+        // ───────────────────────── Component References ─────────────────────────
+
+        /// <summary>Steering system — states call Seek/Flee/Wander/Stop on this.</summary>
+        public MobSteering Steering { get; private set; }
+
+        /// <summary>Awareness system — states read IsSuspicious/IsFullyAlert from this.</summary>
+        public MobAwareness Awareness { get; private set; }
+
+        /// <summary>Pack coordinator — states call RaiseAlarm on this.</summary>
+        public MobPackCoordinator PackCoordinator { get; private set; }
 
         // ───────────────────────── Events ─────────────────────────
 
@@ -90,23 +114,33 @@ namespace MobSystem
         // ───────────────────────── State Instances ─────────────────────────
 
         // Pre-allocated — no GC from state transitions.
-        [NonSerialized] public readonly RoamingState    roamingState    = new RoamingState();
-        [NonSerialized] public readonly ChasingState    chasingState    = new ChasingState();
-        [NonSerialized] public readonly AttackingState  attackingState  = new AttackingState();
-        [NonSerialized] public readonly FleeingState    fleeingState    = new FleeingState();
-        [NonSerialized] public readonly SearchingState  searchingState  = new SearchingState();
+        [NonSerialized] public readonly RoamingState roamingState = new RoamingState();
+        [NonSerialized] public readonly AlertState alertState = new AlertState();
+        [NonSerialized] public readonly ChasingState chasingState = new ChasingState();
+        [NonSerialized] public readonly AttackingState attackingState = new AttackingState();
+        [NonSerialized] public readonly FleeingState fleeingState = new FleeingState();
+        [NonSerialized] public readonly SearchingState searchingState = new SearchingState();
 
         // ───────────────────────── Private ─────────────────────────
 
         private MobBaseState _currentState;
-        private float _detectionTimer;
-        private float _detectionOffset; // Random stagger so mobs don't all check the same frame
+        private Vector2 _facingDirection = Vector2.down;
 
         // ───────────────────────── Lifecycle ─────────────────────────
 
         private void Awake()
         {
             Rb = GetComponent<Rigidbody2D>();
+
+            // Ensure sub-components exist
+            Steering = GetComponent<MobSteering>();
+            if (Steering == null) Steering = gameObject.AddComponent<MobSteering>();
+
+            Awareness = GetComponent<MobAwareness>();
+            if (Awareness == null) Awareness = gameObject.AddComponent<MobAwareness>();
+
+            PackCoordinator = GetComponent<MobPackCoordinator>();
+            if (PackCoordinator == null) PackCoordinator = gameObject.AddComponent<MobPackCoordinator>();
         }
 
         private void Start()
@@ -125,9 +159,10 @@ namespace MobSystem
             FacingDirection = Vector2.down;
             AnimationQueue = "Idle";
 
-            // Stagger detection so mobs don't all fire on the same frame
-            _detectionOffset = UnityEngine.Random.Range(0f, data.detectionInterval);
-            _detectionTimer = _detectionOffset;
+            // Configure sub-components from MobData
+            ConfigureSteering();
+            ConfigureAwareness();
+            ConfigurePackCoordinator();
 
             // Start in roaming
             _currentState = roamingState;
@@ -138,16 +173,53 @@ namespace MobSystem
         {
             if (data == null) return;
 
-            // Staggered player detection
-            _detectionTimer -= Time.deltaTime;
-            if (_detectionTimer <= 0f)
-            {
-                RunDetection();
-                _detectionTimer = data.detectionInterval;
-            }
+            // Update facing from steering when moving
+            if (Steering.IsMoving)
+                _facingDirection = Steering.FacingDirection;
 
             // Tick current state
             _currentState?.UpdateState(this);
+        }
+
+        // ───────────────────────── Configuration ─────────────────────────
+
+        private void ConfigureSteering()
+        {
+            Steering.Configure(
+                maxSpeed: data.moveSpeed,
+                separationRadius: data.separationRadius,
+                separationWeight: data.separationWeight,
+                avoidanceDistance: data.avoidanceDistance,
+                avoidanceWeight: data.avoidanceWeight,
+                wanderStrength: data.wanderStrength,
+                obstacleMask: obstacleMask,
+                mobMask: mobMask
+            );
+        }
+
+        private void ConfigureAwareness()
+        {
+            Awareness.Configure(
+                detectionRange: data.detectionRange,
+                hearingRange: data.hearingRange,
+                visualGainRate: data.visualGainRate,
+                auditoryGainRate: data.auditoryGainRate,
+                decayRate: data.awarenessDecayRate,
+                suspiciousThreshold: data.suspiciousThreshold,
+                alertThreshold: 1f,
+                detectionInterval: data.detectionInterval,
+                playerLayer: playerLayer
+            );
+        }
+
+        private void ConfigurePackCoordinator()
+        {
+            PackCoordinator.Configure(
+                mobTypeId: data.id,
+                alertRadius: data.packAlertRadius,
+                alertAwarenessBoost: data.packAlertBoost,
+                mobMask: mobMask
+            );
         }
 
         // ───────────────────────── State Machine ─────────────────────────
@@ -160,31 +232,6 @@ namespace MobSystem
             _currentState?.ExitState(this);
             _currentState = newState;
             _currentState.EnterState(this);
-        }
-
-        // ───────────────────────── Detection ─────────────────────────
-
-        private void RunDetection()
-        {
-            float range = data.detectionRange;
-
-            // Hostile mobs use aggroRange for detection when not yet chasing
-            if (data.behaviour == MobBehaviour.Hostile)
-                range = Mathf.Max(range, data.aggroRange);
-
-            var hit = Physics2D.OverlapCircle(transform.position, range, playerLayer);
-
-            if (hit != null)
-            {
-                PlayerDetected = true;
-                PlayerTransform = hit.transform;
-                LastKnownPlayerPos = hit.transform.position;
-            }
-            else
-            {
-                PlayerDetected = false;
-                // Keep PlayerTransform and LastKnownPlayerPos — SearchingState needs them
-            }
         }
 
         // ───────────────────────── Combat ─────────────────────────
@@ -200,13 +247,16 @@ namespace MobSystem
             CurrentHealth -= damage;
             CurrentHealth = Mathf.Max(0, CurrentHealth);
 
+            // Getting hit = instant full awareness of the attacker
+            Awareness.ForceFullAlert(attackerPosition);
+
             // Neutral mobs become hostile on first hit
             if (data.behaviour == MobBehaviour.Neutral && !IsProvoked)
             {
                 IsProvoked = true;
-                // Force detection toward the attacker
-                PlayerDetected = true;
-                LastKnownPlayerPos = attackerPosition;
+
+                // Alert nearby neutral mobs of the same type
+                PackCoordinator.ProvokeNearby(attackerPosition);
             }
 
             // Play hit sound
@@ -225,8 +275,19 @@ namespace MobSystem
         }
 
         /// <summary>
+        /// Provoked by a pack member (Neutral mob group aggro).
+        /// Sets IsProvoked and forces awareness to full.
+        /// </summary>
+        public void ProvokeFromPack(Vector3 attackerPosition)
+        {
+            if (data.behaviour != MobBehaviour.Neutral) return;
+
+            IsProvoked = true;
+            Awareness.ForceFullAlert(attackerPosition);
+        }
+
+        /// <summary>
         /// Whether this mob should flee based on its current health.
-        /// States check this to decide whether to transition to FleeingState.
         /// </summary>
         public bool ShouldFlee()
         {
@@ -238,13 +299,21 @@ namespace MobSystem
 
         /// <summary>
         /// Whether this mob currently uses hostile states.
-        /// Always true for Hostile, true for Neutral after provocation, false for Passive.
         /// </summary>
         public bool CanUseHostileStates()
         {
             if (data.behaviour == MobBehaviour.Hostile) return true;
             if (data.behaviour == MobBehaviour.Neutral && IsProvoked) return true;
             return false;
+        }
+
+        /// <summary>
+        /// Update the last known player position. Called by ChasingState
+        /// while actively pursuing.
+        /// </summary>
+        public void UpdateLastKnownPlayerPos(Vector3 position)
+        {
+            LastKnownPlayerPos = position;
         }
 
         // ───────────────────────── Death & Loot ─────────────────────────
@@ -279,7 +348,6 @@ namespace MobSystem
                     var go = Instantiate(data.worldItemPrefab, transform.position, Quaternion.identity);
                     var worldItem = go.GetComponent<InventorySystem.UI.WorldItem>();
 
-                    // Scatter away from the attacker with some randomness
                     Vector2 dir = scatterDirection + UnityEngine.Random.insideUnitCircle * 0.8f;
                     worldItem?.Initialise(instance, 1, dir);
                 }
@@ -290,7 +358,6 @@ namespace MobSystem
 
         /// <summary>
         /// Play a one-shot sound that survives this GameObject being destroyed.
-        /// Same pattern as HarvestableResource.PlaySoundWithPitch.
         /// </summary>
         public void PlaySound(AudioClip clip, float volume, float pitchVariation = 0.1f)
         {
@@ -321,6 +388,30 @@ namespace MobSystem
             playerLayer = playerLayerMask;
         }
 
+        /// <summary>
+        /// Extended initialise with obstacle and mob layers for steering.
+        /// Called by MobSpawnManager if available, falls back to serialised values otherwise.
+        /// </summary>
+        public void Initialise(MobData mobData, LayerMask playerLayerMask,
+                               LayerMask obstacleMaskOverride, LayerMask mobMaskOverride)
+        {
+            data = mobData;
+            playerLayer = playerLayerMask;
+            obstacleMask = obstacleMaskOverride;
+            mobMask = mobMaskOverride;
+        }
+
+        // ───────────────────────── Compatibility ─────────────────────────
+
+        // These properties maintain backward compatibility with code that
+        // reads the old detection fields. They now delegate to MobAwareness.
+
+        /// <summary>True when the player is within visual detection range.</summary>
+        public bool PlayerDetected => Awareness != null && Awareness.PlayerInRange;
+
+        /// <summary>Cached player Transform from awareness system.</summary>
+        public Transform PlayerTransform => Awareness?.PlayerTransform;
+
         // ───────────────────────── Debug ─────────────────────────
 
 #if UNITY_EDITOR
@@ -331,6 +422,10 @@ namespace MobSystem
             // Detection range
             Gizmos.color = new Color(1f, 1f, 0f, 0.2f);
             Gizmos.DrawWireSphere(transform.position, data.detectionRange);
+
+            // Hearing range
+            Gizmos.color = new Color(0f, 1f, 1f, 0.1f);
+            Gizmos.DrawWireSphere(transform.position, data.hearingRange);
 
             // Aggro range (hostile only)
             if (data.HasHostileStates)
@@ -346,6 +441,19 @@ namespace MobSystem
                 Gizmos.DrawWireSphere(transform.position, data.attackRange);
             }
 
+            // Attack hitbox (placed in front of mob along facing direction)
+            if (data.HasHostileStates && Application.isPlaying)
+            {
+                Vector3 hitboxCenter = transform.position +
+                                       (Vector3)FacingDirection * data.attackHitboxOffset;
+                Gizmos.color = new Color(1f, 0.3f, 0f, 0.5f);
+                Gizmos.DrawWireSphere(hitboxCenter, data.attackHitboxRadius);
+
+                // Line from mob to hitbox center so it's clear where it's aimed
+                Gizmos.color = new Color(1f, 0.3f, 0f, 0.3f);
+                Gizmos.DrawLine(transform.position, hitboxCenter);
+            }
+
             // Roam radius from spawn
             if (Application.isPlaying)
             {
@@ -353,9 +461,12 @@ namespace MobSystem
                 Gizmos.DrawWireSphere(SpawnPosition, data.roamRadius);
             }
 
-            // State label
+            // State label with awareness
             string stateLabel = _currentState != null ? _currentState.GetType().Name : "None";
-            string label = $"{(data != null ? data.displayName : "?")} | {stateLabel} | HP: {CurrentHealth}/{(data != null ? data.maxHealth : 0)}";
+            float awareness = Awareness != null ? Awareness.Awareness : 0f;
+            string label = $"{(data != null ? data.displayName : "?")} | {stateLabel} | " +
+                           $"HP: {CurrentHealth}/{(data != null ? data.maxHealth : 0)} | " +
+                           $"Awareness: {awareness:F2}";
             UnityEditor.Handles.Label(transform.position + Vector3.up * 1.2f, label);
         }
 #endif
