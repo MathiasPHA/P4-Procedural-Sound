@@ -1,371 +1,393 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using ProceduralMusic.Core;
 using ProceduralMusic.Bridge;
-using InventorySystem.Data;
+using ProceduralMusic.Synthesis;
 
 namespace InventorySystem.Tools
 {
     /// <summary>
-    /// Attach this MonoBehaviour to a GameObject in the scene (e.g. the Player or a FluteManager object).
-    /// When the player equips the flute ToolData item and right-clicks (or presses the use key),
-    /// it opens the note ring UI — 8 scale notes arranged in a circle around the player.
-    /// Each note plays an AudioClip from the ToolData's instrumentSounds list, pitched so it
-    /// stays in the current key and mode of the ProceduralMusicController.
+    /// Flute instrument — plays notes directly through the procedural synth engine.
+    ///
+    /// NO audio clips needed. NO button prefabs. NO Canvas UI.
+    ///
+    /// HOW IT WORKS:
+    ///   - ToolUseSystem calls OnFluteUsed() to toggle the ring open/closed.
+    ///   - Opening the ring enters PlayerMusicPlayingState, locking movement.
+    ///   - 8 scale notes from the live key are arranged in a circle around the player.
+    ///   - Moving the cursor (mouse or right stick) over a note plays it immediately.
+    ///     Moving to a different note stops the old one and starts the new one.
+    ///     Moving off all notes stops sound.
+    ///   - Closing the ring returns to PlayerIdleState.
+    ///   - Sound goes directly to the LegatoMelody VoiceManager (index 1) in
+    ///     ProceduralMusicController — no AudioClips required.
+    ///   - The ring is drawn with GL in OnRenderObject (world-space, no Canvas).
     ///
     /// SETUP:
-    ///   1. Add this component to your Player (or a dedicated FluteManager GameObject).
-    ///   2. Assign the FluteData ToolData ScriptableObject.
-    ///   3. Assign the NoteButtonPrefab (a world-space UI button with a SpriteRenderer or UI Image).
-    ///   4. Assign the Player transform so buttons orbit it.
-    ///   5. The AudioSource is auto-added.
-    ///
-    /// HOW THE KEY SYNC WORKS:
-    ///   ProceduralMusicController exposes GetComposer().CurrentKey which gives us the live Key
-    ///   (root PitchClass + MusicalMode). We read its GetScaleDegrees() to build 8 pitches
-    ///   (scale degrees 0–6 across one octave, then the octave root), then pitch-shift a single
-    ///   base AudioClip using AudioSource.pitch to land on each semitone relative to base.
+    ///   1. Add this component to the Player GameObject (same as PlayerStateManager).
+    ///   2. Assign PlayerCamera (or leave null — finds Camera.main).
+    ///   3. Assign StateManager (or leave null — auto-found on the same GameObject).
+    ///   4. Assign PointAction — bind to <Mouse>/position + <Gamepad>/rightStick.
+    ///      Set action type to Value, control type Vector2.
+    ///   6. In ToolUseSystem, assign this component to the fluteTool field.
     /// </summary>
-    [RequireComponent(typeof(AudioSource))]
     public class FluteTool : MonoBehaviour
     {
-        // ─── Inspector ───────────────────────────────────────────────────
-        [Header("Flute Data")]
-        [Tooltip("The ToolData ScriptableObject for the flute item.")]
-        public ToolData FluteData;
+        // ── Inspector ─────────────────────────────────────────────────────
 
         [Header("References")]
-        [Tooltip("The player transform — note buttons orbit this position.")]
-        public Transform Player;
+        [Tooltip("Main camera — used to project the point action into world space. Finds Camera.main if null.")]
+        public Camera PlayerCamera;
 
-        [Tooltip("Prefab instantiated for each note button. Should have a NoteButton component.")]
-        public GameObject NoteButtonPrefab;
+        [Tooltip("PlayerStateManager on the player. Auto-found on the same GameObject if left empty.")]
+        public PlayerStateManager StateManager;
+
+        [Header("Input Actions")]
+        [Tooltip("Tracks the cursor/stick position. Bind to <Mouse>/position AND <Gamepad>/rightStick.\n" +
+                 "Set action type to Value, control type to Vector2.")]
+        [SerializeField] private InputAction PointAction = new InputAction(
+            "FlutePoint", InputActionType.Value, expectedControlType: "Vector2");
 
         [Header("Ring Layout")]
-        [Tooltip("Radius of the note circle (world units).")]
-        public float RingRadius = 1.8f;
+        [Tooltip("Radius of the note ring in world units.")]
+        public float RingRadius = 2f;
 
-        [Tooltip("Sorting order used on spawned note buttons so they stay visible above world sprites.")]
-        public int NoteSortingOrder = 100;
+        [Tooltip("Radius of each note dot in world units.")]
+        public float NoteRadius = 0.35f;
 
-        [Tooltip("Angle offset so the first note starts at the top (degrees).")]
+        [Tooltip("Angle for the first note, in degrees. 90 = top of ring.")]
         public float StartAngleDeg = 90f;
 
-        [Header("Pitching")]
-        [Tooltip("MIDI note number the base AudioClip is recorded at (default 60 = C4).")]
-        public int BaseClipMidiNote = 60;
-
-        [Tooltip("Which octave the lowest note of the ring plays in.")]
+        [Tooltip("Which MIDI octave the lowest ring note plays in. 4 = middle C octave.")]
         [Range(3, 6)]
         public int BaseOctave = 4;
 
-        [Header("Animation")]
-        [Tooltip("Time (seconds) for buttons to scale in/out.")]
-        public float AnimationDuration = 0.18f;
+        [Header("Music Ducking")]
+        [Tooltip("Master volume of the music while the flute ring is open (0 = silence, 1 = full).")]
+        [Range(0f, 1f)]
+        public float DuckedVolume = 0.35f;
 
-        // ─── Runtime ─────────────────────────────────────────────────────
-        private AudioSource _audioSource;
-        private List<GameObject> _noteButtons = new List<GameObject>();
-        private bool _isOpen = false;
-        private ToolData _activeInstrumentData;
-        private PlayerStateManager _playerStateManager;
-        private bool _didOverrideGameMusic;
+        [Header("Colors")]
+        public Color RingLineColor    = new Color(0.65f, 0.88f, 1.00f, 0.45f);
+        public Color NoteIdleColor    = new Color(0.80f, 0.93f, 1.00f, 0.80f);
+        public Color NoteHoverColor   = new Color(1.00f, 1.00f, 0.65f, 1.00f);
+        public Color NotePlayingColor = new Color(0.45f, 1.00f, 0.70f, 1.00f);
 
-        // Cached key data rebuilt each time ring opens
-        private int[] _midiNotes = new int[8];
-        private string[] _noteNames = new string[8];
+        // ── Runtime ───────────────────────────────────────────────────────
 
-        private static readonly string[] NoteNameTable =
-            { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+        private bool      _isOpen      = false;
+        private int       _hoveredNote = -1;
+        private int       _activeNote  = -1;
+        private int[]     _midiNotes    = new int[8];
+        private string[]  _noteNames    = new string[8];
+        private Vector3[] _noteWorldPos = new Vector3[8];
+
+        // Dedicated player flute voice — separate from the composition engine's lead voice
+        private VoiceManager _fluteVoice;
+
+        private static readonly string[] NoteTable =
+            { "C","C#","D","D#","E","F","F#","G","G#","A","A#","B" };
 
         // ─────────────────────────────────────────────────────────────────
 
         void Awake()
         {
-            _audioSource = GetComponent<AudioSource>();
-            _audioSource.playOnAwake = false;
-            _audioSource.spatialBlend = 0f; // 2D audio
+            if (PlayerCamera == null)
+                PlayerCamera = Camera.main;
 
-            // Default orbit target to this transform when Player isn't assigned.
-            if (Player == null)
-                Player = transform;
+            if (StateManager == null)
+                StateManager = GetComponent<PlayerStateManager>();
 
-            _playerStateManager = GetComponent<PlayerStateManager>();
-            if (_playerStateManager == null)
-                _playerStateManager = GetComponentInParent<PlayerStateManager>();
-            if (_playerStateManager == null && Player != null)
-                _playerStateManager = Player.GetComponent<PlayerStateManager>();
+            // Default bindings if none are set in the Inspector
+            if (PointAction.bindings.Count == 0)
+            {
+                PointAction.AddBinding("<Mouse>/position");
+                PointAction.AddBinding("<Gamepad>/rightStick")
+                    .WithProcessor("scaleVector2(x=500,y=500)");
+            }
+
         }
 
-        // ─── Public API ───────────────────────────────────────────────────
+        void OnDestroy()
+        {
+            PointAction.Disable();
+        }
 
-        /// <summary>
-        /// Call this from your ToolUseSystem / equip logic when the player uses the flute.
-        /// Toggles the note ring open/closed.
-        /// </summary>
+        // ── Public API ────────────────────────────────────────────────────
+
+        /// <summary>Toggle the ring open or closed. Called by ToolUseSystem.</summary>
         public void OnFluteUsed()
         {
-            if (_isOpen)
-                CloseRing();
-            else
-                OpenRing();
+            if (_isOpen) CloseRing();
+            else         OpenRing();
         }
 
-        /// <summary>
-        /// Sets which instrument data this ring should use for note playback.
-        /// If null, FluteData is used as fallback.
-        /// </summary>
-        public void SetActiveInstrumentData(ToolData toolData)
-        {
-            _activeInstrumentData = toolData;
-        }
-
-        /// <summary>
-        /// Force-close the ring (e.g. when player unequips, takes damage, opens inventory).
-        /// </summary>
+        /// <summary>Force-close the ring (player unequips, opens inventory, etc).</summary>
         public void ForceClose()
         {
             if (_isOpen) CloseRing();
         }
 
-        // ─── Ring Open/Close ──────────────────────────────────────────────
+        // ── Open / Close ──────────────────────────────────────────────────
 
         void OpenRing()
         {
-            if (NoteButtonPrefab == null)
-            {
-                Debug.LogWarning("FluteTool: Note ring did not open because NoteButtonPrefab is missing.");
-                return;
-            }
-
-            if (Player == null)
-            {
-                Debug.LogWarning("FluteTool: Note ring did not open because Player transform is missing.");
-                return;
-            }
-
             _isOpen = true;
-
-            if (_playerStateManager != null)
-                _playerStateManager.StartMusicPlaying();
-
-            if (GameStateManager.Instance != null && !GameStateManager.Instance.IsManualOverride)
-            {
-                GameStateManager.Instance.EnterCozy();
-                _didOverrideGameMusic = true;
-            }
-
-            if (EventSystem.current == null)
-                Debug.LogWarning("FluteTool: No EventSystem found. Ring appears, but pointer interactions may fail.");
-
+            CacheFluteVoice();
             RebuildNoteData();
-            SpawnButtons();
+            UpdateNotePositions();
+
+            PointAction.Enable();
+
+            StateManager?.StartMusicPlaying();
+
+            // Duck the background music while playing
+            if (ProceduralMusicController.Instance != null)
+                ProceduralMusicController.Instance.MasterVolume = DuckedVolume;
         }
 
         void CloseRing()
         {
-            _isOpen = false;
+            _isOpen      = false;
+            _hoveredNote = -1;
+            StopCurrentNote();
 
-            if (_playerStateManager != null)
-                _playerStateManager.StopMusicPlaying();
+            PointAction.Disable();
 
-            if (_didOverrideGameMusic && GameStateManager.Instance != null && GameStateManager.Instance.IsManualOverride)
-            {
-                GameStateManager.Instance.ReturnToAuto();
-                _didOverrideGameMusic = false;
-            }
+            // Restore music volume
+            if (ProceduralMusicController.Instance != null)
+                ProceduralMusicController.Instance.MasterVolume = 0.7f;
 
-            StartCoroutine(DespawnButtons());
+            StateManager?.StopMusicPlaying();
         }
 
-        // ─── Note Data ────────────────────────────────────────────────────
+        // ── Update ────────────────────────────────────────────────────────
+
+        void Update()
+        {
+            if (!_isOpen) return;
+
+            UpdateNotePositions();
+            UpdateHover();
+
+            // Play whichever note is hovered — stop when cursor leaves all notes
+            if (_hoveredNote != _activeNote)
+            {
+                if (_hoveredNote >= 0)
+                    PlayNote(_hoveredNote);
+                else
+                    StopCurrentNote();
+            }
+        }
+
+        void UpdateNotePositions()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                float deg = StartAngleDeg - i * 45f;
+                float rad = deg * Mathf.Deg2Rad;
+                Vector2 offset = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * RingRadius;
+                _noteWorldPos[i] = transform.position + new Vector3(offset.x, offset.y, 0f);
+            }
+        }
+
+        void UpdateHover()
+        {
+            if (PlayerCamera == null) return;
+
+            Vector2 rawPoint = PointAction.ReadValue<Vector2>();
+            Vector3 worldPoint;
+
+            // Mouse: screen-space pixel position → world
+            // Gamepad stick: delta from player center, already scaled to world units
+            if (IsMouseDriving())
+            {
+                float depth = Mathf.Abs(PlayerCamera.transform.position.z - transform.position.z);
+                worldPoint = PlayerCamera.ScreenToWorldPoint(
+                    new Vector3(rawPoint.x, rawPoint.y, depth));
+                worldPoint.z = 0f;
+            }
+            else
+            {
+                // Right stick: treat as offset from player
+                worldPoint = transform.position + new Vector3(rawPoint.x, rawPoint.y, 0f);
+            }
+
+            float best    = float.MaxValue;
+            int   bestIdx = -1;
+            for (int i = 0; i < 8; i++)
+            {
+                float d = Vector2.Distance(worldPoint, _noteWorldPos[i]);
+                if (d < best) { best = d; bestIdx = i; }
+            }
+
+            _hoveredNote = (best < NoteRadius * 5f) ? bestIdx : -1;
+        }
 
         /// <summary>
-        /// Reads the live Key from ProceduralMusicController and builds 8 MIDI notes:
-        /// scale degrees 0–6 (one full scale) + the octave root.
+        /// Heuristic: if the last active control for PointAction is a mouse position,
+        /// we need to unproject from screen space. A gamepad stick is already a Vector2
+        /// in [-1,1] space that we scale to world units.
         /// </summary>
+        bool IsMouseDriving()
+        {
+            var control = PointAction.activeControl;
+            if (control == null) return true; // default to mouse
+            return control.path.Contains("Mouse") || control.path.Contains("Pointer");
+        }
+
+        // ── Sound ─────────────────────────────────────────────────────────
+
+        void PlayNote(int index)
+        {
+            StopCurrentNote();
+            _activeNote = index;
+            _fluteVoice?.NoteOn(_midiNotes[index], 0.85f);
+        }
+
+        void StopCurrentNote()
+        {
+            if (_activeNote < 0) return;
+            _fluteVoice?.NoteOff(_midiNotes[_activeNote]);
+            _activeNote = -1;
+        }
+
+        // ── Note data ─────────────────────────────────────────────────────
+
         void RebuildNoteData()
         {
-            Key currentKey = GetCurrentKey();
-            int[] degrees = currentKey.GetScaleDegrees(); // 7 intervals, semitone offsets from root
-            int rootMidi = ((BaseOctave + 1) * 12) + (int)currentKey.Root;
+            ProceduralMusic.Core.Key   key     = GetCurrentKey();
+            int[] degrees = key.GetScaleDegrees(); // 7 semitone offsets from root
+            int   root    = (BaseOctave + 1) * 12 + (int)key.Root;
 
             for (int i = 0; i < 7; i++)
             {
-                _midiNotes[i] = rootMidi + degrees[i];
-                _noteNames[i] = NoteNameTable[(int)currentKey.Root + degrees[i] < 12
-                    ? (int)currentKey.Root + degrees[i]
-                    : ((int)currentKey.Root + degrees[i]) % 12];
+                _midiNotes[i] = root + degrees[i];
+                _noteNames[i] = NoteTable[((int)key.Root + degrees[i]) % 12];
             }
 
             // 8th note = octave root
-            _midiNotes[7] = rootMidi + 12;
-            _noteNames[7] = NoteNameTable[(int)currentKey.Root];
+            _midiNotes[7] = root + 12;
+            _noteNames[7] = NoteTable[(int)key.Root % 12];
         }
 
-        Key GetCurrentKey()
+        ProceduralMusic.Core.Key GetCurrentKey()
         {
             if (ProceduralMusicController.Instance != null)
             {
                 var composer = ProceduralMusicController.Instance.GetComposer();
-                if (composer != null)
-                    return composer.CurrentKey;
+                if (composer != null) return composer.CurrentKey;
             }
-            // Fallback: C Major
-            return new Key(PitchClass.C, MusicalMode.Major);
+            return new ProceduralMusic.Core.Key(ProceduralMusic.Core.PitchClass.C, ProceduralMusic.Core.MusicalMode.Major);
         }
 
-        // ─── Button Spawning ──────────────────────────────────────────────
-
-        void SpawnButtons()
+        void CacheFluteVoice()
         {
-            if (NoteButtonPrefab == null || Player == null)
+            _fluteVoice = null;
+
+            var controller = ProceduralMusicController.Instance
+                             ?? FindFirstObjectByType<ProceduralMusicController>();
+
+            if (controller == null)
             {
-                Debug.LogWarning("FluteTool: NoteButtonPrefab or Player not assigned.");
+                Debug.LogWarning("[FluteTool] ProceduralMusicController not found in scene.");
                 return;
             }
+
+            _fluteVoice = controller.GetPlayerFluteVoice();
+
+            if (_fluteVoice == null)
+                Debug.LogWarning("[FluteTool] GetPlayerFluteVoice() returned null.");
+        }
+
+        // ── Rendering ─────────────────────────────────────────────────────
+        // Drawn via OnGUI using WorldToScreenPoint — works reliably in all
+        // 2D setups without any camera matrix or GL setup required.
+
+        void OnGUI()
+        {
+            if (!_isOpen || PlayerCamera == null) return;
+
+            // Draw ring outline as a series of line segments between note positions
+            // (OnGUI has no line primitive so we connect the dots with labels)
 
             for (int i = 0; i < 8; i++)
             {
-                Vector3 pos = GetButtonPosition(i);
-                GameObject btn = Instantiate(NoteButtonPrefab, pos, Quaternion.identity);
-                btn.transform.SetParent(Player, worldPositionStays: true);
+                Vector3 sp = PlayerCamera.WorldToScreenPoint(_noteWorldPos[i]);
+                sp.y = Screen.height - sp.y; // flip Y — GUI origin is top-left
+                if (sp.z < 0) continue;      // behind camera
 
-                var spriteRenderer = btn.GetComponent<SpriteRenderer>();
-                if (spriteRenderer != null)
-                    spriteRenderer.sortingOrder = NoteSortingOrder;
+                bool isActive  = (i == _activeNote);
+                bool isHovered = (i == _hoveredNote);
 
-                // Configure the NoteButton component
-                var noteBtn = btn.GetComponent<NoteButton>();
-                if (noteBtn != null)
+                Color c = isActive  ? NotePlayingColor
+                        : isHovered ? NoteHoverColor
+                        : NoteIdleColor;
+
+                float sz = (isHovered || isActive) ? 70f : 54f;
+
+                // Draw dot
+                GUI.color = c;
+                GUI.DrawTexture(
+                    new Rect(sp.x - sz * 0.5f, sp.y - sz * 0.5f, sz, sz),
+                    Texture2D.whiteTexture);
+
+                // Draw note name label on top
+                var style = new GUIStyle(GUI.skin.label)
                 {
-                    int noteIndex = i; // Capture for lambda
-                    int midiNote = _midiNotes[i];
-                    string noteName = _noteNames[i];
-
-                    noteBtn.Setup(noteName, () => PlayNote(midiNote));
-                }
-                else
-                {
-                    Debug.LogWarning($"FluteTool: NoteButtonPrefab is missing a NoteButton component on button {i}.");
-                }
-
-                // Scale-in animation
-                btn.transform.localScale = Vector3.zero;
-                StartCoroutine(ScaleTo(btn.transform, Vector3.one, AnimationDuration));
-
-                _noteButtons.Add(btn);
-            }
-        }
-
-        IEnumerator DespawnButtons()
-        {
-            // Scale all buttons out simultaneously
-            List<Coroutine> anims = new List<Coroutine>();
-            foreach (var btn in _noteButtons)
-                if (btn != null)
-                    anims.Add(StartCoroutine(ScaleTo(btn.transform, Vector3.zero, AnimationDuration)));
-
-            yield return new WaitForSeconds(AnimationDuration);
-
-            foreach (var btn in _noteButtons)
-                if (btn != null) Destroy(btn);
-            _noteButtons.Clear();
-        }
-
-        Vector3 GetButtonPosition(int index)
-        {
-            float angleDeg = StartAngleDeg - (index * 360f / 8f);
-            float angleRad = angleDeg * Mathf.Deg2Rad;
-            Vector2 offset = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad)) * RingRadius;
-            return Player.position + new Vector3(offset.x, offset.y, 0f);
-        }
-
-        // ─── Audio Playback ───────────────────────────────────────────────
-
-        /// <summary>
-        /// Plays the flute sound pitched to the target MIDI note.
-        /// Pitch-shifts the base AudioClip using AudioSource.pitch (ratio of target/base frequency).
-        /// </summary>
-        void PlayNote(int midiNote)
-        {
-            ToolData activeData = _activeInstrumentData != null ? _activeInstrumentData : FluteData;
-
-            if (activeData == null || activeData.instrumentSounds == null || activeData.instrumentSounds.Count == 0)
-            {
-                Debug.LogWarning("FluteTool: No instrument sounds assigned in ToolData.");
-                return;
+                    alignment  = TextAnchor.MiddleCenter,
+                    fontSize   = isHovered || isActive ? 14 : 11,
+                    fontStyle  = FontStyle.Bold
+                };
+                GUI.color = Color.black;
+                GUI.Label(new Rect(sp.x - 20f, sp.y - 10f, 40f, 20f), _noteNames[i], style);
             }
 
-            // Pick the base clip (use the first clip, or randomise if multiple)
-            AudioClip clip = activeData.instrumentSounds.Count == 1
-                ? activeData.instrumentSounds[0]
-                : activeData.instrumentSounds[Random.Range(0, activeData.instrumentSounds.Count)];
-
-            // Pitch ratio: 2^(semitones/12)
-            int semitoneDiff = midiNote - BaseClipMidiNote;
-            float pitchRatio = Mathf.Pow(2f, semitoneDiff / 12f);
-
-            // Apply small random variation from ToolData
-            float variation = Random.Range(-activeData.instrumentPitchVariation, activeData.instrumentPitchVariation);
-            pitchRatio *= Mathf.Pow(2f, variation);
-
-            _audioSource.pitch = pitchRatio;
-            _audioSource.volume = activeData.instrumentVolume;
-            _audioSource.PlayOneShot(clip);
-        }
-
-        // ─── Helpers ──────────────────────────────────────────────────────
-
-        IEnumerator ScaleTo(Transform t, Vector3 target, float duration)
-        {
-            if (t == null) yield break;
-            Vector3 start = t.localScale;
-            float elapsed = 0f;
-            while (elapsed < duration)
+            // Draw connecting ring lines between adjacent dots
+            if (Event.current.type == EventType.Repaint)
             {
-                if (t == null) yield break;
-                elapsed += Time.deltaTime;
-                t.localScale = Vector3.Lerp(start, target, elapsed / duration);
-                yield return null;
-            }
-            if (t != null) t.localScale = target;
-        }
-
-        void Update()
-        {
-            // Keep buttons orbiting the player if they move
-            if (_isOpen && Player != null)
-            {
-                for (int i = 0; i < _noteButtons.Count; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    if (_noteButtons[i] != null)
-                        _noteButtons[i].transform.position = GetButtonPosition(i);
+                    Vector3 a = PlayerCamera.WorldToScreenPoint(_noteWorldPos[i]);
+                    Vector3 b = PlayerCamera.WorldToScreenPoint(_noteWorldPos[(i + 1) % 8]);
+                    a.y = Screen.height - a.y;
+                    b.y = Screen.height - b.y;
+                    if (a.z < 0 || b.z < 0) continue;
+
+                    DrawGUILine(new Vector2(a.x, a.y), new Vector2(b.x, b.y), RingLineColor, 2f);
                 }
             }
+
+            GUI.color = Color.white;
+        }
+
+        // Draws a line in OnGUI using a 1x1 white texture rotated and scaled.
+        void DrawGUILine(Vector2 from, Vector2 to, Color color, float width)
+        {
+            Vector2 dir    = (to - from).normalized;
+            float   length = Vector2.Distance(from, to);
+            float   angle  = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            Vector2 mid    = (from + to) * 0.5f;
+
+            GUIUtility.RotateAroundPivot(angle, mid);
+            GUI.color = color;
+            GUI.DrawTexture(new Rect(mid.x - length * 0.5f, mid.y - width * 0.5f, length, width),
+                            Texture2D.whiteTexture);
+            GUIUtility.RotateAroundPivot(-angle, mid);
         }
 
 #if UNITY_EDITOR
         void OnDrawGizmosSelected()
         {
-            if (Player == null) return;
-            Gizmos.color = new Color(0.4f, 0.8f, 1f, 0.4f);
-            // Draw the ring
-            int segments = 64;
-            Vector3 prev = Player.position + new Vector3(RingRadius, 0f, 0f);
-            for (int i = 1; i <= segments; i++)
-            {
-                float a = i * 2f * Mathf.PI / segments;
-                Vector3 next = Player.position + new Vector3(Mathf.Cos(a) * RingRadius, Mathf.Sin(a) * RingRadius, 0f);
-                Gizmos.DrawLine(prev, next);
-                prev = next;
-            }
-            // Draw note positions
-            Gizmos.color = Color.cyan;
+            Gizmos.color = new Color(0.5f, 0.9f, 1f, 0.25f);
+            Gizmos.DrawWireSphere(transform.position, RingRadius);
             for (int i = 0; i < 8; i++)
-                Gizmos.DrawSphere(GetButtonPosition(i), 0.1f);
+            {
+                float a = (StartAngleDeg - i * 45f) * Mathf.Deg2Rad;
+                Gizmos.DrawWireSphere(
+                    transform.position + new Vector3(Mathf.Cos(a), Mathf.Sin(a)) * RingRadius,
+                    NoteRadius);
+            }
         }
 #endif
     }

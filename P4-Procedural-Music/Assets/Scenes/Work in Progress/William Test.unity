@@ -3317,7 +3317,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 242840640128939848, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1459837516537605292, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3358,6 +3358,10 @@ PrefabInstance:
     - target: {fileID: 1459837516537605292, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3321460352209395124, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
+      propertyPath: MasterVolume
+      value: 0.12
       objectReference: {fileID: 0}
     - target: {fileID: 3321460352209395124, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
       propertyPath: ShowDebugInfo
@@ -4768,7 +4772,7 @@ PrefabInstance:
       objectReference: {fileID: 1654719716}
     - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: toolDatabase.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: 'toolDatabase.Array.data[1]'
@@ -4782,6 +4786,10 @@ PrefabInstance:
       propertyPath: 'toolDatabase.Array.data[3]'
       value: 
       objectReference: {fileID: 11400000, guid: c9c9ac932e3dc48119a052c57cf376e2, type: 2}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: 'toolDatabase.Array.data[4]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 1bfb98d5d171a4ed186f1743632d2a1a, type: 2}
     - target: {fileID: 1106152198793366464, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: m_DefaultActionMap
       value: Player
@@ -4801,6 +4809,94 @@ PrefabInstance:
     - target: {fileID: 4968789950358026991, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: RingRadius
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PlayerCamera
+      value: 
+      objectReference: {fileID: 892208754}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: RingMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: ebc677d3fc1e343d3b5ac3b997b93219, type: 2}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: StateManager
+      value: 
+      objectReference: {fileID: 1605264514}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[0].m_Id
+      value: 4a5b0697-347a-4d1e-8ef8-266e691bcb0a
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[1].m_Id
+      value: 474f0f95-6ccc-4cad-bad8-6f5b8447a88e
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[2].m_Id
+      value: e2e6d506-b9d5-4eb7-bb5f-83d6fc8dee2e
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[3].m_Id
+      value: e2e6d506-b9d5-4eb7-bb5f-83d6fc8dee2e
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[0].m_Name
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[0].m_Path
+      value: <Mouse>/position
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[1].m_Name
+      value: modifier1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[2].m_Name
+      value: binding
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[3].m_Name
+      value: binding
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[0].m_Flags
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[1].m_Flags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[2].m_Flags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[3].m_Flags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[0].m_Action
+      value: FlutePoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[1].m_Action
+      value: FlutePoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[2].m_Action
+      value: FlutePoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360917103592190494, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: PointAction.m_SingletonActionBindings.Array.data[3].m_Action
+      value: FlutePoint
       objectReference: {fileID: 0}
     - target: {fileID: 5913942603858231884, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: magnetRadius
@@ -6439,63 +6535,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2083750496}
   m_CullTransparentMesh: 1
---- !u!1001 &648314632006746295
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2536657806629531061, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_Name
-      value: SpriteRenderer
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 287.43637
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -311.26465
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3055607243459537306, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 526bcfde4451947de9c391268b1301e5, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -6515,4 +6554,3 @@ SceneRoots:
   - {fileID: 615905826}
   - {fileID: 416664755}
   - {fileID: 1093400978}
-  - {fileID: 648314632006746295}

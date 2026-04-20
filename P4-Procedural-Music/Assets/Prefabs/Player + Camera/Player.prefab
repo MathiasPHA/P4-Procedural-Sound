@@ -490,7 +490,6 @@ MonoBehaviour:
   minLightIntensity: 0.1
   wrongToolFeedback: {fileID: 0}
   fluteTool: {fileID: 5360917103592190494}
-  instrumentAudioSource: {fileID: 0}
 --- !u!82 &-1374152125123140291
 AudioSource:
   m_ObjectHideFlags: 0
@@ -831,14 +830,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 403bd4e1c08c042568a5813ef44ccce8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Tools.FluteTool
-  FluteData: {fileID: 11400000, guid: 1bfb98d5d171a4ed186f1743632d2a1a, type: 2}
-  Player: {fileID: 6496137450566507929}
-  NoteButtonPrefab: {fileID: 4968789950358026991}
+  PlayerCamera: {fileID: 0}
+  StateManager: {fileID: 4859490917234952540}
+  PointAction:
+    m_Name: FlutePoint
+    m_Type: 0
+    m_ExpectedControlType: Vector2
+    m_Id: 83c53259-fb40-4885-aa28-f0d09247c936
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 3272fcee-5c4b-4d97-81c5-6cfe47d74c64
+      m_Path: <Mouse>/position
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FlutePoint
+      m_Flags: 0
+    m_Flags: 0
   RingRadius: 1.8
+  NoteRadius: 0.22
   StartAngleDeg: 90
-  BaseClipMidiNote: 60
   BaseOctave: 4
-  AnimationDuration: 0.18
+  RingMaterial: {fileID: 2100000, guid: ebc677d3fc1e343d3b5ac3b997b93219, type: 2}
+  RingLineColor: {r: 0.65, g: 0.88, b: 1, a: 0.45}
+  NoteIdleColor: {r: 0.8, g: 0.93, b: 1, a: 0.8}
+  NoteHoverColor: {r: 1, g: 1, b: 0.65, a: 1}
+  NotePlayingColor: {r: 0.45, g: 1, b: 0.7, a: 1}
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0
