@@ -41,12 +41,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8031143485192898488}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa36e6443b1e47143af019dc7a328a0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DayNightMaster
-  dayLengthMinutes: 5
+  dayLengthMinutes: 10
   currentTime: 0
 --- !u!114 &7230665982664784449
 MonoBehaviour:
