@@ -9,7 +9,6 @@ public class TradeUI : MonoBehaviour
 
     [Header("UI References")]
     public GameObject tradePanel;
-    public TextMeshProUGUI titleText;
     public Transform offerContainer;
     public GameObject tradeSlotPrefab;
 
@@ -36,7 +35,6 @@ public class TradeUI : MonoBehaviour
     public void OpenTrade(GnomeInteractable gnome)
     {
         currentGnome = gnome;
-        titleText.text = gnome.gnomeName;
         PopulateOffers(gnome.tradeOffers);
         tradePanel.SetActive(true);
         gnome.StartTalking();
