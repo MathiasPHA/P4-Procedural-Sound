@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 8882316064892624553}
   - component: {fileID: 4198672553676086458}
   - component: {fileID: 5437731071293162191}
+  - component: {fileID: 4168091981284686830}
   m_Layer: 10
   m_Name: DogPrefab
   m_TagString: Untagged
@@ -259,3 +260,18 @@ MonoBehaviour:
   shakeDuration: 0.15
   flashColor: {r: 0.8627452, g: 0.1921569, b: 0.1960784, a: 1}
   flashDuration: 0.1
+--- !u!114 &4168091981284686830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7533120962837240174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 784ca5647b832f843b6e34524a14be3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobInteractable
+  actionVerb: Attack!
+  interactRange: 0
+  promptOffset: {x: 0, y: 1.2}

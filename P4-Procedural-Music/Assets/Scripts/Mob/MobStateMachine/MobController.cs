@@ -142,6 +142,11 @@ namespace MobSystem
 
             PackCoordinator = GetComponent<MobPackCoordinator>();
             if (PackCoordinator == null) PackCoordinator = gameObject.AddComponent<MobPackCoordinator>();
+
+            // Ensure MobInteractable exists for click-to-attack
+            var interactable = GetComponent<MobInteractable>();
+            if (interactable == null) interactable = gameObject.AddComponent<MobInteractable>();
+            interactable.Configure(this);
         }
 
         private void Start()
