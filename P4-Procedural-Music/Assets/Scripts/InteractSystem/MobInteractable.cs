@@ -34,13 +34,13 @@ namespace MobSystem
         }
 
         /// <summary>
-        /// Configure the interactable from MobData. Called by MobController.
+        /// Set the mob reference. Called by MobController.
+        /// Action verb and interact range are set in the inspector on the prefab,
+        /// same as HarvestInteractable on trees.
         /// </summary>
         public void Configure(MobController mob)
         {
             _mob = mob;
-            SetActionVerb("Attack");
-            SetInteractRange(30f);
         }
 
         public override void Interact(PlayerStateManager player)
