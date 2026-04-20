@@ -8,7 +8,11 @@ public class GnomeInteractable : Interactable
 
     private Animator anim;
 
-    void Awake() => anim = GetComponent<Animator>();
+    void Awake()
+    {
+        // TryGetComponent won't throw if Animator is missing
+        TryGetComponent(out anim);
+    }
 
     public override void Interact(PlayerStateManager player)
     {
