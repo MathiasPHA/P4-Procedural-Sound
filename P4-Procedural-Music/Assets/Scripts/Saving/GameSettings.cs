@@ -145,6 +145,14 @@ public class GameSettings : MonoBehaviour
     {
         worldName = world;
         seed = gameSeed;
+
+        // Persistent singletons survive scene loads, which means they also survive
+        // returning to the main menu. Reset their "already loaded" flags here so the
+        // next scene load hydrates them from the new save's files instead of keeping
+        // values from the previous run.
+        if (DayNightMaster.Instance != null)
+            DayNightMaster.Instance.ResetLoadState();
+
         SceneManager.LoadScene(gameSceneName);
     }
 
