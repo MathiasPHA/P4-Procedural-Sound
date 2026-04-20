@@ -36,13 +36,13 @@ MonoBehaviour:
   attackRange: 20
   attackDamage: 17
   attackCooldown: 5
-  happinessPenalty: 0.093
-  attackWindupDuration: 0.5
-  attackStrikeDuration: 0.25
+  happinessPenalty: 0.09
+  attackWindupDuration: 0.75
+  attackStrikeDuration: 0.186
   attackRecoveryDuration: 1
   attackAimLockRatio: 0.5
-  attackHitboxOffset: 8
-  attackHitboxRadius: 7
+  attackHitboxOffset: 3
+  attackHitboxRadius: 3
   attackLungeSpeed: 80
   searchDuration: 12
   searchRadius: 40
