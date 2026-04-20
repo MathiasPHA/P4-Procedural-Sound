@@ -67,6 +67,9 @@ public class ComfortInfluenceSource : MonoBehaviour, IComfortInfluence
     /// <summary>Change whether distance falloff is used.</summary>
     public void SetUseFalloff(bool value) => useFalloff = value;
 
+    /// <summary>Change the display name at runtime (for debug GUI identification).</summary>
+    public void SetInfluenceName(string name) => influenceName = name;
+
     // ── Editor Gizmo ──
 
     private void OnDrawGizmosSelected()
