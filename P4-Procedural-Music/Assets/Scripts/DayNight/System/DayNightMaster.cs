@@ -22,6 +22,7 @@ public class DayNightMaster : MonoBehaviour
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(gameObject);   // ← add this
     }
 
     void Update()

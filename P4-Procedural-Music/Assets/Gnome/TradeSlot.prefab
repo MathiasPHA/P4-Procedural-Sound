@@ -173,7 +173,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 39.293518, y: -402.3916}
+  m_AnchoredPosition: {x: -11, y: -169}
   m_SizeDelta: {x: 100, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7802761807589920263
@@ -816,4 +816,3 @@ MonoBehaviour:
   costText: {fileID: 2130370621005542001}
   rewardText: {fileID: 6974927155418054435}
   tradeButton: {fileID: 4080083894315036237}
-  lockedOverlay: {fileID: 0}
