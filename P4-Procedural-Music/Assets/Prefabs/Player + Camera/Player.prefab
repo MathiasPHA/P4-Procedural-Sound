@@ -996,7 +996,7 @@ MonoBehaviour:
   drainPerSecond: 0.0005
   satiatedThreshold: 0.7
   hungryThreshold: 0.3
-  wellFedMoodRate: 0.03
+  wellFedMoodRate: 0.04
   starvingMoodRate: 0.08
   showDebugGUI: 0
 --- !u!114 &4590042985337584114
