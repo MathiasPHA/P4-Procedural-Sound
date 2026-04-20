@@ -5,13 +5,14 @@ public class GnomeInteractable : MonoBehaviour
     public string gnomeName = "Gnome Merchant";
     public TradeOffer[] tradeOffers;
     private float interactRange = 3f;
+    private Animator anim;
+
+    void Awake() => anim = GetComponent<Animator>();
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(1)) // Right-click
-        {
+        if (Input.GetMouseButtonDown(1))
             TryInteract();
-        }
     }
 
     void TryInteract()
@@ -31,4 +32,7 @@ public class GnomeInteractable : MonoBehaviour
             }
         }
     }
+
+    public void StartTalking() => anim?.SetBool("isTalking", true);
+    public void StopTalking() => anim?.SetBool("isTalking", false);
 }

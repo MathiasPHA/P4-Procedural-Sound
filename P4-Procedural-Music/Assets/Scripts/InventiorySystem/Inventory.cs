@@ -13,6 +13,7 @@ namespace InventorySystem.Data
     /// </summary>
     public class Inventory
     {
+        public static Inventory Instance;
         public const int DefaultSlotCount = 32;
         public const int HotbarSize = 8;
 
