@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using InventorySystem.Data;
+using InventorySystem.Building;
 
 namespace InventorySystem.Crafting
 {
@@ -8,6 +9,11 @@ namespace InventorySystem.Crafting
     /// Abstract base for crafting stations.
     /// Handles the shared logic: recipe filtering, material checks,
     /// recipe discovery, and ingredient consumption.
+    ///
+    /// If a recipe's result is a Buildable item, crafting enters placement
+    /// mode instead of adding the item to inventory. This applies to ALL
+    /// stations — HandCraft, BuildHammer, Workbench, etc. — so structures
+    /// like campfires can be built from hand-crafting without needing a hammer.
     /// 
     /// Concrete stations (Workbench, CookingStation, BuildHammer)
     /// inherit from this and override only what's unique.
@@ -105,21 +111,26 @@ namespace InventorySystem.Crafting
         }
 
         /// <summary>
-        /// Default crafting: consume ingredients, add result to inventory.
-        /// Override in subclasses for different behaviour (e.g. BuildHammer
-        /// enters placement mode instead of adding to inventory).
+        /// Craft a recipe. If the result is a Buildable item, enters placement
+        /// mode via PlacementSystem (ingredients consumed on actual placement).
+        /// Otherwise, consumes ingredients immediately and adds result to inventory.
         /// </summary>
         public virtual bool Craft(Recipe recipe, Inventory inventory)
         {
             if (!CanCraft(recipe, inventory)) return false;
 
-            // Consume ingredients
+            // ── Buildable results → placement mode (no immediate consumption) ──
+            if (recipe.result.category == ItemCategory.Buildable)
+            {
+                return CraftBuildable(recipe, inventory);
+            }
+
+            // ── Normal crafting: consume ingredients, produce result ──
             foreach (var req in recipe.ingredients)
             {
                 inventory.RemoveItem(req.item.id, req.amount);
             }
 
-            // Produce result
             int overflow = inventory.AddItem(recipe.result, recipe.resultAmount);
 
             if (overflow > 0)
@@ -132,6 +143,32 @@ namespace InventorySystem.Crafting
 
             OnCraftSuccess(recipe, inventory);
             return true;
+        }
+
+        /// <summary>
+        /// Routes a Buildable recipe to PlacementSystem for ghost placement.
+        /// Ingredients are NOT consumed here — PlacementSystem consumes them
+        /// when the player actually clicks to place the structure.
+        /// </summary>
+        private bool CraftBuildable(Recipe recipe, Inventory inventory)
+        {
+            var placement = PlacementSystem.Instance;
+            if (placement == null)
+            {
+                Debug.LogError("[BaseCraftingStation] PlacementSystem.Instance is null — " +
+                               "cannot enter placement mode.");
+                return false;
+            }
+
+            bool started = placement.BeginPlacementFromRecipe(recipe);
+
+            if (started)
+            {
+                Debug.Log($"[Crafting] Entering placement mode for {recipe.result.displayName}");
+                OnCraftSuccess(recipe, inventory);
+            }
+
+            return started;
         }
 
         /// <summary>

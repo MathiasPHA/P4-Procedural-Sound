@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 public class GnomeInteractable : MonoBehaviour
 {
@@ -36,3 +36,4 @@ public class GnomeInteractable : MonoBehaviour
     public void StartTalking() => anim?.SetBool("isTalking", true);
     public void StopTalking() => anim?.SetBool("isTalking", false);
 }
+*/
