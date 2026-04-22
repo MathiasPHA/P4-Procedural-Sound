@@ -17,6 +17,10 @@ namespace ProceduralTerrain
         public float posX;
         public float posY;
 
+        [Tooltip("Optional serialized per-instance state (e.g. campfire fuel). " +
+                 "Empty string for stateless structures. Written/read via IPersistentStructureState.")]
+        public string stateJson = "";
+
         public StructureSaveData() { }
 
         public StructureSaveData(string itemId, Vector3 worldPos)
@@ -24,6 +28,14 @@ namespace ProceduralTerrain
             this.itemId = itemId;
             this.posX = worldPos.x;
             this.posY = worldPos.y;
+        }
+
+        public StructureSaveData(string itemId, Vector3 worldPos, string stateJson)
+        {
+            this.itemId = itemId;
+            this.posX = worldPos.x;
+            this.posY = worldPos.y;
+            this.stateJson = stateJson ?? "";
         }
 
         public Vector3 GetPosition() => new Vector3(posX, posY, 0f);

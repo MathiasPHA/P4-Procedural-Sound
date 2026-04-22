@@ -244,6 +244,16 @@ namespace ProceduralTerrain
             structure.sourceData = placeableData;
             structure.wasSaveLoaded = true; // Flag so it doesn't re-register
 
+            // Restore optional per-instance runtime state (campfire fuel, etc.)
+            // Runs after Awake but before the first Start/Update, so the
+            // structure boots directly into its saved state.
+            if (!string.IsNullOrEmpty(data.stateJson))
+            {
+                var persistent = go.GetComponent<IPersistentStructureState>();
+                if (persistent != null)
+                    persistent.DeserializeState(data.stateJson);
+            }
+
             _activeStructures[chunkCoord].Add(structure);
         }
 
@@ -281,9 +291,17 @@ namespace ProceduralTerrain
                 foreach (var s in liveList)
                 {
                     if (s.sourceData == null || s.sourceData.item == null) continue;
+
+                    // Capture optional per-instance runtime state (campfire fuel, etc.)
+                    string stateJson = "";
+                    var persistent = s.GetComponent<IPersistentStructureState>();
+                    if (persistent != null)
+                        stateJson = persistent.SerializeState() ?? "";
+
                     saveEntries.Add(new StructureSaveData(
                         s.sourceData.item.id,
-                        s.transform.position
+                        s.transform.position,
+                        stateJson
                     ));
                 }
 
