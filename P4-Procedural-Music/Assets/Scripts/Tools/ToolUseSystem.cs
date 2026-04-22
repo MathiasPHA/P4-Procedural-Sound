@@ -47,8 +47,9 @@ namespace InventorySystem.Tools
         [Header("Wrong Tool Feedback")]
         [SerializeField] private ResponseOptions wrongToolFeedback;
 
-        [Header("Instrument Audio")]
-        [SerializeField] private AudioSource instrumentAudioSource;
+        [Header("Flute / Instrument")]
+        [Tooltip("FluteTool component on the player. Handles the note ring and synth playback. Auto-found if not assigned.")]
+        [SerializeField] private FluteTool fluteTool;
 
         private void Start()
         {
@@ -87,15 +88,10 @@ namespace InventorySystem.Tools
                 interactionDetector = GetComponent<InteractionDetector>();
             }
 
-            if (instrumentAudioSource == null)
-            {
-                instrumentAudioSource = GetComponent<AudioSource>();
-                if (instrumentAudioSource == null)
-                    instrumentAudioSource = gameObject.AddComponent<AudioSource>();
-            }
-
-            instrumentAudioSource.playOnAwake = false;
-            instrumentAudioSource.spatialBlend = 0f;
+            if (fluteTool == null)
+                fluteTool = GetComponent<FluteTool>();
+            if (fluteTool == null)
+                fluteTool = FindFirstObjectByType<FluteTool>();
 
             if (wrongToolFeedback == null)
                 wrongToolFeedback = GetComponentInChildren<ResponseOptions>(true);
@@ -151,6 +147,7 @@ namespace InventorySystem.Tools
 
         private void OnEquippedChanged(int equippedSlotIndex)
         {
+            fluteTool?.ForceClose();
             var item = _inventory.EquippedItem;
             Debug.Log($"[ToolUseSystem] OnEquippedChanged fired — slot={equippedSlotIndex}, item={item?.Data?.id ?? "none"}");
 
@@ -194,28 +191,28 @@ namespace InventorySystem.Tools
 
         // ───────────── Input System Callbacks ─────────────
 
-        private void OnAttack(InputValue value)
-        {
-            if (!value.isPressed) return;
-            if (_cooldownTimer > 0f) return;
-            if (PauseManager.isPaused) return;
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+private void OnAttack(InputValue value)
+{
+    if (!value.isPressed) return;
+    if (_cooldownTimer > 0f) return;
+    if (PauseManager.isPaused) return;
+    if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
-            // ── Interaction priority: if hovering an interactable, walk to it ──
-            if (interactionDetector != null && interactionDetector.CurrentTarget != null)
-            {
-                var target = interactionDetector.CurrentTarget;
-                playerStateManager.moveToInteractState.SetTarget(target);
-                playerStateManager.SwitchState(playerStateManager.moveToInteractState);
-                return;
-            }
+    // ── Instrument check FIRST — before interaction target ──
+    if (TryPlayInstrument()) return;
 
-            if (TryPlayInstrument()) return;
+    // ── Interaction priority ──
+    if (interactionDetector != null && interactionDetector.CurrentTarget != null)
+    {
+        var target = interactionDetector.CurrentTarget;
+        playerStateManager.moveToInteractState.SetTarget(target);
+        playerStateManager.SwitchState(playerStateManager.moveToInteractState);
+        return;
+    }
 
-            // ── Otherwise: existing tool/combat logic ──
-            if (TryHitMob()) return;
-            TryUseTool();
-        }
+    if (TryHitMob()) return;
+    TryUseTool();
+}
 
         private void OnUseItem(InputValue value)
         {
@@ -448,35 +445,21 @@ namespace InventorySystem.Tools
 
         private bool TryPlayInstrument()
         {
-            if (_equippedToolData == null || !_equippedToolData.isInstrument)
-                return false;
-
+            if (_equippedToolData == null || !_equippedToolData.isInstrument) return false;
             return TryPlayInstrument(_equippedToolData);
         }
 
         private bool TryPlayInstrument(ToolData toolData)
         {
-            if (toolData == null || !toolData.isInstrument)
-                return false;
+            if (toolData == null || !toolData.isInstrument) return false;
 
-            if (instrumentAudioSource == null)
-                return false;
-
-            if (toolData.instrumentSounds == null || toolData.instrumentSounds.Count == 0)
+            if (fluteTool == null)
             {
-                Debug.LogWarning($"[ToolUseSystem] '{toolData.item?.id ?? "Unknown"}' is marked as an instrument but has no instrument sounds assigned.");
-                _cooldownTimer = toolData.cooldown;
-                return true;
+                Debug.LogWarning("[ToolUseSystem] isInstrument=true but no FluteTool found on player.");
+                return false;
             }
 
-            AudioClip clip = toolData.instrumentSounds[Random.Range(0, toolData.instrumentSounds.Count)];
-            if (clip != null)
-            {
-                instrumentAudioSource.pitch = 1f + Random.Range(-toolData.instrumentPitchVariation, toolData.instrumentPitchVariation);
-                instrumentAudioSource.PlayOneShot(clip, toolData.instrumentVolume);
-            }
-
-            _cooldownTimer = toolData.cooldown;
+            fluteTool.OnFluteUsed();
             return true;
         }
 
