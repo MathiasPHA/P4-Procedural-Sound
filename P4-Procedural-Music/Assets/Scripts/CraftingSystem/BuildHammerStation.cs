@@ -1,14 +1,16 @@
 using UnityEngine;
 using InventorySystem.Data;
-using InventorySystem.Building;
 
 namespace InventorySystem.Crafting
 {
     /// <summary>
     /// Crafting station for the Build Hammer.
-    /// Instead of consuming ingredients and producing an item,
-    /// Craft() hands the recipe to PlacementSystem for ghost placement.
-    /// Ingredients are consumed only when the player actually places the structure.
+    /// All recipes assigned to this station should have Buildable results,
+    /// which the base class automatically routes to PlacementSystem.
+    ///
+    /// This station simply provides a filtered recipe list and auto-discovery.
+    /// The actual placement logic lives in BaseCraftingStation.CraftBuildable()
+    /// and PlacementSystem.BeginPlacementFromRecipe().
     ///
     /// SETUP:
     ///   1. Create a persistent GameObject (e.g. "BuildHammerStation")
@@ -22,7 +24,7 @@ namespace InventorySystem.Crafting
     /// RECIPE CONVENTION:
     ///   - stationType = BuildHammer
     ///   - ingredients  = raw materials (wood, stone, etc.)
-    ///   - result       = the Buildable ItemData (used only for icon/name display
+    ///   - result       = the Buildable ItemData (used for icon/name display
     ///                     and to look up PlaceableData — never added to inventory)
     /// </summary>
     public class BuildHammerStation : BaseCraftingStation
@@ -40,40 +42,10 @@ namespace InventorySystem.Crafting
                 ForceDiscoverAll();
         }
 
-        /// <summary>
-        /// Override: don't consume ingredients or produce an item.
-        /// Instead, tell PlacementSystem to begin recipe-driven placement.
-        /// Ingredients are consumed at actual placement time.
-        /// </summary>
-        public override bool Craft(Recipe recipe, Inventory inventory)
-        {
-            if (recipe == null || recipe.result == null) return false;
-
-            // Verify the player can afford it (visual check — placement will re-check)
-            if (!CanCraft(recipe, inventory)) return false;
-
-            // Hand off to PlacementSystem
-            var placement = PlacementSystem.Instance;
-            if (placement == null)
-            {
-                Debug.LogError("[BuildHammerStation] PlacementSystem.Instance is null!");
-                return false;
-            }
-
-            bool started = placement.BeginPlacementFromRecipe(recipe);
-
-            if (started)
-                OnCraftSuccess(recipe, inventory);
-
-            return started;
-        }
-
         protected override void OnCraftSuccess(Recipe recipe, Inventory inventory)
         {
-            Debug.Log($"[BuildHammer] Entering placement mode for {recipe.result.displayName}");
+            Debug.Log($"[BuildHammer] Placed {recipe.result.displayName}");
         }
-
-        // -----------------------------------------------------------------
 
         private void ForceDiscoverAll()
         {

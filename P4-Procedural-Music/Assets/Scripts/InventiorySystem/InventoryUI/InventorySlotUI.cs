@@ -72,7 +72,7 @@ namespace InventorySystem.UI
                 iconImage.preserveAspect = true;
             }
 
-           // Force durability bar to bottom-anchored filled bar
+            // Force durability bar to bottom-anchored filled bar
             if (durabilityBar != null)
             {
                 durabilityBar.type = Image.Type.Filled;
@@ -183,6 +183,13 @@ namespace InventorySystem.UI
 
                 if (showDurability)
                 {
+                    // Re-assert fill mode every refresh — defends against prefab drift,
+                    // Unity resetting serialized values, or the bar reference being
+                    // silently reassigned to a differently-configured Image.
+                    durabilityBar.type       = Image.Type.Filled;
+                    durabilityBar.fillMethod = Image.FillMethod.Horizontal;
+                    durabilityBar.fillOrigin = (int)Image.OriginHorizontal.Left;
+
                     durabilityBar.fillAmount = slot.Instance.DurabilityNormalized;
                     durabilityBar.color = Color.Lerp(Color.red, Color.green,
                         slot.Instance.DurabilityNormalized);
