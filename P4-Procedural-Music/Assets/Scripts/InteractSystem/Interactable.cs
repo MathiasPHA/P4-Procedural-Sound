@@ -31,6 +31,12 @@ namespace InteractionSystem
         /// <summary>World position where the prompt UI should appear.</summary>
         public Vector3 PromptPosition => transform.position + (Vector3)promptOffset;
 
+        /// <summary>Change the action verb at runtime (e.g. MobInteractable sets "Attack").</summary>
+        public void SetActionVerb(string verb) => actionVerb = verb;
+
+        /// <summary>Change the interact range at runtime.</summary>
+        public void SetInteractRange(float range) => interactRange = Mathf.Max(0f, range);
+
         /// <summary>
         /// Called when the player arrives in range and completes the interaction.
         /// Implement per-type logic (pickup, harvest, open UI, etc.).

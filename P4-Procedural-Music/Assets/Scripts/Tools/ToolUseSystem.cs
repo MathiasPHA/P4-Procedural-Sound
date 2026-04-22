@@ -191,28 +191,28 @@ namespace InventorySystem.Tools
 
         // ───────────── Input System Callbacks ─────────────
 
-private void OnAttack(InputValue value)
-{
-    if (!value.isPressed) return;
-    if (_cooldownTimer > 0f) return;
-    if (PauseManager.isPaused) return;
-    if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+        private void OnAttack(InputValue value)
+        {
+            if (!value.isPressed) return;
+            if (_cooldownTimer > 0f) return;
+            if (PauseManager.isPaused) return;
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
-    // ── Instrument check FIRST — before interaction target ──
-    if (TryPlayInstrument()) return;
+            // ── Instrument check FIRST — before interaction target ──
+            if (TryPlayInstrument()) return;
 
-    // ── Interaction priority ──
-    if (interactionDetector != null && interactionDetector.CurrentTarget != null)
-    {
-        var target = interactionDetector.CurrentTarget;
-        playerStateManager.moveToInteractState.SetTarget(target);
-        playerStateManager.SwitchState(playerStateManager.moveToInteractState);
-        return;
-    }
+            // ── Interaction priority ──
+            if (interactionDetector != null && interactionDetector.CurrentTarget != null)
+            {
+                var target = interactionDetector.CurrentTarget;
+                playerStateManager.moveToInteractState.SetTarget(target);
+                playerStateManager.SwitchState(playerStateManager.moveToInteractState);
+                return;
+            }
 
-    if (TryHitMob()) return;
-    TryUseTool();
-}
+            if (TryHitMob()) return;
+            TryUseTool();
+        }
 
         private void OnUseItem(InputValue value)
         {
@@ -274,14 +274,30 @@ private void OnAttack(InputValue value)
             var mob = hit.GetComponent<MobController>();
             if (mob == null) return false;
 
+            AttackMob(mob);
+            return true;
+        }
+
+        /// <summary>
+        /// Attack a specific mob using the equipped tool (or bare hands).
+        /// Called by TryHitMob (swing in facing direction) and
+        /// MobInteractable.Interact (click-to-walk-and-attack).
+        /// Handles animation, damage, durability, and cooldown.
+        /// </summary>
+        public void AttackMob(MobController mob)
+        {
+            if (mob == null || mob.CurrentHealth <= 0) return;
+            if (_cooldownTimer > 0f) return;
+
             var equippedInstance = _inventory != null ? _inventory.EquippedItem : null;
             ToolData toolData = null;
 
             if (equippedInstance != null && equippedInstance.Data.category == ItemCategory.Tool)
                 _toolLookup.TryGetValue(equippedInstance.Data.id, out toolData);
 
+            // Don't attack with instruments
             if (toolData != null && toolData.isInstrument)
-                return false;
+                return;
 
             if (toolData != null)
             {
@@ -311,8 +327,6 @@ private void OnAttack(InputValue value)
                 mob.TakeDamage(handMobDamage, transform.position);
                 _cooldownTimer = handMobCooldown;
             }
-
-            return true;
         }
 
         // ───────────── Resource Harvesting ─────────────
@@ -490,5 +504,5 @@ private void OnAttack(InputValue value)
         }
 #endif
     }
-    
+
 }

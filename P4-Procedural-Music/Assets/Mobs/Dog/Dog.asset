@@ -30,20 +30,20 @@ MonoBehaviour:
   avoidanceWeight: 1.5
   wanderStrength: 0.5
   fleeSpeedMultiplier: 1.8
-  fleeDistance: 40
+  fleeDistance: 120
   fleeHealthThreshold: 0.2
-  aggroRange: 40
-  attackRange: 20
-  attackDamage: 17
-  attackCooldown: 5
-  happinessPenalty: 0.09
+  aggroRange: 50
+  attackRange: 35
+  happinessPenalty: 0.05
+  threatComfortValue: 0.31
+  threatRadius: 20
   attackWindupDuration: 0.75
-  attackStrikeDuration: 0.186
-  attackRecoveryDuration: 1
+  attackStrikeDuration: 0.256
+  attackRecoveryDuration: 1.5
   attackAimLockRatio: 0.5
-  attackHitboxOffset: 3
-  attackHitboxRadius: 3
-  attackLungeSpeed: 80
+  attackHitboxOffset: 2
+  attackHitboxRadius: 2.5
+  attackLungeSpeed: 120
   searchDuration: 12
   searchRadius: 40
   roamRadius: 30
@@ -62,7 +62,9 @@ MonoBehaviour:
   hitVolume: 0.5
   deathSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
   deathVolume: 0.5
-  attackSound: {fileID: 0}
-  attackVolume: 0.5
+  attackWindupSound: {fileID: 0}
+  attackWindupVolume: 0.5
+  attackStrikeSound: {fileID: 0}
+  attackStrikeVolume: 0.5
   lootTable: {fileID: 0}
   worldItemPrefab: {fileID: 0}

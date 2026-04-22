@@ -125,6 +125,7 @@ namespace MobSystem
 
         private MobBaseState _currentState;
         private Vector2 _facingDirection = Vector2.down;
+        private ComfortInfluenceSource _comfortSource;
 
         // ───────────────────────── Lifecycle ─────────────────────────
 
@@ -141,6 +142,11 @@ namespace MobSystem
 
             PackCoordinator = GetComponent<MobPackCoordinator>();
             if (PackCoordinator == null) PackCoordinator = gameObject.AddComponent<MobPackCoordinator>();
+
+            // Ensure MobInteractable exists for click-to-attack
+            var interactable = GetComponent<MobInteractable>();
+            if (interactable == null) interactable = gameObject.AddComponent<MobInteractable>();
+            interactable.Configure(this);
         }
 
         private void Start()
@@ -163,6 +169,7 @@ namespace MobSystem
             ConfigureSteering();
             ConfigureAwareness();
             ConfigurePackCoordinator();
+            ConfigureComfortSource();
 
             // Start in roaming
             _currentState = roamingState;
@@ -222,16 +229,73 @@ namespace MobSystem
             );
         }
 
+        private void ConfigureComfortSource()
+        {
+            _comfortSource = GetComponent<ComfortInfluenceSource>();
+            if (_comfortSource == null)
+                _comfortSource = gameObject.AddComponent<ComfortInfluenceSource>();
+
+            _comfortSource.SetInfluenceName($"Mob:{data.displayName}");
+            _comfortSource.SetUseFalloff(true);
+
+            // Start with roaming profile
+            UpdateComfortThreat(roamingState);
+        }
+
         // ───────────────────────── State Machine ─────────────────────────
 
         /// <summary>
         /// Transition to a new state. Calls ExitState on the old, EnterState on the new.
+        /// Updates the comfort threat aura to match the new state.
         /// </summary>
         public void SwitchState(MobBaseState newState)
         {
             _currentState?.ExitState(this);
             _currentState = newState;
             _currentState.EnterState(this);
+
+            UpdateComfortThreat(newState);
+        }
+
+        /// <summary>
+        /// Sync the ComfortInfluenceSource to the current AI state.
+        /// All states use the configured threatComfortValue directly —
+        /// only weight and radius change per state.
+        /// </summary>
+        private void UpdateComfortThreat(MobBaseState state)
+        {
+            if (_comfortSource == null || data == null) return;
+
+            _comfortSource.SetComfortValue(data.threatComfortValue);
+
+            switch (state)
+            {
+                case RoamingState:
+                    _comfortSource.SetWeight(0.3f);
+                    _comfortSource.SetRadius(data.threatRadius * 0.5f);
+                    break;
+
+                case AlertState:
+                    _comfortSource.SetWeight(0.5f);
+                    _comfortSource.SetRadius(data.threatRadius * 0.75f);
+                    break;
+
+                case ChasingState:
+                case SearchingState:
+                    _comfortSource.SetWeight(0.8f);
+                    _comfortSource.SetRadius(data.threatRadius);
+                    break;
+
+                case AttackingState:
+                    _comfortSource.SetWeight(1f);
+                    _comfortSource.SetRadius(data.threatRadius);
+                    break;
+
+                case FleeingState:
+                    _comfortSource.SetWeight(0.3f);
+                    _comfortSource.SetRadius(data.threatRadius * 0.3f);
+                    break;
+            }
         }
 
         // ───────────────────────── Combat ─────────────────────────
@@ -320,6 +384,14 @@ namespace MobSystem
 
         private void Die(Vector3 attackerPosition)
         {
+            // Exit current state so it can clean up (stop velocity, etc.)
+            _currentState?.ExitState(this);
+            _currentState = null;
+
+            // Release combat music if it was overridden by chasing/attacking
+            if (GameStateManager.Instance != null && GameStateManager.Instance.IsManualOverride)
+                GameStateManager.Instance.ReturnToAuto();
+
             // Play death sound
             if (data.deathSound != null)
                 PlaySound(data.deathSound, data.deathVolume);
