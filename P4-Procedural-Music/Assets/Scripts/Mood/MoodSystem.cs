@@ -34,8 +34,9 @@ public class MoodSystem : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float startingMood = 0.6f;
 
-    [Tooltip("Smoothing applied to mood changes so they don't feel jerky")]
-    [SerializeField] private float moodSmoothTime = 1.0f;
+    [Tooltip("Smoothing applied to mood changes so they don't feel jerky. " +
+             "Lower = snappier mood response (0.2-0.4 feels responsive, 1.0 feels laggy).")]
+    [SerializeField] private float moodSmoothTime = 0.4f;
 
     [Tooltip("Clamp the total modifier sum so no single frame has an extreme swing. " +
              "Units per second — 0.2 means mood can shift at most 20% per second.")]
@@ -50,7 +51,7 @@ public class MoodSystem : MonoBehaviour
     [SerializeField] private float neutralThreshold   = 0.40f;
     [Tooltip("Mood >= this = Uneasy")]
     [SerializeField] private float uneasyThreshold    = 0.20f;
-    // Below uneasy = Miserable (implicit)
+    // Below uneasy = Horrified (implicit)
 
     [Header("Debug")]
     [SerializeField] private bool showDebugGUI = false;
@@ -77,6 +78,9 @@ public class MoodSystem : MonoBehaviour
 
     /// <summary>Number of registered modifiers.</summary>
     public int ModifierCount => modifiers.Count;
+
+    /// <summary>Read-only access to registered modifiers (for debug HUDs).</summary>
+    public IReadOnlyList<IMoodModifier> Modifiers => modifiers;
 
     /// <summary>
     /// Register a mood modifier. Call from OnEnable or Start.

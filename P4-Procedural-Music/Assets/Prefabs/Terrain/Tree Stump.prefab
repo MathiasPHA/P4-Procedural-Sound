@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 702353380118031419}
   - component: {fileID: 2421190477471066192}
   - component: {fileID: 3810362152200292771}
-  m_Layer: 0
+  - component: {fileID: 6776591974306299187}
+  - component: {fileID: 3569090700284772056}
+  m_Layer: 7
   m_Name: Tree Stump
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,3 +140,46 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 5.116152, y: 2.5495548}
   m_EdgeRadius: 0
+--- !u!114 &6776591974306299187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8946883767646482474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e705c3c11fe791646b2de9f5b4e9df68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Harvesting.HarvestableResource
+  requiredToolType: 1
+  maxHealth: 10
+  dropItem: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
+  dropAmount: 3
+  directToInventory: 0
+  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
+  hitSound: {fileID: 8300000, guid: f2664fd48b2be884c9d14902040c0ecf, type: 3}
+  hitVolume: 0.5
+  depleteSound: {fileID: 0}
+  depleteVolume: 0.5
+  pickupSound: {fileID: 0}
+  pickupVolume: 0.5
+  pitchVariation: 0.15
+  depletedPrefab: {fileID: 0}
+  shakeIntensity: 0.85
+  shakeDuration: 0.15
+--- !u!114 &3569090700284772056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8946883767646482474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67fd9947978f09b41955464610c850f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
+  actionVerb: Chop
+  interactRange: 5.6
+  promptOffset: {x: 0, y: 1.2}

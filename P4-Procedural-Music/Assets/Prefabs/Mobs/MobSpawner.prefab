@@ -49,6 +49,12 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 512
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 192
+  mobMask:
+    serializedVersion: 2
+    m_Bits: 1024
   timeReference: {fileID: 0}
   cullDistance: 210
   cullInterval: 5

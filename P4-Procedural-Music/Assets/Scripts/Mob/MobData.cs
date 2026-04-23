@@ -142,20 +142,26 @@ namespace MobSystem.Data
         [Min(2f)]
         public float attackRange = 24f;
 
-        [Tooltip("Damage dealt per attack. Ignored for Passive mobs.")]
-        [Min(0)]
-        public int attackDamage = 3;
+        [Tooltip("Happiness lost when a strike lands (0–1 scale). " +
+                 "This is the primary 'damage' — a wolf might take 0.08 per hit, " +
+                 "a shadow 0.15. At 0.7 starting happiness, ~9 wolf hits = death.")]
+        [Range(0.01f, 0.3f)]
+        public float happinessPenalty = 0.08f;
 
-        [Tooltip("Seconds between attacks while in Attacking state. Ignored for Passive mobs.")]
-        [Min(0.1f)]
-        public float attackCooldown = 1.5f;
+        // ───────────────────────── Comfort Threat ─────────────────────────
 
-        [Tooltip("Happiness lost per hit (0–1 scale). Overrides the generic damage calculation " +
-                 "in PlayerHealth when set above 0. Use this to make specific mobs feel more or " +
-                 "less threatening independent of their combat damage. " +
-                 "0 = use default formula (attackDamage × PlayerHealth.happinessLossPerDamage).")]
-        [Range(0f, 0.5f)]
-        public float happinessPenalty = 0f;
+        [Header("Comfort Threat")]
+        [Tooltip("Comfort value this mob's presence pushes toward (0–1). " +
+                 "Below 0.5 = threatening (wolves, shadows). " +
+                 "At 0.5 = neutral (no passive effect). " +
+                 "Above 0.5 = comforting (friendly NPCs, if you ever add them).")]
+        [Range(0f, 1f)]
+        public float threatComfortValue = 0.3f;
+
+        [Tooltip("Radius (units) of the passive comfort aura. " +
+                 "Players inside this radius have their comfort affected.")]
+        [Min(20f)]
+        public float threatRadius = 300f;
 
         // ───────────────────────── Attack Phases ─────────────────────────
 
@@ -282,10 +288,15 @@ namespace MobSystem.Data
         [Range(0f, 1f)]
         public float deathVolume = 0.5f;
 
-        [Tooltip("Sound played when a hostile mob starts attacking.")]
-        public AudioClip attackSound;
+        [Tooltip("Telegraph sound at the start of an attack windup (growl, hiss, weapon raise).")]
+        public AudioClip attackWindupSound;
         [Range(0f, 1f)]
-        public float attackVolume = 0.5f;
+        public float attackWindupVolume = 0.5f;
+
+        [Tooltip("Impact sound when the strike lands or swings (bite, slash, thud).")]
+        public AudioClip attackStrikeSound;
+        [Range(0f, 1f)]
+        public float attackStrikeVolume = 0.5f;
 
         // ───────────────────────── Drops ─────────────────────────
 

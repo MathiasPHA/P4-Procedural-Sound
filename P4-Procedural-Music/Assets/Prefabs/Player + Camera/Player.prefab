@@ -506,6 +506,7 @@ GameObject:
   - component: {fileID: 5049543004024689469}
   - component: {fileID: 7459378878359402859}
   - component: {fileID: 4590042985337584114}
+  - component: {fileID: 5360917103592190494}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -673,14 +674,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f2e6fc4287afe094d966b8c9e5adad27, type: 2}
   - {fileID: 11400000, guid: badd5b9eb08a47d4f98a5d4c7934daa2, type: 2}
   - {fileID: 11400000, guid: c9c9ac932e3dc48119a052c57cf376e2, type: 2}
+  - {fileID: 11400000, guid: 1bfb98d5d171a4ed186f1743632d2a1a, type: 2}
   resourceLayer:
     serializedVersion: 2
     m_Bits: 448
   mobLayer:
     serializedVersion: 2
     m_Bits: 1024
-  interactRadius: 6.8
-  detectionOffset: {x: 0, y: -2.77}
+  interactRadius: 6.92
+  detectionOffset: {x: 0, y: 0}
   handDamage: 1
   handCooldown: 0.1
   handMobDamage: 1
@@ -688,6 +690,7 @@ MonoBehaviour:
   maxLightIntensity: 1
   minLightIntensity: 0.1
   wrongToolFeedback: {fileID: 4571617195942478625}
+  fluteTool: {fileID: 5360917103592190494}
 --- !u!82 &-1374152125123140291
 AudioSource:
   m_ObjectHideFlags: 0
@@ -822,7 +825,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 545da188e22263e4d85d721361666671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobSystem.PlayerHealth
-  combatDrainPerSecond: 0.03
+  combatDrainPerSecond: 0
   happinessLossPerDamage: 0.025
   minimumHitPenalty: 3
   hitSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
@@ -861,7 +864,7 @@ MonoBehaviour:
   staticOrderOffset: 0
   randomOffsetRange: 0.01
   referenceMode: 0
-  feetCollider: {fileID: 0}
+  feetCollider: {fileID: 3512293782812170453}
   customPivot: {fileID: 0}
   additionalYOffset: 0
   unifySortingLayer: 1
@@ -934,7 +937,7 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   interactableLayer:
     serializedVersion: 2
-    m_Bits: 448
+    m_Bits: 1472
   detectionRadius: 1
 --- !u!114 &7540234304014331847
 MonoBehaviour:
@@ -949,12 +952,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoodSystem
   startingMood: 0.6
-  moodSmoothTime: 1
+  moodSmoothTime: 0.2
   maxMoodRatePerSecond: 0.2
-  elatedThreshold: 0.8
+  elatedThreshold: 0.9
   contentThreshold: 0.6
   neutralThreshold: 0.4
-  uneasyThreshold: 0.2
+  uneasyThreshold: 0.1
   showDebugGUI: 0
 --- !u!114 &5049543004024689469
 MonoBehaviour:
@@ -969,11 +972,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HappinessSystem
   startingHappiness: 0.7
-  elatedRate: 0.1
-  contentRate: 0.04
+  elatedRate: 0.0125
+  contentRate: 0.005
   neutralRate: 0
-  uneasyRate: 0.04
-  miserableRate: 0.1
+  uneasyRate: 0.005
+  miserableRate: 0.0125
   smoothTime: 0.4
   deathEnabled: 0
   showDebugGUI: 0
@@ -990,10 +993,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HungerSystem
   startingHunger: 0.8
-  drainPerSecond: 0.005
+  drainPerSecond: 0.0005
   satiatedThreshold: 0.7
   hungryThreshold: 0.3
-  wellFedMoodRate: 0.03
+  wellFedMoodRate: 0.04
   starvingMoodRate: 0.08
   showDebugGUI: 0
 --- !u!114 &4590042985337584114
@@ -1009,13 +1012,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComfortSystem
   dayBaselineComfort: 0.55
-  nightBaselineComfort: 0.3
+  nightBaselineComfort: 0.25
   comfortSmoothTime: 0.3
-  maxMoodContribution: 0.06
+  comfortNeutralPoint: 0.55
+  maxPositiveMoodRate: 0.06
+  maxNegativeMoodRate: 0.08
   dayStartHour: 6
   dayEndHour: 18
   transitionHours: 2
   showDebugGUI: 0
+--- !u!114 &5360917103592190494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403bd4e1c08c042568a5813ef44ccce8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Tools.FluteTool
+  PlayerCamera: {fileID: 0}
+  StateManager: {fileID: 4859490917234952540}
+  PointAction:
+    m_Name: FlutePoint
+    m_Type: 0
+    m_ExpectedControlType: Vector2
+    m_Id: 83c53259-fb40-4885-aa28-f0d09247c936
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 3272fcee-5c4b-4d97-81c5-6cfe47d74c64
+      m_Path: <Mouse>/position
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FlutePoint
+      m_Flags: 0
+    m_Flags: 0
+  RingRadius: 1.8
+  NoteRadius: 0.35
+  StartAngleDeg: 90
+  BaseOctave: 4
+  DuckedVolume: 0.35
+  RingLineColor: {r: 0.65, g: 0.88, b: 1, a: 0.45}
+  NoteIdleColor: {r: 0.8, g: 0.93, b: 1, a: 0.8}
+  NoteHoverColor: {r: 1, g: 1, b: 0.65, a: 1}
+  NotePlayingColor: {r: 0.45, g: 1, b: 0.7, a: 1}
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0

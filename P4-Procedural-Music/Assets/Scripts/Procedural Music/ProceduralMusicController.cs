@@ -382,6 +382,7 @@ namespace ProceduralMusic.Bridge
         private VoiceManager _subDroneVoices;
         private VoiceManager _shriekVoices;
         private VoiceManager _banjoVoices;
+        private VoiceManager _playerFluteVoices; // 11 — dedicated voice for player flute tool
 
         private float _sampleRate;
         private bool _initialized;
@@ -421,6 +422,7 @@ namespace ProceduralMusic.Bridge
             _subDroneVoices = _mixer.AddInstrument(InstrumentPreset.SubDrone); // 8
             _shriekVoices = _mixer.AddInstrument(InstrumentPreset.ShriekString); // 9
             _banjoVoices = _mixer.AddInstrument(InstrumentPreset.Banjo);       // 10
+            _playerFluteVoices = _mixer.AddInstrument(InstrumentPreset.LegatoMelody); // 11 — player flute (separate from composition engine lead)
 
             // Initialize composition engine
             Key startKey = new Key(StartingKey, StartingMode);
@@ -678,6 +680,16 @@ namespace ProceduralMusic.Bridge
         public CompositionEngine GetComposer()
         {
             return _composer;
+        }
+
+        /// <summary>
+        /// Get the dedicated VoiceManager for the player's flute instrument.
+        /// This is separate from the composition engine's lead voice (index 1)
+        /// so both can play simultaneously without stealing each other's notes.
+        /// </summary>
+        public VoiceManager GetPlayerFluteVoice()
+        {
+            return _playerFluteVoices;
         }
 
         // ─────────────────────────────────────────────

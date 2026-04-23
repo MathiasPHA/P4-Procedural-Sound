@@ -1,21 +1,27 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using InventorySystem.Data;
+using InventorySystem.Crafting;
 
 namespace InventorySystem.Building
 {
     /// <summary>
-    /// Handles structure placement when the player equips a Buildable item.
+    /// Handles structure placement via the Build Hammer's recipe-driven flow.
     ///
-    /// Flow:
-    ///   1. Player equips a Buildable from the hotbar
+    /// Flow (recipe-driven — Build Hammer):
+    ///   1. BuildHammerStation.Craft() calls BeginPlacementFromRecipe(recipe)
     ///   2. A translucent ghost preview appears at the cursor, snapped to grid
     ///   3. Ghost is green when placement is valid, red when invalid
-    ///   4. Left-click places the structure (consumes one from inventory)
-    ///   5. If the player has more, stays in placement mode for rapid building
-    ///   6. Right-click or Escape cancels and unequips
+    ///   4. Left-click places the structure (consumes recipe ingredients)
+    ///   5. If the player still has enough materials, stays in placement mode
+    ///   6. Right-click or Escape cancels — fires OnPlacementCancelled so the
+    ///      build menu can re-open
+    ///
+    /// The legacy item-driven path (equip a Buildable directly) is deprecated.
+    /// All structures now go through the hammer.
     ///
     /// Validation checks:
     ///   - Position overlaps valid ground (groundLayer)
@@ -79,6 +85,10 @@ namespace InventorySystem.Building
         private PlaceableData _activePlaceable;
         private int _equippedSlotIndex = -1;
 
+        // Recipe-driven placement (Build Hammer)
+        private Recipe _activeRecipe;
+        private bool _isRecipeDriven;
+
         // Ghost preview
         private GameObject _ghost;
         private SpriteRenderer[] _ghostRenderers;
@@ -87,6 +97,18 @@ namespace InventorySystem.Building
 
         /// <summary>True while the player is in placement mode.</summary>
         public bool IsPlacing => _isPlacing;
+
+        /// <summary>
+        /// Fired when the player cancels recipe-driven placement (right-click/Escape).
+        /// BuildHammerEquipHandler or CraftingUIManager can listen to re-open the build menu.
+        /// </summary>
+        public event Action OnPlacementCancelled;
+
+        /// <summary>
+        /// Fired when placement finishes because the player ran out of materials.
+        /// Allows the build menu to re-open automatically.
+        /// </summary>
+        public event Action OnPlacementFinished;
 
         public static PlacementSystem Instance { get; private set; }
 
@@ -104,10 +126,13 @@ namespace InventorySystem.Building
         // Lifecycle
         // =====================================================================
 
-        private void Start()
+        private void Awake()
         {
             Instance = this;
+        }
 
+        private void Start()
+        {
             if (mainCamera == null)
                 mainCamera = Camera.main;
 
@@ -125,25 +150,14 @@ namespace InventorySystem.Building
                 _lookup[p.item.id] = p;
             }
 
-            // Subscribe to inventory (InventoryBootstrap runs at -50, so PlayerInventory exists by now)
             _inventory = InventoryBootstrap.PlayerInventory;
 
-            if (_inventory != null)
-            {
-                _inventory.OnEquippedChanged += OnEquippedChanged;
-            }
-            else
-            {
-                Debug.LogWarning("[PlacementSystem] PlayerInventory not available. " +
-                                 "Ensure InventoryBootstrap runs before PlacementSystem (execution order -50).");
-            }
+            // NOTE: Legacy Buildable-equip path removed (Path A — all structures go through Build Hammer).
+            // OnEquippedChanged subscription is no longer needed for placement.
         }
 
         private void OnDestroy()
         {
-            if (_inventory != null)
-                _inventory.OnEquippedChanged -= OnEquippedChanged;
-
             DestroyGhost();
         }
 
@@ -166,55 +180,59 @@ namespace InventorySystem.Building
         }
 
         // =====================================================================
-        // Equip handler — enters/exits placement mode
+        // Recipe-driven placement (Build Hammer)
         // =====================================================================
 
-        private void OnEquippedChanged(int slotIndex)
+        /// <summary>
+        /// Enter placement mode for a structure defined by a recipe.
+        /// Called by BuildHammerStation.Craft().
+        /// Ingredients are NOT consumed here — they're consumed on actual placement.
+        /// </summary>
+        /// <returns>True if placement mode was entered successfully.</returns>
+        public bool BeginPlacementFromRecipe(Recipe recipe)
         {
-            // If already placing, clean up the ghost
+            if (recipe == null || recipe.result == null)
+            {
+                Debug.LogWarning("[PlacementSystem] BeginPlacementFromRecipe — null recipe or result.");
+                return false;
+            }
+
+            // Look up the PlaceableData via the recipe's result item
+            if (!_lookup.TryGetValue(recipe.result.id, out var placeable))
+            {
+                Debug.LogWarning($"[PlacementSystem] No PlaceableData found for '{recipe.result.id}'. " +
+                                 "Make sure it's in the Placeables list.");
+                return false;
+            }
+
+            if (placeable.prefab == null)
+            {
+                Debug.LogWarning($"[PlacementSystem] PlaceableData for '{recipe.result.id}' has no prefab.");
+                return false;
+            }
+
+            // Clean up any existing placement
             if (_isPlacing)
             {
                 DestroyGhost();
                 _isPlacing = false;
             }
 
-            // Nothing equipped
-            if (slotIndex < 0)
-            {
-                _activePlaceable = null;
-                _equippedSlotIndex = -1;
-                return;
-            }
+            _activeRecipe = recipe;
+            _isRecipeDriven = true;
+            _activePlaceable = placeable;
+            _equippedSlotIndex = -1; // Not relevant for recipe-driven
 
-            var slot = _inventory.Slots[slotIndex];
+            CreateGhost();
+            _isPlacing = true;
 
-            // Only activate for buildable items that have placement data
-            if (slot.IsEmpty || slot.ItemData.category != ItemCategory.Buildable)
-            {
-                _activePlaceable = null;
-                _equippedSlotIndex = -1;
-                return;
-            }
-
-            if (_lookup.TryGetValue(slot.ItemData.id, out var data))
-            {
-                _activePlaceable = data;
-                _equippedSlotIndex = slotIndex;
-                EnterPlacement();
-            }
+            Debug.Log($"[PlacementSystem] Recipe-driven placement started for '{recipe.result.displayName}'");
+            return true;
         }
 
         // =====================================================================
         // Placement mode
         // =====================================================================
-
-        private void EnterPlacement()
-        {
-            if (_activePlaceable == null || _activePlaceable.prefab == null) return;
-
-            CreateGhost();
-            _isPlacing = true;
-        }
 
         private void ExitPlacement()
         {
@@ -224,28 +242,48 @@ namespace InventorySystem.Building
             DestroyGhost();
             _activePlaceable = null;
             _equippedSlotIndex = -1;
+
+            bool wasRecipeDriven = _isRecipeDriven;
+            _activeRecipe = null;
+            _isRecipeDriven = false;
+
+            // Let listeners know so the build menu can re-open
+            if (wasRecipeDriven)
+                OnPlacementFinished?.Invoke();
         }
 
         /// <summary>
-        /// Cancel placement and unequip the buildable item.
+        /// Cancel placement. For recipe-driven: don't unequip the hammer,
+        /// just exit placement and notify listeners (build menu re-opens).
         /// </summary>
         private void CancelPlacement()
         {
             if (!_isPlacing) return;
 
+            bool wasRecipeDriven = _isRecipeDriven;
             int slotToUnequip = _equippedSlotIndex;
 
-            // Set _isPlacing false BEFORE calling UseSlot to prevent
-            // OnEquippedChanged from double-cleaning-up
+            // Clean up state BEFORE any callbacks
             _isPlacing = false;
             DestroyGhost();
             _activePlaceable = null;
             _equippedSlotIndex = -1;
+            _activeRecipe = null;
+            _isRecipeDriven = false;
 
-            // Unequip the item (UseSlot toggles equip off for Buildables)
-            if (slotToUnequip >= 0 && _inventory.EquippedSlotIndex == slotToUnequip)
+            if (wasRecipeDriven)
             {
-                _inventory.UseSlot(slotToUnequip);
+                // Hammer stays equipped — fire event so build menu re-opens
+                OnPlacementCancelled?.Invoke();
+            }
+            else
+            {
+                // Legacy path: unequip the buildable item
+                if (slotToUnequip >= 0 && _inventory != null &&
+                    _inventory.EquippedSlotIndex == slotToUnequip)
+                {
+                    _inventory.UseSlot(slotToUnequip);
+                }
             }
         }
 
@@ -263,7 +301,7 @@ namespace InventorySystem.Building
                 col.enabled = false;
 
             foreach (var rb in _ghost.GetComponentsInChildren<Rigidbody2D>())
-                Object.Destroy(rb);
+                Destroy(rb);
 
             // Disable all MonoBehaviours (PlacedStructure, ComfortInfluenceSource, etc.)
             foreach (var mb in _ghost.GetComponentsInChildren<MonoBehaviour>())
@@ -374,6 +412,34 @@ namespace InventorySystem.Building
 
         private void PlaceStructure()
         {
+            if (_isRecipeDriven)
+            {
+                PlaceFromRecipe();
+            }
+            else
+            {
+                PlaceFromInventoryItem();
+            }
+        }
+
+        /// <summary>
+        /// Recipe-driven placement: consume recipe ingredients, spawn structure.
+        /// </summary>
+        private void PlaceFromRecipe()
+        {
+            if (_activeRecipe == null || _inventory == null) return;
+
+            // Double-check the player can still afford the recipe
+            foreach (var req in _activeRecipe.ingredients)
+            {
+                if (!_inventory.HasItem(req.item.id, req.amount))
+                {
+                    Debug.LogWarning("[PlacementSystem] Can't afford recipe — ingredients changed mid-placement.");
+                    ExitPlacement();
+                    return;
+                }
+            }
+
             // Spawn the real structure
             var go = Instantiate(
                 _activePlaceable.prefab,
@@ -381,22 +447,17 @@ namespace InventorySystem.Building
                 Quaternion.identity
             );
 
-            // Play placement audio
-            PlayPLacementSound();
+            PlayPlacementSound();
 
             // Tag it with a reference back to its data
             var structure = go.GetComponent<PlacedStructure>();
             if (structure != null)
-            {
                 structure.sourceData = _activePlaceable;
-            }
 
             // Register with save system
             var structureManager = ProceduralTerrain.PlacedStructureManager.Instance;
             if (structureManager != null && structure != null)
-            {
                 structureManager.RegisterStructure(structure);
-            }
 
             // Track placement in dungeon for delta save
             if (DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon)
@@ -406,21 +467,66 @@ namespace InventorySystem.Building
                     go.transform.position);
             }
 
-            // Consume one from inventory
-            _inventory.RemoveItem(_activePlaceable.item.id, 1);
-
-            // If the player has more, stay in placement mode for rapid building
-            if (_inventory.HasItem(_activePlaceable.item.id, 1))
+            // Consume recipe ingredients
+            foreach (var req in _activeRecipe.ingredients)
             {
-                // Keep placing
-                return;
+                _inventory.RemoveItem(req.item.id, req.amount);
             }
 
-            // Out of items — exit placement mode
+            // If the player can still afford another, stay in placement mode
+            bool canAffordAnother = true;
+            foreach (var req in _activeRecipe.ingredients)
+            {
+                if (!_inventory.HasItem(req.item.id, req.amount))
+                {
+                    canAffordAnother = false;
+                    break;
+                }
+            }
+
+            if (!canAffordAnother)
+                ExitPlacement();
+        }
+
+        /// <summary>
+        /// Legacy item-driven placement: consume one Buildable from inventory.
+        /// Kept for backwards compatibility but no longer the primary path.
+        /// </summary>
+        private void PlaceFromInventoryItem()
+        {
+            // Spawn the real structure
+            var go = Instantiate(
+                _activePlaceable.prefab,
+                new Vector3(_currentGridPos.x, _currentGridPos.y, 0f),
+                Quaternion.identity
+            );
+
+            PlayPlacementSound();
+
+            var structure = go.GetComponent<PlacedStructure>();
+            if (structure != null)
+                structure.sourceData = _activePlaceable;
+
+            var structureManager = ProceduralTerrain.PlacedStructureManager.Instance;
+            if (structureManager != null && structure != null)
+                structureManager.RegisterStructure(structure);
+
+            if (DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon)
+            {
+                DungeonDeltaTracker.RecordPlacement(
+                    _activePlaceable.item.id,
+                    go.transform.position);
+            }
+
+            _inventory.RemoveItem(_activePlaceable.item.id, 1);
+
+            if (_inventory.HasItem(_activePlaceable.item.id, 1))
+                return;
+
             ExitPlacement();
         }
 
-        private void PlayPLacementSound()
+        private void PlayPlacementSound()
         {
             if (audioSource != null && placementSound != null)
             {
@@ -442,7 +548,6 @@ namespace InventorySystem.Building
                 (_activePlaceable?.gridCells.y ?? 1) * gridSize
             );
 
-            // Draw placement footprint
             Gizmos.color = _currentValid
                 ? new Color(0.2f, 1f, 0.2f, 0.3f)
                 : new Color(1f, 0.2f, 0.2f, 0.3f);

@@ -21,6 +21,13 @@ public interface IComfortInfluence
     /// <summary>Display name for debug UI.</summary>
     string Name { get; }
 
+    /// <summary>
+    /// If true (default), comfort strength falls off with distance (quadratic).
+    /// If false, full comfort is applied anywhere inside the radius (flat zone).
+    /// Campfires use flat; structures typically use falloff.
+    /// </summary>
+    bool UseFalloff { get; }
+
     /// <summary>Return true if the underlying GameObject has been destroyed.</summary>
     bool IsDestroyed { get; }
 }
