@@ -66,11 +66,13 @@ namespace ProceduralTerrain
                 if (p == null || p.item == null) continue;
                 _placeableLookup[p.item.id] = p;
             }
-        }
 
-        private void Start()
-        {
-            // Load all saved structure data into memory
+            // Load saved structure data into memory in Awake (not Start) so that
+            // ChunkManager.Start can call LoadStructuresForChunk for the initial
+            // chunks around the player and actually find data. Otherwise, on a
+            // scene reload (e.g. exiting a cave), the initial chunks finish
+            // loading before _savedStructures is populated and silently spawn
+            // nothing — only later chunks (loaded by walking) get their structures.
             LoadAllFromDisk();
         }
 
@@ -179,6 +181,41 @@ namespace ProceduralTerrain
         }
 
         /// <summary>
+        /// Update the saved state JSON for a single structure, in-place.
+        /// Called by stateful structures (e.g. CampfireController) from OnDestroy
+        /// so their state survives chunk unload between auto-saves.
+        ///
+        /// Safer than syncing the whole chunk during teardown — only touches the
+        /// one entry, can't clobber sibling structures whose GameObjects may
+        /// already be destroyed.
+        /// </summary>
+        public void UpdateStructureState(PlacedStructure structure, string stateJson)
+        {
+            if (structure == null || structure.sourceData == null || structure.sourceData.item == null)
+                return;
+
+            Vector2Int chunkCoord = GetChunkCoord(structure.transform.position);
+            if (!_savedStructures.TryGetValue(chunkCoord, out var saveList))
+                return;
+
+            string itemId = structure.sourceData.item.id;
+            Vector3 pos = structure.transform.position;
+
+            // Find the matching save entry by id + position and update its stateJson.
+            for (int i = 0; i < saveList.Count; i++)
+            {
+                var entry = saveList[i];
+                if (entry.itemId == itemId &&
+                    Mathf.Approximately(entry.posX, pos.x) &&
+                    Mathf.Approximately(entry.posY, pos.y))
+                {
+                    entry.stateJson = stateJson ?? "";
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
         /// Save all structure data to disk.
         /// Called by SaveSystemManager during auto-save / quit / pause.
         /// </summary>
@@ -244,6 +281,16 @@ namespace ProceduralTerrain
             structure.sourceData = placeableData;
             structure.wasSaveLoaded = true; // Flag so it doesn't re-register
 
+            // Restore optional per-instance runtime state (campfire fuel, etc.)
+            // Runs after Awake but before the first Start, so the structure boots
+            // directly into its saved state — no extinguish-sound flash on load.
+            if (!string.IsNullOrEmpty(data.stateJson))
+            {
+                var persistent = go.GetComponent<IPersistentStructureState>();
+                if (persistent != null)
+                    persistent.DeserializeState(data.stateJson);
+            }
+
             _activeStructures[chunkCoord].Add(structure);
         }
 
@@ -281,9 +328,17 @@ namespace ProceduralTerrain
                 foreach (var s in liveList)
                 {
                     if (s.sourceData == null || s.sourceData.item == null) continue;
+
+                    // Capture optional per-instance runtime state (campfire fuel, etc.)
+                    string stateJson = "";
+                    var persistent = s.GetComponent<IPersistentStructureState>();
+                    if (persistent != null)
+                        stateJson = persistent.SerializeState() ?? "";
+
                     saveEntries.Add(new StructureSaveData(
                         s.sourceData.item.id,
-                        s.transform.position
+                        s.transform.position,
+                        stateJson
                     ));
                 }
 
