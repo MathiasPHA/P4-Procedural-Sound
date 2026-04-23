@@ -111,6 +111,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8781945158064195290}
     m_Modifications:
+    - target: {fileID: 924936816296885620, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1266937967330519900, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4097649421943274822, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5630964879714554849, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
       propertyPath: comfySprite
       value: 
@@ -131,6 +143,10 @@ PrefabInstance:
       propertyPath: veryComfySprite
       value: 
       objectReference: {fileID: 21300000, guid: b179557e175f0494ab26477132fa1d29, type: 3}
+    - target: {fileID: 6088085385196870917, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7194471966198297126, guid: e926a5224e454af41b30068ec469e9b0, type: 3}
       propertyPath: m_Name
       value: HappinessMeter
@@ -253,6 +269,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2475039021538155465, guid: 7084ad7950b4bd24393e24b2f6f1986c, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2994092254748825865, guid: 7084ad7950b4bd24393e24b2f6f1986c, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6593606805071586699, guid: 7084ad7950b4bd24393e24b2f6f1986c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -331,6 +355,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6593606805071586699, guid: 7084ad7950b4bd24393e24b2f6f1986c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8226014797119474358, guid: 7084ad7950b4bd24393e24b2f6f1986c, type: 3}
+      propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

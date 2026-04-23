@@ -1,38 +1,26 @@
-// using UnityEngine;
+using UnityEngine;
+using InteractionSystem;
 
-// public class GnomeInteractable : MonoBehaviour
-// {
-//     public string gnomeName = "Gnome Merchant";
-//     public TradeOffer[] tradeOffers;
-//     private float interactRange = 3f;
-//     private Animator anim;
+public class GnomeInteractable : Interactable
+{
+    public string gnomeName = "";
+    public TradeOffer[] tradeOffers;
 
-//     void Awake() => anim = GetComponent<Animator>();
+    private Animator anim;
 
-//     void Update()
-//     {
-//         if (Input.GetMouseButtonDown(1))
-//             TryInteract();
-//     }
+    void Awake()
+    {
+        // TryGetComponent won't throw if Animator is missing
+        TryGetComponent(out anim);
+    }
 
-//     void TryInteract()
-//     {
-//         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-//         if (Physics.Raycast(ray, out RaycastHit hit, 10f))
-//         {
-//             if (hit.collider.gameObject == gameObject)
-//             {
-//                 float dist = Vector3.Distance(
-//                     Camera.main.transform.position,
-//                     transform.position);
-//                 if (dist <= interactRange)
-//                     TradeUI.Instance.OpenTrade(this);
-//                 else
-//                     Debug.Log("Too far away!");
-//             }
-//         }
-//     }
+    public override void Interact(PlayerStateManager player)
+    {
+        TradeUI.Instance.OpenTrade(this);
+    }
 
-//     public void StartTalking() => anim?.SetBool("isTalking", true);
-//     public void StopTalking() => anim?.SetBool("isTalking", false);
-// }
+    public override bool CanInteract() => true;
+
+    public void StartTalking() => anim?.SetBool("isTalking", true);
+    public void StopTalking()  => anim?.SetBool("isTalking", false);
+}

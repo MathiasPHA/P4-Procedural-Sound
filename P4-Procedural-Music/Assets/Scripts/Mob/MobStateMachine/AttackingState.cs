@@ -98,9 +98,9 @@ namespace MobSystem.States
             mob.Steering.Stop();
             mob.AnimationQueue = "AttackWindup";
 
-            // Play attack sound at the start of windup (the "growl" / "hiss")
-            if (mob.Data.attackSound != null)
-                mob.PlaySound(mob.Data.attackSound, mob.Data.attackVolume);
+            // Play windup telegraph sound
+            if (mob.Data.attackWindupSound != null)
+                mob.PlaySound(mob.Data.attackWindupSound, mob.Data.attackWindupVolume);
 
             // Initialise locked direction to current facing (will be updated during tracking)
             _lockedDirection = (mob.Awareness.PlayerTransform != null)
@@ -152,6 +152,10 @@ namespace MobSystem.States
             _phase = Phase.Strike;
             _phaseTimer = mob.Data.attackStrikeDuration;
 
+            // Play strike sound (bite, slash — plays even on miss)
+            if (mob.Data.attackStrikeSound != null)
+                mob.PlaySound(mob.Data.attackStrikeSound, mob.Data.attackStrikeVolume);
+
             mob.AnimationQueue = "Attack";
             mob.FacingDirection = _lockedDirection;
         }
@@ -186,23 +190,20 @@ namespace MobSystem.States
 
             if (hit == null) return;
 
-            // Found the player in the hitbox — apply damage
+            // Found the player in the hitbox — reduce happiness
             _hasStruck = true;
 
-            if (PlayerHealth.Instance != null)
+            if (HappinessSystem.Instance != null)
             {
-                PlayerHealth.Instance.TakeDamage(
-                    mob.Data.attackDamage,
-                    mob.Data.happinessPenalty,
-                    mob.transform.position);
+                HappinessSystem.Instance.AdjustHappiness(-mob.Data.happinessPenalty);
 
                 // Attack makes noise — other mobs hear it
                 mob.Awareness.HearSound(mob.transform.position, 0.2f);
             }
             else
             {
-                Debug.Log($"[MobAttack] {mob.Data.displayName} hits player for " +
-                          $"{mob.Data.attackDamage} damage (no PlayerHealth found)");
+                Debug.Log($"[MobAttack] {mob.Data.displayName} strikes player for " +
+                          $"{mob.Data.happinessPenalty:F2} happiness (no HappinessSystem found)");
             }
         }
 

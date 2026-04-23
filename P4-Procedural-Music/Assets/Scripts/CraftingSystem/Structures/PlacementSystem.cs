@@ -126,10 +126,13 @@ namespace InventorySystem.Building
         // Lifecycle
         // =====================================================================
 
-        private void Start()
+        private void Awake()
         {
             Instance = this;
+        }
 
+        private void Start()
+        {
             if (mainCamera == null)
                 mainCamera = Camera.main;
 
