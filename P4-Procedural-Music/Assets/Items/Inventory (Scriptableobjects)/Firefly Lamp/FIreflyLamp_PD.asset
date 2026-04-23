@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff6c2e07d007c7c48997e48695dd906d, type: 3}
-  m_Name: FIreflyLamp_PD
+  m_Name: FireflyLamp_PD
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlaceableData
   item: {fileID: 11400000, guid: a122730a7bb3b214c9465364a31eba14, type: 2}
   prefab: {fileID: 4573615798231788584, guid: ba3fbc09302d83046956966cb0da53ce, type: 3}

@@ -301,10 +301,13 @@ namespace InventorySystem.Tools
 
             // ── Net: attempt catch instead of dealing damage ──
             if (toolData != null && toolData.toolType == ToolType.Net)
-                return TryCatchMob(mob, toolData, equippedInstance);
+            {
+                TryCatchMob(mob, toolData, equippedInstance);
+                return;
+            }
 
             if (toolData != null)
-            {
+            {   
                 playerStateManager.animationQue = $"Harvest{toolData.toolType}";
                 playerStateManager.StartHarvest();
                 mob.TakeDamage(toolData.damage, transform.position);
