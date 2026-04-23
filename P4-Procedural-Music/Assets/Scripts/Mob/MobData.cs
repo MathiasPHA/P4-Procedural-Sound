@@ -192,6 +192,12 @@ namespace MobSystem.Data
         [Min(2f)]
         public float attackHitboxOffset = 14f;
 
+        [Tooltip("World-space vertical offset (units) applied to the hitbox center. " +
+                 "Use to lift the hitbox toward the visual body when the sprite pivot " +
+                 "is at the feet. Positive = up, negative = down. Independent of facing direction.")]
+        [Range(-20f, 20f)]
+        public float attackHitboxYOffset = 0f;
+
         [Tooltip("Radius (units) of the damage hitbox during the strike phase. " +
                  "Larger = harder to dodge. A player inside this circle when the strike " +
                  "checks will take damage.")]
@@ -203,6 +209,19 @@ namespace MobSystem.Data
                  "backward, since the mob catches up mid-strike.")]
         [Min(0f)]
         public float attackLungeSpeed = 80f;
+
+        [Tooltip("When true, the attack direction snaps to horizontal (left/right only) " +
+                 "regardless of the player's actual position. Use for mobs whose attack " +
+                 "animation only works sideways (e.g. a troll with a side-swing only).")]
+        public bool horizontalAttackOnly = false;
+
+        [Tooltip("Vertical extent (full height, units) of the hitbox when horizontalAttackOnly " +
+                 "is on. Uses OverlapBox instead of OverlapCircle so the hitbox is a flat " +
+                 "horizontal rectangle rather than a vertically-reaching circle. Smaller values " +
+                 "require the player to be more precisely at the mob's y to get hit. " +
+                 "Ignored when horizontalAttackOnly is off.")]
+        [Min(2f)]
+        public float attackHitboxHeight = 10f;
 
         // ───────────────────────── Searching ─────────────────────────
 

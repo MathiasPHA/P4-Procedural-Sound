@@ -513,13 +513,39 @@ namespace MobSystem
                 Gizmos.DrawWireSphere(transform.position, data.attackRange);
             }
 
-            // Attack hitbox (placed in front of mob along facing direction)
-            if (data.HasHostileStates && Application.isPlaying)
+            // Attack hitbox (placed in front of mob along facing direction).
+            // In edit mode FacingDirection has no meaningful runtime value, so
+            // we fall back to Vector2.right just so the gizmo is visible for
+            // tuning attackHitboxOffset / attackHitboxRadius without entering play.
+            //
+            // When horizontalAttackOnly is set, the real attack always snaps
+            // to left/right regardless of the mob's current facing, AND uses
+            // OverlapBox with a reduced vertical extent — so we draw a flat
+            // wire cube here so the gizmo matches what actually deals damage.
+            if (data.HasHostileStates)
             {
-                Vector3 hitboxCenter = transform.position +
-                                       (Vector3)FacingDirection * data.attackHitboxOffset;
+                Vector2 facing = Application.isPlaying ? FacingDirection : Vector2.right;
+
+                if (data.horizontalAttackOnly)
+                    facing = facing.x < 0f ? Vector2.left : Vector2.right;
+
+                Vector3 hitboxCenter = transform.position
+                                       + (Vector3)facing * data.attackHitboxOffset
+                                       + Vector3.up * data.attackHitboxYOffset;
                 Gizmos.color = new Color(1f, 0.3f, 0f, 0.5f);
-                Gizmos.DrawWireSphere(hitboxCenter, data.attackHitboxRadius);
+
+                if (data.horizontalAttackOnly)
+                {
+                    Vector3 boxSize = new Vector3(
+                        data.attackHitboxRadius * 2f,
+                        data.attackHitboxHeight,
+                        0f);
+                    Gizmos.DrawWireCube(hitboxCenter, boxSize);
+                }
+                else
+                {
+                    Gizmos.DrawWireSphere(hitboxCenter, data.attackHitboxRadius);
+                }
 
                 // Line from mob to hitbox center so it's clear where it's aimed
                 Gizmos.color = new Color(1f, 0.3f, 0f, 0.3f);
