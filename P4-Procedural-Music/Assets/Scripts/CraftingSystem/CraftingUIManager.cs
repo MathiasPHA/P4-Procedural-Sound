@@ -77,6 +77,12 @@ namespace InventorySystem.UI
         [Tooltip("Used when the tabs list is empty. Otherwise the first tab's station is the default.")]
         [SerializeField] private BaseCraftingStation handCraftingStation;
 
+        [Header("Inventory UI (for placement sync)")]
+        [Tooltip("Reference to the InventoryUIManager. When a Buildable is crafted, " +
+                 "the inventory panel is closed alongside the crafting panel so the " +
+                 "player has a clear view for placement.")]
+        [SerializeField] private InventoryUIManager inventoryUI;
+
         [Header("Audio")]
         [SerializeField] private AudioClip craftSound;
         [Range(0f, 1f)]
@@ -346,18 +352,15 @@ namespace InventorySystem.UI
         }
 
         // =====================================================================
-        // PlacementSystem callbacks — re-open after placement
+        // PlacementSystem callbacks
         // =====================================================================
 
         private void OnPlacementEnded()
         {
-            // Re-open the crafting panel on the same tab the player was on
-            // when they clicked Build. This lets them continue placing structures.
-            if (_closedForPlacement)
-            {
-                _closedForPlacement = false;
-                OpenPanel();
-            }
+            // Placement ended (cancelled or out of materials).
+            // The panels stay closed — the player reopens them manually with Tab.
+            // This gives the player a clear view of what they just built.
+            _closedForPlacement = false;
         }
 
         // =====================================================================
@@ -390,7 +393,10 @@ namespace InventorySystem.UI
                 SelectRecipe(_recipeEntries[0].Recipe);
         }
 
-        private void ClosePanel()
+        /// <summary>
+        /// Close the crafting panel. Public so PauseManager can close it on Escape.
+        /// </summary>
+        public void ClosePanel()
         {
             _isOpen = false;
             craftingPanel.SetActive(false);
@@ -529,17 +535,22 @@ namespace InventorySystem.UI
                 if (craftSound != null && _audioSource != null && Time.time >= lastCraftSoundTime + craftSoundCooldown)
                 {
                     lastCraftSoundTime = Time.time;
-                   _audioSource.pitch = 1f + UnityEngine.Random.Range(-craftPitchVariation, craftPitchVariation);
+                    _audioSource.pitch = 1f + UnityEngine.Random.Range(-craftPitchVariation, craftPitchVariation);
                     _audioSource.PlayOneShot(craftSound, craftVolume);
                 }
 
-                // If the result was a Buildable, close the panel for placement.
+                // If the result was a Buildable, close both panels for placement.
                 // PlacementSystem is now in ghost mode. Mark _closedForPlacement
                 // so we re-open on the same tab when placement ends.
                 if (_selectedRecipe.result.category == ItemCategory.Buildable)
                 {
                     _closedForPlacement = true;
                     ClosePanel();
+
+                    // Close the inventory too so the player has a clear view for placement
+                    if (inventoryUI != null && inventoryUI.IsInventoryOpen)
+                        inventoryUI.ToggleInventory();
+
                     return;
                 }
 
