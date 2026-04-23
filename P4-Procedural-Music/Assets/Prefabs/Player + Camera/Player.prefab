@@ -641,6 +641,7 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   placeables:
   - {fileID: 11400000, guid: 9bb0b9522cbff8147af80d40c66aa4bf, type: 2}
+  - {fileID: 11400000, guid: 037e886c19d0c16489492b7d5f1cac1a, type: 2}
   gridSize: 2
   skipGroundCheck: 1
   groundLayer:
@@ -674,6 +675,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f2e6fc4287afe094d966b8c9e5adad27, type: 2}
   - {fileID: 11400000, guid: badd5b9eb08a47d4f98a5d4c7934daa2, type: 2}
   - {fileID: 11400000, guid: c9c9ac932e3dc48119a052c57cf376e2, type: 2}
+  - {fileID: 11400000, guid: ba943e36e971647b891f8c815031b7e5, type: 2}
   resourceLayer:
     serializedVersion: 2
     m_Bits: 448

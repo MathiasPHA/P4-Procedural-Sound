@@ -37,6 +37,13 @@ MonoBehaviour:
   attackDamage: 3
   attackCooldown: 1.5
   happinessPenalty: 0
+  attackWindupDuration: 0.5
+  attackStrikeDuration: 0.25
+  attackRecoveryDuration: 0.4
+  attackAimLockRatio: 0.5
+  attackHitboxOffset: 14
+  attackHitboxRadius: 16
+  attackLungeSpeed: 80
   searchDuration: 4
   searchRadius: 3
   roamRadius: 20
@@ -59,3 +66,5 @@ MonoBehaviour:
   attackVolume: 0.5
   lootTable: {fileID: 0}
   worldItemPrefab: {fileID: 0}
+  isCatchable: 1
+  catchResultItem: {fileID: 11400000, guid: d6752d5d083088e4bb0adbec45fbe74a, type: 2}
