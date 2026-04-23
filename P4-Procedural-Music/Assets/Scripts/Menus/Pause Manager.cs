@@ -1,18 +1,58 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using InventorySystem.Building;
+using InventorySystem.UI;
 
 public class PauseManager : MonoBehaviour
 {
     public static bool isPaused = false;
+
+    [Header("Pause Menus")]
     public GameObject pauseMenuUI;
     public GameObject OptionsUI;
     public GameObject ExitUI;
+
+    [Header("Audio")]
     public MixerVolumeController volumeController;
+
+    [Header("UI Managers (for Escape priority chain)")]
+    [Tooltip("When Escape is pressed and the inventory is open, close it instead of pausing.")]
+    [SerializeField] private InventoryUIManager inventoryUI;
+
+    [Tooltip("When Escape is pressed and the crafting panel is open, close it instead of pausing.")]
+    [SerializeField] private CraftingUIManager craftingUI;
 
     private float[] savedVolumes;
 
+    /// <summary>
+    /// Escape key priority chain:
+    ///   1. If placing a structure  → PlacementSystem cancels placement (we skip pause)
+    ///   2. If inventory/crafting is open → close them (we skip pause)
+    ///   3. Otherwise → toggle pause menu
+    /// </summary>
     private void OnPause(InputValue value)
     {
+        // 1. Placement mode — PlacementSystem.Update() handles Escape itself.
+        //    We just skip pausing so the pause menu doesn't pop up over the ghost.
+        if (PlacementSystem.Instance != null && PlacementSystem.Instance.IsPlacing)
+            return;
+
+        // 2. Inventory/crafting open — close them instead of pausing.
+        bool inventoryOpen = inventoryUI != null && inventoryUI.IsInventoryOpen;
+        bool craftingOpen = craftingUI != null && craftingUI.IsOpen;
+
+        if (inventoryOpen || craftingOpen)
+        {
+            if (inventoryOpen)
+                inventoryUI.ToggleInventory();
+
+            if (craftingOpen)
+                craftingUI.ClosePanel();
+
+            return;
+        }
+
+        // 3. Default — toggle pause
         if (isPaused) Resume();
         else Pause();
     }
