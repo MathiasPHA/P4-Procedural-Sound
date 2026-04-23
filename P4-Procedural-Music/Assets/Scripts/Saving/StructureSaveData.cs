@@ -18,7 +18,7 @@ namespace ProceduralTerrain
         public float posY;
 
         [Tooltip("Optional serialized per-instance state (e.g. campfire fuel). " +
-                 "Empty string for stateless structures. Written/read via IPersistentStructureState.")]
+                 "Empty for stateless structures. Written/read via IPersistentStructureState.")]
         public string stateJson = "";
 
         public StructureSaveData() { }

@@ -67,6 +67,30 @@ public class CampfireController : MonoBehaviour, IPersistentStructureState
         ApplyBurnState(EvaluateBurnState(), instant: true);
     }
 
+    private static bool _isQuitting;
+    private void OnApplicationQuit() => _isQuitting = true;
+
+    /// <summary>
+    /// Push current fuel state up to PlacedStructureManager before being destroyed.
+    /// Catches the chunk-unload case (between auto-saves) so fuel doesn't reset
+    /// when the player walks away and back.
+    ///
+    /// Skipped on application quit — SaveSystemManager.OnApplicationQuit already
+    /// runs a full save, and reaching across singletons during shutdown is fragile.
+    /// </summary>
+    private void OnDestroy()
+    {
+        if (_isQuitting) return;
+
+        var manager = PlacedStructureManager.Instance;
+        if (manager == null) return; // PlacedStructureManager already destroyed (scene unload teardown)
+
+        var ps = GetComponent<InventorySystem.Building.PlacedStructure>();
+        if (ps == null) return;
+
+        manager.UpdateStructureState(ps, SerializeState());
+    }
+
     private void Update()
     {
         ConsumeFuel();
@@ -186,9 +210,9 @@ public class CampfireController : MonoBehaviour, IPersistentStructureState
     }
 
     /// <summary>
-    /// Called by PlacedStructureManager during save. Captures currentFuel;
-    /// burn state is re-derived on load so it stays consistent with thresholds
-    /// even if those thresholds are later retuned in the Inspector.
+    /// Called by PlacedStructureManager during save. Captures currentFuel only;
+    /// burn state is re-derived on load so retuned thresholds in the Inspector
+    /// are respected.
     /// </summary>
     public string SerializeState()
     {
