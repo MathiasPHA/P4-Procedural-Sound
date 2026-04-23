@@ -27,6 +27,10 @@ public class ConsoleProgressBar : MonoBehaviour
     "[===================>] 100%"  // [20]
 };
 
+
+    public Material material;
+
+    [SerializeField] private float progressValue;
     [SerializeField] private string currentProgress;
 
     private FishingV1 fishingScript;
@@ -34,12 +38,16 @@ public class ConsoleProgressBar : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        material = GetComponent<Renderer>().material;
         fishingScript = GameObject.Find("Fish").GetComponent<FishingV1>();
     }
     void Update()
     {
         float points = fishingScript.fishingPoints;
         float target = fishingScript.targetPoints;
+
+        progressValue = (points % target) / target; // Normalize to 0-1 range
+        float progressClamp = Mathf.Clamp01(points / target);
 
         int index = Mathf.Clamp(Mathf.FloorToInt((points / target) * 20f), 0, 20);
 
@@ -48,5 +56,11 @@ public class ConsoleProgressBar : MonoBehaviour
             currentProgress = Progress[index];
             Debug.Log(currentProgress);
         }
+
+        if (fishingScript.fishingTime > 0 && progressClamp <= 1)
+        {
+            material.SetFloat("_Progress", Mathf.Min(progressClamp, 1f));
+        }   
+
     }
 }

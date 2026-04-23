@@ -263,18 +263,16 @@ MonoBehaviour:
   fishingTime: 8
   fishPos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
-  posClamp: 3
   deltaDistance: 0
   canFishMove: 1
   isFishMoving: 0
   fishMoveSpeed: 1.5
   isFishCaught: 0
-  addedToInventory: 0
   fishingPoints: 0
   targetPoints: 0
   initialFishingTime: 0
   tFraction: 0.7
-  dropItem: {fileID: 11400000, guid: c0a6464a70d857447977c8661cfa78cf, type: 2}
+  dropItem: {fileID: 0}
   dropAmount: 1
   pickupSound: {fileID: 0}
   pickupVolume: 0.5

@@ -1,3 +1,5 @@
+using InventorySystem;
+using InventorySystem.Data;
 using UnityEngine;
 
 public class FishingV1 : MonoBehaviour
@@ -10,7 +12,7 @@ public class FishingV1 : MonoBehaviour
     private Vector3 initialFishPos;
     public Vector3 fishPos;
     public Vector3 targetPos;
-    private float posClamp = 3f;
+    [SerializeField] private float posClamp = 3f;
     [SerializeField] private float deltaDistance; // Debugger
 
     [Header("Fish Move")]
@@ -20,10 +22,30 @@ public class FishingV1 : MonoBehaviour
 
     [Header("Fish Catch")]
     public bool isFishCaught = false;
+    public bool addedToInventory = false;
     public float fishingPoints = 0f;
     public float targetPoints;
     [SerializeField] private float initialFishingTime;
     [SerializeField] private float tFraction = 0.7f;
+
+
+
+    [Header("Drops")]
+    [Tooltip("The item dropped when this resource is harvested.")]
+    [SerializeField] private ItemData dropItem;
+
+    [Tooltip("How many items drop when the resource is destroyed.")]
+    [Min(1)][SerializeField] private int dropAmount = 1;
+
+
+    [Tooltip("Sound played when harvesting with directToInventory.")]
+    [SerializeField] private AudioClip pickupSound;
+    [Range(0f, 1f)]
+    [SerializeField] private float pickupVolume = 0.5f;
+    [Tooltip("How much the pitch varies randomly each pickup (e.g. 0.15 = ±15%).")]
+    [Range(0f, 0.5f)]
+    [SerializeField] private float pitchVariation = 0.15f;
+
 
 
     private void OnTriggerStay2D(Collider2D other)
@@ -41,7 +63,7 @@ public class FishingV1 : MonoBehaviour
         FishT = gameObject.transform;
         initialFishPos = FishT.position;
         fishPos = FishT.position;
-
+        addedToInventory = false;
 
 
         // Randomize the fishing time by adding a random value between -2 and 2 seconds
@@ -51,6 +73,7 @@ public class FishingV1 : MonoBehaviour
 
     void Update()
     {
+
         if (fishingTime > 0)
         {
 
@@ -103,9 +126,26 @@ public class FishingV1 : MonoBehaviour
         // Have Hook on fish for 70% of the initial fishing time to catch the fish
         targetPoints = initialFishingTime * tFraction;
 
-        if (fishingPoints >= targetPoints)
+        if (fishingPoints >= targetPoints && !addedToInventory)
         {
             isFishCaught = true;
+            addedToInventory = true;
+
+            // Add straight to player inventory
+            var inventory = InventoryBootstrap.PlayerInventory;
+            if (inventory != null)
+            {
+                int overflow = inventory.AddItem(dropItem, dropAmount);
+                if (overflow > 0)
+                    Debug.LogWarning($"[Harvestable] {overflow}x {dropItem.displayName} didn't fit.");
+            }
+
+            // Play sound with pitch variation (survives Destroy)
+            /* 
+               if (pickupSound != null)
+                   PlaySoundWithPitch(pickupSound, transform.position, pickupVolume);
+            */
+
             Debug.Log("Fish Caught!");
         }
     }
