@@ -49,12 +49,14 @@ namespace InteractionSystem
                 return;
             }
 
-            // Get closest point on the target's collider to walk toward
+            // Walk toward the closest point on the collider (natural path into the object).
+            // Distance check, however, is measured from the InteractCenter so that
+            // interactCenterOffset on the Interactable actually controls where "in range" is.
             Vector2 destination = _targetCollider != null
                 ? _targetCollider.ClosestPoint(player.transform.position)
-                : (Vector2)_target.transform.position;
+                : (Vector2)_target.InteractCenter;
 
-            float distance = Vector2.Distance(player.transform.position, destination);
+            float distance = Vector2.Distance(player.transform.position, _target.InteractCenter);
 
             // Arrived — interact
             if (distance <= _target.InteractRange)

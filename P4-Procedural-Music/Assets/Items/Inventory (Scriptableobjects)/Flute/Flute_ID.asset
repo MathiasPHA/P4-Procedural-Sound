@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Flute
   description: it's a Flute
   loreNote: Plays some sweet note
-  icon: {fileID: 0}
+  icon: {fileID: -6878207050336261975, guid: 530334c2d22584d8f96b561596a882bf, type: 3}
   category: 1
   maxStackSize: 1
   isDroppable: 1
