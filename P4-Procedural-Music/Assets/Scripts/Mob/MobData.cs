@@ -163,6 +163,16 @@ namespace MobSystem.Data
         [Min(20f)]
         public float threatRadius = 300f;
 
+        // ───────────────────────── Hurt ─────────────────────────
+
+        [Header("Hurt")]
+        [Tooltip("Duration (sec) the mob is frozen in place after taking damage. " +
+                 "Freezes movement only — state machine continues ticking, and " +
+                 "mobs already in an attack phase (Windup/Strike/Recovery) are " +
+                 "immune (super armor). Set to 0 to disable hit stun entirely.")]
+        [Range(0f, 1f)]
+        public float hurtStunDuration = 0.3f;
+
         // ───────────────────────── Attack Phases ─────────────────────────
 
         [Header("Attack Phases")]

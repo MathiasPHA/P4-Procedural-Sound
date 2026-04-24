@@ -44,6 +44,20 @@ namespace MobSystem
         [Min(0f)]
         [SerializeField] private float minimumHitPenalty = 0.03f;
 
+        [Header("Hurt Reaction")]
+        [Tooltip("How long (sec) the player is locked in the hurt state after " +
+                 "taking a hit. Movement is frozen and the hurt animation plays. " +
+                 "Set to 0 to disable the hurt state entirely.")]
+        [Min(0f)]
+        [SerializeField] private float hurtStunDuration = 0.3f;
+
+        [Tooltip("How long (sec) the player is invincible after taking a hit. " +
+                 "Usually longer than hurtStunDuration so there's a dodge window " +
+                 "after the stun ends but before the player can be hit again. " +
+                 "Set to 0 to disable i-frames.")]
+        [Min(0f)]
+        [SerializeField] private float iFrameDuration = 0.6f;
+
         [Header("Audio")]
         [Tooltip("Sound played when the player takes a hit from a mob.")]
         [SerializeField] private AudioClip hitSound;
@@ -55,7 +69,12 @@ namespace MobSystem
 
         // Runtime
         private HappinessSystem happinessSystem;
+        private PlayerStateManager playerStateManager;
+        private float _iFrameTimer;
         private bool _inCombat;
+
+        /// <summary>True while the player is in invincibility frames from a recent hit.</summary>
+        public bool IsInvincible => _iFrameTimer > 0f;
 
         private void Awake()
         {
@@ -76,10 +95,20 @@ namespace MobSystem
             if (happinessSystem == null)
                 Debug.LogWarning("[PlayerHealth] No HappinessSystem found! " +
                                  "Mob damage won't affect happiness.");
+
+            // Cache PlayerStateManager so hits can trigger the hurt state
+            playerStateManager = GetComponent<PlayerStateManager>();
+            if (playerStateManager == null)
+                Debug.LogWarning("[PlayerHealth] No PlayerStateManager on this GameObject — " +
+                                 "hurt state won't trigger on hit.");
         }
 
         private void Update()
         {
+            // Tick i-frame timer
+            if (_iFrameTimer > 0f)
+                _iFrameTimer -= Time.deltaTime;
+
             // Check combat state from GameStateManager
             _inCombat = GameStateManager.Instance != null
                      && GameStateManager.Instance.CurrentState == GameMusicState.Combat;
@@ -103,6 +132,13 @@ namespace MobSystem
         /// <param name="attackerPosition">World position of the mob.</param>
         public void TakeDamage(int damage, float happinessPenaltyOverride, Vector3 attackerPosition)
         {
+            // Ignore hits during i-frames
+            if (IsInvincible)
+            {
+                Debug.Log("[PlayerHealth] Hit ignored — invincible.");
+                return;
+            }
+
             if (happinessSystem != null)
             {
                 float loss;
@@ -120,6 +156,17 @@ namespace MobSystem
 
                 Debug.Log($"[PlayerHealth] Hit for {damage} dmg → " +
                           $"-{loss:F3} happiness (now {happinessSystem.Happiness:F2})");
+            }
+
+            // Start i-frames so follow-up hits this frame / next few frames are ignored
+            if (iFrameDuration > 0f)
+                _iFrameTimer = iFrameDuration;
+
+            // Trigger the hurt state so the player freezes and plays the hurt animation.
+            // Skipped if stun is zeroed (designer wants no visible reaction).
+            if (playerStateManager != null && hurtStunDuration > 0f)
+            {
+                playerStateManager.StartHurt(hurtStunDuration);
             }
 
             // Play hit sound

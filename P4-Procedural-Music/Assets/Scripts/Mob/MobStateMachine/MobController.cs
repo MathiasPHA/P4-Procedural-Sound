@@ -68,6 +68,13 @@ namespace MobSystem
         public bool IsProvoked { get; private set; }
 
         /// <summary>
+        /// True while the mob is frozen from a recent hit. Movement is zeroed
+        /// each frame until the stun timer expires. Attack phases bypass this
+        /// (super armor) — see Update().
+        /// </summary>
+        public bool IsHurtStunned => _hurtStunTimer > 0f;
+
+        /// <summary>
         /// Current facing direction — set by states or derived from steering.
         /// MobAnimator reads this for sprite flipping and direction suffixes.
         /// </summary>
@@ -126,6 +133,7 @@ namespace MobSystem
         private MobBaseState _currentState;
         private Vector2 _facingDirection = Vector2.down;
         private ComfortInfluenceSource _comfortSource;
+        private float _hurtStunTimer;
 
         // ───────────────────────── Lifecycle ─────────────────────────
 
@@ -180,12 +188,39 @@ namespace MobSystem
         {
             if (data == null) return;
 
+            // Tick hit stun timer
+            if (_hurtStunTimer > 0f)
+                _hurtStunTimer -= Time.deltaTime;
+
             // Update facing from steering when moving
             if (Steering.IsMoving)
                 _facingDirection = Steering.FacingDirection;
 
             // Tick current state
             _currentState?.UpdateState(this);
+
+            // Apply hit stun AFTER state tick so we override whatever the state
+            // just set. Attack phases are immune (super armor) — getting hit
+            // during windup/strike/recovery does not cancel the attack.
+            if (IsHurtStunned && !IsInAttackPhase())
+            {
+                Rb.linearVelocity = Vector2.zero;
+                // Override the state's animation queue so a Walk clip doesn't
+                // play on a frozen mob if the hurt animation is shorter than
+                // the stun duration.
+                AnimationQueue = "Idle";
+            }
+        }
+
+        /// <summary>
+        /// True if the mob is currently in any phase of an attack. Used to
+        /// grant super armor so hit stun doesn't cancel attacks mid-swing.
+        /// </summary>
+        private bool IsInAttackPhase()
+        {
+            return AnimationQueue == "AttackWindup"
+                || AnimationQueue == "Attack"
+                || AnimationQueue == "AttackRecovery";
         }
 
         // ───────────────────────── Configuration ─────────────────────────
@@ -326,6 +361,10 @@ namespace MobSystem
             // Play hit sound
             if (data.hitSound != null)
                 PlaySound(data.hitSound, data.hitVolume);
+
+            // Start hit stun (ignored by attack phases — see Update)
+            if (data.hurtStunDuration > 0f)
+                _hurtStunTimer = data.hurtStunDuration;
 
             OnDamaged?.Invoke(CurrentHealth, data.maxHealth, attackerPosition);
 
