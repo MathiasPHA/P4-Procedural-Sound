@@ -101,8 +101,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 5
+  m_Offset: {x: -1.4558635, y: -3.64}
+  m_Radius: 4.3225017
 --- !u!95 &6486862887375494910
 Animator:
   serializedVersion: 7
@@ -273,5 +273,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobInteractable
   actionVerb: Attack!
-  interactRange: 5
+  interactRange: 7.69
+  interactCenterOffset: {x: -1.43, y: -2.85}
   promptOffset: {x: 0, y: 1.2}
