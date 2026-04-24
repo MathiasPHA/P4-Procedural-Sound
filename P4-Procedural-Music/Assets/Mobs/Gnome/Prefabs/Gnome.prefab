@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 1079981951141499114}
   - component: {fileID: 1882539765994000035}
   - component: {fileID: 280538403942413479}
+  - component: {fileID: 8737546276844972407}
   m_Layer: 10
   m_Name: Gnome
   m_TagString: Untagged
@@ -180,3 +181,25 @@ MonoBehaviour:
   promptOffset: {x: 0, y: 1.2}
   gnomeName: 
   tradeOffers: []
+--- !u!95 &8737546276844972407
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5378333380033046601}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0ba15ee8c6aa36f4fbcce1caa5eb2fd5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
