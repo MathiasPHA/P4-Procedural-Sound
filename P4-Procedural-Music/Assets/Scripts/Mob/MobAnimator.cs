@@ -57,6 +57,13 @@ namespace MobSystem
                  "so the idle/default state faces right without flipping.")]
         [SerializeField] private bool defaultFacingRight = true;
 
+        [Header("Hurt Animation")]
+        [Tooltip("How long the hurt animation plays over the current state animation " +
+                 "when the mob takes damage (seconds). Set to 0 to disable the hurt " +
+                 "override entirely. If no '{prefix}_Hurt_{direction}' clip exists, " +
+                 "falls back to '{prefix}_Hurt', then to the normal state animation.")]
+        [SerializeField] private float hurtAnimationDuration = 0.3f;
+
         // ───────────────────────── Runtime ─────────────────────────
 
         private SpriteRenderer _spriteRenderer;
@@ -64,6 +71,7 @@ namespace MobSystem
         private MobController _mob;
         private bool _hasAnimator;
         private string _lastPlayedClip;
+        private float _hurtTimer;
 
         private void Awake()
         {
@@ -88,11 +96,36 @@ namespace MobSystem
             // Auto-set prefix from MobData if not set in inspector
             if (string.IsNullOrEmpty(clipPrefix) && _mob.Data != null)
                 clipPrefix = _mob.Data.id;
+
+            // Hook into damage events so we can play the hurt animation on top
+            // of whatever state animation is currently running.
+            _mob.OnDamaged += OnMobDamaged;
+        }
+
+        private void OnDestroy()
+        {
+            if (_mob != null)
+                _mob.OnDamaged -= OnMobDamaged;
+        }
+
+        private void OnMobDamaged(int currentHealth, int maxHealth, Vector3 attackerPosition)
+        {
+            if (hurtAnimationDuration <= 0f) return;
+
+            _hurtTimer = hurtAnimationDuration;
+
+            // Clear the last-played cache so the hurt clip plays from frame 0,
+            // even if the mob is taking consecutive hits while already in Hurt.
+            _lastPlayedClip = null;
         }
 
         private void LateUpdate()
         {
             if (_mob == null) return;
+
+            // Tick hurt override timer
+            if (_hurtTimer > 0f)
+                _hurtTimer -= Time.deltaTime;
 
             UpdateFlip();
 
@@ -129,7 +162,11 @@ namespace MobSystem
 
         private void UpdateAnimator()
         {
-            string state = MapAnimationQueue(_mob.AnimationQueue);
+            // While the hurt timer is active, force "Hurt" over the state-driven
+            // queue value. This lets the hurt clip play on top of whatever the
+            // AI is doing without needing the states to know about damage.
+            bool hurtActive = _hurtTimer > 0f;
+            string state = hurtActive ? "Hurt" : MapAnimationQueue(_mob.AnimationQueue);
             string direction = GetDirectionSuffix();
 
             // Try full name: Rabbit_AttackWindup_Left
@@ -150,6 +187,18 @@ namespace MobSystem
 
                 string attackNoDir = $"{clipPrefix}_Attack";
                 if (TryPlay(attackNoDir)) return;
+            }
+
+            // Hurt fallback — if no dedicated Hurt clip exists on this mob,
+            // cancel the hurt override so we don't block the state animation
+            // for the full hurt duration displaying nothing new. Next frame
+            // picks up the normal state-driven animation.
+            if (hurtActive)
+            {
+                _hurtTimer = 0f;
+                string fallbackState = MapAnimationQueue(_mob.AnimationQueue);
+                if (TryPlay($"{clipPrefix}_{fallbackState}_{direction}")) return;
+                if (TryPlay($"{clipPrefix}_{fallbackState}")) return;
             }
 
             // No matching clip — keep current frame (no spam)

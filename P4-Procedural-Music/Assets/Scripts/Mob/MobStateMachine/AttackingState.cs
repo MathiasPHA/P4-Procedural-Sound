@@ -49,6 +49,14 @@ namespace MobSystem.States
         private bool _hasStruck;
         private Vector2 _lockedDirection;
 
+        /// <summary>
+        /// True this frame if the damaging hitbox is currently live. False during
+        /// windup, recovery, the pre-activation portion of strike (controlled by
+        /// MobData.attackHitboxActivationRatio), and after a hit has already landed.
+        /// Read by MobController's gizmo to visualise the active window.
+        /// </summary>
+        public bool IsHitboxActive { get; private set; }
+
         public override void EnterState(MobController mob)
         {
             StartWindup(mob);
@@ -85,6 +93,7 @@ namespace MobSystem.States
         {
             // Stop any lunge velocity when leaving the state
             if (mob.Rb != null) mob.Rb.linearVelocity = Vector2.zero;
+            IsHitboxActive = false;
         }
 
         // ───────────────────────── Windup ─────────────────────────
@@ -94,6 +103,7 @@ namespace MobSystem.States
             _phase = Phase.Windup;
             _phaseTimer = mob.Data.attackWindupDuration;
             _hasStruck = false;
+            IsHitboxActive = false;
 
             mob.Steering.Stop();
             mob.AnimationQueue = "AttackWindup";
@@ -197,15 +207,25 @@ namespace MobSystem.States
 
         private void UpdateStrike(MobController mob, Vector2 mobPos, Vector2 playerPos)
         {
-            // Lunge forward (bypasses steering — this is scripted attack motion)
+            // Lunge forward (bypasses steering — this is scripted attack motion).
+            // Lunge runs for the whole strike regardless of hitbox activation,
+            // so the mob's movement arc isn't affected by the activation ratio.
             if (mob.Rb != null && mob.Data.attackLungeSpeed > 0f)
                 mob.Rb.linearVelocity = _lockedDirection * mob.Data.attackLungeSpeed;
 
             mob.AnimationQueue = "Attack";
             mob.FacingDirection = _lockedDirection;
 
-            // ── Hitbox check — continuous during strike until first hit ──
-            if (!_hasStruck)
+            // ── Hitbox activation gate ──
+            // The damaging hitbox stays off for the first portion of the strike
+            // (controlled by attackHitboxActivationRatio) so it can be lined up
+            // with the impact frame of the attack animation. 0 = active immediately,
+            // 0.4 = active from 40% into the strike onward.
+            float strikeElapsed = mob.Data.attackStrikeDuration - _phaseTimer;
+            float activationThreshold = mob.Data.attackStrikeDuration * mob.Data.attackHitboxActivationRatio;
+            IsHitboxActive = !_hasStruck && strikeElapsed >= activationThreshold;
+
+            if (IsHitboxActive)
                 CheckHitbox(mob);
 
             _phaseTimer -= Time.deltaTime;
@@ -281,6 +301,7 @@ namespace MobSystem.States
         {
             _phase = Phase.Recovery;
             _phaseTimer = mob.Data.attackRecoveryDuration;
+            IsHitboxActive = false;
 
             if (mob.Rb != null) mob.Rb.linearVelocity = Vector2.zero;
             mob.AnimationQueue = "AttackRecovery";

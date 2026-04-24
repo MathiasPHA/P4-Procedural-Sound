@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 7356484101254077988}
   - component: {fileID: 6704315460794764853}
   - component: {fileID: 2541410371246158582}
+  - component: {fileID: 6869283197776844036}
   m_Layer: 10
   m_Name: Troll
   m_TagString: Untagged
@@ -232,6 +233,7 @@ MonoBehaviour:
   twoDirectionMode: 1
   flipViaScale: 0
   defaultFacingRight: 1
+  hurtAnimationDuration: 0.3
 --- !u!114 &7356484101254077988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,3 +288,26 @@ MonoBehaviour:
   interactRange: 15.58
   interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
+--- !u!114 &6869283197776844036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1099063152185500091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2f3e410ceac3da4abf19108a169dbe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::YSortable
+  sortingGroup: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  ordersPerUnit: 100
+  staticOrderOffset: 0
+  randomOffsetRange: 0.01
+  referenceMode: 0
+  feetCollider: {fileID: 0}
+  customPivot: {fileID: 0}
+  additionalYOffset: 0
+  unifySortingLayer: 1
+  unifiedSortingLayerName: World
