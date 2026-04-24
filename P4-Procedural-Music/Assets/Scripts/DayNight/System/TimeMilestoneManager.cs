@@ -1,9 +1,10 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class TimeMilestoneManager : MonoBehaviour
 {
     [Header("Times of Day")]
-    [SerializeField] private string[] timeMilestones = new string[]
+    [SerializeField]
+    private string[] timeMilestones = new string[]
     {
         "Midnight",     // 0
         "Dawn",         // 1
@@ -21,7 +22,7 @@ public class TimeMilestoneManager : MonoBehaviour
     [SerializeField] private ComfortSystem comfortSystem;
     [SerializeField] private ComfortMusicBridge comfortMusicBridge;
 
-    // Det her er lort, men det virker ikke hvis man bruger et array, da de ikke kan være sat til at være const
+    // Det her er lort, men det virker ikke hvis man bruger et array, da de ikke kan vï¿½re sat til at vï¿½re const
     private const int DawnTime = 3;         // Dawn starts at 3:00
     private const int SunriseTime = 6;      // Sunrise at 6:00
     private const int MorningTime = 7;      // Morning starts at 7:00
@@ -80,7 +81,7 @@ public class TimeMilestoneManager : MonoBehaviour
             case SunriseTime:
                 // 6:00 - 7:59 is Sunrise
                 currentTimeMilestone = timeMilestones[2];
-                comfortSystem.SetDayNightValue(1); // 1 = day
+                if (comfortSystem != null) comfortSystem.SetDayNightValue(1); // 1 = day
                 break;
             case MorningTime:
                 // 7:00 - 10:59 is Morning
@@ -97,7 +98,7 @@ public class TimeMilestoneManager : MonoBehaviour
             case NoonTime + 1:
                 // 13:00 - 13:59 is Midday
                 currentTimeMilestone = timeMilestones[5];
-                comfortMusicBridge.SetExploring2(true);  // switch to upbeat exploring
+                if (comfortMusicBridge != null) comfortMusicBridge.SetExploring2(true);  // switch to upbeat exploring
                 break;
             case AfternoonTime:
                 // 14:00 - 17:59 is Afternoon
@@ -110,7 +111,7 @@ public class TimeMilestoneManager : MonoBehaviour
             case DuskTime:
                 // 19:00 - 20:59 is Dusk
                 currentTimeMilestone = timeMilestones[8];
-                comfortSystem.SetDayNightValue(0); // 0 = night
+                if (comfortSystem != null) comfortSystem.SetDayNightValue(0); // 0 = night
                 break;
             case NightTime:
                 // 23:00 - 23:59 is Night

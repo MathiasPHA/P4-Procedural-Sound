@@ -226,8 +226,8 @@ MonoBehaviour:
   - {fileID: 6863596224840849692, guid: 4301e16ca813bf34e9072fa4c7292aad, type: 3}
   cellSize: 20
   dungeonExitPrefab: {fileID: 959634196538878873, guid: 0025b5b3b87829c42b30536f469af777, type: 3}
-  testConfig: {fileID: 11400000, guid: 42d3d7f3653d43b4f84910fd3f846c4e, type: 2}
-  testSeed: 123
+  testConfig: {fileID: 11400000, guid: 4c303a379a9a42d44aa856f290d477fe, type: 2}
+  testSeed: 19
 --- !u!4 &1513643
 Transform:
   m_ObjectHideFlags: 0
@@ -279,10 +279,6 @@ PrefabInstance:
     - target: {fileID: 3370708515185586827, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
       propertyPath: m_Name
       value: Happines_HungerMeterUI
-      objectReference: {fileID: 0}
-    - target: {fileID: 3370708515185586827, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7424794445039387837, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
       propertyPath: m_AnchorMax.x
