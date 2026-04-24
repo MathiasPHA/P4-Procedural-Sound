@@ -1939,6 +1939,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 992352094}
     m_Modifications:
+    - target: {fileID: 280538403942413479, guid: 3ab35f5b745b1bc4fab7665bd4c0accb, type: 3}
+      propertyPath: tradeOffers.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 280538403942413479, guid: 3ab35f5b745b1bc4fab7665bd4c0accb, type: 3}
+      propertyPath: 'tradeOffers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 50b7673ee1535d841b2e2e7be517165c, type: 2}
     - target: {fileID: 2899307749003560267, guid: 3ab35f5b745b1bc4fab7665bd4c0accb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 50
