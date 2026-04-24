@@ -105,3 +105,18 @@ MonoBehaviour:
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
+  - name: Gnome Village
+    enabled: 1
+    prefabs:
+    - {fileID: 4602211281127180821, guid: 335dab328af943f498ba8f05278f8fcd, type: 3}
+    baseChance: 0.07
+    densityNoiseScale: 0.2
+    densityCutoff: 0.8
+    densityMultiplier: 1
+    minSpacing: 5
+    maxCountPerChunk: 0
+    positionJitter: 0.45
+    allowedTerrain: 00000000
+    sortingOrderOffset: 0
+    seedOffset: 0
+    depletedPrefab: {fileID: 0}
