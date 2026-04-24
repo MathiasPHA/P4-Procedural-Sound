@@ -38,19 +38,19 @@ public class HappinessSystem : MonoBehaviour
 
     [Header("Drift Rates (units per second, per mood tier)")]
     [Tooltip("Happiness gain rate when mood is Elated")]
-    [SerializeField] private float elatedRate    =  0.025f;
+    [SerializeField] private float elatedRate = 0.025f;
 
     [Tooltip("Happiness gain rate when mood is Content")]
-    [SerializeField] private float contentRate   =  0.010f;
+    [SerializeField] private float contentRate = 0.010f;
 
     [Tooltip("Happiness drift when mood is Neutral (should be 0 or very small)")]
-    [SerializeField] private float neutralRate   =  0.000f;
+    [SerializeField] private float neutralRate = 0.000f;
 
     [Tooltip("Happiness drain rate when mood is Uneasy (positive number, applied as negative)")]
-    [SerializeField] private float uneasyRate    =  0.010f;
+    [SerializeField] private float uneasyRate = 0.010f;
 
     [Tooltip("Happiness drain rate when mood is Miserable (positive number, applied as negative)")]
-    [SerializeField] private float miserableRate =  0.025f;
+    [SerializeField] private float miserableRate = 0.025f;
 
     [Header("Smoothing")]
     [Tooltip("Smooth happiness changes so the bar doesn't jitter")]
@@ -72,13 +72,21 @@ public class HappinessSystem : MonoBehaviour
     /// </summary>
     public event System.Action OnHappinessDepleted;
 
+    /// <summary>
+    /// Fired whenever a damaging AdjustHappiness call actually lands (i.e.
+    /// wasn't filtered out by i-frames). The argument is the absolute amount
+    /// of happiness lost (positive number). Subscribe from PlayerHealth or
+    /// any other hit-reaction system.
+    /// </summary>
+    public event System.Action<float> OnDamaged;
+
     // ───────────────────────── State ─────────────────────────
 
     private float happiness;
     private float happinessTarget;
     private float happinessVelocity;   // for SmoothDamp
     private float currentDriftRate;    // for debug display
-    private bool  isDead;
+    private bool isDead;
 
     private MoodSystem moodSystem;
 
@@ -98,9 +106,21 @@ public class HappinessSystem : MonoBehaviour
     ///   - Mob attacks: AdjustHappiness(-0.1f)
     ///   - Potions (future): AdjustHappiness(+0.2f)
     /// Clamped to 0–1. Bypasses smoothing for instant feedback on hits.
+    ///
+    /// Damage (negative delta) is filtered through PlayerHealth.IsInvincible
+    /// — hits during i-frames are silently ignored. When a damaging call does
+    /// land, OnDamaged fires with the amount lost.
     /// </summary>
     public void AdjustHappiness(float delta)
     {
+        // Damage gate: ignore negative deltas during i-frames
+        if (delta < 0f
+            && MobSystem.PlayerHealth.Instance != null
+            && MobSystem.PlayerHealth.Instance.IsInvincible)
+        {
+            return;
+        }
+
         happinessTarget = Mathf.Clamp01(happinessTarget + delta);
 
         // For negative hits, snap the displayed value partway so the player
@@ -108,6 +128,7 @@ public class HappinessSystem : MonoBehaviour
         if (delta < 0f)
         {
             happiness = Mathf.Clamp01(happiness + delta * 0.7f);
+            OnDamaged?.Invoke(-delta);
         }
     }
 
@@ -196,12 +217,12 @@ public class HappinessSystem : MonoBehaviour
     {
         switch (tier)
         {
-            case MoodTier.Elated:    return  elatedRate;
-            case MoodTier.Content:   return  contentRate;
-            case MoodTier.Neutral:   return  neutralRate;
-            case MoodTier.Uneasy:    return -uneasyRate;
+            case MoodTier.Elated: return elatedRate;
+            case MoodTier.Content: return contentRate;
+            case MoodTier.Neutral: return neutralRate;
+            case MoodTier.Uneasy: return -uneasyRate;
             case MoodTier.Miserable: return -miserableRate;
-            default:                 return  0f;
+            default: return 0f;
         }
     }
 

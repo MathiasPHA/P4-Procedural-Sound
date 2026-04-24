@@ -36,7 +36,7 @@ MonoBehaviour:
     effectSoundVolume: 0
   - effectType: 5
     duration: 0.1
-    magnitude: 10
+    magnitude: 0.1
     tintColor: {r: 0, g: 0.7584905, b: 0.18064094, a: 0.41960785}
     effectMessage: I don't feel so good
     effectSound: {fileID: 0}

@@ -589,6 +589,29 @@ namespace MobSystem
                 // Line from mob to hitbox center so it's clear where it's aimed
                 Gizmos.color = new Color(1f, 0.3f, 0f, 0.3f);
                 Gizmos.DrawLine(transform.position, hitboxCenter);
+
+                // Filled overlay when the hitbox is currently live — pulses bright
+                // during the active frames so activation timing is visible at a
+                // glance while tuning attackHitboxActivationRatio in play mode.
+                if (Application.isPlaying
+                    && _currentState == attackingState
+                    && attackingState.IsHitboxActive)
+                {
+                    Gizmos.color = new Color(1f, 0.1f, 0f, 0.55f);
+
+                    if (data.horizontalAttackOnly)
+                    {
+                        Vector3 boxSize = new Vector3(
+                            data.attackHitboxRadius * 2f,
+                            data.attackHitboxHeight,
+                            0.1f);
+                        Gizmos.DrawCube(hitboxCenter, boxSize);
+                    }
+                    else
+                    {
+                        Gizmos.DrawSphere(hitboxCenter, data.attackHitboxRadius);
+                    }
+                }
             }
 
             // Roam radius from spawn

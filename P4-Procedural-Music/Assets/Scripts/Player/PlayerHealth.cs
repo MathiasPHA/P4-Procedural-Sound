@@ -95,12 +95,47 @@ namespace MobSystem
             if (happinessSystem == null)
                 Debug.LogWarning("[PlayerHealth] No HappinessSystem found! " +
                                  "Mob damage won't affect happiness.");
+            else
+                happinessSystem.OnDamaged += HandleDamaged;
 
             // Cache PlayerStateManager so hits can trigger the hurt state
             playerStateManager = GetComponent<PlayerStateManager>();
             if (playerStateManager == null)
                 Debug.LogWarning("[PlayerHealth] No PlayerStateManager on this GameObject — " +
                                  "hurt state won't trigger on hit.");
+        }
+
+        private void OnDestroy()
+        {
+            if (happinessSystem != null)
+                happinessSystem.OnDamaged -= HandleDamaged;
+        }
+
+        /// <summary>
+        /// Fires when HappinessSystem takes actual damage (after i-frame
+        /// filtering). This is where all the player-side hit reactions live —
+        /// hurt state, i-frame start, hit sound, visual feedback.
+        /// </summary>
+        private void HandleDamaged(float amountLost)
+        {
+            // Start i-frames so follow-up hits during the next few frames are ignored
+            if (iFrameDuration > 0f)
+                _iFrameTimer = iFrameDuration;
+
+            // Trigger the hurt state so the player freezes and plays the hurt animation
+            if (playerStateManager != null && hurtStunDuration > 0f)
+                playerStateManager.StartHurt(hurtStunDuration);
+
+            // Play hit sound
+            if (hitSound != null)
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
+
+            // Visual feedback — flash on player sprite
+            if (PlayerHitFeedback.Instance != null)
+                PlayerHitFeedback.Instance.TriggerHit();
+
+            Debug.Log($"[PlayerHealth] Took {amountLost:F3} happiness damage " +
+                      $"(now {(happinessSystem != null ? happinessSystem.Happiness : 0f):F2})");
         }
 
         private void Update()
@@ -130,54 +165,25 @@ namespace MobSystem
         /// <param name="damage">The mob's attackDamage value.</param>
         /// <param name="happinessPenaltyOverride">MobData.happinessPenalty — 0 means use default formula.</param>
         /// <param name="attackerPosition">World position of the mob.</param>
+        /// <summary>
+        /// Legacy entry point. Mobs now call HappinessSystem.AdjustHappiness
+        /// directly, and hit reactions run via the OnDamaged event — see
+        /// HandleDamaged. This method is kept so any other caller (debug
+        /// tools, scripted events) that still routes through here continues
+        /// to work; it just funnels into the same event path.
+        /// </summary>
         public void TakeDamage(int damage, float happinessPenaltyOverride, Vector3 attackerPosition)
         {
-            // Ignore hits during i-frames
-            if (IsInvincible)
-            {
-                Debug.Log("[PlayerHealth] Hit ignored — invincible.");
-                return;
-            }
+            if (happinessSystem == null) return;
 
-            if (happinessSystem != null)
-            {
-                float loss;
+            float loss = happinessPenaltyOverride > 0f
+                ? happinessPenaltyOverride
+                : Mathf.Max(damage * happinessLossPerDamage, minimumHitPenalty);
 
-                if (happinessPenaltyOverride > 0f)
-                {
-                    loss = happinessPenaltyOverride;
-                }
-                else
-                {
-                    loss = Mathf.Max(damage * happinessLossPerDamage, minimumHitPenalty);
-                }
-
-                happinessSystem.AdjustHappiness(-loss);
-
-                Debug.Log($"[PlayerHealth] Hit for {damage} dmg → " +
-                          $"-{loss:F3} happiness (now {happinessSystem.Happiness:F2})");
-            }
-
-            // Start i-frames so follow-up hits this frame / next few frames are ignored
-            if (iFrameDuration > 0f)
-                _iFrameTimer = iFrameDuration;
-
-            // Trigger the hurt state so the player freezes and plays the hurt animation.
-            // Skipped if stun is zeroed (designer wants no visible reaction).
-            if (playerStateManager != null && hurtStunDuration > 0f)
-            {
-                playerStateManager.StartHurt(hurtStunDuration);
-            }
-
-            // Play hit sound
-            if (hitSound != null)
-            {
-                AudioSource.PlayClipAtPoint(hitSound, transform.position, hitVolume);
-            }
-
-            // Visual feedback — red flash on player sprite
-            if (PlayerHitFeedback.Instance != null)
-                PlayerHitFeedback.Instance.TriggerHit();
+            // AdjustHappiness handles i-frame gating and fires OnDamaged,
+            // which routes through HandleDamaged — so hit reactions
+            // (hurt state, i-frames, sound, feedback) all happen there.
+            happinessSystem.AdjustHappiness(-loss);
         }
 
         // ───────────────────────── Debug GUI ─────────────────────────

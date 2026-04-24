@@ -197,6 +197,17 @@ namespace MobSystem.Data
         [Range(0f, 1f)]
         public float attackAimLockRatio = 0.5f;
 
+        [Tooltip("Fraction of the strike phase that passes before the hitbox goes live (0–1). " +
+                 "0 = hitbox active from strike start (uniform damage window). " +
+                 "0.5 = hitbox stays off for the first half, then activates. " +
+                 "0.9 = very sharp active frames at the end of the strike. " +
+                 "Use to match the hitbox to the impact frame of the attack animation — " +
+                 "e.g. a troll whose swing lands on frame 3 of 5 wants ~0.4. " +
+                 "The mob still lunges forward during the full strike; only the damaging " +
+                 "hitbox is delayed.")]
+        [Range(0f, 1f)]
+        public float attackHitboxActivationRatio = 0f;
+
         [Tooltip("Distance (units) in front of the mob where the hitbox center is placed. " +
                  "Should roughly match the mob's 'reach'.")]
         [Min(2f)]
