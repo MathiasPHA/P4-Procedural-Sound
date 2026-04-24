@@ -34,9 +34,9 @@ MonoBehaviour:
   fleeHealthThreshold: 0
   aggroRange: 6
   attackRange: 1.2
-  attackDamage: 3
-  attackCooldown: 1.5
-  happinessPenalty: 0
+  happinessPenalty: 0.01
+  threatComfortValue: 0.3
+  threatRadius: 300
   attackWindupDuration: 0.5
   attackStrikeDuration: 0.25
   attackRecoveryDuration: 0.4
@@ -62,8 +62,10 @@ MonoBehaviour:
   hitVolume: 0.5
   deathSound: {fileID: 0}
   deathVolume: 0.5
-  attackSound: {fileID: 0}
-  attackVolume: 0.5
+  attackWindupSound: {fileID: 0}
+  attackWindupVolume: 0.5
+  attackStrikeSound: {fileID: 0}
+  attackStrikeVolume: 0.5
   lootTable: {fileID: 0}
   worldItemPrefab: {fileID: 0}
   isCatchable: 1

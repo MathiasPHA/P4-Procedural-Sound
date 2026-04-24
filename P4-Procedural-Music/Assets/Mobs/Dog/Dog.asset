@@ -64,7 +64,9 @@ MonoBehaviour:
   deathVolume: 0.5
   attackWindupSound: {fileID: 0}
   attackWindupVolume: 0.5
-  attackStrikeSound: {fileID: 0}
+  attackStrikeSound: {fileID: 8300000, guid: 13385f8c99e532d40abb205764182552, type: 3}
   attackStrikeVolume: 0.5
   lootTable: {fileID: 0}
   worldItemPrefab: {fileID: 0}
+  isCatchable: 0
+  catchResultItem: {fileID: 0}
