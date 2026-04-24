@@ -50,7 +50,7 @@ MonoBehaviour:
     noiseThreshold: 0
   maxTotalCorridorSpawns: 0
   corridorSpawns: []
-  happinessModifier: -0.3
+  happinessModifier: -0
   dungeonComfortValue: 0.15
   threshold1Max: 0.3
   threshold2Min: 0.55
