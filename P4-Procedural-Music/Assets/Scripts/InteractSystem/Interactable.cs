@@ -19,6 +19,11 @@ namespace InteractionSystem
         [Tooltip("How close the player must be to perform the interaction.")]
         [SerializeField] private float interactRange = 1.5f;
 
+        [Tooltip("World-space offset from pivot for the interact range center. " +
+                 "Use when the object's pivot isn't at its visual center " +
+                 "(e.g. mob pivot at feet, but interact zone should be at body).")]
+        [SerializeField] private Vector2 interactCenterOffset = Vector2.zero;
+
         [Tooltip("Offset from pivot where the prompt appears (world space, added to transform.position).")]
         [SerializeField] private Vector2 promptOffset = new Vector2(0f, 1.2f);
 
@@ -27,6 +32,13 @@ namespace InteractionSystem
 
         /// <summary>Max distance from player to interact.</summary>
         public float InteractRange => interactRange;
+
+        /// <summary>
+        /// World position of the interact zone center. Distance checks in
+        /// PlayerMoveToInteractState measure from the player to this point.
+        /// Defaults to transform.position when interactCenterOffset is zero.
+        /// </summary>
+        public Vector3 InteractCenter => transform.position + (Vector3)interactCenterOffset;
 
         /// <summary>World position where the prompt UI should appear.</summary>
         public Vector3 PromptPosition => transform.position + (Vector3)promptOffset;
@@ -54,7 +66,11 @@ namespace InteractionSystem
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = new Color(0f, 1f, 0.5f, 0.3f);
-            Gizmos.DrawWireSphere(transform.position, interactRange);
+            Gizmos.DrawWireSphere(InteractCenter, interactRange);
+
+            // Small marker at the interact center itself
+            Gizmos.color = new Color(0f, 1f, 0.5f, 0.8f);
+            Gizmos.DrawWireSphere(InteractCenter, 0.08f);
 
             // Prompt position
             Gizmos.color = Color.cyan;

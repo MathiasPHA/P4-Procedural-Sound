@@ -163,6 +163,16 @@ namespace MobSystem.Data
         [Min(20f)]
         public float threatRadius = 300f;
 
+        // ───────────────────────── Hurt ─────────────────────────
+
+        [Header("Hurt")]
+        [Tooltip("Duration (sec) the mob is frozen in place after taking damage. " +
+                 "Freezes movement only — state machine continues ticking, and " +
+                 "mobs already in an attack phase (Windup/Strike/Recovery) are " +
+                 "immune (super armor). Set to 0 to disable hit stun entirely.")]
+        [Range(0f, 1f)]
+        public float hurtStunDuration = 0.3f;
+
         // ───────────────────────── Attack Phases ─────────────────────────
 
         [Header("Attack Phases")]
@@ -187,10 +197,27 @@ namespace MobSystem.Data
         [Range(0f, 1f)]
         public float attackAimLockRatio = 0.5f;
 
+        [Tooltip("Fraction of the strike phase that passes before the hitbox goes live (0–1). " +
+                 "0 = hitbox active from strike start (uniform damage window). " +
+                 "0.5 = hitbox stays off for the first half, then activates. " +
+                 "0.9 = very sharp active frames at the end of the strike. " +
+                 "Use to match the hitbox to the impact frame of the attack animation — " +
+                 "e.g. a troll whose swing lands on frame 3 of 5 wants ~0.4. " +
+                 "The mob still lunges forward during the full strike; only the damaging " +
+                 "hitbox is delayed.")]
+        [Range(0f, 1f)]
+        public float attackHitboxActivationRatio = 0f;
+
         [Tooltip("Distance (units) in front of the mob where the hitbox center is placed. " +
                  "Should roughly match the mob's 'reach'.")]
         [Min(2f)]
         public float attackHitboxOffset = 14f;
+
+        [Tooltip("World-space vertical offset (units) applied to the hitbox center. " +
+                 "Use to lift the hitbox toward the visual body when the sprite pivot " +
+                 "is at the feet. Positive = up, negative = down. Independent of facing direction.")]
+        [Range(-20f, 20f)]
+        public float attackHitboxYOffset = 0f;
 
         [Tooltip("Radius (units) of the damage hitbox during the strike phase. " +
                  "Larger = harder to dodge. A player inside this circle when the strike " +
@@ -203,6 +230,19 @@ namespace MobSystem.Data
                  "backward, since the mob catches up mid-strike.")]
         [Min(0f)]
         public float attackLungeSpeed = 80f;
+
+        [Tooltip("When true, the attack direction snaps to horizontal (left/right only) " +
+                 "regardless of the player's actual position. Use for mobs whose attack " +
+                 "animation only works sideways (e.g. a troll with a side-swing only).")]
+        public bool horizontalAttackOnly = false;
+
+        [Tooltip("Vertical extent (full height, units) of the hitbox when horizontalAttackOnly " +
+                 "is on. Uses OverlapBox instead of OverlapCircle so the hitbox is a flat " +
+                 "horizontal rectangle rather than a vertically-reaching circle. Smaller values " +
+                 "require the player to be more precisely at the mob's y to get hit. " +
+                 "Ignored when horizontalAttackOnly is off.")]
+        [Min(2f)]
+        public float attackHitboxHeight = 10f;
 
         // ───────────────────────── Searching ─────────────────────────
 

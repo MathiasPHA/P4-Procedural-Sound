@@ -50,8 +50,39 @@ namespace MobSystem.States
             Vector2 playerPos = mob.Awareness.PlayerTransform.position;
             float distToPlayer = Vector2.Distance(mobPos, playerPos);
 
+            // ── Pick seek target and arrival condition ──
+            // For horizontal-only attackers (trolls with a sideways-only swing),
+            // we target a point beside the player at attackHitboxOffset distance
+            // — i.e. exactly where the attack will land. The mob arrives "in range"
+            // only when it's actually alongside the player, not when it's close
+            // in general. This prevents the classic failure where the mob triggers
+            // its attack while still above or below the player and swings at air.
+            Vector2 seekTarget;
+            bool readyToAttack;
+
+            if (mob.Data.horizontalAttackOnly)
+            {
+                float dx = mobPos.x - playerPos.x;
+                Vector2 sideDir = Mathf.Approximately(dx, 0f)
+                    ? (mob.FacingDirection.x < 0f ? Vector2.left : Vector2.right)
+                    : (dx > 0f ? Vector2.right : Vector2.left);
+
+                seekTarget = playerPos + sideDir * mob.Data.attackHitboxOffset;
+
+                // Arrival tolerance is half the hitbox radius — tight enough that
+                // the mob really is beside the player when it swings, loose enough
+                // that minor steering jitter doesn't prevent the transition.
+                float arrivalRadius = mob.Data.attackHitboxRadius * 0.5f;
+                readyToAttack = Vector2.Distance(mobPos, seekTarget) <= arrivalRadius;
+            }
+            else
+            {
+                seekTarget = playerPos;
+                readyToAttack = distToPlayer <= mob.Data.attackRange;
+            }
+
             // ── Within attack range? ──
-            if (distToPlayer <= mob.Data.attackRange)
+            if (readyToAttack)
             {
                 mob.SwitchState(mob.attackingState);
                 return;
@@ -65,8 +96,8 @@ namespace MobSystem.States
                 return;
             }
 
-            // ── Steer toward player ──
-            mob.Steering.Seek(playerPos);
+            // ── Steer toward the chosen seek target ──
+            mob.Steering.Seek(seekTarget);
             mob.AnimationQueue = "Walk";
 
             // Update last known position for searching
