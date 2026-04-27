@@ -163,6 +163,16 @@ namespace MobSystem.Data
         [Min(20f)]
         public float threatRadius = 300f;
 
+        // ───────────────────────── Hurt ─────────────────────────
+
+        [Header("Hurt")]
+        [Tooltip("Duration (sec) the mob is frozen in place after taking damage. " +
+                 "Freezes movement only — state machine continues ticking, and " +
+                 "mobs already in an attack phase (Windup/Strike/Recovery) are " +
+                 "immune (super armor). Set to 0 to disable hit stun entirely.")]
+        [Range(0f, 1f)]
+        public float hurtStunDuration = 0.3f;
+
         // ───────────────────────── Attack Phases ─────────────────────────
 
         [Header("Attack Phases")]
@@ -186,6 +196,17 @@ namespace MobSystem.Data
                  "0.5 = tracks for first half, then locks. Lower = easier to dodge.")]
         [Range(0f, 1f)]
         public float attackAimLockRatio = 0.5f;
+
+        [Tooltip("Fraction of the strike phase that passes before the hitbox goes live (0–1). " +
+                 "0 = hitbox active from strike start (uniform damage window). " +
+                 "0.5 = hitbox stays off for the first half, then activates. " +
+                 "0.9 = very sharp active frames at the end of the strike. " +
+                 "Use to match the hitbox to the impact frame of the attack animation — " +
+                 "e.g. a troll whose swing lands on frame 3 of 5 wants ~0.4. " +
+                 "The mob still lunges forward during the full strike; only the damaging " +
+                 "hitbox is delayed.")]
+        [Range(0f, 1f)]
+        public float attackHitboxActivationRatio = 0f;
 
         [Tooltip("Distance (units) in front of the mob where the hitbox center is placed. " +
                  "Should roughly match the mob's 'reach'.")]

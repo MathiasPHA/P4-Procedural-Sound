@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Log_Trade
   m_EditorClassIdentifier: Assembly-CSharp::TradeOffer
   costItem: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
-  costAmount: 2
+  costAmount: 4
   rewardItem: {fileID: 11400000, guid: 9d78585a34684a9449ac55e5637cfdce, type: 2}
   rewardAmount: 1
   isLocked: 0
