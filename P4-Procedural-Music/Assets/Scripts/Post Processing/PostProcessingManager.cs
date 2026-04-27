@@ -14,6 +14,10 @@ public class PostProcessingManager : MonoBehaviour
 
     [Header("Overlay Sprite")]
     public CanvasGroup overlayCanvasGroup; 
+    
+    [Header("Fade In Settings")]
+    [SerializeField] float minimumIntensity;
+    [SerializeField] float maximumIntensity;
 
     private Vignette vignette;
     private FilmGrain filmGrain;
@@ -47,6 +51,6 @@ public class PostProcessingManager : MonoBehaviour
     {
         if (vignette != null)   vignette.intensity.value   = masterIntensity;
         if (filmGrain != null)  filmGrain.intensity.value  = masterIntensity;
-        overlayCanvasGroup.alpha = Mathf.InverseLerp(0.675f, 1f, masterIntensity);
+        overlayCanvasGroup.alpha = Mathf.InverseLerp(minimumIntensity, maximumIntensity, masterIntensity);
     }
 }
