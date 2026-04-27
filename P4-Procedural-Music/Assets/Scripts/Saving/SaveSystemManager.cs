@@ -1,3 +1,4 @@
+using System.Collections;
 using System.IO;
 using ProceduralTerrain;
 using UnityEngine;
@@ -13,14 +14,18 @@ public class SaveSystemManager : MonoBehaviour
 
     public static SaveSystemManager Instance { get; private set; }
 
-    private float _saveTimer;
-
     /// <summary>
-    /// Latched true after a permadeath wipe. While set, SaveModifiedChunks is a
-    /// no-op so that autosave / OnApplicationQuit can't re-create files between
-    /// deletion and the scene transition back to the main menu.
+    /// GLOBAL kill switch for the entire save layer. Once true, NO save
+    /// subsystem should write to disk — they bail at the top of every save
+    /// method with `if (SaveSystemManager.IsSavingDisabled) return;`.
+    /// Set automatically by DeleteCurrentWorld().
     /// </summary>
+    public static bool IsSavingDisabled { get; private set; }
+
+    private float _saveTimer;
     private bool _worldDeleted;
+
+    // ───────────────────────── Lifecycle ─────────────────────────
 
     private void Awake()
     {
@@ -32,38 +37,35 @@ public class SaveSystemManager : MonoBehaviour
 
         Instance = this;
 
-        // Read worldName and seed from GameSettings if available
+        // Static fields persist across play-mode entries in the editor — reset.
+        IsSavingDisabled = false;
+
         if (GameSettings.Instance != null)
-        {
             worldName = GameSettings.Instance.worldName;
-        }
         else
-        {
             Debug.LogWarning("[SaveSystemManager] GameSettings not found — using fallback worldName.");
-        }
     }
 
     private void Start()
     {
-        // Load inventory once everything is initialized
         if (InventorySaveSystem.Instance != null)
             InventorySaveSystem.Instance.LoadInventory(worldName);
         else
             Debug.LogWarning("[SaveSystemManager] InventorySaveSystem not found — inventory not loaded.");
 
-        // Load player position and happiness
         if (PlayerSaveSystem.Instance != null)
             PlayerSaveSystem.Instance.LoadPlayer(worldName);
         else
             Debug.LogWarning("[SaveSystemManager] PlayerSaveSystem not found — player not loaded.");
 
-        // Load time of day
         if (DayNightMaster.Instance != null)
             DayNightMaster.Instance.LoadTime(worldName);
     }
 
     private void Update()
     {
+        if (IsSavingDisabled) return;
+
         if (autoSaveInterval > 0)
         {
             _saveTimer += Time.deltaTime;
@@ -77,24 +79,22 @@ public class SaveSystemManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        if (IsSavingDisabled) return;
         SaveModifiedChunks();
     }
 
     private void OnApplicationPause(bool paused)
     {
-        if (paused)
+        if (paused && !IsSavingDisabled)
             SaveModifiedChunks();
     }
 
-    /// <summary>
-    /// Force save all modified chunks now.
-    /// </summary>
+    // ───────────────────────── Saving ─────────────────────────
+
     public void SaveModifiedChunks()
     {
-        // Permadeath gate: once the world's been wiped, never write again.
-        if (_worldDeleted) return;
+        if (IsSavingDisabled || _worldDeleted) return;
 
-        // Save chunks (only if ChunkManager exists — won't in dungeon scenes)
         if (ChunkManager.Instance != null)
         {
             ChunkPersistence.SaveModifiedChunks(
@@ -104,27 +104,22 @@ public class SaveSystemManager : MonoBehaviour
             );
         }
 
-        // Save inventory
         if (InventorySaveSystem.Instance != null)
             InventorySaveSystem.Instance.SaveInventory(worldName);
         else
             Debug.LogWarning("[SaveSystemManager] InventorySaveSystem not found — inventory not saved.");
 
-        // Save player position and happiness
         if (PlayerSaveSystem.Instance != null)
             PlayerSaveSystem.Instance.SavePlayer(worldName);
         else
             Debug.LogWarning("[SaveSystemManager] PlayerSaveSystem not found — player not saved.");
 
-        // Save player-placed structures
         if (PlacedStructureManager.Instance != null)
             PlacedStructureManager.Instance.SaveAll();
 
-        // Save time of day
         if (DayNightMaster.Instance != null)
             DayNightMaster.Instance.SaveTime(worldName);
 
-        // Keep lastPlayed timestamp fresh in the metadata file
         if (GameSettings.Instance != null)
             GameSettings.Instance.UpdateLastPlayed(worldName);
     }
@@ -132,25 +127,93 @@ public class SaveSystemManager : MonoBehaviour
     // ───────────────────────── Permadeath ─────────────────────────
 
     /// <summary>
-    /// Permanently deletes the current world's entire save folder
-    /// (worlds/{worldName}/ — chunks, structures, inventory, player, time,
-    /// metadata, everything). Disarms further saves so the in-memory state
-    /// can't resurrect files before the scene unloads.
-    ///
-    /// Call this from your death flow for permadeath. Returns true if a
-    /// folder was actually deleted.
+    /// Permadeath wipe. Order matters:
+    ///   1. Trip the global IsSavingDisabled gate FIRST so any save call
+    ///      mid-deletion bails before writing.
+    ///   2. Disable every save-subsystem MonoBehaviour we know about — stops
+    ///      their Update loops and any timed/queued saves.
+    ///   3. Delete the world folder from disk.
+    ///   4. Watch the folder for ~2 seconds. If anything re-creates a file
+    ///      inside it, we log the filename so we can hunt down which
+    ///      subsystem is bypassing the gate.
     /// </summary>
     public bool DeleteCurrentWorld()
     {
-        // Latch FIRST so any save call mid-deletion is a no-op.
+        Debug.Log("[SaveSystemManager] PERMADEATH — wiping world.");
+
+        // 1. GLOBAL gate up.
+        IsSavingDisabled = true;
         _worldDeleted = true;
-        return DeleteWorld(worldName);
+
+        // 2. Aggressively shut down every save-related component.
+        ShutdownSaveSubsystems();
+
+        // 3. Delete the folder.
+        bool deleted = DeleteWorld(worldName);
+
+        // 4. Monitor for resurrection.
+        if (deleted)
+            StartCoroutine(MonitorForResurrection(worldName, watchSeconds: 2f));
+
+        return deleted;
     }
 
     /// <summary>
-    /// Delete a named world's save folder from disk. Static so a main-menu
-    /// "Delete World" button can also call it without an active SaveSystemManager.
+    /// Disables every save subsystem component we can reach. This stops their
+    /// Update loops, but does NOT stop someone from calling their public Save
+    /// methods directly — that's what the IsSavingDisabled gate is for.
     /// </summary>
+    private void ShutdownSaveSubsystems()
+    {
+        if (InventorySaveSystem.Instance != null)
+            InventorySaveSystem.Instance.enabled = false;
+
+        if (PlayerSaveSystem.Instance != null)
+            PlayerSaveSystem.Instance.enabled = false;
+
+        if (PlacedStructureManager.Instance != null)
+            PlacedStructureManager.Instance.enabled = false;
+
+        if (DayNightMaster.Instance != null)
+            DayNightMaster.Instance.enabled = false;
+
+        if (ChunkManager.Instance != null)
+            ChunkManager.Instance.enabled = false;
+
+        autoSaveInterval = 0f;
+    }
+
+    /// <summary>
+    /// Watches the world folder after deletion. If a file shows up, we know
+    /// some subsystem bypassed the IsSavingDisabled gate and we log which
+    /// file came back so we can patch that subsystem.
+    /// </summary>
+    private IEnumerator MonitorForResurrection(string watchedWorld, float watchSeconds)
+    {
+        string fullPath = Path.Combine(Application.persistentDataPath, "worlds", watchedWorld);
+        float elapsed = 0f;
+        bool reportedRecreation = false;
+
+        while (elapsed < watchSeconds)
+        {
+            if (!reportedRecreation && Directory.Exists(fullPath))
+            {
+                reportedRecreation = true;
+                Debug.LogError(
+                    $"[SaveSystemManager] !!! World folder was RECREATED after deletion: {fullPath}\n" +
+                    "Something is bypassing the IsSavingDisabled gate. Files inside:");
+
+                foreach (var file in Directory.GetFiles(fullPath))
+                    Debug.LogError($"   ↳ {Path.GetFileName(file)}");
+            }
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (!reportedRecreation)
+            Debug.Log($"[SaveSystemManager] Permadeath wipe confirmed clean after {watchSeconds:F1}s.");
+    }
+
     public static bool DeleteWorld(string targetWorldName)
     {
         if (string.IsNullOrWhiteSpace(targetWorldName))
@@ -159,7 +222,6 @@ public class SaveSystemManager : MonoBehaviour
             return false;
         }
 
-        // Safety: never accept a name that could escape the worlds folder.
         if (targetWorldName.Contains("..") ||
             targetWorldName.Contains("/") ||
             targetWorldName.Contains("\\"))
@@ -171,7 +233,6 @@ public class SaveSystemManager : MonoBehaviour
         string worldsRoot = Path.Combine(Application.persistentDataPath, "worlds");
         string worldPath = Path.Combine(worldsRoot, targetWorldName);
 
-        // Belt-and-braces: confirm the resolved path is actually inside worldsRoot.
         string fullWorldPath = Path.GetFullPath(worldPath);
         string fullRoot = Path.GetFullPath(worldsRoot);
         if (!fullWorldPath.StartsWith(fullRoot))
@@ -180,9 +241,15 @@ public class SaveSystemManager : MonoBehaviour
             return false;
         }
 
+        // Log the path EVERY time so we can verify it's the right one.
+        Debug.Log($"[SaveSystemManager] Attempting to delete: {fullWorldPath}");
+
         if (!Directory.Exists(fullWorldPath))
         {
-            Debug.LogWarning($"[SaveSystemManager] World folder not found: {fullWorldPath}");
+            Debug.LogWarning(
+                $"[SaveSystemManager] World folder not found at {fullWorldPath} — " +
+                "either the path is wrong or the world was never saved. " +
+                $"Look in: {Application.persistentDataPath}");
             return false;
         }
 
@@ -194,17 +261,16 @@ public class SaveSystemManager : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[SaveSystemManager] Failed to delete '{targetWorldName}': {e.Message}");
+            Debug.LogError(
+                $"[SaveSystemManager] Failed to delete '{targetWorldName}': {e.Message}\n" +
+                "If this is a sharing-violation error, a file is still open. " +
+                "One of the save subsystems likely holds a FileStream — close it before deletion.");
             return false;
         }
     }
 
     // ───────────────────────── Editor Tools ─────────────────────────
 
-    /// <summary>
-    /// Delete all save data and regenerate. Use if world is corrupted.
-    /// Available from Inspector right-click menu.
-    /// </summary>
     [ContextMenu("Clear Save Data")]
     public void ClearSaveData()
     {
@@ -216,14 +282,16 @@ public class SaveSystemManager : MonoBehaviour
         Debug.Log($"[SaveSystemManager] Cleared save data for world '{worldName}'");
     }
 
-    /// <summary>
-    /// Full filesystem wipe — same as the permadeath path. Use this from the
-    /// editor when you want a clean slate (kills inventory/player/time/metadata
-    /// files that the partial 'Clear Save Data' leaves behind).
-    /// </summary>
     [ContextMenu("Delete World Folder (Full Wipe)")]
     public void EditorDeleteWorldFolder()
     {
         DeleteWorld(worldName);
+    }
+
+    [ContextMenu("Print Persistent Data Path")]
+    public void PrintPersistentDataPath()
+    {
+        Debug.Log($"[SaveSystemManager] persistentDataPath = {Application.persistentDataPath}");
+        Debug.Log($"[SaveSystemManager] worlds folder      = {Path.Combine(Application.persistentDataPath, "worlds")}");
     }
 }
