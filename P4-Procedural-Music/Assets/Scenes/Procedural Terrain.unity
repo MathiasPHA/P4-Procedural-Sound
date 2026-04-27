@@ -1971,7 +1971,7 @@ PrefabInstance:
     - target: {fileID: 3230786977991478547, guid: 4c4428881e3587c42ac53f0916cb9993, type: 3}
       propertyPath: inputProvider
       value: 
-      objectReference: {fileID: 56514507}
+      objectReference: {fileID: 0}
     - target: {fileID: 3230786977991478547, guid: 4c4428881e3587c42ac53f0916cb9993, type: 3}
       propertyPath: offerContainer
       value: 
