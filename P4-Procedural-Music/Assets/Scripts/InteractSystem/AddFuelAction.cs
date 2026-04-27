@@ -13,6 +13,11 @@ using InventorySystem.Data;
 ///   1. Attach to the same GameObject as a CampfireComfortSource
 ///   2. Also attach a WorldStationInteractable (the router)
 ///   3. Fuel target auto-found via GetComponent
+///
+/// Note: Awake intentionally does NOT error when the fuel target is missing.
+/// The placement ghost preview instantiates this prefab too, and ghosts
+/// don't have functional components by design. Validation is deferred to
+/// Execute, which only runs on a real placed structure.
 /// </summary>
 public class AddFuelAction : MonoBehaviour, IWorldInteractAction
 {
@@ -30,14 +35,16 @@ public class AddFuelAction : MonoBehaviour, IWorldInteractAction
     {
         if (fuelTarget == null)
             fuelTarget = GetComponent<CampfireComfortSource>();
-
-        if (fuelTarget == null)
-            Debug.LogError($"[AddFuelAction] No CampfireComfortSource on {name}!");
+        // Intentionally no error log — see class-doc note about ghost previews.
     }
 
     public void Execute(PlayerStateManager player)
     {
-        if (fuelTarget == null) return;
+        if (fuelTarget == null)
+        {
+            Debug.LogWarning($"[AddFuelAction] No CampfireComfortSource on {name} — can't fuel.");
+            return;
+        }
 
         var inventory = InventoryBootstrap.PlayerInventory;
         if (inventory == null) return;
@@ -56,7 +63,6 @@ public class AddFuelAction : MonoBehaviour, IWorldInteractAction
             return;
         }
 
-        // Consume one unit from equipped and feed the campfire
         inventory.RemoveItem(data.id, 1);
         fuelTarget.AddFuel(data.burnFuelValue);
 

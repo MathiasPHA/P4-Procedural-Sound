@@ -17,6 +17,10 @@ namespace InventorySystem.Crafting
     ///   1. Attach to the same GameObject as a BaseCraftingStation subclass
     ///   2. Also attach a WorldStationInteractable (the router)
     ///   3. Station ref auto-found via GetComponent; UI refs auto-found in scene
+    ///
+    /// Note: Awake/Start do NOT error when refs are missing. Placement ghosts
+    /// instantiate this prefab too, and ghosts don't need functional refs.
+    /// Validation is deferred to Execute, which only runs on real placed pots.
     /// </summary>
     public class OpenCraftingUIAction : MonoBehaviour, IWorldInteractAction
     {
@@ -42,16 +46,30 @@ namespace InventorySystem.Crafting
 
             if (craftingUI == null)
                 craftingUI = FindAnyObjectByType<CraftingUIManager>();
-
-            if (station == null)
-                Debug.LogError($"[OpenCraftingUIAction] No BaseCraftingStation on {name}!");
-            if (craftingUI == null)
-                Debug.LogError("[OpenCraftingUIAction] CraftingUIManager not found in scene!");
+            // No errors here — see class-doc note about ghost previews.
         }
 
         public void Execute(PlayerStateManager player)
         {
-            if (station == null || craftingUI == null) return;
+            if (station == null)
+            {
+                Debug.LogError($"[OpenCraftingUIAction] {name}: no BaseCraftingStation found — can't open panel.");
+                return;
+            }
+
+            if (craftingUI == null)
+            {
+                // Last-chance lookup in case Start hadn't fired yet
+                craftingUI = FindAnyObjectByType<CraftingUIManager>();
+                if (craftingUI == null)
+                {
+                    Debug.LogError($"[OpenCraftingUIAction] {name}: no CraftingUIManager in scene — can't open panel.");
+                    return;
+                }
+            }
+
+            if (inventoryUI == null)
+                inventoryUI = FindAnyObjectByType<InventoryUIManager>();
 
             // Open the inventory panel if it isn't already — puts player in
             // inventoryState (stops movement) and reveals the inventory UI.
@@ -60,6 +78,8 @@ namespace InventorySystem.Crafting
 
             // Focus the crafting panel on this station. If already open, re-targets.
             craftingUI.OpenWithStation(station);
+
+            Debug.Log($"[OpenCraftingUIAction] Opened crafting panel on {station.StationType}.");
         }
     }
 }

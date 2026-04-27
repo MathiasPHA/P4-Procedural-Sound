@@ -31,6 +31,13 @@ namespace InventorySystem.UI
     /// Building) without needing a specific tool equipped. Each tab maps
     /// to a BaseCraftingStation that filters recipes by station type.
     ///
+    /// Tab visibility:
+    ///   When the active station is one of the tabs, the tab bar is shown
+    ///   and the player can switch freely. When a world-only station is
+    ///   active (cooking station, workbench, etc. — anything not in the
+    ///   tabs list), the tab bar is hidden so the player can't accidentally
+    ///   switch off the world station's recipe set.
+    ///
     /// Communicates with the inventory purely through the Inventory API
     /// and the crafting station abstraction — no direct coupling to
     /// InventoryUIManager.
@@ -95,7 +102,9 @@ namespace InventorySystem.UI
         private bool _isOpen;
         private bool _initialized;
 
-        // Tab state
+        // Tab state. _activeTabIndex == -1 means the active station isn't
+        // represented in the tabs list (e.g. a world-only station like the
+        // cooking pot). In that case the tab bar is hidden.
         private int _activeTabIndex;
         private readonly List<CraftingTabButton> _tabButtons = new();
 
@@ -278,6 +287,7 @@ namespace InventorySystem.UI
             RebuildRecipeList();
             ClearSelection();
             UpdateTabHighlights();
+            UpdateTabBarVisibility();
             UpdateStationHeader();
 
             // Auto-select first recipe
@@ -291,6 +301,34 @@ namespace InventorySystem.UI
             {
                 _tabButtons[i].SetActive(i == _activeTabIndex);
             }
+        }
+
+        /// <summary>
+        /// Show the tab bar only when the active station is one of the tabs.
+        /// World-only stations (cooking, workbench, etc.) hide the bar so
+        /// the player can't switch away from the station's recipe set.
+        /// </summary>
+        private void UpdateTabBarVisibility()
+        {
+            if (tabBarContainer == null) return;
+
+            bool show = _activeTabIndex >= 0 && _activeTabIndex < tabs.Count;
+            tabBarContainer.gameObject.SetActive(show);
+        }
+
+        /// <summary>
+        /// Returns the tab index whose station matches the given station,
+        /// or -1 if no tab matches (i.e. the station is a world-only station).
+        /// </summary>
+        private int FindTabIndexForStation(ICraftingStation station)
+        {
+            if (station == null) return -1;
+            for (int i = 0; i < tabs.Count; i++)
+            {
+                if (tabs[i].station == (BaseCraftingStation)station)
+                    return i;
+            }
+            return -1;
         }
 
         // =====================================================================
@@ -316,15 +354,8 @@ namespace InventorySystem.UI
             {
                 _activeStation = station;
 
-                // Try to find a matching tab and highlight it
-                for (int i = 0; i < tabs.Count; i++)
-                {
-                    if (tabs[i].station == (BaseCraftingStation)station)
-                    {
-                        _activeTabIndex = i;
-                        break;
-                    }
-                }
+                // -1 means the active station isn't a tab — world-only.
+                _activeTabIndex = FindTabIndexForStation(station);
             }
 
             if (_isOpen)
@@ -332,6 +363,7 @@ namespace InventorySystem.UI
                 RebuildRecipeList();
                 ClearSelection();
                 UpdateTabHighlights();
+                UpdateTabBarVisibility();
                 UpdateStationHeader();
             }
         }
@@ -398,6 +430,7 @@ namespace InventorySystem.UI
 
             RebuildRecipeList();
             UpdateTabHighlights();
+            UpdateTabBarVisibility();
             UpdateStationHeader();
 
             // Auto-select first recipe if nothing is selected
@@ -485,15 +518,37 @@ namespace InventorySystem.UI
         {
             if (stationNameText == null) return;
 
-            // Use the active tab's label if available
+            // Tab-backed station: use the tab label
             if (_activeTabIndex >= 0 && _activeTabIndex < tabs.Count)
             {
                 stationNameText.text = tabs[_activeTabIndex].label.ToUpper();
+                return;
             }
-            else
+
+            // World-only station (cooking, workbench, ...): use station type
+            if (_activeStation != null)
             {
-                stationNameText.text = "CRAFTING";
+                stationNameText.text = GetStationDisplayName(_activeStation.StationType);
+                return;
             }
+
+            stationNameText.text = "CRAFTING";
+        }
+
+        /// <summary>
+        /// Pretty-prints a CraftingStationType for the panel header when no tab
+        /// label is available. Adjust here if you rename a station type.
+        /// </summary>
+        private static string GetStationDisplayName(CraftingStationType type)
+        {
+            return type switch
+            {
+                CraftingStationType.HandCraft       => "CRAFTING",
+                CraftingStationType.Workbench       => "WORKBENCH",
+                CraftingStationType.CookingStation  => "COOKING",
+                CraftingStationType.BuildHammer     => "BUILDING",
+                _                                   => type.ToString().ToUpper()
+            };
         }
 
         // =====================================================================

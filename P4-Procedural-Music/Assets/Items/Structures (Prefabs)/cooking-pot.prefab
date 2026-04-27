@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: -4176774757488347955}
   - component: {fileID: 5728131855267080679}
   - component: {fileID: 4587687224067442618}
-  - component: {fileID: 450748044201033805}
   - component: {fileID: 3455197286441480644}
   - component: {fileID: -55101933661581049}
   - component: {fileID: -5648824164581605508}
@@ -187,21 +186,6 @@ MonoBehaviour:
   depletedPrefab: {fileID: 0}
   shakeIntensity: 0.1
   shakeDuration: 0.15
---- !u!114 &450748044201033805
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3306544976526998673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67fd9947978f09b41955464610c850f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
-  actionVerb: Interact
-  interactRange: 1.5
-  promptOffset: {x: 0, y: 1.2}
 --- !u!114 &3455197286441480644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,7 +200,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.CookingStation
   stationType: 2
   recipeDatabase:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: c650546ba34cbad4b827e9063c606284, type: 2}
+  - {fileID: 11400000, guid: aed7ae12ea555b74dbb7b585c756e48b, type: 2}
   discoverAllOnStart: 1
 --- !u!114 &-55101933661581049
 MonoBehaviour:
@@ -231,7 +216,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.WorldStationInteractable
   actionVerb: Interact
-  interactRange: 1.5
+  interactRange: 15
+  interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
   logActions: 0
 --- !u!114 &-5648824164581605508

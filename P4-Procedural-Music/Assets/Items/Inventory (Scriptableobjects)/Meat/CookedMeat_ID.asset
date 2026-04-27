@@ -10,22 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
-  m_Name: Meat
+  m_Name: CookedMeat_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: Meat
-  displayName: Meat
-  description: Smells raw
-  loreNote: A great source of energy
-  icon: {fileID: 21300000, guid: 9487c875d96ff7b4ca7c323dbbe09dd2, type: 3}
+  id: Cooked_Meat
+  displayName: Cooked Meat
+  description: Cooked meat taste nice
+  loreNote: 
+  icon: {fileID: 21300000, guid: 9d7a0841901800b41921c76cd6ff10fd, type: 3}
   category: 2
-  maxStackSize: 64
+  maxStackSize: 10
   isDroppable: 1
   hasInstanceState: 0
   maxDurability: 100
-  hungerRestore: 0.05
-  happinessRestore: 0.1
-  consumeSound: {fileID: 8300000, guid: d4de340d8b20f9946b22f968fdcb8b2b, type: 3}
-  consumeSoundVolume: 0.5
+  hungerRestore: 0.3
+  happinessRestore: 0
+  consumeSound: {fileID: 0}
+  consumeSoundVolume: 1
+  customEffects: []
   isFuel: 0
   burnFuelValue: 0
   displayStats: []
