@@ -218,5 +218,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
   actionVerb: Chop
-  interactRange: 8
+  interactRange: 8.21
+  interactCenterOffset: {x: -1.01, y: -14.2}
   promptOffset: {x: 0, y: 1.2}

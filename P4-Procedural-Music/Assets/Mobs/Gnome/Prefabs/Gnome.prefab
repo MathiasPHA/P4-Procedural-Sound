@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8693388746157213851
+--- !u!1 &3608220973379519148
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,41 +8,73 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3323750995553289177}
-  - component: {fileID: 8341613971563643845}
-  - component: {fileID: 3521536375207501733}
-  - component: {fileID: 3518467805631313325}
-  - component: {fileID: 8591403981544268455}
-  m_Layer: 8
-  m_Name: Strawberry plant
+  - component: {fileID: 848143569157019974}
+  m_Layer: 10
+  m_Name: InteractPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3323750995553289177
+--- !u!4 &848143569157019974
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8693388746157213851}
+  m_GameObject: {fileID: 3608220973379519148}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
+  m_Father: {fileID: 2899307749003560267}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5378333380033046601
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2899307749003560267}
+  - component: {fileID: 1079981951141499114}
+  - component: {fileID: 1882539765994000035}
+  - component: {fileID: 280538403942413479}
+  - component: {fileID: 8737546276844972407}
+  m_Layer: 10
+  m_Name: Gnome
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2899307749003560267
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5378333380033046601}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 310.44, y: -313.32, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 848143569157019974}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &8341613971563643845
+--- !u!212 &1079981951141499114
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8693388746157213851}
+  m_GameObject: {fileID: 5378333380033046601}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -82,25 +114,25 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 41
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 86aab90d0fbc2dd47a718714c0ce0b96, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f222e759ac81d314c83a2cf6ff382f8a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 5.6, y: 6.3}
+  m_Size: {x: 10, y: 10}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!61 &3521536375207501733
-BoxCollider2D:
+--- !u!70 &1882539765994000035
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8693388746157213851}
+  m_GameObject: {fileID: 5378333380033046601}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -128,68 +160,46 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 5.6, y: 6.3}
-    newSize: {x: 5.6, y: 6.3}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 4.71, y: 5.47}
-  m_EdgeRadius: 0
---- !u!114 &3518467805631313325
+  m_Offset: {x: 0, y: -1.46}
+  m_Size: {x: 3.8703308, y: 6.74}
+  m_Direction: 0
+--- !u!114 &280538403942413479
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8693388746157213851}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e705c3c11fe791646b2de9f5b4e9df68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Harvesting.HarvestableResource
-  requiredToolType: 0
-  maxHealth: 1
-  dropItem: {fileID: 11400000, guid: 761a4282f297c2841add3c75c9fe7481, type: 2}
-  dropAmount: 3
-  directToInventory: 0
-  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
-  hitSound: {fileID: 0}
-  hitVolume: 0.5
-  depleteSound: {fileID: 0}
-  depleteVolume: 0.5
-  pickupSound: {fileID: 0}
-  pickupVolume: 0.5
-  pitchVariation: 0.15
-  depletedPrefab: {fileID: 0}
-  shakeIntensity: 0.1
-  shakeDuration: 0.15
---- !u!114 &8591403981544268455
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8693388746157213851}
+  m_GameObject: {fileID: 5378333380033046601}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ca15f71e044cdc4985221eb33a847fe, type: 3}
+  m_Script: {fileID: 11500000, guid: 43b5181cb964e604f8f15ffe43fdcbe7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.BushInteractable
-  actionVerb: Pick
-  interactRange: 4.48
+  m_EditorClassIdentifier: Assembly-CSharp::GnomeInteractable
+  actionVerb: Trade
+  interactRange: 5.07
   interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
-  dropItem: {fileID: 11400000, guid: 761a4282f297c2841add3c75c9fe7481, type: 2}
-  dropAmount: 3
-  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
-  depletedSprite: {fileID: 0}
-  depletedPrefab: {fileID: 0}
-  destroyOnHarvest: 1
-  harvestSound: {fileID: 8300000, guid: 0fa6545b998569c488a78ea6d7f66301, type: 3}
-  volume: 0.5
-  pitchVariation: 0.15
+  gnomeName: 
+  tradeOffers: []
+--- !u!95 &8737546276844972407
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5378333380033046601}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0ba15ee8c6aa36f4fbcce1caa5eb2fd5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

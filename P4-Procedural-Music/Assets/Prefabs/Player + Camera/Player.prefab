@@ -620,7 +620,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82b1851245cedbf439f77f3d769ef9c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.ItemMagnet
-  magnetRadius: 18.8
+  magnetRadius: 15.4
   pullSpeed: 9.4
   acceleration: 3
   collectDistance: 7.93
@@ -682,8 +682,8 @@ MonoBehaviour:
   mobLayer:
     serializedVersion: 2
     m_Bits: 1024
-  interactRadius: 6.92
-  detectionOffset: {x: 0, y: 0}
+  interactRadius: 8.84
+  detectionOffset: {x: 0, y: -3.41}
   handDamage: 1
   handCooldown: 0.1
   handMobDamage: 1
