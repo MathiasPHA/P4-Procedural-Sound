@@ -13,7 +13,7 @@ public class PostProcessingManager : MonoBehaviour
     public Slider masterSlider;
 
     [Header("Overlay Sprite")]
-    public CanvasGroup overlayCanvasGroup; // drag your Image's parent CanvasGroup here
+    public CanvasGroup overlayCanvasGroup; 
 
     private Vignette vignette;
     private FilmGrain filmGrain;
@@ -47,6 +47,6 @@ public class PostProcessingManager : MonoBehaviour
     {
         if (vignette != null)   vignette.intensity.value   = masterIntensity;
         if (filmGrain != null)  filmGrain.intensity.value  = masterIntensity;
-        overlayCanvasGroup.alpha = Mathf.InverseLerp(0.5f, 1f, masterIntensity);
+        overlayCanvasGroup.alpha = Mathf.InverseLerp(0.675f, 1f, masterIntensity);
     }
 }
