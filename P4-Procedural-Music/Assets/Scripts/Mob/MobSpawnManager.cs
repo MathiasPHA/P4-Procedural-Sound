@@ -297,6 +297,9 @@ namespace MobSystem
             // Initialise with data and layer masks
             controller.Initialise(mobData, playerLayer, obstacleMask, mobMask);
 
+            // Attach catching behaviour if the mob supports it
+            CatchableMob.TryAddToInstance(instance, mobData);  
+
             // Track
             _activeMobs.Add(controller);
             IncrementTypeCount(mobData.id);
@@ -403,7 +406,22 @@ namespace MobSystem
             IncrementTypeCount(mobData.id);
             controller.OnDeath += HandleMobDeath;
 
+        // Attach catching behaviour if the mob supports it
+            CatchableMob.TryAddToInstance(instance, mobData);
+
             return controller;
+        }
+
+        /// <summary>
+        /// Called by CatchableMob when a mob is caught so tracking stays accurate.
+        /// Removes the mob from active lists without triggering death logic.
+        /// </summary>
+        public void UntrackMob(MobController mob)
+        {
+            if (mob == null) return;
+            mob.OnDeath -= HandleMobDeath;
+            DecrementTypeCount(mob.Data.id);
+            _activeMobs.Remove(mob);
         }
 
         /// <summary>
