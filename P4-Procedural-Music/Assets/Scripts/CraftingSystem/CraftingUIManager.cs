@@ -77,12 +77,6 @@ namespace InventorySystem.UI
         [Tooltip("Used when the tabs list is empty. Otherwise the first tab's station is the default.")]
         [SerializeField] private BaseCraftingStation handCraftingStation;
 
-        [Header("Inventory UI (for placement sync)")]
-        [Tooltip("Reference to the InventoryUIManager. When a Buildable is crafted, " +
-                 "the inventory panel is closed alongside the crafting panel so the " +
-                 "player has a clear view for placement.")]
-        [SerializeField] private InventoryUIManager inventoryUI;
-
         [Header("Audio")]
         [SerializeField] private AudioClip craftSound;
         [Range(0f, 1f)]
@@ -351,16 +345,34 @@ namespace InventorySystem.UI
             SetActiveStation(null);
         }
 
+        /// <summary>
+        /// Set the active station AND open the crafting panel.
+        /// Used by click-to-interact handlers (e.g. CookingStationInteractable)
+        /// that need to pop the panel open in response to a world click, rather
+        /// than waiting for the inventory toggle key.
+        /// If the panel is already open, this just re-targets to the new station.
+        /// </summary>
+        public void OpenWithStation(ICraftingStation station)
+        {
+            SetActiveStation(station);
+
+            if (!_isOpen)
+                OpenPanel();
+        }
+
         // =====================================================================
-        // PlacementSystem callbacks
+        // PlacementSystem callbacks — re-open after placement
         // =====================================================================
 
         private void OnPlacementEnded()
         {
-            // Placement ended (cancelled or out of materials).
-            // The panels stay closed — the player reopens them manually with Tab.
-            // This gives the player a clear view of what they just built.
-            _closedForPlacement = false;
+            // Re-open the crafting panel on the same tab the player was on
+            // when they clicked Build. This lets them continue placing structures.
+            if (_closedForPlacement)
+            {
+                _closedForPlacement = false;
+                OpenPanel();
+            }
         }
 
         // =====================================================================
@@ -394,7 +406,8 @@ namespace InventorySystem.UI
         }
 
         /// <summary>
-        /// Close the crafting panel. Public so PauseManager can close it on Escape.
+        /// Close the crafting panel. Public so external systems (pause menu,
+        /// scene transitions, etc.) can dismiss the panel cleanly.
         /// </summary>
         public void ClosePanel()
         {
@@ -535,22 +548,17 @@ namespace InventorySystem.UI
                 if (craftSound != null && _audioSource != null && Time.time >= lastCraftSoundTime + craftSoundCooldown)
                 {
                     lastCraftSoundTime = Time.time;
-                    _audioSource.pitch = 1f + UnityEngine.Random.Range(-craftPitchVariation, craftPitchVariation);
+                   _audioSource.pitch = 1f + UnityEngine.Random.Range(-craftPitchVariation, craftPitchVariation);
                     _audioSource.PlayOneShot(craftSound, craftVolume);
                 }
 
-                // If the result was a Buildable, close both panels for placement.
+                // If the result was a Buildable, close the panel for placement.
                 // PlacementSystem is now in ghost mode. Mark _closedForPlacement
                 // so we re-open on the same tab when placement ends.
                 if (_selectedRecipe.result.category == ItemCategory.Buildable)
                 {
                     _closedForPlacement = true;
                     ClosePanel();
-
-                    // Close the inventory too so the player has a clear view for placement
-                    if (inventoryUI != null && inventoryUI.IsInventoryOpen)
-                        inventoryUI.ToggleInventory();
-
                     return;
                 }
 
