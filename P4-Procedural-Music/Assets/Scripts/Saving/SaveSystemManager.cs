@@ -1,3 +1,4 @@
+using System.IO;
 using ProceduralTerrain;
 using UnityEngine;
 
@@ -13,6 +14,13 @@ public class SaveSystemManager : MonoBehaviour
     public static SaveSystemManager Instance { get; private set; }
 
     private float _saveTimer;
+
+    /// <summary>
+    /// Latched true after a permadeath wipe. While set, SaveModifiedChunks is a
+    /// no-op so that autosave / OnApplicationQuit can't re-create files between
+    /// deletion and the scene transition back to the main menu.
+    /// </summary>
+    private bool _worldDeleted;
 
     private void Awake()
     {
@@ -83,6 +91,9 @@ public class SaveSystemManager : MonoBehaviour
     /// </summary>
     public void SaveModifiedChunks()
     {
+        // Permadeath gate: once the world's been wiped, never write again.
+        if (_worldDeleted) return;
+
         // Save chunks (only if ChunkManager exists — won't in dungeon scenes)
         if (ChunkManager.Instance != null)
         {
@@ -118,6 +129,78 @@ public class SaveSystemManager : MonoBehaviour
             GameSettings.Instance.UpdateLastPlayed(worldName);
     }
 
+    // ───────────────────────── Permadeath ─────────────────────────
+
+    /// <summary>
+    /// Permanently deletes the current world's entire save folder
+    /// (worlds/{worldName}/ — chunks, structures, inventory, player, time,
+    /// metadata, everything). Disarms further saves so the in-memory state
+    /// can't resurrect files before the scene unloads.
+    ///
+    /// Call this from your death flow for permadeath. Returns true if a
+    /// folder was actually deleted.
+    /// </summary>
+    public bool DeleteCurrentWorld()
+    {
+        // Latch FIRST so any save call mid-deletion is a no-op.
+        _worldDeleted = true;
+        return DeleteWorld(worldName);
+    }
+
+    /// <summary>
+    /// Delete a named world's save folder from disk. Static so a main-menu
+    /// "Delete World" button can also call it without an active SaveSystemManager.
+    /// </summary>
+    public static bool DeleteWorld(string targetWorldName)
+    {
+        if (string.IsNullOrWhiteSpace(targetWorldName))
+        {
+            Debug.LogWarning("[SaveSystemManager] Cannot delete world — name is empty.");
+            return false;
+        }
+
+        // Safety: never accept a name that could escape the worlds folder.
+        if (targetWorldName.Contains("..") ||
+            targetWorldName.Contains("/") ||
+            targetWorldName.Contains("\\"))
+        {
+            Debug.LogError($"[SaveSystemManager] Refusing suspicious world name: '{targetWorldName}'");
+            return false;
+        }
+
+        string worldsRoot = Path.Combine(Application.persistentDataPath, "worlds");
+        string worldPath = Path.Combine(worldsRoot, targetWorldName);
+
+        // Belt-and-braces: confirm the resolved path is actually inside worldsRoot.
+        string fullWorldPath = Path.GetFullPath(worldPath);
+        string fullRoot = Path.GetFullPath(worldsRoot);
+        if (!fullWorldPath.StartsWith(fullRoot))
+        {
+            Debug.LogError($"[SaveSystemManager] Path escape blocked: {fullWorldPath}");
+            return false;
+        }
+
+        if (!Directory.Exists(fullWorldPath))
+        {
+            Debug.LogWarning($"[SaveSystemManager] World folder not found: {fullWorldPath}");
+            return false;
+        }
+
+        try
+        {
+            Directory.Delete(fullWorldPath, recursive: true);
+            Debug.Log($"[SaveSystemManager] Deleted world: {targetWorldName}");
+            return true;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[SaveSystemManager] Failed to delete '{targetWorldName}': {e.Message}");
+            return false;
+        }
+    }
+
+    // ───────────────────────── Editor Tools ─────────────────────────
+
     /// <summary>
     /// Delete all save data and regenerate. Use if world is corrupted.
     /// Available from Inspector right-click menu.
@@ -131,5 +214,16 @@ public class SaveSystemManager : MonoBehaviour
             PlacedStructureManager.Instance.ClearAll(worldName);
 
         Debug.Log($"[SaveSystemManager] Cleared save data for world '{worldName}'");
+    }
+
+    /// <summary>
+    /// Full filesystem wipe — same as the permadeath path. Use this from the
+    /// editor when you want a clean slate (kills inventory/player/time/metadata
+    /// files that the partial 'Clear Save Data' leaves behind).
+    /// </summary>
+    [ContextMenu("Delete World Folder (Full Wipe)")]
+    public void EditorDeleteWorldFolder()
+    {
+        DeleteWorld(worldName);
     }
 }
