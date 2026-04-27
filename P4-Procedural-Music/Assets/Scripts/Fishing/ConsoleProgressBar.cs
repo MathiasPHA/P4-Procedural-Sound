@@ -3,64 +3,65 @@ using UnityEngine;
 public class ConsoleProgressBar : MonoBehaviour
 {
     private string[] Progress = new string[]
-{
-    "[                    ] 0%",   // [0]
-    "[>                   ] 5%",   // [1]
-    "[=>                  ] 10%",  // [2]
-    "[==>                 ] 15%",  // [3]
-    "[===>                ] 20%",  // [4]
-    "[====>               ] 25%",  // [5]
-    "[=====>              ] 30%",  // [6]
-    "[======>             ] 35%",  // [7]
-    "[=======>            ] 40%",  // [8]
-    "[========>           ] 45%",  // [9]
-    "[=========>          ] 50%",  // [10]
-    "[==========>         ] 55%",  // [11]
-    "[===========>        ] 60%",  // [12]
-    "[============>       ] 65%",  // [13]
-    "[=============>      ] 70%",  // [14]
-    "[==============>     ] 75%",  // [15]
-    "[===============>    ] 80%",  // [16]
-    "[================>   ] 85%",  // [17]
-    "[=================>  ] 90%",  // [18]
-    "[==================> ] 95%",  // [19]
-    "[===================>] 100%"  // [20]
-};
+    {
+        "[                    ] 0%",
+        "[>                   ] 5%",
+        "[=>                  ] 10%",
+        "[==>                 ] 15%",
+        "[===>                ] 20%",
+        "[====>               ] 25%",
+        "[=====>              ] 30%",
+        "[======>             ] 35%",
+        "[=======>            ] 40%",
+        "[========>           ] 45%",
+        "[=========>          ] 50%",
+        "[==========>         ] 55%",
+        "[===========>        ] 60%",
+        "[============>       ] 65%",
+        "[=============>      ] 70%",
+        "[==============>     ] 75%",
+        "[===============>    ] 80%",
+        "[================>   ] 85%",
+        "[=================>  ] 90%",
+        "[==================> ] 95%",
+        "[===================>] 100%"
+    };
 
-
-    public Material material;
-
-    [SerializeField] private float progressValue;
+    [SerializeField] private Transform progT;
     [SerializeField] private string currentProgress;
+
+    private const float MIN_POS = -8.25f;
+    private const float MAX_POS = 8.25f;
 
     private FishingV1 fishingScript;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        material = GetComponent<Renderer>().material;
         fishingScript = GameObject.Find("Fish").GetComponent<FishingV1>();
+        progT = transform.GetChild(0);
     }
+
     void Update()
     {
         float points = fishingScript.fishingPoints;
         float target = fishingScript.targetPoints;
-
-        progressValue = (points % target) / target; // Normalize to 0-1 range
         float progressClamp = Mathf.Clamp01(points / target);
 
-        int index = Mathf.Clamp(Mathf.FloorToInt((points / target) * 20f), 0, 20);
+        // Convert 0-1 progress into one of 21 steps (0-20) matching the Progress array indices
+        int index = Mathf.Clamp(Mathf.FloorToInt(progressClamp * 20f), 0, 20);
 
+        // Only log when the progress step actually changes to avoid spamming the console every frame
         if (currentProgress != Progress[index])
         {
             currentProgress = Progress[index];
             Debug.Log(currentProgress);
         }
 
-        if (fishingScript.fishingTime > 0 && progressClamp <= 1)
+        if (fishingScript.fishingTime > 0)
         {
-            material.SetFloat("_Progress", Mathf.Min(progressClamp, 1f));
-        }   
-
+            float targetY = Mathf.Lerp(MIN_POS, MAX_POS, progressClamp);
+            Vector3 pos = progT.localPosition;
+            progT.localPosition = new Vector3(pos.x, targetY, pos.z);
+        }
     }
 }
