@@ -38,7 +38,7 @@ MonoBehaviour:
   threatComfortValue: 0.236
   threatRadius: 300
   hurtStunDuration: 0.3
-  attackWindupDuration: 0.87
+  attackWindupDuration: 0.75
   attackStrikeDuration: 0.5
   attackRecoveryDuration: 1.2
   attackAimLockRatio: 0

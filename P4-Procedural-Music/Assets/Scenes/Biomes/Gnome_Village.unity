@@ -1940,8 +1940,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 992352094}
     m_Modifications:
     - target: {fileID: 280538403942413479, guid: 3ab35f5b745b1bc4fab7665bd4c0accb, type: 3}
+      propertyPath: gnomeName
+      value: Jeff
+      objectReference: {fileID: 0}
+    - target: {fileID: 280538403942413479, guid: 3ab35f5b745b1bc4fab7665bd4c0accb, type: 3}
       propertyPath: tradeOffers.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 280538403942413479, guid: 3ab35f5b745b1bc4fab7665bd4c0accb, type: 3}
       propertyPath: 'tradeOffers.Array.data[0]'
