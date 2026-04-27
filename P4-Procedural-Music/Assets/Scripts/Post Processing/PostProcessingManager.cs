@@ -10,7 +10,6 @@ public class PostProcessingManager : MonoBehaviour
 
     [Header("Master Control")]
     [Range(0f, 1f)] public float masterIntensity = 0f;
-    public Slider masterSlider;
 
     [Header("Overlay Sprite")]
     public CanvasGroup overlayCanvasGroup; 
@@ -19,8 +18,13 @@ public class PostProcessingManager : MonoBehaviour
     [SerializeField] float minimumIntensity;
     [SerializeField] float maximumIntensity;
 
+    [Header("Tentacle")]
+    public TentacleAttack tentacleAttack;
+    public float tentacleTriggerThreshold = 0.1f;
+
     private Vignette vignette;
     private FilmGrain filmGrain;
+    private bool tentacleTriggered = false;
 
     void Start()
     {
@@ -28,14 +32,6 @@ public class PostProcessingManager : MonoBehaviour
         {
             globalVolume.profile.TryGet(out vignette);
             globalVolume.profile.TryGet(out filmGrain);
-        }
-
-        if (masterSlider != null)
-        {
-            masterSlider.minValue = 0f;
-            masterSlider.maxValue = 1f;
-            masterSlider.value = masterIntensity;
-            masterSlider.onValueChanged.AddListener(SetMasterIntensity);
         }
     }
 
@@ -48,9 +44,23 @@ public class PostProcessingManager : MonoBehaviour
     void OnValidate() => ApplyIntensity();
 
     void ApplyIntensity()
-    {
-        if (vignette != null)   vignette.intensity.value   = masterIntensity;
-        if (filmGrain != null)  filmGrain.intensity.value  = masterIntensity;
-        overlayCanvasGroup.alpha = Mathf.InverseLerp(minimumIntensity, maximumIntensity, masterIntensity);
+{
+    if (vignette != null)   vignette.intensity.value   = masterIntensity;
+    if (filmGrain != null)  filmGrain.intensity.value  = masterIntensity;
+    overlayCanvasGroup.alpha = Mathf.InverseLerp(minimumIntensity, maximumIntensity, masterIntensity);
+
+    Debug.Log($"Intensity: {masterIntensity} | TentacleAssigned: {tentacleAttack != null} | Triggered: {tentacleTriggered}");
+
+    if (tentacleAttack != null)
+        {
+        if (masterIntensity >= tentacleTriggerThreshold && !tentacleTriggered)
+        {
+            tentacleTriggered = true;
+            tentacleAttack.Trigger(Random.insideUnitCircle.normalized);
+        }
+
+        if (masterIntensity < tentacleTriggerThreshold)
+            tentacleTriggered = false;
+        }
     }
 }

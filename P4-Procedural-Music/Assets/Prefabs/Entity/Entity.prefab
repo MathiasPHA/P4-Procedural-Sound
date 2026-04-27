@@ -31,6 +31,7 @@ Transform:
   m_Children:
   - {fileID: 8750972517590760118}
   - {fileID: 4151659040603030810}
+  - {fileID: 4669588117724555041}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2376639401677186789
@@ -135,6 +136,55 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1 &2723353998556096738
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4669588117724555041}
+  - component: {fileID: 8327087191408862021}
+  m_Layer: 0
+  m_Name: TentacleAttack
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4669588117724555041
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2723353998556096738}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1088396668706583432}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8327087191408862021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2723353998556096738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e2ecc39fedb80142926f0a0f1f8a76b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TentacleAttack
+  mobData: {fileID: 11400000, guid: 9f883aa29f6282340bc88e70657f92cc, type: 2}
+  tentacleSprite: {fileID: 21300000, guid: 8acccf381617854479d7205ca45a043b, type: 3}
+  tentacleLength: 5
+  player: {fileID: 0}
+  edgeOffsetDistance: 3
 --- !u!1 &4227593545026455722
 GameObject:
   m_ObjectHideFlags: 0
@@ -203,6 +253,8 @@ MonoBehaviour:
   overlayCanvasGroup: {fileID: 7992955286026317831}
   minimumIntensity: 0.62
   maximumIntensity: 1
+  tentacleAttack: {fileID: 0}
+  tentacleTriggerThreshold: 0.1
 --- !u!1 &5270877079746877183
 GameObject:
   m_ObjectHideFlags: 0
