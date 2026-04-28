@@ -12,6 +12,11 @@ public class PauseManager : MonoBehaviour
     public GameObject OptionsUI;
     public GameObject ExitUI;
 
+    [Header("Settings Sub-panels (closed on Resume)")]
+    [SerializeField] private GameObject settingsPopup;
+    [SerializeField] private GameObject controlsUI;
+    [SerializeField] private GameObject soundUI;
+
     [Header("Audio")]
     public MixerVolumeController volumeController;
 
@@ -33,7 +38,6 @@ public class PauseManager : MonoBehaviour
     private void OnPause(InputValue value)
     {
         // 1. Placement mode — PlacementSystem.Update() handles Escape itself.
-        //    We just skip pausing so the pause menu doesn't pop up over the ghost.
         if (PlacementSystem.Instance != null && PlacementSystem.Instance.IsPlacing)
             return;
 
@@ -75,11 +79,12 @@ public class PauseManager : MonoBehaviour
 
     public void Resume()
     {
-        if (OptionsUI.activeSelf || ExitUI.activeSelf)
-        {
-            OptionsUI.SetActive(false);
-            ExitUI.SetActive(false);
-        }
+        // Close all sub-panels so they don't reappear next pause
+        if (settingsPopup != null) settingsPopup.SetActive(false);
+        if (controlsUI != null)    controlsUI.SetActive(false);
+        if (soundUI != null)       soundUI.SetActive(false);
+        if (OptionsUI.activeSelf)  OptionsUI.SetActive(false);
+        if (ExitUI.activeSelf)     ExitUI.SetActive(false);
 
         // Restore from PlayerPrefs (picks up any settings changes)
         for (int i = 0; i < volumeController.groups.Length; i++)
