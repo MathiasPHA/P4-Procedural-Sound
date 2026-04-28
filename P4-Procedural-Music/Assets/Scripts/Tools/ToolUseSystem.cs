@@ -267,7 +267,9 @@ namespace InventorySystem.Tools
                 }
             }
 
-            if (_pointerOverUI) return;
+            // _pointerOverUI intentionally NOT checked — right-clicking a hotbar
+            // slot IS a UI click, so blocking here would prevent berry/potion eating.
+            TryConsumeHotbarItem();
         }
 
         // ───────────── Consumable ─────────────
