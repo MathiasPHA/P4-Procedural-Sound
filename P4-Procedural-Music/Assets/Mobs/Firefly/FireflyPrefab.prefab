@@ -113,7 +113,7 @@ Animator:
   m_GameObject: {fileID: 7533120962837240174}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: cb1a2d427b4f23a4baa95e0bfd663b14, type: 2}
+  m_Controller: {fileID: 9100000, guid: 3a7442cdfaf0c5c4583169c6992ac56d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -174,7 +174,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1127744342512690379, guid: db2c758ad61ba32428fbe14ca477b7a3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: eab4e14cc76b14d41bd649fa107b9216, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -222,6 +222,7 @@ MonoBehaviour:
   twoDirectionMode: 1
   flipViaScale: 0
   defaultFacingRight: 1
+  hurtAnimationDuration: 0.3
 --- !u!114 &4198672553676086458
 MonoBehaviour:
   m_ObjectHideFlags: 0
