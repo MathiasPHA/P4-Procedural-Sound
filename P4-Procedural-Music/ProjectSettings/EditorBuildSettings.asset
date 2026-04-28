@@ -17,9 +17,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Work in Progress/Comfort System.unity
     guid: b3d3fba8d205e254c9921ccc392ad366
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Procedural Terrain.unity
     guid: 39c38dad3bf7b4d44bb45bda37b464d3
+  - enabled: 1
+    path: Assets/Scenes/Procedural_Terrain.unity
+    guid: c82f889512841ff41a1b2d0dcbe42053
   - enabled: 1
     path: Assets/Scenes/DungeonScene.unity
     guid: 8313d53d3abb3c447940d2a88e26af85
