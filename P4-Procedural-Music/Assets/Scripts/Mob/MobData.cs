@@ -347,6 +347,18 @@ namespace MobSystem.Data
         [Tooltip("Prefab with WorldItem component for spawning drops.")]
         public GameObject worldItemPrefab;
 
+         // ───────────────────────── Catchable ─────────────────────────
+ 
+        [Header("Catchable")]
+        [Tooltip("If true, the player can catch this mob with a Net. " +
+                 "CatchableMob is added to instances automatically at spawn.")]
+        public bool isCatchable = false;
+ 
+        [Tooltip("Item added to the player's inventory on a successful catch " +
+                 "(e.g. a 'Firefly' ItemData ScriptableObject). " +
+                 "Leave empty to despawn the mob without giving anything.")]
+        public ItemData catchResultItem;
+
         // ───────────────────────── Helpers ─────────────────────────
 
         /// <summary>
@@ -371,5 +383,9 @@ namespace MobSystem.Data
                 return currentHour >= spawnTimeStart || currentHour <= spawnTimeEnd;
             }
         }
+
+       
     }
+            
+
 }
