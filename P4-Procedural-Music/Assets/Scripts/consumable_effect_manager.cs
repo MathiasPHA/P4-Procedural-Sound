@@ -390,7 +390,7 @@ namespace InventorySystem
             bool wasEnabled = playerLight.enabled;
 
             playerLight.pointLightOuterRadius = effect.magnitude;
-            playerLight.intensity = 1.5f;
+            playerLight.intensity = effect.magnitude;
             playerLight.color = effect.tintColor;
             playerLight.enabled = true;
 

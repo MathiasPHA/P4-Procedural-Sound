@@ -44,6 +44,10 @@ GameObject:
   - component: {fileID: 1882539765994000035}
   - component: {fileID: 280538403942413479}
   - component: {fileID: 8737546276844972407}
+  - component: {fileID: 3767606111026507985}
+  - component: {fileID: 2570316451404134487}
+  - component: {fileID: 2705838249200582455}
+  - component: {fileID: 1862184065596230285}
   m_Layer: 10
   m_Name: Gnome
   m_TagString: Untagged
@@ -112,13 +116,13 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 41
+  m_SortingLayerID: 1209571973
+  m_SortingLayer: 2
+  m_SortingOrder: 345
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: f222e759ac81d314c83a2cf6ff382f8a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 10, y: 10}
@@ -136,7 +140,7 @@ CapsuleCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 1d63535254e94dd418253cd35d2b7e6f, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -176,11 +180,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GnomeInteractable
   actionVerb: Trade
-  interactRange: 5.07
+  interactRange: 6.06
   interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
   gnomeName: 
-  tradeOffers: []
+  tradeOffers:
+  - {fileID: 11400000, guid: 50b7673ee1535d841b2e2e7be517165c, type: 2}
+  - {fileID: 11400000, guid: b30e56ad45927a84da304356d1f46752, type: 2}
+  - {fileID: 11400000, guid: fafb2bdf8a4473d4b9d3019459d1177f, type: 2}
+  MyOffer: {fileID: 0}
 --- !u!95 &8737546276844972407
 Animator:
   serializedVersion: 7
@@ -203,3 +211,92 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3767606111026507985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5378333380033046601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b5f67d30d8609b4fa25855773cf0c6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobAnimator
+  clipPrefix: Gnome
+  twoDirectionMode: 1
+  flipViaScale: 0
+  defaultFacingRight: 1
+  hurtAnimationDuration: 0.3
+--- !u!50 &2570316451404134487
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5378333380033046601}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 145.94
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!114 &2705838249200582455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5378333380033046601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a70dd7db6a86764ebea8ceb01d32734, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobController
+  data: {fileID: 11400000, guid: 21c542961355d9149991ce4a4c5e2e7a, type: 2}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 208
+  mobMask:
+    serializedVersion: 2
+    m_Bits: 1024
+--- !u!114 &1862184065596230285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5378333380033046601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2f3e410ceac3da4abf19108a169dbe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::YSortable
+  sortingGroup: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  ordersPerUnit: 100
+  staticOrderOffset: 0
+  randomOffsetRange: 0.01
+  referenceMode: 0
+  feetCollider: {fileID: 0}
+  customPivot: {fileID: 0}
+  additionalYOffset: 0
+  unifySortingLayer: 1
+  unifiedSortingLayerName: World
