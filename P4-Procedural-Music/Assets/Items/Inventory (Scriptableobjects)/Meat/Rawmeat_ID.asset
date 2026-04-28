@@ -29,11 +29,12 @@ MonoBehaviour:
   customEffects:
   - effectType: 6
     duration: 5
-    magnitude: 2
+    magnitude: 0.00005
     tintColor: {r: 0, g: 0.8113208, b: 0.22199002, a: 0}
     effectMessage: 
     effectSound: {fileID: 0}
     effectSoundVolume: 0
+    sceneName: 
   isFuel: 0
   burnFuelValue: 0
   displayStats: []
