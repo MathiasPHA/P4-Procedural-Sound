@@ -25,3 +25,9 @@ MonoBehaviour:
     spawnChance: 0.21
     activeTimeMultiplier: 1.11
     strictTimeWindow: 0
+  - name: Firefly
+    mobData: {fileID: 11400000, guid: 9986f52e97db8dd499c896e1f7e4360d, type: 2}
+    typeCap: 10
+    spawnChance: 0.4
+    activeTimeMultiplier: 3
+    strictTimeWindow: 1

@@ -362,8 +362,15 @@ namespace InventorySystem.Tools
             // Can't attack with an instrument equipped
             if (toolData != null && toolData.isInstrument) return;
 
-            if (toolData != null)
+            // ── Net: attempt catch instead of dealing damage ──
+            if (toolData != null && toolData.toolType == ToolType.Net)
             {
+                TryCatchMob(mob, toolData, equippedInstance);
+                return;
+            }
+
+            if (toolData != null)
+            {   
                 playerStateManager.animationQue = $"Harvest{toolData.toolType}";
                 playerStateManager.StartHarvest();
                 mob.TakeDamage(toolData.damage, transform.position);
@@ -455,6 +462,43 @@ namespace InventorySystem.Tools
             }
 
             _cooldownTimer = toolData.cooldown;
+        }
+
+        // ───────────── Bug Catching ─────────────
+
+            private bool TryCatchMob(MobController mob, ToolData toolData, ItemInstance equippedInstance)        {
+            var catchable = mob.GetComponent<MobSystem.CatchableMob>();
+
+            if (catchable == null)
+            {
+                // Mob isn't catchable — shrug so the player gets clear feedback.
+                playerStateManager.SwitchState(playerStateManager.playerShrugState);
+                _cooldownTimer = toolData.cooldown;
+                return true;
+            }
+
+            playerStateManager.animationQue = "HarvestNet";
+            playerStateManager.StartHarvest();
+
+            catchable.AttemptCatch();
+
+            // Durability cost — same as every other tool swing.
+            if (equippedInstance != null
+                && equippedInstance.Data.hasInstanceState
+                && toolData.durabilityCost > 0)
+            {
+                bool broke = equippedInstance.ReduceDurability(toolData.durabilityCost);
+                if (broke)
+                    _inventory.RemoveItem(equippedInstance.Data.id, 1);
+                else
+                {
+                    _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                    _inventory.NotifyChanged();
+                }
+            }
+
+            _cooldownTimer = toolData.cooldown;
+            return true;
         }
 
         private void TryUseTool()
