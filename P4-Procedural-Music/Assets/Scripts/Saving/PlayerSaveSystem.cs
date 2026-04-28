@@ -13,6 +13,13 @@ public class PlayerSaveSystem : MonoBehaviour
 {
     public static PlayerSaveSystem Instance { get; private set; }
 
+    /// <summary>
+    /// Fires after LoadPlayer finishes successfully applying saved state to the player.
+    /// Subscribers can read playerTransform.position safely from here.
+    /// Does NOT fire if no save exists, the save is corrupt, or load is skipped (e.g. in a dungeon).
+    /// </summary>
+    public static event Action OnPlayerLoaded;
+
     [Tooltip("The player's Transform to save/restore position from.")]
     [SerializeField] private Transform playerTransform;
 
@@ -69,8 +76,8 @@ public class PlayerSaveSystem : MonoBehaviour
             positionX = playerTransform.position.x,
             positionY = playerTransform.position.y,
             happiness = happinessSystem != null ? happinessSystem.Happiness : 0.5f,
-            hunger    = hungerSystem    != null ? hungerSystem.Hunger       : 0.8f,
-            mood      = moodSystem      != null ? moodSystem.Mood           : 0.6f
+            hunger = hungerSystem != null ? hungerSystem.Hunger : 0.8f,
+            mood = moodSystem != null ? moodSystem.Mood : 0.6f
         };
 
         File.WriteAllText(GetSavePath(worldName), JsonUtility.ToJson(data, prettyPrint: true));
@@ -112,6 +119,8 @@ public class PlayerSaveSystem : MonoBehaviour
 
         Debug.Log($"[PlayerSaveSystem] Loaded player at ({data.positionX:F1}, {data.positionY:F1}), " +
                   $"happiness={data.happiness:F2}, hunger={data.hunger:F2}, mood={data.mood:F2}");
+
+        OnPlayerLoaded?.Invoke();
     }
 
     // -------------------------------------------------------------------------
@@ -137,6 +146,6 @@ public class PlayerSaveSystem : MonoBehaviour
         public float happiness;
         // New fields — default values ensure old saves load cleanly
         public float hunger = 0.8f;
-        public float mood   = 0.6f;
+        public float mood = 0.6f;
     }
 }

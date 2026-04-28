@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: a7b52b9a4b3491f48b68d51a13fdd9e6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c7bae8833efd96e4eb7def461a239158, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -151,6 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
   actionVerb: Interact
   interactRange: 9
+  interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
 --- !u!70 &-5922434671469985519
 CapsuleCollider2D:

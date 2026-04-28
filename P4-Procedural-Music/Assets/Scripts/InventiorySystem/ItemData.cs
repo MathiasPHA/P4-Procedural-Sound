@@ -31,6 +31,10 @@ namespace InventorySystem.Data
 
         [Range(0f, 1f)]
         public float effectSoundVolume = 1f;
+
+        [Header("Scene Loading")]
+        [Tooltip("Scene to load when using SceneLoad effect type")]
+        public string sceneName = "";
     }
 
     public enum EffectType
@@ -57,7 +61,10 @@ namespace InventorySystem.Data
         // Visual Only
         ColorTint,          // Just apply color tint (use tintColor)
         Shrink,             // Scale player down (magnitude = scale multiplier)
-        Grow               // Scale player up (magnitude = scale multiplier)
+        Grow,               // Scale player up (magnitude = scale multiplier)
+
+        // Scene
+        SceneLoad           // Load a scene by name (use sceneName field)
     }
 
     [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item Data")]
