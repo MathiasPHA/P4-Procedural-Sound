@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
   m_Name: Keys_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: 
-  displayName: 
-  description: 
-  loreNote: 
-  icon: {fileID: 0}
-  category: 0
+  id: keys
+  displayName: Car keys
+  description: Keys for a hot rod. Try interacting with them
+  loreNote: Oh that's where I left them!
+  icon: {fileID: 21300000, guid: 6f8ad03987e9f0e41988ca9b61855eb6, type: 3}
+  category: 2
   maxStackSize: 1
   isDroppable: 1
   hasInstanceState: 0
@@ -26,7 +26,15 @@ MonoBehaviour:
   happinessRestore: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
-  customEffects: []
+  customEffects:
+  - effectType: 16
+    duration: 0
+    magnitude: 0
+    tintColor: {r: 0, g: 0, b: 0, a: 0}
+    effectMessage: 
+    effectSound: {fileID: 0}
+    effectSoundVolume: 0
+    sceneName: End
   isFuel: 0
   burnFuelValue: 0
   displayStats: []
