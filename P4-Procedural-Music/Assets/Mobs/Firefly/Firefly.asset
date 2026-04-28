@@ -62,7 +62,7 @@ MonoBehaviour:
   groupSizeMax: 5
   prefab: {fileID: 7533120962837240174, guid: 1abb9c8faf305d44fa5521289f0778c3, type: 3}
   ambientSound: {fileID: 8300000, guid: c9c30c17ed3580e4bb1b5885fbccd46b, type: 3}
-  ambientVolume: 0.43
+  ambientVolume: 0.486
   hitSound: {fileID: 0}
   hitVolume: 0.5
   deathSound: {fileID: 0}
