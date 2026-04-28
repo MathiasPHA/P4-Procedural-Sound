@@ -1,5 +1,6 @@
-using InventorySystem.Data;
 using InteractionSystem;
+using InventorySystem;
+using InventorySystem.Data;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,6 +16,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerMoveToInteractState moveToInteractState = new PlayerMoveToInteractState();
     public PlayerShrugState playerShrugState = new PlayerShrugState();
     public PlayerHurtState hurtState = new PlayerHurtState();
+    public ConsumableEffectManager consumableEffect;
 
     public string animationQue;
     public Rigidbody2D playerRB;
@@ -82,6 +84,10 @@ public class PlayerStateManager : MonoBehaviour
     private void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
+        if (consumableEffect.invertControls == true)
+        {
+            moveInput = -moveInput;
+        }
     }
     private void GetDircetion(float x, float y)
     {
