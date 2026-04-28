@@ -1,11 +1,13 @@
 using InventorySystem;
 using InventorySystem.Data;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class FishingV1 : MonoBehaviour
 {
     [Header("Fishing Time")]
     public float fishingTime = 8f;
+    private float timeBleed = 1.5f;
 
     [Header("Fish Pos")]
     private Transform FishT;
@@ -125,6 +127,8 @@ public class FishingV1 : MonoBehaviour
     {
         // Have Hook on fish for 70% of the initial fishing time to catch the fish
         targetPoints = initialFishingTime * tFraction;
+        timeBleed -= Time.deltaTime;
+
 
         if (fishingPoints >= targetPoints && !addedToInventory)
         {
@@ -147,8 +151,25 @@ public class FishingV1 : MonoBehaviour
             */
 
             Debug.Log("Fish Caught!");
+
+
+            if (fishingTime <= 0)
+            {
+
+                TimeBleed();
+            }
         }
+        else if (fishingTime <= 0 && !isFishCaught)
+        {
+            Debug.Log("Fish Escaped!");
+            TimeBleed();
+        }
+
+        void TimeBleed()
+        {
+            if (timeBleed <= 0)
+                this.transform.parent.gameObject.SetActive(false);
+        }
+
     }
-
-
 }
