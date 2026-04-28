@@ -260,7 +260,7 @@ namespace MobSystem.Data
 
         [Header("Roaming")]
         [Tooltip("Maximum distance (units) from spawn point for a random wander target.")]
-        [Min(20f)]
+        [Min(2f)]
         public float roamRadius = 80f;
 
         [Tooltip("Seconds the mob idles at a waypoint before picking a new one.")]
