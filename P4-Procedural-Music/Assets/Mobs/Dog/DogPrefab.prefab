@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 8882316064892624553}
   - component: {fileID: 4198672553676086458}
   - component: {fileID: 5437731071293162191}
+  - component: {fileID: 4168091981284686830}
   m_Layer: 10
   m_Name: DogPrefab
   m_TagString: Untagged
@@ -51,7 +52,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 1000
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 0
@@ -100,8 +101,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 5
+  m_Offset: {x: -1.4558635, y: -3.64}
+  m_Radius: 4.3225017
 --- !u!95 &6486862887375494910
 Animator:
   serializedVersion: 7
@@ -259,3 +260,19 @@ MonoBehaviour:
   shakeDuration: 0.15
   flashColor: {r: 0.8627452, g: 0.1921569, b: 0.1960784, a: 1}
   flashDuration: 0.1
+--- !u!114 &4168091981284686830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7533120962837240174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 784ca5647b832f843b6e34524a14be3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobInteractable
+  actionVerb: Attack!
+  interactRange: 7.69
+  interactCenterOffset: {x: -1.43, y: -2.85}
+  promptOffset: {x: 0, y: 1.2}

@@ -1,5 +1,89 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &143309732382018496
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3607452441334150946}
+  - component: {fileID: 3879887650259570354}
+  m_Layer: 9
+  m_Name: Consumable light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3607452441334150946
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143309732382018496}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6496137450566507929}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3879887650259570354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143309732382018496}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 2
+  m_LightType: 3
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 0.06520693, g: 0.88831574, b: 0.98742133, a: 1}
+  m_Intensity: 0.4
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 000000000b1b471a859a1848c1404eb4d38801f415515f9c
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0.3
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_LocalBounds:
+    m_Center: {x: 0, y: -0.00000011920929, z: 0}
+    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 15.03
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
 --- !u!1 &1952490527162336135
 GameObject:
   m_ObjectHideFlags: 0
@@ -506,6 +590,9 @@ GameObject:
   - component: {fileID: 5049543004024689469}
   - component: {fileID: 7459378878359402859}
   - component: {fileID: 4590042985337584114}
+  - component: {fileID: 5360917103592190494}
+  - component: {fileID: 4726844026393616103}
+  - component: {fileID: 1398216102474507775}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -526,10 +613,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 940622067822762165}
   - {fileID: 1489269463399578993}
   - {fileID: 1603329111665028624}
   - {fileID: 1383886557447435293}
   - {fileID: 7292625958249071643}
+  - {fileID: 3607452441334150946}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &50687759397478212
@@ -618,7 +707,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82b1851245cedbf439f77f3d769ef9c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.ItemMagnet
-  magnetRadius: 18.8
+  magnetRadius: 15.4
   pullSpeed: 9.4
   acceleration: 3
   collectDistance: 7.93
@@ -640,6 +729,8 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   placeables:
   - {fileID: 11400000, guid: 9bb0b9522cbff8147af80d40c66aa4bf, type: 2}
+  - {fileID: 11400000, guid: feee236670a750e4f9bd4974e4e7ead1, type: 2}
+  - {fileID: 11400000, guid: b4a223a398ec44f8ba59d383b5c366c4, type: 2}
   gridSize: 2
   skipGroundCheck: 1
   groundLayer:
@@ -673,14 +764,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f2e6fc4287afe094d966b8c9e5adad27, type: 2}
   - {fileID: 11400000, guid: badd5b9eb08a47d4f98a5d4c7934daa2, type: 2}
   - {fileID: 11400000, guid: c9c9ac932e3dc48119a052c57cf376e2, type: 2}
+  - {fileID: 11400000, guid: 1bfb98d5d171a4ed186f1743632d2a1a, type: 2}
   resourceLayer:
     serializedVersion: 2
     m_Bits: 448
   mobLayer:
     serializedVersion: 2
     m_Bits: 1024
-  interactRadius: 6.8
-  detectionOffset: {x: 0, y: -2.77}
+  interactRadius: 8.84
+  detectionOffset: {x: 0, y: -3.41}
   handDamage: 1
   handCooldown: 0.1
   handMobDamage: 1
@@ -688,6 +780,7 @@ MonoBehaviour:
   maxLightIntensity: 1
   minLightIntensity: 0.1
   wrongToolFeedback: {fileID: 4571617195942478625}
+  instrumentAudioSource: {fileID: 0}
 --- !u!82 &-1374152125123140291
 AudioSource:
   m_ObjectHideFlags: 0
@@ -822,9 +915,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 545da188e22263e4d85d721361666671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobSystem.PlayerHealth
-  combatDrainPerSecond: 0.03
+  combatDrainPerSecond: 0
   happinessLossPerDamage: 0.025
   minimumHitPenalty: 3
+  hurtStunDuration: 0.3
+  iFrameDuration: 0.6
   hitSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
   hitVolume: 0.6
   showDebugGUI: 0
@@ -861,7 +956,7 @@ MonoBehaviour:
   staticOrderOffset: 0
   randomOffsetRange: 0.01
   referenceMode: 0
-  feetCollider: {fileID: 0}
+  feetCollider: {fileID: 3512293782812170453}
   customPivot: {fileID: 0}
   additionalYOffset: 0
   unifySortingLayer: 1
@@ -934,7 +1029,7 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   interactableLayer:
     serializedVersion: 2
-    m_Bits: 448
+    m_Bits: 1472
   detectionRadius: 1
 --- !u!114 &7540234304014331847
 MonoBehaviour:
@@ -949,12 +1044,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoodSystem
   startingMood: 0.6
-  moodSmoothTime: 1
+  moodSmoothTime: 0.2
   maxMoodRatePerSecond: 0.2
-  elatedThreshold: 0.8
+  elatedThreshold: 0.9
   contentThreshold: 0.6
   neutralThreshold: 0.4
-  uneasyThreshold: 0.2
+  uneasyThreshold: 0.1
   showDebugGUI: 0
 --- !u!114 &5049543004024689469
 MonoBehaviour:
@@ -969,13 +1064,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HappinessSystem
   startingHappiness: 0.7
-  elatedRate: 0.1
-  contentRate: 0.04
+  elatedRate: 0.0125
+  contentRate: 0.005
   neutralRate: 0
-  uneasyRate: 0.04
-  miserableRate: 0.1
+  uneasyRate: 0.005
+  miserableRate: 0.0125
   smoothTime: 0.4
-  deathEnabled: 0
+  deathEnabled: 1
   showDebugGUI: 0
 --- !u!114 &7459378878359402859
 MonoBehaviour:
@@ -990,10 +1085,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HungerSystem
   startingHunger: 0.8
-  drainPerSecond: 0.005
+  drainPerSecond: 0.0005
   satiatedThreshold: 0.7
   hungryThreshold: 0.3
-  wellFedMoodRate: 0.03
+  wellFedMoodRate: 0.04
   starvingMoodRate: 0.08
   showDebugGUI: 0
 --- !u!114 &4590042985337584114
@@ -1009,13 +1104,98 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComfortSystem
   dayBaselineComfort: 0.55
-  nightBaselineComfort: 0.3
+  nightBaselineComfort: 0.25
   comfortSmoothTime: 0.3
-  maxMoodContribution: 0.06
+  comfortNeutralPoint: 0.55
+  maxPositiveMoodRate: 0.06
+  maxNegativeMoodRate: 0.08
   dayStartHour: 6
   dayEndHour: 18
   transitionHours: 2
   showDebugGUI: 0
+--- !u!114 &5360917103592190494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403bd4e1c08c042568a5813ef44ccce8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Tools.FluteTool
+  PlayerCamera: {fileID: 0}
+  StateManager: {fileID: 4859490917234952540}
+  RingCanvas: {fileID: 0}
+  NoteButtonPrefab: {fileID: 0}
+  PointAction:
+    m_Name: FlutePoint
+    m_Type: 0
+    m_ExpectedControlType: Vector2
+    m_Id: 83c53259-fb40-4885-aa28-f0d09247c936
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 3272fcee-5c4b-4d97-81c5-6cfe47d74c64
+      m_Path: <Mouse>/position
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FlutePoint
+      m_Flags: 0
+    m_Flags: 0
+  RingRadius: 1.8
+  StartAngleDeg: 90
+  BaseOctave: 4
+  DuckedVolume: 0.35
+  NoteIdleColor: {r: 0.8, g: 0.93, b: 1, a: 0.8}
+  NoteHoverColor: {r: 1, g: 1, b: 0.65, a: 1}
+  NotePlayingColor: {r: 0.45, g: 1, b: 0.7, a: 1}
+  LabelIdleColor: {r: 0.1, g: 0.1, b: 0.15, a: 1}
+  LabelActiveColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &4726844026393616103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73296ffe0ffd98145a3234e441868ca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.ConsumableEffectManager
+  playerSprite: {fileID: 3043719320757778836}
+  audioSource: {fileID: -1374152125123140291}
+  playerLight: {fileID: 3879887650259570354}
+  happinessSystem: {fileID: 5049543004024689469}
+  hungerSystem: {fileID: 7459378878359402859}
+  playerStateManager: {fileID: 4859490917234952540}
+  logEffects: 1
+  invertControls: 0
+--- !u!114 &1398216102474507775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968789950358026991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 592ab056e1565c84295c4d1e8bc596cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDeathHandler
+  happinessSystem: {fileID: 5049543004024689469}
+  deathCanvasGroup: {fileID: 0}
+  playerRigidbody: {fileID: 50687759397478212}
+  componentsToDisable: []
+  delayBeforeFade: 0.4
+  fadeInDuration: 2
+  fadeOutDuration: 0.6
+  deathSound: {fileID: 0}
+  deathVolume: 1
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0
@@ -1094,6 +1274,107 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 5.69902, y: 9.229477}
   m_EdgeRadius: 0
+--- !u!1 &6367575777783444297
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 940622067822762165}
+  - component: {fileID: 6191453365563253831}
+  - component: {fileID: 2464591860043277438}
+  - component: {fileID: 2943257966140927366}
+  m_Layer: 9
+  m_Name: FluteUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &940622067822762165
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367575777783444297}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalScale: {x: 0.099999994, y: 0.099999994, z: 0.099999994}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6496137450566507929}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 500, y: 500}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!223 &6191453365563253831
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367575777783444297}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: -1671474923
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!114 &2464591860043277438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367575777783444297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
+  m_UiScaleMode: 0
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 800, y: 600}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 1
+--- !u!114 &2943257966140927366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367575777783444297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &6482219940600310175
 GameObject:
   m_ObjectHideFlags: 0

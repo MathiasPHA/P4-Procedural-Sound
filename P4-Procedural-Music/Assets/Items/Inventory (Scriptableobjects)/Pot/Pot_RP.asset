@@ -13,12 +13,8 @@ MonoBehaviour:
   m_Name: Pot_RP
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.Recipe
   recipeId: Pot
-  stationType: 0
+  stationType: 3
   ingredients:
-  - item: {fileID: 11400000, guid: 655c34cbdf2d44085891bd8cf65fe554, type: 2}
-    amount: 5
-  - item: {fileID: 11400000, guid: 70706f95bacef4ee0bb8bc9dfbae1c02, type: 2}
-    amount: 1
   - item: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
     amount: 3
   result: {fileID: 11400000, guid: 1631bb5a5190f44f88e4d09104ffc4c1, type: 2}

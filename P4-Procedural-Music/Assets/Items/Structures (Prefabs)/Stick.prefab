@@ -152,7 +152,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.PickupInteractable
   actionVerb: Pick up
-  interactRange: 2
+  interactRange: 4.53
+  interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
   itemData: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
   amount: 1

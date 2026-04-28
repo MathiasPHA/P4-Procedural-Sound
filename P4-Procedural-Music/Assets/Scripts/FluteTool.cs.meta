@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 403bd4e1c08c042568a5813ef44ccce8
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - FluteData: {instanceID: 0}
+  - Player: {instanceID: 0}
+  - NoteButtonPrefab: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

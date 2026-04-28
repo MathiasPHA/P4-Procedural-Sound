@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4dbc57ffa34cf544b98aa16558f3ff3, type: 3}
   m_Name: Hammer_RP
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.Recipe
-  recipeId: 
+  recipeId: Hammer
   stationType: 0
   ingredients:
   - item: {fileID: 11400000, guid: 9d78585a34684a9449ac55e5637cfdce, type: 2}
     amount: 1
-  - item: {fileID: 0}
+  - item: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
     amount: 3
   result: {fileID: 11400000, guid: c7362b89b5f2f476798ce0be93c96eaf, type: 2}
   resultAmount: 1

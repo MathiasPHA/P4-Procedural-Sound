@@ -142,20 +142,36 @@ namespace MobSystem.Data
         [Min(2f)]
         public float attackRange = 24f;
 
-        [Tooltip("Damage dealt per attack. Ignored for Passive mobs.")]
-        [Min(0)]
-        public int attackDamage = 3;
+        [Tooltip("Happiness lost when a strike lands (0–1 scale). " +
+                 "This is the primary 'damage' — a wolf might take 0.08 per hit, " +
+                 "a shadow 0.15. At 0.7 starting happiness, ~9 wolf hits = death.")]
+        [Range(0.01f, 0.3f)]
+        public float happinessPenalty = 0.08f;
 
-        [Tooltip("Seconds between attacks while in Attacking state. Ignored for Passive mobs.")]
-        [Min(0.1f)]
-        public float attackCooldown = 1.5f;
+        // ───────────────────────── Comfort Threat ─────────────────────────
 
-        [Tooltip("Happiness lost per hit (0–1 scale). Overrides the generic damage calculation " +
-                 "in PlayerHealth when set above 0. Use this to make specific mobs feel more or " +
-                 "less threatening independent of their combat damage. " +
-                 "0 = use default formula (attackDamage × PlayerHealth.happinessLossPerDamage).")]
-        [Range(0f, 0.5f)]
-        public float happinessPenalty = 0f;
+        [Header("Comfort Threat")]
+        [Tooltip("Comfort value this mob's presence pushes toward (0–1). " +
+                 "Below 0.5 = threatening (wolves, shadows). " +
+                 "At 0.5 = neutral (no passive effect). " +
+                 "Above 0.5 = comforting (friendly NPCs, if you ever add them).")]
+        [Range(0f, 1f)]
+        public float threatComfortValue = 0.3f;
+
+        [Tooltip("Radius (units) of the passive comfort aura. " +
+                 "Players inside this radius have their comfort affected.")]
+        [Min(20f)]
+        public float threatRadius = 300f;
+
+        // ───────────────────────── Hurt ─────────────────────────
+
+        [Header("Hurt")]
+        [Tooltip("Duration (sec) the mob is frozen in place after taking damage. " +
+                 "Freezes movement only — state machine continues ticking, and " +
+                 "mobs already in an attack phase (Windup/Strike/Recovery) are " +
+                 "immune (super armor). Set to 0 to disable hit stun entirely.")]
+        [Range(0f, 1f)]
+        public float hurtStunDuration = 0.3f;
 
         // ───────────────────────── Attack Phases ─────────────────────────
 
@@ -181,10 +197,27 @@ namespace MobSystem.Data
         [Range(0f, 1f)]
         public float attackAimLockRatio = 0.5f;
 
+        [Tooltip("Fraction of the strike phase that passes before the hitbox goes live (0–1). " +
+                 "0 = hitbox active from strike start (uniform damage window). " +
+                 "0.5 = hitbox stays off for the first half, then activates. " +
+                 "0.9 = very sharp active frames at the end of the strike. " +
+                 "Use to match the hitbox to the impact frame of the attack animation — " +
+                 "e.g. a troll whose swing lands on frame 3 of 5 wants ~0.4. " +
+                 "The mob still lunges forward during the full strike; only the damaging " +
+                 "hitbox is delayed.")]
+        [Range(0f, 1f)]
+        public float attackHitboxActivationRatio = 0f;
+
         [Tooltip("Distance (units) in front of the mob where the hitbox center is placed. " +
                  "Should roughly match the mob's 'reach'.")]
         [Min(2f)]
         public float attackHitboxOffset = 14f;
+
+        [Tooltip("World-space vertical offset (units) applied to the hitbox center. " +
+                 "Use to lift the hitbox toward the visual body when the sprite pivot " +
+                 "is at the feet. Positive = up, negative = down. Independent of facing direction.")]
+        [Range(-20f, 20f)]
+        public float attackHitboxYOffset = 0f;
 
         [Tooltip("Radius (units) of the damage hitbox during the strike phase. " +
                  "Larger = harder to dodge. A player inside this circle when the strike " +
@@ -197,6 +230,19 @@ namespace MobSystem.Data
                  "backward, since the mob catches up mid-strike.")]
         [Min(0f)]
         public float attackLungeSpeed = 80f;
+
+        [Tooltip("When true, the attack direction snaps to horizontal (left/right only) " +
+                 "regardless of the player's actual position. Use for mobs whose attack " +
+                 "animation only works sideways (e.g. a troll with a side-swing only).")]
+        public bool horizontalAttackOnly = false;
+
+        [Tooltip("Vertical extent (full height, units) of the hitbox when horizontalAttackOnly " +
+                 "is on. Uses OverlapBox instead of OverlapCircle so the hitbox is a flat " +
+                 "horizontal rectangle rather than a vertically-reaching circle. Smaller values " +
+                 "require the player to be more precisely at the mob's y to get hit. " +
+                 "Ignored when horizontalAttackOnly is off.")]
+        [Min(2f)]
+        public float attackHitboxHeight = 10f;
 
         // ───────────────────────── Searching ─────────────────────────
 
@@ -214,7 +260,7 @@ namespace MobSystem.Data
 
         [Header("Roaming")]
         [Tooltip("Maximum distance (units) from spawn point for a random wander target.")]
-        [Min(20f)]
+        [Min(2f)]
         public float roamRadius = 80f;
 
         [Tooltip("Seconds the mob idles at a waypoint before picking a new one.")]
@@ -282,10 +328,15 @@ namespace MobSystem.Data
         [Range(0f, 1f)]
         public float deathVolume = 0.5f;
 
-        [Tooltip("Sound played when a hostile mob starts attacking.")]
-        public AudioClip attackSound;
+        [Tooltip("Telegraph sound at the start of an attack windup (growl, hiss, weapon raise).")]
+        public AudioClip attackWindupSound;
         [Range(0f, 1f)]
-        public float attackVolume = 0.5f;
+        public float attackWindupVolume = 0.5f;
+
+        [Tooltip("Impact sound when the strike lands or swings (bite, slash, thud).")]
+        public AudioClip attackStrikeSound;
+        [Range(0f, 1f)]
+        public float attackStrikeVolume = 0.5f;
 
         // ───────────────────────── Drops ─────────────────────────
 
@@ -295,6 +346,18 @@ namespace MobSystem.Data
 
         [Tooltip("Prefab with WorldItem component for spawning drops.")]
         public GameObject worldItemPrefab;
+
+         // ───────────────────────── Catchable ─────────────────────────
+ 
+        [Header("Catchable")]
+        [Tooltip("If true, the player can catch this mob with a Net. " +
+                 "CatchableMob is added to instances automatically at spawn.")]
+        public bool isCatchable = false;
+ 
+        [Tooltip("Item added to the player's inventory on a successful catch " +
+                 "(e.g. a 'Firefly' ItemData ScriptableObject). " +
+                 "Leave empty to despawn the mob without giving anything.")]
+        public ItemData catchResultItem;
 
         // ───────────────────────── Helpers ─────────────────────────
 
@@ -320,5 +383,9 @@ namespace MobSystem.Data
                 return currentHour >= spawnTimeStart || currentHour <= spawnTimeEnd;
             }
         }
+
+       
     }
+            
+
 }

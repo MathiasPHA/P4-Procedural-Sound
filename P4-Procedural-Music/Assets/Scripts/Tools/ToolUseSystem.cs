@@ -21,6 +21,9 @@ namespace InventorySystem.Tools
         [Header("Detection")]
         [SerializeField] private LayerMask resourceLayer;
         [SerializeField] private LayerMask mobLayer;
+        [Tooltip("Layer for placed structures (campfires, workbenches, etc.). " +
+                 "Only tools with structureDamage > 0 can damage things on this layer.")]
+        [SerializeField] private LayerMask structureLayer;
         [SerializeField] private float interactRadius = 1.5f;
         [SerializeField] private Vector2 detectionOffset = new Vector2(0.5f, 0f);
 
@@ -199,7 +202,21 @@ namespace InventorySystem.Tools
             if (!value.isPressed) return;
             if (_cooldownTimer > 0f) return;
             if (PauseManager.isPaused) return;
+
+            // Block all click interactions during structure placement —
+            // the click belongs to PlacementSystem for placing the ghost.
+            if (InventorySystem.Building.PlacementSystem.Instance != null &&
+                InventorySystem.Building.PlacementSystem.Instance.IsPlacing) return;
+
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+
+            // ── Structure damage takes priority over interaction priority ──
+            // If the equipped tool has structureDamage > 0 (e.g. Hammer) AND a
+            // structure is in attack range, damage it directly. This bypasses
+            // the InteractionDetector check below so the player can demolish
+            // a campfire even though CampfireInteractable would normally
+            // intercept the click and route to fueling.
+            if (TryHitStructure()) return;
 
             // ── Interaction priority: if hovering an interactable, walk to it ──
             if (interactionDetector != null && interactionDetector.CurrentTarget != null)
@@ -222,6 +239,11 @@ namespace InventorySystem.Tools
             if (!value.isPressed) return;
             if (_cooldownTimer > 0f) return;
             if (PauseManager.isPaused) return;
+
+            // Block item use during placement — right-click is used by
+            // PlacementSystem to cancel the ghost.
+            if (InventorySystem.Building.PlacementSystem.Instance != null &&
+                InventorySystem.Building.PlacementSystem.Instance.IsPlacing) return;
 
             // ── Campfire fueling: check BEFORE UI block so hotbar UI doesn't intercept ──
             // Use GetComponent because InteractionDetector may return HarvestInteractable first
@@ -320,6 +342,63 @@ namespace InventorySystem.Tools
 
         // ───────────── Resource Harvesting ─────────────
 
+        /// <summary>
+        /// Public entry point used by MobInteractable → MoveToInteractState.
+        /// The player has already walked into range; just apply damage to the
+        /// specific mob passed in. Mirrors HarvestResource's pattern.
+        /// </summary>
+        public void AttackMob(MobController mob)
+        {
+            if (mob == null || mob.CurrentHealth <= 0) return;
+            if (_cooldownTimer > 0f) return;
+            if (_inventory == null) return;
+
+            var equippedInstance = _inventory.EquippedItem;
+            ToolData toolData = null;
+
+            if (equippedInstance != null && equippedInstance.Data.category == ItemCategory.Tool)
+                _toolLookup.TryGetValue(equippedInstance.Data.id, out toolData);
+
+            // Can't attack with an instrument equipped
+            if (toolData != null && toolData.isInstrument) return;
+
+            // ── Net: attempt catch instead of dealing damage ──
+            if (toolData != null && toolData.toolType == ToolType.Net)
+            {
+                TryCatchMob(mob, toolData, equippedInstance);
+                return;
+            }
+
+            if (toolData != null)
+            {   
+                playerStateManager.animationQue = $"Harvest{toolData.toolType}";
+                playerStateManager.StartHarvest();
+                mob.TakeDamage(toolData.damage, transform.position);
+
+                if (equippedInstance.Data.hasInstanceState && toolData.durabilityCost > 0)
+                {
+                    bool broke = equippedInstance.ReduceDurability(toolData.durabilityCost);
+                    if (broke)
+                    {
+                        _inventory.RemoveItem(equippedInstance.Data.id, 1);
+                    }
+                    else
+                    {
+                        _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                        _inventory.NotifyChanged();
+                    }
+                }
+                _cooldownTimer = toolData.cooldown;
+            }
+            else
+            {
+                playerStateManager.animationQue = "HarvestHand";
+                playerStateManager.StartHarvest();
+                mob.TakeDamage(handMobDamage, transform.position);
+                _cooldownTimer = handMobCooldown;
+            }
+        }
+
         public void HarvestResource(HarvestableResource resource)
         {
             if (resource == null || resource.IsDepleted) return;
@@ -385,6 +464,43 @@ namespace InventorySystem.Tools
             _cooldownTimer = toolData.cooldown;
         }
 
+        // ───────────── Bug Catching ─────────────
+
+            private bool TryCatchMob(MobController mob, ToolData toolData, ItemInstance equippedInstance)        {
+            var catchable = mob.GetComponent<MobSystem.CatchableMob>();
+
+            if (catchable == null)
+            {
+                // Mob isn't catchable — shrug so the player gets clear feedback.
+                playerStateManager.SwitchState(playerStateManager.playerShrugState);
+                _cooldownTimer = toolData.cooldown;
+                return true;
+            }
+
+            playerStateManager.animationQue = "HarvestNet";
+            playerStateManager.StartHarvest();
+
+            catchable.AttemptCatch();
+
+            // Durability cost — same as every other tool swing.
+            if (equippedInstance != null
+                && equippedInstance.Data.hasInstanceState
+                && toolData.durabilityCost > 0)
+            {
+                bool broke = equippedInstance.ReduceDurability(toolData.durabilityCost);
+                if (broke)
+                    _inventory.RemoveItem(equippedInstance.Data.id, 1);
+                else
+                {
+                    _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                    _inventory.NotifyChanged();
+                }
+            }
+
+            _cooldownTimer = toolData.cooldown;
+            return true;
+        }
+
         private void TryUseTool()
         {
             if (_inventory == null) return;
@@ -445,6 +561,74 @@ namespace InventorySystem.Tools
 
             _cooldownTimer = toolData.cooldown;
         }
+
+        // ───────────── Structure Damage (Hammer) ─────────────
+
+        /// <summary>
+        /// If the equipped tool has structureDamage > 0 and a PlacedStructure
+        /// is in attack range, deal that damage and consume the click.
+        /// Returns true if a structure was hit (caller should not run further
+        /// click logic). Returns false otherwise — including when the equipped
+        /// tool can't damage structures, so the normal interact/mob/resource
+        /// flow proceeds unchanged.
+        /// </summary>
+        private bool TryHitStructure()
+        {
+            if (structureLayer.value == 0) return false;
+            if (_inventory == null) return false;
+
+            // Bare hands and non-tool items can't damage structures.
+            var equippedInstance = _inventory.EquippedItem;
+            if (equippedInstance == null || equippedInstance.Data.category != ItemCategory.Tool)
+                return false;
+
+            if (!_toolLookup.TryGetValue(equippedInstance.Data.id, out var toolData))
+                return false;
+
+            // Instruments don't damage anything.
+            if (toolData.isInstrument) return false;
+
+            // Only tools that explicitly opt in can damage structures.
+            if (toolData.structureDamage <= 0) return false;
+
+            Vector2 facingDir = GetFacingDirection();
+            if (facingDir == Vector2.zero) return false;
+
+            Vector2 origin = (Vector2)transform.position
+                             + facingDir * detectionOffset.x
+                             + Vector2.up * detectionOffset.y;
+
+            var hit = Physics2D.OverlapCircle(origin, interactRadius, structureLayer);
+            if (hit == null) return false;
+
+            // GetComponentInParent handles cases where the collider is on a
+            // child sprite/collider GameObject rather than the root.
+            var structure = hit.GetComponentInParent<InventorySystem.Building.PlacedStructure>();
+            if (structure == null || structure.IsDestroyed) return false;
+
+            Vector2 hitDir = ((Vector2)structure.transform.position - (Vector2)transform.position).normalized;
+
+            playerStateManager.animationQue = $"Harvest{toolData.toolType}";
+            playerStateManager.StartHarvest();
+            structure.TakeDamage(toolData.structureDamage, hitDir);
+
+            if (equippedInstance.Data.hasInstanceState && toolData.durabilityCost > 0)
+            {
+                bool broke = equippedInstance.ReduceDurability(toolData.durabilityCost);
+                if (broke)
+                    _inventory.RemoveItem(equippedInstance.Data.id, 1);
+                else
+                {
+                    _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                    _inventory.NotifyChanged();
+                }
+            }
+
+            _cooldownTimer = toolData.cooldown;
+            return true;
+        }
+
+        // ───────────── Instrument ─────────────
 
         private bool TryPlayInstrument()
         {
@@ -507,5 +691,5 @@ namespace InventorySystem.Tools
         }
 #endif
     }
-    
+
 }

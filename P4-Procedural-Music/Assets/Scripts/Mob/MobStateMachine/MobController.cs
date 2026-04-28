@@ -68,6 +68,13 @@ namespace MobSystem
         public bool IsProvoked { get; private set; }
 
         /// <summary>
+        /// True while the mob is frozen from a recent hit. Movement is zeroed
+        /// each frame until the stun timer expires. Attack phases bypass this
+        /// (super armor) — see Update().
+        /// </summary>
+        public bool IsHurtStunned => _hurtStunTimer > 0f;
+
+        /// <summary>
         /// Current facing direction — set by states or derived from steering.
         /// MobAnimator reads this for sprite flipping and direction suffixes.
         /// </summary>
@@ -125,6 +132,8 @@ namespace MobSystem
 
         private MobBaseState _currentState;
         private Vector2 _facingDirection = Vector2.down;
+        private ComfortInfluenceSource _comfortSource;
+        private float _hurtStunTimer;
 
         // ───────────────────────── Lifecycle ─────────────────────────
 
@@ -141,6 +150,11 @@ namespace MobSystem
 
             PackCoordinator = GetComponent<MobPackCoordinator>();
             if (PackCoordinator == null) PackCoordinator = gameObject.AddComponent<MobPackCoordinator>();
+
+            // Ensure MobInteractable exists for click-to-attack
+            var interactable = GetComponent<MobInteractable>();
+            if (interactable == null) interactable = gameObject.AddComponent<MobInteractable>();
+            interactable.Configure(this);
         }
 
         private void Start()
@@ -163,6 +177,7 @@ namespace MobSystem
             ConfigureSteering();
             ConfigureAwareness();
             ConfigurePackCoordinator();
+            ConfigureComfortSource();
 
             // Start in roaming
             _currentState = roamingState;
@@ -173,12 +188,39 @@ namespace MobSystem
         {
             if (data == null) return;
 
+            // Tick hit stun timer
+            if (_hurtStunTimer > 0f)
+                _hurtStunTimer -= Time.deltaTime;
+
             // Update facing from steering when moving
             if (Steering.IsMoving)
                 _facingDirection = Steering.FacingDirection;
 
             // Tick current state
             _currentState?.UpdateState(this);
+
+            // Apply hit stun AFTER state tick so we override whatever the state
+            // just set. Attack phases are immune (super armor) — getting hit
+            // during windup/strike/recovery does not cancel the attack.
+            if (IsHurtStunned && !IsInAttackPhase())
+            {
+                Rb.linearVelocity = Vector2.zero;
+                // Override the state's animation queue so a Walk clip doesn't
+                // play on a frozen mob if the hurt animation is shorter than
+                // the stun duration.
+                AnimationQueue = "Idle";
+            }
+        }
+
+        /// <summary>
+        /// True if the mob is currently in any phase of an attack. Used to
+        /// grant super armor so hit stun doesn't cancel attacks mid-swing.
+        /// </summary>
+        private bool IsInAttackPhase()
+        {
+            return AnimationQueue == "AttackWindup"
+                || AnimationQueue == "Attack"
+                || AnimationQueue == "AttackRecovery";
         }
 
         // ───────────────────────── Configuration ─────────────────────────
@@ -222,16 +264,73 @@ namespace MobSystem
             );
         }
 
+        private void ConfigureComfortSource()
+        {
+            _comfortSource = GetComponent<ComfortInfluenceSource>();
+            if (_comfortSource == null)
+                _comfortSource = gameObject.AddComponent<ComfortInfluenceSource>();
+
+            _comfortSource.SetInfluenceName($"Mob:{data.displayName}");
+            _comfortSource.SetUseFalloff(true);
+
+            // Start with roaming profile
+            UpdateComfortThreat(roamingState);
+        }
+
         // ───────────────────────── State Machine ─────────────────────────
 
         /// <summary>
         /// Transition to a new state. Calls ExitState on the old, EnterState on the new.
+        /// Updates the comfort threat aura to match the new state.
         /// </summary>
         public void SwitchState(MobBaseState newState)
         {
             _currentState?.ExitState(this);
             _currentState = newState;
             _currentState.EnterState(this);
+
+            UpdateComfortThreat(newState);
+        }
+
+        /// <summary>
+        /// Sync the ComfortInfluenceSource to the current AI state.
+        /// All states use the configured threatComfortValue directly —
+        /// only weight and radius change per state.
+        /// </summary>
+        private void UpdateComfortThreat(MobBaseState state)
+        {
+            if (_comfortSource == null || data == null) return;
+
+            _comfortSource.SetComfortValue(data.threatComfortValue);
+
+            switch (state)
+            {
+                case RoamingState:
+                    _comfortSource.SetWeight(0.3f);
+                    _comfortSource.SetRadius(data.threatRadius * 0.5f);
+                    break;
+
+                case AlertState:
+                    _comfortSource.SetWeight(0.5f);
+                    _comfortSource.SetRadius(data.threatRadius * 0.75f);
+                    break;
+
+                case ChasingState:
+                case SearchingState:
+                    _comfortSource.SetWeight(0.8f);
+                    _comfortSource.SetRadius(data.threatRadius);
+                    break;
+
+                case AttackingState:
+                    _comfortSource.SetWeight(1f);
+                    _comfortSource.SetRadius(data.threatRadius);
+                    break;
+
+                case FleeingState:
+                    _comfortSource.SetWeight(0.3f);
+                    _comfortSource.SetRadius(data.threatRadius * 0.3f);
+                    break;
+            }
         }
 
         // ───────────────────────── Combat ─────────────────────────
@@ -262,6 +361,10 @@ namespace MobSystem
             // Play hit sound
             if (data.hitSound != null)
                 PlaySound(data.hitSound, data.hitVolume);
+
+            // Start hit stun (ignored by attack phases — see Update)
+            if (data.hurtStunDuration > 0f)
+                _hurtStunTimer = data.hurtStunDuration;
 
             OnDamaged?.Invoke(CurrentHealth, data.maxHealth, attackerPosition);
 
@@ -320,6 +423,14 @@ namespace MobSystem
 
         private void Die(Vector3 attackerPosition)
         {
+            // Exit current state so it can clean up (stop velocity, etc.)
+            _currentState?.ExitState(this);
+            _currentState = null;
+
+            // Release combat music if it was overridden by chasing/attacking
+            if (GameStateManager.Instance != null && GameStateManager.Instance.IsManualOverride)
+                GameStateManager.Instance.ReturnToAuto();
+
             // Play death sound
             if (data.deathSound != null)
                 PlaySound(data.deathSound, data.deathVolume);
@@ -441,17 +552,66 @@ namespace MobSystem
                 Gizmos.DrawWireSphere(transform.position, data.attackRange);
             }
 
-            // Attack hitbox (placed in front of mob along facing direction)
-            if (data.HasHostileStates && Application.isPlaying)
+            // Attack hitbox (placed in front of mob along facing direction).
+            // In edit mode FacingDirection has no meaningful runtime value, so
+            // we fall back to Vector2.right just so the gizmo is visible for
+            // tuning attackHitboxOffset / attackHitboxRadius without entering play.
+            //
+            // When horizontalAttackOnly is set, the real attack always snaps
+            // to left/right regardless of the mob's current facing, AND uses
+            // OverlapBox with a reduced vertical extent — so we draw a flat
+            // wire cube here so the gizmo matches what actually deals damage.
+            if (data.HasHostileStates)
             {
-                Vector3 hitboxCenter = transform.position +
-                                       (Vector3)FacingDirection * data.attackHitboxOffset;
+                Vector2 facing = Application.isPlaying ? FacingDirection : Vector2.right;
+
+                if (data.horizontalAttackOnly)
+                    facing = facing.x < 0f ? Vector2.left : Vector2.right;
+
+                Vector3 hitboxCenter = transform.position
+                                       + (Vector3)facing * data.attackHitboxOffset
+                                       + Vector3.up * data.attackHitboxYOffset;
                 Gizmos.color = new Color(1f, 0.3f, 0f, 0.5f);
-                Gizmos.DrawWireSphere(hitboxCenter, data.attackHitboxRadius);
+
+                if (data.horizontalAttackOnly)
+                {
+                    Vector3 boxSize = new Vector3(
+                        data.attackHitboxRadius * 2f,
+                        data.attackHitboxHeight,
+                        0f);
+                    Gizmos.DrawWireCube(hitboxCenter, boxSize);
+                }
+                else
+                {
+                    Gizmos.DrawWireSphere(hitboxCenter, data.attackHitboxRadius);
+                }
 
                 // Line from mob to hitbox center so it's clear where it's aimed
                 Gizmos.color = new Color(1f, 0.3f, 0f, 0.3f);
                 Gizmos.DrawLine(transform.position, hitboxCenter);
+
+                // Filled overlay when the hitbox is currently live — pulses bright
+                // during the active frames so activation timing is visible at a
+                // glance while tuning attackHitboxActivationRatio in play mode.
+                if (Application.isPlaying
+                    && _currentState == attackingState
+                    && attackingState.IsHitboxActive)
+                {
+                    Gizmos.color = new Color(1f, 0.1f, 0f, 0.55f);
+
+                    if (data.horizontalAttackOnly)
+                    {
+                        Vector3 boxSize = new Vector3(
+                            data.attackHitboxRadius * 2f,
+                            data.attackHitboxHeight,
+                            0.1f);
+                        Gizmos.DrawCube(hitboxCenter, boxSize);
+                    }
+                    else
+                    {
+                        Gizmos.DrawSphere(hitboxCenter, data.attackHitboxRadius);
+                    }
+                }
             }
 
             // Roam radius from spawn

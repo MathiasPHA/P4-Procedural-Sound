@@ -17,6 +17,14 @@ namespace ProceduralTerrain
         public float posX;
         public float posY;
 
+        [Tooltip("Optional serialized per-instance state (e.g. campfire fuel). " +
+                 "Empty for stateless structures. Written/read via IPersistentStructureState.")]
+        public string stateJson = "";
+
+        [Tooltip("Persisted HP. 0 = unset (load at full HP from PlaceableData.maxHealth). " +
+                 "Backward compatible with saves predating the structure HP system.")]
+        public int health = 0;
+
         public StructureSaveData() { }
 
         public StructureSaveData(string itemId, Vector3 worldPos)
@@ -24,6 +32,23 @@ namespace ProceduralTerrain
             this.itemId = itemId;
             this.posX = worldPos.x;
             this.posY = worldPos.y;
+        }
+
+        public StructureSaveData(string itemId, Vector3 worldPos, string stateJson)
+        {
+            this.itemId = itemId;
+            this.posX = worldPos.x;
+            this.posY = worldPos.y;
+            this.stateJson = stateJson ?? "";
+        }
+
+        public StructureSaveData(string itemId, Vector3 worldPos, string stateJson, int health)
+        {
+            this.itemId = itemId;
+            this.posX = worldPos.x;
+            this.posY = worldPos.y;
+            this.stateJson = stateJson ?? "";
+            this.health = health;
         }
 
         public Vector3 GetPosition() => new Vector3(posX, posY, 0f);

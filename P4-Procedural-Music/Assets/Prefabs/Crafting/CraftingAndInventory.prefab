@@ -559,8 +559,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0.74509805, g: 0.74509805, b: 0.74509805, a: 1}
+    m_PressedColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -613,6 +613,7 @@ Transform:
   - {fileID: 839421626177070954}
   - {fileID: 2919006127048188317}
   - {fileID: 4968412724055359822}
+  - {fileID: 2042392948926872664}
   - {fileID: 4735442353266174171}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -699,12 +700,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.HandCraftingStation
   stationType: 0
   recipeDatabase:
-  - {fileID: 11400000, guid: 89ccd0954437c8d418a4b4b167338d3a, type: 2}
   - {fileID: 11400000, guid: a619de73b22ceab42a3f43c5299a342a, type: 2}
+  - {fileID: 11400000, guid: fac8eb7d68fc4401283077d00b6da3fb, type: 2}
+  - {fileID: 11400000, guid: 89ccd0954437c8d418a4b4b167338d3a, type: 2}
   - {fileID: 11400000, guid: 9e8a0ac6e5208914f8fd0326f5eab248, type: 2}
+  - {fileID: 11400000, guid: 3460484d83b054dfabf5246cd0ae54dc, type: 2}
   - {fileID: 11400000, guid: 20599ac605c4e314d9fdd593fe7e6427, type: 2}
   - {fileID: 11400000, guid: 8d44597e159083b49a457c85b827a197, type: 2}
-  - {fileID: 11400000, guid: 3460484d83b054dfabf5246cd0ae54dc, type: 2}
   discoverAllOnStart: 1
 --- !u!1 &2112802766474408795
 GameObject:
@@ -1018,8 +1020,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0.74509805, g: 0.74509805, b: 0.74509805, a: 1}
+    m_PressedColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -1434,12 +1436,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.UI.CraftingUIManager
   inputProvider: {fileID: 8470669982361081032}
   craftingPanel: {fileID: 5237897616051974432}
+  tabBarContainer: {fileID: 7706167557323375842}
+  tabButtonPrefab: {fileID: 559701109952050234, guid: 4c12803b0e14a7e42b8473502ad6048d, type: 3}
+  tabs:
+  - label: Default
+    station: {fileID: 1675543017461387510}
+  - label: Structures
+    station: {fileID: 795951859908026514}
   stationNameText: {fileID: 2097218622307864920}
   recipeListContent: {fileID: 5750511888308149230}
   recipeEntryPrefab: {fileID: 2840442066277045541, guid: 6d3a4674e781b1544ae1204e299361d7, type: 3}
   recipeDetail: {fileID: 2006848442576879805}
   handCraftingStation: {fileID: 1675543017461387510}
-  craftSound: {fileID: 0}
+  craftSound: {fileID: 8300000, guid: 31102935334ec10459fc866508a52e62, type: 3}
   craftVolume: 0.5
   craftPitchVariation: 0.1
   craftSoundCooldown: 0.15
@@ -1754,8 +1763,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0.74509805, g: 0.74509805, b: 0.74509805, a: 1}
+    m_PressedColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -2126,7 +2135,7 @@ MonoBehaviour:
   draggedItem: {fileID: 162349643480972597}
   tooltip: {fileID: 7700236191663077667}
   splitSlider: {fileID: 9166338638959098457}
-  slotPrefab: {fileID: 7030135364690952109, guid: f2782f17d7e6aae42afbddadc8348be9, type: 3}
+  slotPrefab: {fileID: 7030135364690952109, guid: 748dd667fb6626445809277566e7e924, type: 3}
   worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
   playerTransform: {fileID: 0}
   dropDistance: 1.5
@@ -2967,6 +2976,7 @@ RectTransform:
   m_Children:
   - {fileID: 748124093670641019}
   - {fileID: 4609680694987025502}
+  - {fileID: 7706167557323375842}
   - {fileID: 8228061938598926833}
   - {fileID: 5106714984678345587}
   m_Father: {fileID: 839421626177070954}
@@ -4082,7 +4092,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0009766555}
+  m_AnchoredPosition: {x: 0, y: -0.00033057234}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1251338704045564888
@@ -4651,6 +4661,118 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
   m_ShowMaskGraphic: 0
+--- !u!1 &7820501871274900668
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7706167557323375842}
+  - component: {fileID: 6145983008590677810}
+  m_Layer: 5
+  m_Name: TabBarContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7706167557323375842
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7820501871274900668}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8082527889179760602}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -200, y: 210}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6145983008590677810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7820501871274900668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!1 &8080576449571048841
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2042392948926872664}
+  - component: {fileID: 795951859908026514}
+  m_Layer: 0
+  m_Name: BuildHammerStation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2042392948926872664
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8080576449571048841}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6799891896453001869}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &795951859908026514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8080576449571048841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f9bc1b73601cee40a8362e086ab2d1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.BuildHammerStation
+  stationType: 3
+  recipeDatabase:
+  - {fileID: 11400000, guid: a619de73b22ceab42a3f43c5299a342a, type: 2}
+  - {fileID: 11400000, guid: 8c17779159f296f42bca9a5bd0e90709, type: 2}
+  - {fileID: 11400000, guid: 568aab7d06b6c43dcb4fcb57c4018096, type: 2}
+  discoverAllOnStart: 1
 --- !u!1 &8106799000397714712
 GameObject:
   m_ObjectHideFlags: 0

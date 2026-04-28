@@ -22,6 +22,9 @@ MonoBehaviour:
     densityCutoff: 0.05
     densityMultiplier: 1
     minSpacing: 0
+    clearanceRadius: 25
+    objectClearance: 1
+    maxCountPerChunk: 0
     positionJitter: 0.45
     allowedTerrain: 00000000
     sortingOrderOffset: 0
@@ -36,6 +39,9 @@ MonoBehaviour:
     densityCutoff: 0.02
     densityMultiplier: 1
     minSpacing: 0.5
+    clearanceRadius: 0
+    objectClearance: 0
+    maxCountPerChunk: 0
     positionJitter: 0.45
     allowedTerrain: 00000000
     sortingOrderOffset: 0
@@ -51,6 +57,9 @@ MonoBehaviour:
     densityCutoff: 0.125
     densityMultiplier: 1
     minSpacing: 2.5
+    clearanceRadius: 0
+    objectClearance: 0
+    maxCountPerChunk: 0
     positionJitter: 0.45
     allowedTerrain: 00000000
     sortingOrderOffset: 0
@@ -66,6 +75,9 @@ MonoBehaviour:
     densityCutoff: 0.35
     densityMultiplier: 1
     minSpacing: 3
+    clearanceRadius: 0
+    objectClearance: 0
+    maxCountPerChunk: 0
     positionJitter: 0.45
     allowedTerrain: 00000000
     sortingOrderOffset: 0
@@ -80,7 +92,44 @@ MonoBehaviour:
     densityCutoff: 0.8
     densityMultiplier: 1
     minSpacing: 5
+    clearanceRadius: 20
+    objectClearance: 20
+    maxCountPerChunk: 1
     positionJitter: 0.45
+    allowedTerrain: 00000000
+    sortingOrderOffset: 0
+    seedOffset: 0
+    depletedPrefab: {fileID: 0}
+  - name: Troll Dungeon
+    enabled: 1
+    prefabs:
+    - {fileID: 601663009861402173, guid: ce10bc2b85f570a4a870e7e9429989a9, type: 3}
+    baseChance: 0.03
+    densityNoiseScale: 0.2
+    densityCutoff: 0.8
+    densityMultiplier: 1
+    minSpacing: 5
+    clearanceRadius: 20
+    objectClearance: 20
+    maxCountPerChunk: 1
+    positionJitter: 0.45
+    allowedTerrain: 00000000
+    sortingOrderOffset: 0
+    seedOffset: 0
+    depletedPrefab: {fileID: 0}
+  - name: Gnome Village
+    enabled: 1
+    prefabs:
+    - {fileID: 4602211281127180821, guid: 335dab328af943f498ba8f05278f8fcd, type: 3}
+    baseChance: 0.037
+    densityNoiseScale: 0.2
+    densityCutoff: 0.8
+    densityMultiplier: 1
+    minSpacing: 5
+    clearanceRadius: 25
+    objectClearance: 25
+    maxCountPerChunk: 1
+    positionJitter: 0
     allowedTerrain: 00000000
     sortingOrderOffset: 0
     seedOffset: 0

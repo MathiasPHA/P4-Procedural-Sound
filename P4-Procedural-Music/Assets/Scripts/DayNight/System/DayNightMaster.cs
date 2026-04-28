@@ -12,6 +12,11 @@ public class DayNightMaster : MonoBehaviour
 
     private float _timeSpeed; // Hours per second
 
+    // Tracks whether we've already loaded time.json this session.
+    // Prevents scene reloads (e.g. returning from the dungeon) from overwriting
+    // the ticking persistent singleton with stale on-disk data.
+    private bool hasLoadedFromDisk = false;
+
     private const string SAVE_FILENAME = "time.json";
 
     private void Awake()
@@ -22,6 +27,7 @@ public class DayNightMaster : MonoBehaviour
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Update()
@@ -64,10 +70,17 @@ public class DayNightMaster : MonoBehaviour
 
     public void LoadTime(string worldName)
     {
+        // Guard against re-loading within the same session.
+        // Called by SaveSystemManager.Start() every time the overworld scene loads,
+        // including after exiting the dungeon — without this gate, the ticking
+        // persistent singleton would get slammed back to the save-point value.
+        if (hasLoadedFromDisk) return;
+
         string path = GetSavePath(worldName);
         if (!File.Exists(path))
         {
             currentTime = 5f; // New game starts at 5am — adjust to taste
+            hasLoadedFromDisk = true;
             return;
         }
 
@@ -76,12 +89,23 @@ public class DayNightMaster : MonoBehaviour
             string json = File.ReadAllText(path);
             var data = JsonUtility.FromJson<TimeSaveData>(json);
             currentTime = data.currentTime;
+            hasLoadedFromDisk = true;
             Debug.Log($"[DayNightMaster] Loaded time: {GetTimeString()}");
         }
         catch (System.Exception e)
         {
             Debug.LogError($"[DayNightMaster] Failed to load time: {e.Message}");
         }
+    }
+
+    /// <summary>
+    /// Clear the "already loaded" flag so the next LoadTime() call re-reads from disk.
+    /// Call from the main menu / save-slot flow before loading a different world,
+    /// otherwise the persistent singleton would keep the previous run's time.
+    /// </summary>
+    public void ResetLoadState()
+    {
+        hasLoadedFromDisk = false;
     }
 
     private string GetSavePath(string worldName)

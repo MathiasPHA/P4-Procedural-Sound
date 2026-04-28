@@ -39,7 +39,7 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
     [Tooltip("Comfort value that produces zero mood contribution. " +
              "Above this → positive mood, below → negative mood.")]
     [Range(0f, 1f)]
-    [SerializeField] private float comfortNeutralPoint = 0.55f;
+    [SerializeField] private float comfortNeutralPoint = 0.5f;
 
     [Tooltip("Max positive mood rate (units/sec) when comfort is at 1.0")]
     [SerializeField] private float maxPositiveMoodRate = 0.06f;
@@ -135,14 +135,14 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
 
     // ───────────────────────── Debug override (for DevTestConsole) ─────────────────────────
 
-    private bool  debugOverrideActive = false;
-    private float debugOverrideValue  = 0.5f;
+    private bool debugOverrideActive = false;
+    private float debugOverrideValue = 0.5f;
 
     /// <summary>Dev tool only: force comfort to a specific value, bypassing baseline + influences.</summary>
     public void SetDebugComfortOverride(float value)
     {
         debugOverrideActive = true;
-        debugOverrideValue  = Mathf.Clamp01(value);
+        debugOverrideValue = Mathf.Clamp01(value);
     }
 
     /// <summary>Dev tool only: clear the comfort override and resume normal calculation.</summary>
@@ -192,11 +192,11 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
 
         // Sunrise ramp: 0 at (dayStart - transition) → 1 at dayStart
         float sunriseStart = dayStartHour - transitionHours;
-        float sunriseEnd   = dayStartHour;
+        float sunriseEnd = dayStartHour;
 
         // Sunset ramp: 1 at dayEnd → 0 at (dayEnd + transition)
         float sunsetStart = dayEndHour;
-        float sunsetEnd   = dayEndHour + transitionHours;
+        float sunsetEnd = dayEndHour + transitionHours;
 
         float value;
         if (hour >= sunriseEnd && hour <= sunsetStart)
@@ -248,9 +248,17 @@ public class ComfortSystem : MonoBehaviour, IMoodModifier
             float distance = Vector3.Distance(playerTransform.position, inf.Position);
             if (distance > inf.Radius) continue;
 
-            // Falloff: full strength at center, zero at edge
-            float falloff = 1f - Mathf.Clamp01(distance / inf.Radius);
-            falloff = falloff * falloff; // quadratic falloff
+            // Falloff: quadratic by default, flat if the source opts out
+            float falloff;
+            if (inf.UseFalloff)
+            {
+                falloff = 1f - Mathf.Clamp01(distance / inf.Radius);
+                falloff = falloff * falloff; // quadratic falloff
+            }
+            else
+            {
+                falloff = 1f; // full strength anywhere inside radius
+            }
 
             float effectiveWeight = inf.Weight * falloff;
             weightedSum += inf.ComfortValue * effectiveWeight;

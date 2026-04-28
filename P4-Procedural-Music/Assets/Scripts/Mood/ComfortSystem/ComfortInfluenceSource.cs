@@ -23,12 +23,17 @@ public class ComfortInfluenceSource : MonoBehaviour, IComfortInfluence
     [Tooltip("Display name for debug")]
     [SerializeField] private string influenceName = "Influence";
 
+    [Tooltip("If true, comfort strength falls off with distance (quadratic). " +
+             "If false, full comfort applies anywhere inside the radius.")]
+    [SerializeField] private bool useFalloff = true;
+
     // ── IComfortInfluence ──
     public float ComfortValue => comfortValue;
     public float Weight => weight;
     public float Radius => radius;
     public Vector3 Position => transform.position;
     public string Name => influenceName;
+    public bool UseFalloff => useFalloff;
     public bool IsDestroyed => this == null;
 
     // ── Reference to the comfort system ──
@@ -58,6 +63,12 @@ public class ComfortInfluenceSource : MonoBehaviour, IComfortInfluence
 
     /// <summary>Change the radius at runtime.</summary>
     public void SetRadius(float r) => radius = Mathf.Max(0f, r);
+
+    /// <summary>Change whether distance falloff is used.</summary>
+    public void SetUseFalloff(bool value) => useFalloff = value;
+
+    /// <summary>Change the display name at runtime (for debug GUI identification).</summary>
+    public void SetInfluenceName(string name) => influenceName = name;
 
     // ── Editor Gizmo ──
 
@@ -89,9 +100,20 @@ public class CampfireComfortSource : ComfortInfluenceSource
     [Tooltip("Comfort value when nearly burnt out")]
     [SerializeField] private float minComfort = 0.45f;
 
+    [Header("Radius per fire size")]
+    [Tooltip("Radius when fully fueled (big fire)")]
+    [SerializeField] private float bigRadius = 14f;
+
+    [Tooltip("Radius at half fuel (medium fire)")]
+    [SerializeField] private float mediumRadius = 9f;
+
+    [Tooltip("Radius when nearly out (small fire)")]
+    [SerializeField] private float smallRadius = 5f;
+
     private void Start()
     {
         fuelRemaining = maxFuelSeconds;
+        SetUseFalloff(false); // flat comfort — full value anywhere in radius
     }
 
     private void Update()
@@ -104,8 +126,16 @@ public class CampfireComfortSource : ComfortInfluenceSource
             // Comfort decreases as fire dies
             SetComfortValue(Mathf.Lerp(minComfort, maxComfort, fuelRatio));
 
-            // Radius shrinks slightly as fire gets smaller
-            SetRadius(Mathf.Lerp(5f, 12f, fuelRatio));
+            // Radius shrinks in stages: big → medium → small
+            float radius;
+            if (fuelRatio > 0.6f)
+                radius = Mathf.Lerp(mediumRadius, bigRadius, (fuelRatio - 0.6f) / 0.4f);
+            else if (fuelRatio > 0.25f)
+                radius = Mathf.Lerp(smallRadius, mediumRadius, (fuelRatio - 0.25f) / 0.35f);
+            else
+                radius = Mathf.Lerp(2f, smallRadius, fuelRatio / 0.25f);
+
+            SetRadius(radius);
         }
         else
         {

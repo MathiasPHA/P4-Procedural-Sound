@@ -225,13 +225,14 @@ GameObject:
   - component: {fileID: 1626463313000977171}
   - component: {fileID: 4589884889179511114}
   - component: {fileID: 7775883068081880350}
-  - component: {fileID: 6379968897288913679}
   - component: {fileID: -8538655097096910356}
   - component: {fileID: 3578511633562600573}
   - component: {fileID: 4861363729842834169}
   - component: {fileID: 3875033480923864871}
-  - component: {fileID: 151770259482907043}
   - component: {fileID: 5264495890279824989}
+  - component: {fileID: 4378696072532226969}
+  - component: {fileID: 851314945430049803}
+  - component: {fileID: 4093903545421048378}
   m_Layer: 6
   m_Name: Campfire_World
   m_TagString: Untagged
@@ -411,24 +412,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8b1b829e8f57af4eac20cf86bd742c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacedStructure
-  sourceData: {fileID: 0}
+  sourceData: {fileID: 11400000, guid: 9bb0b9522cbff8147af80d40c66aa4bf, type: 2}
   wasSaveLoaded: 0
---- !u!114 &6379968897288913679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5dcd22a650fdccc40ae3815f3f253ec3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComfortInfluenceSource
-  comfortValue: 0.8
-  weight: 1
-  radius: 10
-  influenceName: Influence
 --- !u!114 &-8538655097096910356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -525,21 +510,6 @@ MonoBehaviour:
   extinguishClip: {fileID: 0}
   currentFuel: 65
   currentBurnState: 3
---- !u!114 &151770259482907043
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6f61ba26ea2d45be8bec6fa2da871a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.CampfireInteractable
-  actionVerb: Interact
-  interactRange: 7
-  promptOffset: {x: 0, y: 0}
 --- !u!70 &5264495890279824989
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -577,3 +547,51 @@ CapsuleCollider2D:
   m_Offset: {x: -0.28, y: -3.77}
   m_Size: {x: 6.35, y: 7.1}
   m_Direction: 0
+--- !u!114 &4378696072532226969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1072beb254b4dc0468d9d1cc5f671952, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.WorldStationInteractable
+  actionVerb: Interact
+  interactRange: 1.5
+  promptOffset: {x: 0, y: 1.2}
+  logActions: 0
+--- !u!114 &851314945430049803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e26135a335066184c8cccd1ead8f643b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AddFuelAction
+  fuelTarget: {fileID: 0}
+  fuelSound: {fileID: 0}
+  fuelVolume: 0.6
+--- !u!114 &4093903545421048378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393102421888571362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dcd22a650fdccc40ae3815f3f253ec3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ComfortInfluenceSource
+  comfortValue: 0.8
+  weight: 1
+  radius: 50
+  influenceName: Influence
+  useFalloff: 1

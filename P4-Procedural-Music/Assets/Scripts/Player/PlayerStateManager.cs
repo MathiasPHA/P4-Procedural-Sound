@@ -1,5 +1,6 @@
-using InventorySystem.Data;
 using InteractionSystem;
+using InventorySystem;
+using InventorySystem.Data;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,8 +12,11 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerRunState runState = new PlayerRunState();
     public PlayerInventoryState inventoryState = new PlayerInventoryState();
     public PlayerHarvestState harvestState = new PlayerHarvestState();
+    public PlayerMusicPlayingState musicPlayingState = new PlayerMusicPlayingState();
     public PlayerMoveToInteractState moveToInteractState = new PlayerMoveToInteractState();
     public PlayerShrugState playerShrugState = new PlayerShrugState();
+    public PlayerHurtState hurtState = new PlayerHurtState();
+    public ConsumableEffectManager consumableEffect;
 
     public string animationQue;
     public Rigidbody2D playerRB;
@@ -36,8 +40,9 @@ public class PlayerStateManager : MonoBehaviour
 
     void Update()
     {
-        // Don't update facing direction during harvest — prevents animation restart
-        if (currentState != harvestState)
+        // Don't update facing direction during harvest or hurt —
+        // prevents animation restart / direction flip while locked
+        if (currentState != harvestState && currentState != hurtState)
             GetDircetion(moveInput.x, moveInput.y);
 
         currentState.UpdateState(this);
@@ -54,6 +59,23 @@ public class PlayerStateManager : MonoBehaviour
         SwitchState(harvestState);
     }
 
+    public void StartHurt(float stunDuration)
+    {
+        hurtState.Configure(stunDuration);
+        SwitchState(hurtState);
+    }
+
+    public void StartMusicPlaying()
+    {
+        SwitchState(musicPlayingState);
+    }
+
+    public void StopMusicPlaying()
+    {
+        if (currentState == musicPlayingState)
+            SwitchState(idleState);
+    }
+
     public void OnHarvestAnimationComplete()
     {
         SwitchState(idleState);
@@ -62,6 +84,10 @@ public class PlayerStateManager : MonoBehaviour
     private void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
+        if (consumableEffect.invertControls == true)
+        {
+            moveInput = -moveInput;
+        }
     }
     private void GetDircetion(float x, float y)
     {

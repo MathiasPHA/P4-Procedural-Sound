@@ -49,6 +49,14 @@ namespace MobSystem.States
         private bool _hasStruck;
         private Vector2 _lockedDirection;
 
+        /// <summary>
+        /// True this frame if the damaging hitbox is currently live. False during
+        /// windup, recovery, the pre-activation portion of strike (controlled by
+        /// MobData.attackHitboxActivationRatio), and after a hit has already landed.
+        /// Read by MobController's gizmo to visualise the active window.
+        /// </summary>
+        public bool IsHitboxActive { get; private set; }
+
         public override void EnterState(MobController mob)
         {
             StartWindup(mob);
@@ -85,6 +93,7 @@ namespace MobSystem.States
         {
             // Stop any lunge velocity when leaving the state
             if (mob.Rb != null) mob.Rb.linearVelocity = Vector2.zero;
+            IsHitboxActive = false;
         }
 
         // ───────────────────────── Windup ─────────────────────────
@@ -94,18 +103,44 @@ namespace MobSystem.States
             _phase = Phase.Windup;
             _phaseTimer = mob.Data.attackWindupDuration;
             _hasStruck = false;
+            IsHitboxActive = false;
 
             mob.Steering.Stop();
             mob.AnimationQueue = "AttackWindup";
 
-            // Play attack sound at the start of windup (the "growl" / "hiss")
-            if (mob.Data.attackSound != null)
-                mob.PlaySound(mob.Data.attackSound, mob.Data.attackVolume);
+            // Play windup telegraph sound
+            if (mob.Data.attackWindupSound != null)
+                mob.PlaySound(mob.Data.attackWindupSound, mob.Data.attackWindupVolume);
 
             // Initialise locked direction to current facing (will be updated during tracking)
             _lockedDirection = (mob.Awareness.PlayerTransform != null)
-                ? ((Vector2)mob.Awareness.PlayerTransform.position - (Vector2)mob.transform.position).normalized
+                ? ComputeAttackDirection(mob, mob.Awareness.PlayerTransform.position)
                 : mob.FacingDirection;
+        }
+
+        /// <summary>
+        /// Returns the direction the attack should face. When
+        /// MobData.horizontalAttackOnly is true, snaps to Vector2.left/right
+        /// based on the player's x relative to the mob; otherwise returns
+        /// the normal direction-to-player vector.
+        /// </summary>
+        private static Vector2 ComputeAttackDirection(MobController mob, Vector2 playerPos)
+        {
+            Vector2 mobPos = mob.transform.position;
+
+            if (mob.Data.horizontalAttackOnly)
+            {
+                float dx = playerPos.x - mobPos.x;
+
+                // Player directly above/below — keep current horizontal facing
+                // to avoid snapping back and forth on tiny x fluctuations.
+                if (Mathf.Approximately(dx, 0f))
+                    return mob.FacingDirection.x < 0f ? Vector2.left : Vector2.right;
+
+                return dx < 0f ? Vector2.left : Vector2.right;
+            }
+
+            return (playerPos - mobPos).normalized;
         }
 
         private void UpdateWindup(MobController mob, Vector2 mobPos, Vector2 playerPos)
@@ -129,10 +164,12 @@ namespace MobSystem.States
 
             if (elapsed < trackingCutoff)
             {
-                // Still tracking — update both facing and locked direction
-                Vector2 toPlayer = (playerPos - mobPos).normalized;
-                _lockedDirection = toPlayer;
-                mob.FacingDirection = toPlayer;
+                // Still tracking — update both facing and locked direction.
+                // ComputeAttackDirection snaps to horizontal when horizontalAttackOnly is on,
+                // so a troll will flip sides if the player dashes around behind it.
+                Vector2 dir = ComputeAttackDirection(mob, playerPos);
+                _lockedDirection = dir;
+                mob.FacingDirection = dir;
             }
             else
             {
@@ -152,21 +189,43 @@ namespace MobSystem.States
             _phase = Phase.Strike;
             _phaseTimer = mob.Data.attackStrikeDuration;
 
+            // Defensive re-snap: guarantee _lockedDirection is purely horizontal
+            // when the flag is on, regardless of how it got assigned during windup.
+            // This is belt-and-suspenders — ComputeAttackDirection already does this,
+            // but any edge case (null PlayerTransform fallback, future code changes)
+            // can no longer leak a non-horizontal direction into the strike.
+            if (mob.Data.horizontalAttackOnly)
+                _lockedDirection = _lockedDirection.x < 0f ? Vector2.left : Vector2.right;
+
+            // Play strike sound (bite, slash — plays even on miss)
+            if (mob.Data.attackStrikeSound != null)
+                mob.PlaySound(mob.Data.attackStrikeSound, mob.Data.attackStrikeVolume);
+
             mob.AnimationQueue = "Attack";
             mob.FacingDirection = _lockedDirection;
         }
 
         private void UpdateStrike(MobController mob, Vector2 mobPos, Vector2 playerPos)
         {
-            // Lunge forward (bypasses steering — this is scripted attack motion)
+            // Lunge forward (bypasses steering — this is scripted attack motion).
+            // Lunge runs for the whole strike regardless of hitbox activation,
+            // so the mob's movement arc isn't affected by the activation ratio.
             if (mob.Rb != null && mob.Data.attackLungeSpeed > 0f)
                 mob.Rb.linearVelocity = _lockedDirection * mob.Data.attackLungeSpeed;
 
             mob.AnimationQueue = "Attack";
             mob.FacingDirection = _lockedDirection;
 
-            // ── Hitbox check — continuous during strike until first hit ──
-            if (!_hasStruck)
+            // ── Hitbox activation gate ──
+            // The damaging hitbox stays off for the first portion of the strike
+            // (controlled by attackHitboxActivationRatio) so it can be lined up
+            // with the impact frame of the attack animation. 0 = active immediately,
+            // 0.4 = active from 40% into the strike onward.
+            float strikeElapsed = mob.Data.attackStrikeDuration - _phaseTimer;
+            float activationThreshold = mob.Data.attackStrikeDuration * mob.Data.attackHitboxActivationRatio;
+            IsHitboxActive = !_hasStruck && strikeElapsed >= activationThreshold;
+
+            if (IsHitboxActive)
                 CheckHitbox(mob);
 
             _phaseTimer -= Time.deltaTime;
@@ -176,33 +235,63 @@ namespace MobSystem.States
 
         private void CheckHitbox(MobController mob)
         {
-            Vector2 hitboxCenter = (Vector2)mob.transform.position +
-                                   _lockedDirection * mob.Data.attackHitboxOffset;
+            Vector2 hitboxCenter = (Vector2)mob.transform.position
+                                   + _lockedDirection * mob.Data.attackHitboxOffset
+                                   + Vector2.up * mob.Data.attackHitboxYOffset;
 
-            var hit = Physics2D.OverlapCircle(
-                hitboxCenter,
-                mob.Data.attackHitboxRadius,
-                mob.PlayerLayerMask);
+            // Shape depends on horizontalAttackOnly:
+            //   off → OverlapCircle: uniform reach in all directions
+            //   on  → OverlapBox: flat horizontal rectangle, width = 2*radius,
+            //         height = attackHitboxHeight (typically much less than 2*radius)
+            Collider2D hit;
+            if (mob.Data.horizontalAttackOnly)
+            {
+                Vector2 boxSize = new Vector2(
+                    mob.Data.attackHitboxRadius * 2f,
+                    mob.Data.attackHitboxHeight);
+
+                hit = Physics2D.OverlapBox(
+                    hitboxCenter,
+                    boxSize,
+                    0f,
+                    mob.PlayerLayerMask);
+
+                // Secondary check: the player's collider can be taller than the box
+                // and overlap it even when the player's actual position is well above
+                // or below the mob (e.g. running "under" a big troll). Reject hits
+                // whose transform y is outside the same vertical tolerance that defines
+                // the box, so the attack truly requires horizontal alignment.
+                if (hit != null)
+                {
+                    float yGap = Mathf.Abs(hit.transform.position.y - mob.transform.position.y);
+                    if (yGap > mob.Data.attackHitboxHeight * 0.5f)
+                        hit = null;
+                }
+            }
+            else
+            {
+                hit = Physics2D.OverlapCircle(
+                    hitboxCenter,
+                    mob.Data.attackHitboxRadius,
+                    mob.PlayerLayerMask);
+            }
 
             if (hit == null) return;
 
-            // Found the player in the hitbox — apply damage
+            // Found the player in the hitbox — reduce happiness
             _hasStruck = true;
 
-            if (PlayerHealth.Instance != null)
+            if (HappinessSystem.Instance != null)
             {
-                PlayerHealth.Instance.TakeDamage(
-                    mob.Data.attackDamage,
-                    mob.Data.happinessPenalty,
-                    mob.transform.position);
+                HappinessSystem.Instance.AdjustHappiness(-mob.Data.happinessPenalty);
 
                 // Attack makes noise — other mobs hear it
                 mob.Awareness.HearSound(mob.transform.position, 0.2f);
             }
             else
             {
-                Debug.Log($"[MobAttack] {mob.Data.displayName} hits player for " +
-                          $"{mob.Data.attackDamage} damage (no PlayerHealth found)");
+                Debug.Log($"[MobAttack] {mob.Data.displayName} strikes player for " +
+                          $"{mob.Data.happinessPenalty:F2} happiness (no HappinessSystem found)");
             }
         }
 
@@ -212,6 +301,7 @@ namespace MobSystem.States
         {
             _phase = Phase.Recovery;
             _phaseTimer = mob.Data.attackRecoveryDuration;
+            IsHitboxActive = false;
 
             if (mob.Rb != null) mob.Rb.linearVelocity = Vector2.zero;
             mob.AnimationQueue = "AttackRecovery";
@@ -219,10 +309,11 @@ namespace MobSystem.States
 
         private void UpdateRecovery(MobController mob, Vector2 mobPos, Vector2 playerPos)
         {
-            // Still face the player — mob is committed to being in combat,
-            // just can't act. Turning head toward the threat looks alert.
-            Vector2 toPlayer = (playerPos - mobPos).normalized;
-            mob.FacingDirection = toPlayer;
+            // Direction is frozen to the strike direction — the mob is committed
+            // and can't re-aim during the vulnerable window. This reinforces the
+            // "commit and pay for it" combat rhythm: if the player sidesteps during
+            // strike, the mob has to play out recovery facing the wrong way.
+            mob.FacingDirection = _lockedDirection;
 
             mob.Steering.Stop();
             mob.AnimationQueue = "AttackRecovery";

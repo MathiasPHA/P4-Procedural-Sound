@@ -1,18 +1,75 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using InventorySystem.Building;
+using InventorySystem.UI;
 
 public class PauseManager : MonoBehaviour
 {
     public static bool isPaused = false;
+
+    [Header("Pause Menus")]
     public GameObject pauseMenuUI;
     public GameObject OptionsUI;
     public GameObject ExitUI;
+
+    [Header("Audio")]
     public MixerVolumeController volumeController;
+
+    [Header("UI Managers (for Escape priority chain)")]
+    [Tooltip("When Escape is pressed and the inventory is open, close it instead of pausing.")]
+    [SerializeField] private InventoryUIManager inventoryUI;
+
+    [Tooltip("When Escape is pressed and the crafting panel is open, close it instead of pausing.")]
+    [SerializeField] private CraftingUIManager craftingUI;
 
     private float[] savedVolumes;
 
-    private void OnPause(InputValue value)
+    /// <summary>
+    /// Poll Escape directly in Update instead of going through the Input System's
+    /// action binding. This bypasses action map switching — when the inventory
+    /// opens and DisableMovement() is called, the Pause action can become
+    /// unavailable. Polling Keyboard.current works regardless of action state.
+    ///
+    /// Runs with Time.timeScale = 0 because this script uses Update (not
+    /// FixedUpdate) and Keyboard.current is timescale-independent.
+    /// </summary>
+    private void Update()
     {
+        if (Keyboard.current == null) return;
+        if (!Keyboard.current.escapeKey.wasPressedThisFrame) return;
+
+        HandleEscape();
+    }
+
+    /// <summary>
+    /// Escape key priority chain:
+    ///   1. If placing a structure  → PlacementSystem cancels placement (we skip pause)
+    ///   2. If inventory/crafting is open → close them (we skip pause)
+    ///   3. Otherwise → toggle pause menu
+    /// </summary>
+    private void HandleEscape()
+    {
+        // 1. Placement mode — PlacementSystem.Update() handles Escape itself.
+        //    Skip pausing so the pause menu doesn't pop up over the ghost.
+        if (PlacementSystem.Instance != null && PlacementSystem.Instance.IsPlacing)
+            return;
+
+        // 2. Inventory/crafting open — close them instead of pausing.
+        bool inventoryOpen = inventoryUI != null && inventoryUI.IsInventoryOpen;
+        bool craftingOpen = craftingUI != null && craftingUI.IsOpen;
+
+        if (inventoryOpen || craftingOpen)
+        {
+            if (inventoryOpen)
+                inventoryUI.ToggleInventory();
+
+            if (craftingOpen)
+                craftingUI.ClosePanel();
+
+            return;
+        }
+
+        // 3. Default — toggle pause
         if (isPaused) Resume();
         else Pause();
     }
