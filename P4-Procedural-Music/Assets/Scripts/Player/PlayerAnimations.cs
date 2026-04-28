@@ -22,41 +22,25 @@ public class PlayerAnimations : MonoBehaviour
         if (animationQue == "Idle")
         {
             if (playerStateManager.playerDir == "Down")
-            {
                 playerAnimator.Play("PlayerIdleFront");
-            }
             else if (playerStateManager.playerDir == "Left")
-            {
                 playerAnimator.Play("PlayerIdleLeft");
-            }
             else if (playerStateManager.playerDir == "Right")
-            {
                 playerAnimator.Play("PlayerIdleRight");
-            }
             else if (playerStateManager.playerDir == "Up")
-            {
                 playerAnimator.Play("PlayerIdleBack");
-            }
         }
 
         if (animationQue == "Run")
         {
             if (playerStateManager.playerDir == "Down")
-            {
                 playerAnimator.Play("PlayerRunFront");
-            }
             else if (playerStateManager.playerDir == "Left")
-            {
                 playerAnimator.Play("PlayerRunLeft");
-            }
             else if (playerStateManager.playerDir == "Right")
-            {
                 playerAnimator.Play("PlayerRunRight");
-            }
             else if (playerStateManager.playerDir == "Up")
-            {
                 playerAnimator.Play("PlayerRunBack");
-            }
         }
 
         if (animationQue == "HarvestAxe")
@@ -73,6 +57,22 @@ public class PlayerAnimations : MonoBehaviour
                 playerAnimator.Play("PlayerPickaxeSwingLeft");
             else if (playerStateManager.playerDir == "Right" || playerStateManager.playerDir == "Down")
                 playerAnimator.Play("PlayerPickaxeSwingRight");
+        }
+
+        if (animationQue == "HarvestHammer")
+        {
+            if (playerStateManager.playerDir == "Left" || playerStateManager.playerDir == "Up")
+                playerAnimator.Play("PlayerHammerSwingLeft");
+            else if (playerStateManager.playerDir == "Right" || playerStateManager.playerDir == "Down")
+                playerAnimator.Play("PlayerHammerSwingRight");
+        }
+
+        if (animationQue == "HarvestSpear")
+        {
+            if (playerStateManager.playerDir == "Left" || playerStateManager.playerDir == "Up")
+                playerAnimator.Play("PlayerSpearSwingLeft");
+            else if (playerStateManager.playerDir == "Right" || playerStateManager.playerDir == "Down")
+                playerAnimator.Play("PlayerSpearSwingRight");
         }
 
         if (animationQue == "HarvestHand")
@@ -99,21 +99,13 @@ public class PlayerAnimations : MonoBehaviour
         if (animationQue == "Hurt")
         {
             if (playerStateManager.playerDir == "Down")
-            {
                 playerAnimator.Play("PlayerHurtFront");
-            }
             else if (playerStateManager.playerDir == "Left")
-            {
                 playerAnimator.Play("PlayerHurtLeft");
-            }
             else if (playerStateManager.playerDir == "Right")
-            {
                 playerAnimator.Play("PlayerHurtRight");
-            }
             else if (playerStateManager.playerDir == "Up")
-            {
                 playerAnimator.Play("PlayerHurtBack");
-            }
         }
     }
 }
