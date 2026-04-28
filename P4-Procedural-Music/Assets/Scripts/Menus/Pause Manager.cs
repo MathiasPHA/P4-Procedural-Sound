@@ -12,6 +12,11 @@ public class PauseManager : MonoBehaviour
     public GameObject OptionsUI;
     public GameObject ExitUI;
 
+    [Header("Settings Sub-panels (closed on Resume)")]
+    [SerializeField] private GameObject settingsPopup;
+    [SerializeField] private GameObject controlsUI;
+    [SerializeField] private GameObject soundUI;
+
     [Header("Audio")]
     public MixerVolumeController volumeController;
 
@@ -29,9 +34,6 @@ public class PauseManager : MonoBehaviour
     /// action binding. This bypasses action map switching — when the inventory
     /// opens and DisableMovement() is called, the Pause action can become
     /// unavailable. Polling Keyboard.current works regardless of action state.
-    ///
-    /// Runs with Time.timeScale = 0 because this script uses Update (not
-    /// FixedUpdate) and Keyboard.current is timescale-independent.
     /// </summary>
     private void Update()
     {
@@ -92,11 +94,12 @@ public class PauseManager : MonoBehaviour
 
     public void Resume()
     {
-        if (OptionsUI.activeSelf || ExitUI.activeSelf)
-        {
-            OptionsUI.SetActive(false);
-            ExitUI.SetActive(false);
-        }
+        // Close all sub-panels so they don't reappear next pause
+        if (settingsPopup != null) settingsPopup.SetActive(false);
+        if (controlsUI != null)    controlsUI.SetActive(false);
+        if (soundUI != null)       soundUI.SetActive(false);
+        if (OptionsUI.activeSelf)  OptionsUI.SetActive(false);
+        if (ExitUI.activeSelf)     ExitUI.SetActive(false);
 
         // Restore from PlayerPrefs (picks up any settings changes)
         for (int i = 0; i < volumeController.groups.Length; i++)
