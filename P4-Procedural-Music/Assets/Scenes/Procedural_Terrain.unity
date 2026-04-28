@@ -212,6 +212,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Happines_HungerMeterUI
       objectReference: {fileID: 0}
+    - target: {fileID: 3710820692350290881, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4106220589028447584, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
       propertyPath: m_SortingOrder
       value: 10
@@ -309,6 +313,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
+--- !u!114 &241608114 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3537296947420161221, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+  m_PrefabInstance: {fileID: 773878942}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e9d234cbbb451542a5493ae2c44e510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.UI.InventoryUIManager
 --- !u!225 &306964506 stripped
 CanvasGroup:
   m_CorrespondingSourceObject: {fileID: 4254097958352710514, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
@@ -487,6 +502,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 795951859908026514, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: recipeDatabase.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 795951859908026514, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: ad4bc49c0948f2a488cc09ee8cac6955, type: 2}
+    - target: {fileID: 795951859908026514, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 568aab7d06b6c43dcb4fcb57c4018096, type: 2}
+    - target: {fileID: 795951859908026514, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 8c17779159f296f42bca9a5bd0e90709, type: 2}
     - target: {fileID: 447341623361402295, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_fontAsset
       value: 
@@ -827,6 +858,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5548861199716356723, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: inventoryUI
+      value: 
+      objectReference: {fileID: 241608114}
     - target: {fileID: 5652438653742745187, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1099,6 +1134,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralTerrain.PlacedStructureManager
   placeableDatabase:
   - {fileID: 11400000, guid: 9bb0b9522cbff8147af80d40c66aa4bf, type: 2}
+  - {fileID: 11400000, guid: b4a223a398ec44f8ba59d383b5c366c4, type: 2}
+  - {fileID: 11400000, guid: feee236670a750e4f9bd4974e4e7ead1, type: 2}
+  - {fileID: 11400000, guid: ac2de69023ef2dd49b6e247d5c014356, type: 2}
 --- !u!20 &892208754 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 3537779781170470357, guid: 6af3322d69c99264d8cd0c902d4f1d85, type: 3}
@@ -1898,10 +1936,38 @@ PrefabInstance:
       propertyPath: deathCanvasGroup
       value: 
       objectReference: {fileID: 306964506}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: resourceLayer.m_Bits
+      value: 384
+      objectReference: {fileID: 0}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: structureLayer.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: toolDatabase.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: 'toolDatabase.Array.data[5]'
+      value: 
+      objectReference: {fileID: 11400000, guid: f048d790656f64efeae146e8437a7fa1, type: 2}
+    - target: {fileID: 527060532823837240, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: 'toolDatabase.Array.data[6]'
+      value: 
+      objectReference: {fileID: 11400000, guid: f048d790656f64efeae146e8437a7fa1, type: 2}
     - target: {fileID: 1591661159947031898, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 892208754}
+    - target: {fileID: 1591661159947031898, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: placeables.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1591661159947031898, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: 'placeables.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: ac2de69023ef2dd49b6e247d5c014356, type: 2}
     - target: {fileID: 3043719320757778836, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: m_SortingLayer
       value: 2
@@ -2234,6 +2300,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 86478258343467068, guid: 8f0d320f49e953c45b347a7d37e47a11, type: 3}
+      propertyPath: comfortMusicBridge
+      value: 
+      objectReference: {fileID: 1549251058}
     - target: {fileID: 7839711183037292425, guid: 8f0d320f49e953c45b347a7d37e47a11, type: 3}
       propertyPath: m_Name
       value: Game State Manager
@@ -2588,6 +2658,10 @@ PrefabInstance:
     - target: {fileID: 2199441422565306820, guid: 2391b09c34b5fd844a0413e98c7464fd, type: 3}
       propertyPath: m_Name
       value: TradeCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199441422565306820, guid: 2391b09c34b5fd844a0413e98c7464fd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4400326881956539273, guid: 2391b09c34b5fd844a0413e98c7464fd, type: 3}
       propertyPath: m_fontAsset

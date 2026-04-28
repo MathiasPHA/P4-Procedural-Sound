@@ -31,6 +31,13 @@ namespace InventorySystem.UI
     /// Building) without needing a specific tool equipped. Each tab maps
     /// to a BaseCraftingStation that filters recipes by station type.
     ///
+    /// Tab visibility:
+    ///   When the active station is one of the tabs, the tab bar is shown
+    ///   and the player can switch freely. When a world-only station is
+    ///   active (cooking station, workbench, etc. — anything not in the
+    ///   tabs list), the tab bar is hidden so the player can't accidentally
+    ///   switch off the world station's recipe set.
+    ///
     /// Communicates with the inventory purely through the Inventory API
     /// and the crafting station abstraction — no direct coupling to
     /// InventoryUIManager.
@@ -77,12 +84,6 @@ namespace InventorySystem.UI
         [Tooltip("Used when the tabs list is empty. Otherwise the first tab's station is the default.")]
         [SerializeField] private BaseCraftingStation handCraftingStation;
 
-        [Header("Inventory UI (for placement sync)")]
-        [Tooltip("Reference to the InventoryUIManager. When a Buildable is crafted, " +
-                 "the inventory panel is closed alongside the crafting panel so the " +
-                 "player has a clear view for placement.")]
-        [SerializeField] private InventoryUIManager inventoryUI;
-
         [Header("Audio")]
         [SerializeField] private AudioClip craftSound;
         [Range(0f, 1f)]
@@ -101,7 +102,9 @@ namespace InventorySystem.UI
         private bool _isOpen;
         private bool _initialized;
 
-        // Tab state
+        // Tab state. _activeTabIndex == -1 means the active station isn't
+        // represented in the tabs list (e.g. a world-only station like the
+        // cooking pot). In that case the tab bar is hidden.
         private int _activeTabIndex;
         private readonly List<CraftingTabButton> _tabButtons = new();
 
@@ -284,6 +287,7 @@ namespace InventorySystem.UI
             RebuildRecipeList();
             ClearSelection();
             UpdateTabHighlights();
+            UpdateTabBarVisibility();
             UpdateStationHeader();
 
             // Auto-select first recipe
@@ -297,6 +301,34 @@ namespace InventorySystem.UI
             {
                 _tabButtons[i].SetActive(i == _activeTabIndex);
             }
+        }
+
+        /// <summary>
+        /// Show the tab bar only when the active station is one of the tabs.
+        /// World-only stations (cooking, workbench, etc.) hide the bar so
+        /// the player can't switch away from the station's recipe set.
+        /// </summary>
+        private void UpdateTabBarVisibility()
+        {
+            if (tabBarContainer == null) return;
+
+            bool show = _activeTabIndex >= 0 && _activeTabIndex < tabs.Count;
+            tabBarContainer.gameObject.SetActive(show);
+        }
+
+        /// <summary>
+        /// Returns the tab index whose station matches the given station,
+        /// or -1 if no tab matches (i.e. the station is a world-only station).
+        /// </summary>
+        private int FindTabIndexForStation(ICraftingStation station)
+        {
+            if (station == null) return -1;
+            for (int i = 0; i < tabs.Count; i++)
+            {
+                if (tabs[i].station == (BaseCraftingStation)station)
+                    return i;
+            }
+            return -1;
         }
 
         // =====================================================================
@@ -322,15 +354,8 @@ namespace InventorySystem.UI
             {
                 _activeStation = station;
 
-                // Try to find a matching tab and highlight it
-                for (int i = 0; i < tabs.Count; i++)
-                {
-                    if (tabs[i].station == (BaseCraftingStation)station)
-                    {
-                        _activeTabIndex = i;
-                        break;
-                    }
-                }
+                // -1 means the active station isn't a tab — world-only.
+                _activeTabIndex = FindTabIndexForStation(station);
             }
 
             if (_isOpen)
@@ -338,6 +363,7 @@ namespace InventorySystem.UI
                 RebuildRecipeList();
                 ClearSelection();
                 UpdateTabHighlights();
+                UpdateTabBarVisibility();
                 UpdateStationHeader();
             }
         }
@@ -351,16 +377,34 @@ namespace InventorySystem.UI
             SetActiveStation(null);
         }
 
+        /// <summary>
+        /// Set the active station AND open the crafting panel.
+        /// Used by click-to-interact handlers (e.g. CookingStationInteractable)
+        /// that need to pop the panel open in response to a world click, rather
+        /// than waiting for the inventory toggle key.
+        /// If the panel is already open, this just re-targets to the new station.
+        /// </summary>
+        public void OpenWithStation(ICraftingStation station)
+        {
+            SetActiveStation(station);
+
+            if (!_isOpen)
+                OpenPanel();
+        }
+
         // =====================================================================
-        // PlacementSystem callbacks
+        // PlacementSystem callbacks — re-open after placement
         // =====================================================================
 
         private void OnPlacementEnded()
         {
-            // Placement ended (cancelled or out of materials).
-            // The panels stay closed — the player reopens them manually with Tab.
-            // This gives the player a clear view of what they just built.
-            _closedForPlacement = false;
+            // Re-open the crafting panel on the same tab the player was on
+            // when they clicked Build. This lets them continue placing structures.
+            if (_closedForPlacement)
+            {
+                _closedForPlacement = false;
+                OpenPanel();
+            }
         }
 
         // =====================================================================
@@ -386,6 +430,7 @@ namespace InventorySystem.UI
 
             RebuildRecipeList();
             UpdateTabHighlights();
+            UpdateTabBarVisibility();
             UpdateStationHeader();
 
             // Auto-select first recipe if nothing is selected
@@ -394,7 +439,8 @@ namespace InventorySystem.UI
         }
 
         /// <summary>
-        /// Close the crafting panel. Public so PauseManager can close it on Escape.
+        /// Close the crafting panel. Public so external systems (pause menu,
+        /// scene transitions, etc.) can dismiss the panel cleanly.
         /// </summary>
         public void ClosePanel()
         {
@@ -472,15 +518,37 @@ namespace InventorySystem.UI
         {
             if (stationNameText == null) return;
 
-            // Use the active tab's label if available
+            // Tab-backed station: use the tab label
             if (_activeTabIndex >= 0 && _activeTabIndex < tabs.Count)
             {
                 stationNameText.text = tabs[_activeTabIndex].label.ToUpper();
+                return;
             }
-            else
+
+            // World-only station (cooking, workbench, ...): use station type
+            if (_activeStation != null)
             {
-                stationNameText.text = "CRAFTING";
+                stationNameText.text = GetStationDisplayName(_activeStation.StationType);
+                return;
             }
+
+            stationNameText.text = "CRAFTING";
+        }
+
+        /// <summary>
+        /// Pretty-prints a CraftingStationType for the panel header when no tab
+        /// label is available. Adjust here if you rename a station type.
+        /// </summary>
+        private static string GetStationDisplayName(CraftingStationType type)
+        {
+            return type switch
+            {
+                CraftingStationType.HandCraft       => "CRAFTING",
+                CraftingStationType.Workbench       => "WORKBENCH",
+                CraftingStationType.CookingStation  => "COOKING",
+                CraftingStationType.BuildHammer     => "BUILDING",
+                _                                   => type.ToString().ToUpper()
+            };
         }
 
         // =====================================================================
@@ -535,22 +603,17 @@ namespace InventorySystem.UI
                 if (craftSound != null && _audioSource != null && Time.time >= lastCraftSoundTime + craftSoundCooldown)
                 {
                     lastCraftSoundTime = Time.time;
-                    _audioSource.pitch = 1f + UnityEngine.Random.Range(-craftPitchVariation, craftPitchVariation);
+                   _audioSource.pitch = 1f + UnityEngine.Random.Range(-craftPitchVariation, craftPitchVariation);
                     _audioSource.PlayOneShot(craftSound, craftVolume);
                 }
 
-                // If the result was a Buildable, close both panels for placement.
+                // If the result was a Buildable, close the panel for placement.
                 // PlacementSystem is now in ghost mode. Mark _closedForPlacement
                 // so we re-open on the same tab when placement ends.
                 if (_selectedRecipe.result.category == ItemCategory.Buildable)
                 {
                     _closedForPlacement = true;
                     ClosePanel();
-
-                    // Close the inventory too so the player has a clear view for placement
-                    if (inventoryUI != null && inventoryUI.IsInventoryOpen)
-                        inventoryUI.ToggleInventory();
-
                     return;
                 }
 

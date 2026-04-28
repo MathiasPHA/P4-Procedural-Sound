@@ -23,6 +23,11 @@ namespace ProceduralTerrain
     ///   - SaveAll() is called by SaveSystemManager during auto-save / quit / pause.
     ///   - When a chunk loads, ChunkManager calls LoadStructuresForChunk(coord).
     ///   - When a chunk unloads, ChunkManager calls UnloadStructuresForChunk(coord).
+    ///
+    /// HP PERSISTENCE:
+    ///   PlacedStructure.CurrentHealth is captured at save time and restored on load
+    ///   via PlacedStructure.RestoreHealth(int). Stored on the new health field of
+    ///   StructureSaveData (0 = unset / load at full HP, backward compatible).
     /// </summary>
     public class PlacedStructureManager : MonoBehaviour
     {
@@ -221,12 +226,11 @@ namespace ProceduralTerrain
         /// </summary>
         public void SaveAll()
         {
-            SyncActiveToSaveData();
-
             string worldName = SaveSystemManager.Instance != null
                 ? SaveSystemManager.Instance.worldName
                 : "default";
 
+            SyncActiveToSaveData();
             SaveToDisk(worldName);
         }
 
@@ -280,6 +284,10 @@ namespace ProceduralTerrain
 
             structure.sourceData = placeableData;
             structure.wasSaveLoaded = true; // Flag so it doesn't re-register
+
+            // Restore HP. 0 = unset (load at full HP). Runs after Awake so sourceData
+            // is now assigned and PlacedStructure.RestoreHealth can pull maxHealth.
+            structure.RestoreHealth(data.health);
 
             // Restore optional per-instance runtime state (campfire fuel, etc.)
             // Runs after Awake but before the first Start, so the structure boots
@@ -335,10 +343,16 @@ namespace ProceduralTerrain
                     if (persistent != null)
                         stateJson = persistent.SerializeState() ?? "";
 
+                    // Capture HP. Demolished structures (HP=0) never reach here because
+                    // Demolish() unregisters them, but guard anyway.
+                    int hp = s.CurrentHealth;
+                    if (hp <= 0) hp = s.MaxHealth;
+
                     saveEntries.Add(new StructureSaveData(
                         s.sourceData.item.id,
                         s.transform.position,
-                        stateJson
+                        stateJson,
+                        hp
                     ));
                 }
 
