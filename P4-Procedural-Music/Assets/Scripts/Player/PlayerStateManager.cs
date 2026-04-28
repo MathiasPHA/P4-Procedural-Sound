@@ -16,6 +16,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerMoveToInteractState moveToInteractState = new PlayerMoveToInteractState();
     public PlayerShrugState playerShrugState = new PlayerShrugState();
     public PlayerHurtState hurtState = new PlayerHurtState();
+    public PlayerDeathState deathState = new PlayerDeathState();
     public ConsumableEffectManager consumableEffect;
 
     public string animationQue;
@@ -40,9 +41,9 @@ public class PlayerStateManager : MonoBehaviour
 
     void Update()
     {
-        // Don't update facing direction during harvest or hurt —
+        // Don't update facing direction during harvest, hurt, or death —
         // prevents animation restart / direction flip while locked
-        if (currentState != harvestState && currentState != hurtState)
+        if (currentState != harvestState && currentState != hurtState && currentState != deathState)
             GetDircetion(moveInput.x, moveInput.y);
 
         currentState.UpdateState(this);
@@ -63,6 +64,11 @@ public class PlayerStateManager : MonoBehaviour
     {
         hurtState.Configure(stunDuration);
         SwitchState(hurtState);
+    }
+
+    public void StartDeath()
+    {
+        SwitchState(deathState);
     }
 
     public void StartMusicPlaying()

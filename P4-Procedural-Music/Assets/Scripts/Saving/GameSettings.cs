@@ -153,7 +153,10 @@ public class GameSettings : MonoBehaviour
         if (DayNightMaster.Instance != null)
             DayNightMaster.Instance.ResetLoadState();
 
-        SceneManager.LoadScene(gameSceneName);
+        if (SceneTransition.Instance != null)
+            SceneTransition.Instance.LoadScene(gameSceneName);
+        else
+            SceneManager.LoadScene(gameSceneName); // fallback if transition prefab missing
     }
 
     private void SaveMetadata(string world, int gameSeed)

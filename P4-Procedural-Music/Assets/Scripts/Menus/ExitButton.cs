@@ -27,7 +27,10 @@ public class ExitButton : MonoBehaviour
         {
             Debug.Log("ComfortMusicBridge not found. Cannot set music state to Exploring.");
         }
-        SceneManager.LoadScene("Main Menu");
+        if (SceneTransition.Instance != null)
+            SceneTransition.Instance.LoadScene("Main Menu");
+        else
+            SceneManager.LoadScene("Main Menu"); // fallback if transition prefab missing
 
     }
 }
