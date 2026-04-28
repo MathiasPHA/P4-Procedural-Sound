@@ -41,8 +41,39 @@ namespace InventorySystem.Building
         [SerializeField] private Camera mainCamera;
 
         [Header("Placeable Database")]
-        [Tooltip("All placeable item definitions. The system builds a lookup by item ID.")]
+        [Tooltip("All placeable item definitions. Use right-click → Auto-Populate Placeables " +
+                 "to scan the project and fill this list automatically.")]
         [SerializeField] private List<PlaceableData> placeables = new();
+
+        /// <summary>Read-only access to the registered placeables (runtime use).</summary>
+        public IReadOnlyList<PlaceableData> Placeables => placeables;
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Right-click the PlacementSystem component → Auto-Populate Placeables.
+        /// Scans the entire project for every PlaceableData asset and fills the list.
+        /// Run this whenever you add a new structure — no manual dragging needed.
+        /// </summary>
+        [ContextMenu("Auto-Populate Placeables")]
+        private void AutoPopulatePlaceables()
+        {
+            placeables.Clear();
+
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:PlaceableData");
+
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var data = UnityEditor.AssetDatabase.LoadAssetAtPath<PlaceableData>(path);
+
+                if (data != null)
+                    placeables.Add(data);
+            }
+
+            UnityEditor.EditorUtility.SetDirty(this);
+            Debug.Log($"[PlacementSystem] Auto-populated {placeables.Count} PlaceableData asset(s).");
+        }
+#endif
 
         [Header("Grid")]
         [Tooltip("World-space size of one grid cell.")]
@@ -398,9 +429,14 @@ namespace InventorySystem.Building
                 return;
             }
 
-            // Right-click or Escape — cancel placement
-            if (mouse.rightButton.wasPressedThisFrame ||
-                (keyboard != null && keyboard.escapeKey.wasPressedThisFrame))
+            // Right-click, Escape, or Tab — cancel placement.
+            // Tab cancels AND lets the inventory toggle fire on the same frame,
+            // acting as a "back to menu" shortcut.
+            bool cancelPressed = mouse.rightButton.wasPressedThisFrame
+                || (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
+                || (keyboard != null && keyboard.tabKey.wasPressedThisFrame);
+
+            if (cancelPressed)
             {
                 CancelPlacement();
             }

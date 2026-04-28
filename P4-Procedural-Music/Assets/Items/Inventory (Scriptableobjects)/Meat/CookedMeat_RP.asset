@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a4dbc57ffa34cf544b98aa16558f3ff3, type: 3}
-  m_Name: Pot_RP
+  m_Name: CookedMeat_RP
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.Recipe
-  recipeId: Pot
-  stationType: 3
+  recipeId: Cooked_Meat
+  stationType: 2
   ingredients:
-  - item: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
-    amount: 3
-  result: {fileID: 11400000, guid: 1631bb5a5190f44f88e4d09104ffc4c1, type: 2}
+  - item: {fileID: 11400000, guid: 87cb786f5e71c4af09d511eac81b5e03, type: 2}
+    amount: 1
+  result: {fileID: 11400000, guid: 47de165830dc8c541858ebef0858f056, type: 2}
   resultAmount: 1
   craftTime: 0
