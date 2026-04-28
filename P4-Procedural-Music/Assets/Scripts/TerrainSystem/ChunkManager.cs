@@ -371,7 +371,7 @@ namespace ProceduralTerrain
 
                 var chunkObjects = ObjectSpawner.SpawnChunk(
                     coord, chunkSize, chunk, objectSpawnConfig,
-                    _runtimeSeed, chunkParent, cellSize, removedIds, depletedIds);
+                    generationConfig, _runtimeSeed, chunkParent, cellSize, removedIds, depletedIds);
 
                 _loadedObjects[coord] = chunkObjects;
             }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 370192446305852294}
   - component: {fileID: 525407814986711875}
   - component: {fileID: 1111014456885726042}
+  - component: {fileID: 7068373108540207478}
   m_Layer: 0
   m_Name: DevTool
   m_TagString: Untagged
@@ -47,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DevTestConsole
   toggleKey: 94
   openOnStart: 0
-  showCornerButton: 1
+  showCornerButton: 0
   panelX: 580
   panelY: 10
   panelWidth: 340
@@ -65,7 +66,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoodRateHUD
   toggleKey: 95
-  showHUD: 1
+  showHUD: 0
   hudX: 10
   hudY: 420
   hudWidth: 300
+--- !u!114 &7068373108540207478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9065397540719651061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d619ac9036030a046af7c9633c9bee79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSpawnerDevTool
+  itemDatabase: {fileID: 11400000, guid: 80ff36d17b36f944d8f221f69b6a4ae9, type: 2}
+  toggleKey: 96
+  openOnStart: 0
+  showCornerButton: 0
+  panelX: 10
+  panelY: 10
+  panelWidth: 400
+  maxPanelHeight: 700

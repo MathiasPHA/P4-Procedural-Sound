@@ -30,14 +30,29 @@ public class PauseManager : MonoBehaviour
     private float[] savedVolumes;
 
     /// <summary>
+    /// Poll Escape directly in Update instead of going through the Input System's
+    /// action binding. This bypasses action map switching — when the inventory
+    /// opens and DisableMovement() is called, the Pause action can become
+    /// unavailable. Polling Keyboard.current works regardless of action state.
+    /// </summary>
+    private void Update()
+    {
+        if (Keyboard.current == null) return;
+        if (!Keyboard.current.escapeKey.wasPressedThisFrame) return;
+
+        HandleEscape();
+    }
+
+    /// <summary>
     /// Escape key priority chain:
     ///   1. If placing a structure  → PlacementSystem cancels placement (we skip pause)
     ///   2. If inventory/crafting is open → close them (we skip pause)
     ///   3. Otherwise → toggle pause menu
     /// </summary>
-    private void OnPause(InputValue value)
+    private void HandleEscape()
     {
         // 1. Placement mode — PlacementSystem.Update() handles Escape itself.
+        //    Skip pausing so the pause menu doesn't pop up over the ghost.
         if (PlacementSystem.Instance != null && PlacementSystem.Instance.IsPlacing)
             return;
 

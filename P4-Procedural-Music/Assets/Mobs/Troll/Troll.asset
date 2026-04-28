@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48822c4b9f2eaf542a897f51bd8c20c6, type: 3}
+  m_Name: Troll
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.Data.MobData
+  id: troll
+  displayName: Troll
+  behaviour: 1
+  maxHealth: 80
+  moveSpeed: 40
+  detectionRange: 200
+  hearingRange: 300
+  detectionInterval: 0.25
+  visualGainRate: 1.5
+  auditoryGainRate: 0.6
+  awarenessDecayRate: 0.4
+  suspiciousThreshold: 0.5
+  separationRadius: 59.8
+  separationWeight: 1.74
+  avoidanceDistance: 70.1
+  avoidanceWeight: 1.85
+  wanderStrength: 0.637
+  fleeSpeedMultiplier: 1.5
+  fleeDistance: 160
+  fleeHealthThreshold: 0
+  aggroRange: 120
+  attackRange: 25
+  happinessPenalty: 0.2
+  threatComfortValue: 0.236
+  threatRadius: 300
+  hurtStunDuration: 0.3
+  attackWindupDuration: 0.75
+  attackStrikeDuration: 0.5
+  attackRecoveryDuration: 1.2
+  attackAimLockRatio: 0
+  attackHitboxActivationRatio: 0.38
+  attackHitboxOffset: 15.5
+  attackHitboxYOffset: -5.6
+  attackHitboxRadius: 11.27
+  attackLungeSpeed: 0
+  horizontalAttackOnly: 1
+  attackHitboxHeight: 10
+  searchDuration: 4
+  searchRadius: 60
+  roamRadius: 80
+  roamIdleTime: 2
+  packAlertRadius: 200
+  packAlertBoost: 0.7
+  allowedTerrain: 00000000
+  spawnTimeStart: 0
+  spawnTimeEnd: 24
+  groupSizeMin: 1
+  groupSizeMax: 1
+  prefab: {fileID: 1099063152185500091, guid: 950359b4791a3fa49b04e3a7c1ac1b68, type: 3}
+  ambientSound: {fileID: 0}
+  ambientVolume: 0.3
+  hitSound: {fileID: 0}
+  hitVolume: 0.5
+  deathSound: {fileID: 0}
+  deathVolume: 0.5
+  attackWindupSound: {fileID: 0}
+  attackWindupVolume: 0.5
+  attackStrikeSound: {fileID: 0}
+  attackStrikeVolume: 0.5
+  lootTable: {fileID: 11400000, guid: 8beb63041a865d347a8d5fcbaf885c6f, type: 2}
+  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}

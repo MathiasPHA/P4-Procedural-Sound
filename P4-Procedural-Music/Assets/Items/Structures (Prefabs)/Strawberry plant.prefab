@@ -181,7 +181,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.BushInteractable
   actionVerb: Pick
-  interactRange: 2
+  interactRange: 4.48
+  interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
   dropItem: {fileID: 11400000, guid: 761a4282f297c2841add3c75c9fe7481, type: 2}
   dropAmount: 3
