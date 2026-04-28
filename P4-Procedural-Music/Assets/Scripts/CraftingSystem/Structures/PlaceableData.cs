@@ -24,5 +24,12 @@ namespace InventorySystem.Building
 
         [Tooltip("Size in grid cells. A campfire is 1x1, a long workbench might be 2x1.")]
         public Vector2Int gridCells = Vector2Int.one;
+
+        [Header("Durability")]
+        [Tooltip("Total damage this structure can absorb before being demolished. " +
+                 "Only tools with structureDamage > 0 (e.g. Hammer) can deal damage. " +
+                 "Default 30 = 6 hammer hits at structureDamage=5.")]
+        [Min(1)]
+        public int maxHealth = 30;
     }
 }

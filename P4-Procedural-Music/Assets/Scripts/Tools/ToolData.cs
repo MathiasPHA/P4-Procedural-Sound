@@ -20,8 +20,13 @@ namespace InventorySystem.Data
         public ToolType toolType;
 
         [Header("Stats")]
-        [Tooltip("Damage dealt per swing to a harvestable resource.")]
+        [Tooltip("Damage dealt per swing to a harvestable resource (and to mobs).")]
         [Min(0)] public int damage = 1;
+
+        [Tooltip("Damage dealt per swing to PlacedStructures. " +
+                 "0 = this tool cannot damage structures at all (default for axes, pickaxes, hand). " +
+                 "Set this to 5 on the Hammer so it can demolish placed buildings.")]
+        [Min(0)] public int structureDamage = 0;
 
         [Tooltip("Seconds between swings.")]
         [Min(0.1f)] public float cooldown = 0.5f;
