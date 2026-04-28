@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 namespace InventorySystem
 {
@@ -227,6 +228,10 @@ namespace InventorySystem
                 case EffectType.Confusion:
                     StartCoroutine(ApplyConfusionEffect(effect));
                     break;
+
+                case EffectType.SceneLoad:
+                    ApplySceneLoad(effect);
+                    break;
             }
         }
 
@@ -281,6 +286,18 @@ namespace InventorySystem
             Vector2 randomOffset = Random.insideUnitCircle * radius;
             transform.position += new Vector3(randomOffset.x, randomOffset.y, 0);
             if (logEffects) Debug.Log("Teleported!");
+        }
+
+        private void ApplySceneLoad(ConsumableEffect effect)
+        {
+            if (string.IsNullOrEmpty(effect.sceneName))
+            {
+                Debug.LogWarning("[ConsumableEffectManager] SceneLoad effect has no scene name set!");
+                return;
+            }
+
+            if (logEffects) Debug.Log($"Loading scene: {effect.sceneName}");
+            SceneManager.LoadScene(effect.sceneName);
         }
 
         #endregion
@@ -390,7 +407,7 @@ namespace InventorySystem
             bool wasEnabled = playerLight.enabled;
 
             playerLight.pointLightOuterRadius = effect.magnitude;
-            playerLight.intensity = 1.5f;
+            playerLight.intensity = effect.magnitude;
             playerLight.color = effect.tintColor;
             playerLight.enabled = true;
 

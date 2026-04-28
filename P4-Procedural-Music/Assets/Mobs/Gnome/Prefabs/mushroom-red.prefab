@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2225051034846359906}
   - component: {fileID: 4541574541969967333}
   - component: {fileID: 305666644842631940}
+  - component: {fileID: 8878636700090241631}
   m_Layer: 0
   m_Name: mushroom-red
   m_TagString: Untagged
@@ -138,3 +139,26 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 7.1498203, y: 4.6808977}
   m_EdgeRadius: 0
+--- !u!114 &8878636700090241631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2702195463603104573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2f3e410ceac3da4abf19108a169dbe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::YSortable
+  sortingGroup: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  ordersPerUnit: 100
+  staticOrderOffset: 0
+  randomOffsetRange: 0.01
+  referenceMode: 0
+  feetCollider: {fileID: 0}
+  customPivot: {fileID: 0}
+  additionalYOffset: 0
+  unifySortingLayer: 1
+  unifiedSortingLayerName: World

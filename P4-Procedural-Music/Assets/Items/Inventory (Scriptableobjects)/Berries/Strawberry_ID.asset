@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
+  m_Name: Strawberry_ID
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
+  id: strawberry
+  displayName: Strawberry
+  description: A jummy red berry. Useful for jam and cakes!
+  loreNote: My granddaughters favourite
+  icon: {fileID: 21300000, guid: 50a582239fdb25d428ffd50f5bafdb2d, type: 3}
+  category: 2
+  maxStackSize: 64
+  isDroppable: 1
+  hasInstanceState: 0
+  maxDurability: 100
+  hungerRestore: 0.05
+  happinessRestore: 0
+  consumeSound: {fileID: 8300000, guid: 2c78bea2e4210c746a24116cd503d40f, type: 3}
+  consumeSoundVolume: 0.5
+  isFuel: 0
+  burnFuelValue: 0
+  displayStats: []

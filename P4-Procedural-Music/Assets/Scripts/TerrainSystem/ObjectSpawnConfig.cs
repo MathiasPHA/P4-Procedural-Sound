@@ -41,9 +41,25 @@ namespace ProceduralTerrain
             public float densityMultiplier = 2f;
 
             [Header("Placement")]
-            [Tooltip("Minimum distance between this object and others of the same rule (in tiles).")]
+            [Tooltip("Minimum distance (in tiles) this object claims from any other spawned object, " +
+                     "across all rules. When two objects are checked, the larger of the two minSpacing " +
+                     "values is used as the required clearance.")]
             [Range(0f, 5f)]
             public float minSpacing = 1.5f;
+
+            [Tooltip("Required distance (in WORLD UNITS) from any disallowed terrain. 0 = no check " +
+                     "(only the spawn cell itself is verified). Use this when the object's sprite is " +
+                     "wider than one cell — e.g. a tree sprite ~30 units wide on a 20-unit grid wants " +
+                     "a clearance of ~15 so its canopy doesn't visually overhang water at coastlines. " +
+                     "Setting this ≥ cellSize/2 effectively bans the object from coastline cells.")]
+            public float clearanceRadius = 0f;
+
+            [Tooltip("Required distance (in WORLD UNITS) from any other spawned object, across all rules. " +
+                     "When two objects are checked, the larger of the two values is used. " +
+                     "Use this for sprite-overlap prevention when sprites are wider than a tile — " +
+                     "e.g. a tree sprite ~30 units wide wants ~25 to avoid canopy overlap. " +
+                     "Stacks with minSpacing — both checks run; whichever rejects first wins.")]
+            public float objectClearance = 0f;
 
             [Tooltip("Max instances per chunk (0 = unlimited).")]
             public int maxCountPerChunk = 0;

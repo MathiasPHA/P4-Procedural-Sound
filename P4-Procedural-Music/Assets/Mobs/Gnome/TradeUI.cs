@@ -35,7 +35,7 @@ public class TradeUI : MonoBehaviour
     public void OpenTrade(GnomeInteractable gnome)
     {
         currentGnome = gnome;
-        PopulateOffers(gnome.tradeOffers);
+        PopulateOffer(gnome.MyOffer);
         tradePanel.SetActive(true);
         gnome.StartTalking();
 
@@ -53,15 +53,12 @@ public class TradeUI : MonoBehaviour
         inputProvider?.EnableMovement();
     }
 
-    void PopulateOffers(TradeOffer[] offers)
+    void PopulateOffer(TradeOffer offer)
     {
         foreach (Transform child in offerContainer)
             Destroy(child.gameObject);
-
-        foreach (var offer in offers)
-        {
             var slot = Instantiate(tradeSlotPrefab, offerContainer);
             slot.GetComponent<TradeSlot>().Setup(offer);
-        }
+        
     }
 }
