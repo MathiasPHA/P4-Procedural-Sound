@@ -12,6 +12,11 @@ public class PauseManager : MonoBehaviour
     public GameObject OptionsUI;
     public GameObject ExitUI;
 
+    [Header("Settings Sub-panels (closed on Resume)")]
+    [SerializeField] private GameObject settingsPopup;
+    [SerializeField] private GameObject controlsUI;
+    [SerializeField] private GameObject soundUI;
+
     [Header("Audio")]
     public MixerVolumeController volumeController;
 
@@ -25,15 +30,29 @@ public class PauseManager : MonoBehaviour
     private float[] savedVolumes;
 
     /// <summary>
+    /// Poll Escape directly in Update instead of going through the Input System's
+    /// action binding. This bypasses action map switching — when the inventory
+    /// opens and DisableMovement() is called, the Pause action can become
+    /// unavailable. Polling Keyboard.current works regardless of action state.
+    /// </summary>
+    private void Update()
+    {
+        if (Keyboard.current == null) return;
+        if (!Keyboard.current.escapeKey.wasPressedThisFrame) return;
+
+        HandleEscape();
+    }
+
+    /// <summary>
     /// Escape key priority chain:
     ///   1. If placing a structure  → PlacementSystem cancels placement (we skip pause)
     ///   2. If inventory/crafting is open → close them (we skip pause)
     ///   3. Otherwise → toggle pause menu
     /// </summary>
-    private void OnPause(InputValue value)
+    private void HandleEscape()
     {
         // 1. Placement mode — PlacementSystem.Update() handles Escape itself.
-        //    We just skip pausing so the pause menu doesn't pop up over the ghost.
+        //    Skip pausing so the pause menu doesn't pop up over the ghost.
         if (PlacementSystem.Instance != null && PlacementSystem.Instance.IsPlacing)
             return;
 
@@ -75,11 +94,12 @@ public class PauseManager : MonoBehaviour
 
     public void Resume()
     {
-        if (OptionsUI.activeSelf || ExitUI.activeSelf)
-        {
-            OptionsUI.SetActive(false);
-            ExitUI.SetActive(false);
-        }
+        // Close all sub-panels so they don't reappear next pause
+        if (settingsPopup != null) settingsPopup.SetActive(false);
+        if (controlsUI != null)    controlsUI.SetActive(false);
+        if (soundUI != null)       soundUI.SetActive(false);
+        if (OptionsUI.activeSelf)  OptionsUI.SetActive(false);
+        if (ExitUI.activeSelf)     ExitUI.SetActive(false);
 
         // Restore from PlayerPrefs (picks up any settings changes)
         for (int i = 0; i < volumeController.groups.Length; i++)

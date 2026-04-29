@@ -99,10 +99,10 @@ namespace InventorySystem.Input
 
             // --- Resolve individual actions ---
             // Each call logs clearly if an action is missing
-            _point           = ResolveAction("Mouse Position");
-            _click           = ResolveAction("Left Button");
-            _rightClick      = ResolveAction("RightButton");
-            _middleClick     = ResolveAction("MiddleButton");
+            _point           = ResolveAction("Point");
+            _click           = ResolveAction("Click");
+            _rightClick      = ResolveAction("RightClick");
+            _middleClick     = ResolveAction("MiddleClick");
             _modifier        = ResolveAction("Modifier");
             _ctrlModifier    = ResolveAction("Ctrl Modifier");
             _toggleInventory = ResolveAction("Toggle Inventory");

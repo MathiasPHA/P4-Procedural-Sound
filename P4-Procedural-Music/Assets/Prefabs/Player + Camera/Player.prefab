@@ -729,6 +729,8 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   placeables:
   - {fileID: 11400000, guid: 9bb0b9522cbff8147af80d40c66aa4bf, type: 2}
+  - {fileID: 11400000, guid: feee236670a750e4f9bd4974e4e7ead1, type: 2}
+  - {fileID: 11400000, guid: b4a223a398ec44f8ba59d383b5c366c4, type: 2}
   gridSize: 2
   skipGroundCheck: 1
   groundLayer:
@@ -778,7 +780,7 @@ MonoBehaviour:
   maxLightIntensity: 1
   minLightIntensity: 0.1
   wrongToolFeedback: {fileID: 4571617195942478625}
-  fluteTool: {fileID: 5360917103592190494}
+  instrumentAudioSource: {fileID: 0}
 --- !u!82 &-1374152125123140291
 AudioSource:
   m_ObjectHideFlags: 0
