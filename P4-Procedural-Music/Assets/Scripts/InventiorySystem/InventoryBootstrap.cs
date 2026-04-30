@@ -6,16 +6,21 @@ namespace InventorySystem
 {
     /// <summary>
     /// Game bootstrap that creates and wires up the inventory and crafting systems.
-    /// 
+    ///
     /// Initialization order:
     ///   -100  InventoryInputProvider.Start() — resolves actions from PlayerInput clone
     ///    -50  InventoryBootstrap.Start()     — creates Inventory, wires UI + crafting, spawns test items
     ///      0  Everything else
-    /// 
+    ///
     /// By running in Start() with execution order -50, we guarantee that:
     /// 1. PlayerInput has created its clone (in its own Awake/OnEnable)
     /// 2. InventoryInputProvider has resolved all actions (at -100)
     /// 3. Only THEN do we create the inventory and subscribe to input events
+    ///
+    /// UICoordinator is initialised LAST so it can subscribe to OnToggleInventory
+    /// after both managers have set themselves up. This is the single owner of
+    /// inventory + crafting open/close — Tab no longer reaches the managers
+    /// directly.
     /// </summary>
     [DefaultExecutionOrder(-50)]
     public class InventoryBootstrap : MonoBehaviour
@@ -27,6 +32,11 @@ namespace InventorySystem
         [Header("Crafting")]
         [Tooltip("Assign the CraftingUIManager in the scene. Leave null to skip crafting init.")]
         [SerializeField] private CraftingUIManager craftingUIManager;
+
+        [Header("UI Coordinator")]
+        [Tooltip("Single owner of inventory + crafting open/close. " +
+                 "Required for Tab toggle to work.")]
+        [SerializeField] private UICoordinator uiCoordinator;
 
         [Header("Test Items (remove for production)")]
         [SerializeField] private ItemData testWood;
@@ -61,14 +71,27 @@ namespace InventorySystem
             // Create the runtime inventory
             PlayerInventory = new Inventory();
 
-            // Wire up the inventory UI
+            // 1. Inventory UI
             uiManager.Initialise(PlayerInventory);
 
-            // Wire up the crafting UI
+            // 2. Crafting UI
             if (craftingUIManager != null)
             {
                 craftingUIManager.Initialise(PlayerInventory);
                 Debug.Log("[InventoryBootstrap] Crafting system initialized.");
+            }
+
+            // 3. UI Coordinator — must come AFTER both managers so it subscribes
+            //    to OnToggleInventory once everything else is ready.
+            if (uiCoordinator != null)
+            {
+                uiCoordinator.Initialise();
+                Debug.Log("[InventoryBootstrap] UI Coordinator initialized.");
+            }
+            else
+            {
+                Debug.LogError("[InventoryBootstrap] UICoordinator is not assigned — " +
+                               "Tab toggle will NOT work. Assign a UICoordinator in the Inspector.");
             }
 
             // Spawn test items
