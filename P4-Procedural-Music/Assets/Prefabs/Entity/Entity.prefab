@@ -251,13 +251,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PostProcessingManager
   globalVolume: {fileID: 5047136726942696559}
+  musicController: {fileID: 0}
+  musicTriggerSpookyThreshold: 0.2
+  musicTriggerHorrorThreshold: 0.6
+  defaultMusicState: 0
   masterIntensity: 0
   overlayEyes: {fileID: 7992955286026317831}
   overlayTentacles: {fileID: 1446724875971297114}
   minimumIntensity: 0.62
   maximumIntensity: 1
   tentacleAttack: {fileID: 8327087191408862021}
-  tentacleTriggerThreshold: 0.9
+  tentacleTriggerThreshold: 0.7
 --- !u!1 &5270877079746877183
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,7 +410,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
