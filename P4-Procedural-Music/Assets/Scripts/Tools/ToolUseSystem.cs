@@ -44,6 +44,13 @@ namespace InventorySystem.Tools
         private bool _drainingDurability = false;
         private ToolData _equippedToolData = null;
 
+        /// <summary>
+        /// The ToolData of the currently equipped tool, or null if none / not a tool.
+        /// Other systems (e.g. WaterFishingInteractable) can use this to check
+        /// what tool the player is holding without re-doing the inventory lookup.
+        /// </summary>
+        public ToolData EquippedToolData => _equippedToolData;
+
         // Cached every Update — IsPointerOverGameObject() is invalid inside
         // Input System callbacks (it queries last-frame UI state), so we
         // sample it here and read the cached value in OnAttack / OnUseItem.
@@ -227,11 +234,21 @@ namespace InventorySystem.Tools
             if (TryHitStructure()) return;
 
             // ── Interaction priority: if hovering an interactable, walk to it ──
+            // Some interactables (e.g. WaterFishingInteractable) opt out of the
+            // walk-to-interact step via InteractImmediately and run from where
+            // the player is standing.
             if (interactionDetector != null && interactionDetector.CurrentTarget != null)
             {
                 var target = interactionDetector.CurrentTarget;
-                playerStateManager.moveToInteractState.SetTarget(target);
-                playerStateManager.SwitchState(playerStateManager.moveToInteractState);
+                if (target.InteractImmediately)
+                {
+                    target.Interact(playerStateManager);
+                }
+                else
+                {
+                    playerStateManager.moveToInteractState.SetTarget(target);
+                    playerStateManager.SwitchState(playerStateManager.moveToInteractState);
+                }
                 return;
             }
 

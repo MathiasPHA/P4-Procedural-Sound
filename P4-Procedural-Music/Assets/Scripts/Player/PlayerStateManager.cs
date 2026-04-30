@@ -17,6 +17,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerShrugState playerShrugState = new PlayerShrugState();
     public PlayerHurtState hurtState = new PlayerHurtState();
     public PlayerDeathState deathState = new PlayerDeathState();
+    public PlayerFishingState fishingState = new PlayerFishingState();
     public ConsumableEffectManager consumableEffect;
 
     public string animationQue;
