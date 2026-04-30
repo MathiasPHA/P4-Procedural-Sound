@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fbc66b268b288345b2ba9a0ef5b6bae, type: 3}
-  m_Name: TrollHeart_Trade
+  m_Name: PotionOfShrink_Trade
   m_EditorClassIdentifier: Assembly-CSharp::TradeOffer
-  costItem: {fileID: 11400000, guid: 98297e918cb0aab419db37bdaff8acee, type: 2}
-  costAmount: 1
-  rewardItem: {fileID: 11400000, guid: 3f9632874b5b8114e84cd44eb39d7d44, type: 2}
+  costItem: {fileID: 11400000, guid: d6752d5d083088e4bb0adbec45fbe74a, type: 2}
+  costAmount: 5
+  rewardItem: {fileID: 11400000, guid: 1a04462826b86074aa419b8bd2583bc3, type: 2}
   rewardAmount: 1
   isLocked: 0
   lockHint: 
