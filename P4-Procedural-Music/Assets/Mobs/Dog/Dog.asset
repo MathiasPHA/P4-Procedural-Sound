@@ -37,10 +37,12 @@ MonoBehaviour:
   happinessPenalty: 0.05
   threatComfortValue: 0.31
   threatRadius: 20
+  hurtStunDuration: 0.3
   attackWindupDuration: 0.75
   attackStrikeDuration: 0.256
   attackRecoveryDuration: 1.5
   attackAimLockRatio: 0.5
+  attackHitboxActivationRatio: 0
   attackHitboxOffset: 2
   attackHitboxYOffset: 0
   attackHitboxRadius: 2.5
@@ -59,15 +61,17 @@ MonoBehaviour:
   groupSizeMin: 1
   groupSizeMax: 3
   prefab: {fileID: 7533120962837240174, guid: f5e0da7755236d841996db9af255473b, type: 3}
-  ambientSound: {fileID: 0}
-  ambientVolume: 0.3
-  hitSound: {fileID: 8300000, guid: 5fdbe4f6c61f3174a99af8fd98773e97, type: 3}
+  ambientSound: {fileID: 8300000, guid: 0ec4bf10044baa641b9d07b3ac2f2ba4, type: 3}
+  ambientVolume: 0.205
+  hitSound: {fileID: 8300000, guid: 74d44f6554e6ef04ab1ce8db48efc920, type: 3}
   hitVolume: 0.5
-  deathSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
-  deathVolume: 0.5
-  attackWindupSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: 6ecd0bab9ca54954a9ee35db725d37e0, type: 3}
+  deathVolume: 0.39
+  attackWindupSound: {fileID: 8300000, guid: 9e946a2e9d4d21a43815fc3146747d64, type: 3}
   attackWindupVolume: 0.5
-  attackStrikeSound: {fileID: 0}
+  attackStrikeSound: {fileID: 8300000, guid: 13385f8c99e532d40abb205764182552, type: 3}
   attackStrikeVolume: 0.5
   lootTable: {fileID: 11400000, guid: a18432a8c88ca5b4b92bb83aea283f1b, type: 2}
   worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
+  isCatchable: 0
+  catchResultItem: {fileID: 0}

@@ -77,14 +77,14 @@ namespace ProceduralMusic.Synthesis
             Name = "Bass",
             SynthType = SynthVoice.SynthType.Subtractive,
             MaxPolyphony = 1,
-            Attack = 0.003f,
-            Decay = 0.2f,
-            Sustain = 0.75f,
-            Release = 0.15f,
-            OscWaveform = Waveform.Saw,
-            FilterCutoff = 400f,
-            FilterEnvAmount = 800f,
-            Volume = 0.38f
+            Attack = 0.012f,        // Was 0.003f — removes harsh click transient on low notes
+            Decay = 0.25f,          // Was 0.2f — slightly more natural decay shape
+            Sustain = 0.65f,        // Was 0.75f — less droning sustain level
+            Release = 0.22f,        // Was 0.15f — slightly longer tail, less abrupt cutoff
+            OscWaveform = Waveform.Triangle, // Was Saw — warmer, rounder tone for folk
+            FilterCutoff = 600f,    // Was 400f — warmer starting point, less honky
+            FilterEnvAmount = 400f, // Was 800f — tighter filter sweep, more consistent tone
+            Volume = 0.27f          // Was 0.38f — sits further back in the mix
         };
 
         public static InstrumentPreset Kick => new InstrumentPreset
