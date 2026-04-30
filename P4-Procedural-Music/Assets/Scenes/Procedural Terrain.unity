@@ -855,6 +855,10 @@ PrefabInstance:
       propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7261307573467921049, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: m_Alpha
+      value: 0.044736896
+      objectReference: {fileID: 0}
     - target: {fileID: 7601733649236919983, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2400,21 +2404,57 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: overlayEyes
+      value: 
+      objectReference: {fileID: 5297504137905860941}
+    - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: tentacleAttack
       value: 
       objectReference: {fileID: 5297504137905860939}
     - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: masterIntensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: minimumIntensity
+      value: 0.62
+      objectReference: {fileID: 0}
+    - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: overlayTentacles
+      value: 
+      objectReference: {fileID: 5297504137905860943}
+    - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: tentacleTriggerThreshold
-      value: 0.9
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7992955286026317831, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: m_Alpha
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 381852574}
+    - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: spawnOffset
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: tentaclePrefab
+      value: 
+      objectReference: {fileID: 926544784483756400, guid: 28c95d756cba22646a27855198dc006e, type: 3}
+    - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: postProcessingManager
+      value: 
+      objectReference: {fileID: 5297504137905860940}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4756500043793811492, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6906162423460749044, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5297504137905860943}
   m_SourcePrefab: {fileID: 100100000, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
 --- !u!114 &5297504137905860939 stripped
 MonoBehaviour:
@@ -2427,6 +2467,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e2ecc39fedb80142926f0a0f1f8a76b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TentacleAttack
+--- !u!114 &5297504137905860940 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+  m_PrefabInstance: {fileID: 5297504137905860938}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5309511721baddd4dbd98ed168b7751f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PostProcessingManager
+--- !u!225 &5297504137905860941 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 7992955286026317831, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+  m_PrefabInstance: {fileID: 5297504137905860938}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5297504137905860942 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6906162423460749044, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+  m_PrefabInstance: {fileID: 5297504137905860938}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &5297504137905860943
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5297504137905860942}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &5779260070297747632
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2670,7 +2743,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4254097958352710514, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
       propertyPath: m_Alpha
-      value: 0
+      value: 0.044736896
       objectReference: {fileID: 0}
     - target: {fileID: 4254097958352710514, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
       propertyPath: m_BlocksRaycasts

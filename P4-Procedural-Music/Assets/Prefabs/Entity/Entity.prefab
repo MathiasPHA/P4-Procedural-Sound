@@ -32,7 +32,6 @@ Transform:
   - {fileID: 8750972517590760118}
   - {fileID: 4151659040603030810}
   - {fileID: 4669588117724555041}
-  - {fileID: 7389051117700214467}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2376639401677186789
@@ -184,10 +183,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TentacleAttack
   mobData: {fileID: 11400000, guid: 9f883aa29f6282340bc88e70657f92cc, type: 2}
   spriteScale: 3
-  tentaclePrefab: {fileID: 0}
+  tentaclePrefab: {fileID: 926544784483756400, guid: 28c95d756cba22646a27855198dc006e, type: 3}
   player: {fileID: 0}
-  spawnOffset: 3
-  postProcessingManager: {fileID: 0}
+  spawnOffset: 10
+  postProcessingManager: {fileID: 7658765726653544607}
   intensityDecreaseSpeed: 0.2
 --- !u!1 &4227593545026455722
 GameObject:
@@ -252,44 +251,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PostProcessingManager
   globalVolume: {fileID: 5047136726942696559}
-  masterIntensity: 0.791
-  overlayEyes: {fileID: 0}
-  overlayTentacles: {fileID: 0}
+  masterIntensity: 0
+  overlayEyes: {fileID: 7992955286026317831}
+  overlayTentacles: {fileID: 1446724875971297114}
   minimumIntensity: 0.62
   maximumIntensity: 1
-  tentacleAttack: {fileID: 0}
-  tentacleTriggerThreshold: 0.1
---- !u!1 &4756500043793811492
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7389051117700214467}
-  m_Layer: 0
-  m_Name: TentacleSpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7389051117700214467
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4756500043793811492}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1088396668706583432}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  tentacleAttack: {fileID: 8327087191408862021}
+  tentacleTriggerThreshold: 0.7
 --- !u!1 &5270877079746877183
 GameObject:
   m_ObjectHideFlags: 0
@@ -389,6 +357,7 @@ GameObject:
   - component: {fileID: 7475655582940682885}
   - component: {fileID: 9195771696524320859}
   - component: {fileID: 8010458251646217796}
+  - component: {fileID: 1446724875971297114}
   m_Layer: 5
   m_Name: Tentacle Overlay
   m_TagString: Untagged
@@ -453,3 +422,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &1446724875971297114
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906162423460749044}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
