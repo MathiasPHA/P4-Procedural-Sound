@@ -44,14 +44,19 @@ namespace InventorySystem.Tools
         private bool _drainingDurability = false;
         private ToolData _equippedToolData = null;
 
+        // Cached every Update — IsPointerOverGameObject() is invalid inside
+        // Input System callbacks (it queries last-frame UI state), so we
+        // sample it here and read the cached value in OnAttack / OnUseItem.
+        private bool _pointerOverUI = false;
+
         [Header("Torch Light Fade")]
         [SerializeField] private float maxLightIntensity = 1f;   // intensity at full durability
         [SerializeField] private float minLightIntensity = 0.1f; // intensity at 0 durability
         [Header("Wrong Tool Feedback")]
         [SerializeField] private ResponseOptions wrongToolFeedback;
 
-        [Header("Instrument Audio")]
-        [SerializeField] private AudioSource instrumentAudioSource;
+        [Header("Flute / Instrument")]
+        [SerializeField] private FluteTool fluteTool;
 
         private void Start()
         {
@@ -90,15 +95,10 @@ namespace InventorySystem.Tools
                 interactionDetector = GetComponent<InteractionDetector>();
             }
 
-            if (instrumentAudioSource == null)
-            {
-                instrumentAudioSource = GetComponent<AudioSource>();
-                if (instrumentAudioSource == null)
-                    instrumentAudioSource = gameObject.AddComponent<AudioSource>();
-            }
-
-            instrumentAudioSource.playOnAwake = false;
-            instrumentAudioSource.spatialBlend = 0f;
+            if (fluteTool == null)
+                fluteTool = GetComponent<FluteTool>();
+            if (fluteTool == null)
+                fluteTool = FindObjectOfType<FluteTool>();
 
             if (wrongToolFeedback == null)
                 wrongToolFeedback = GetComponentInChildren<ResponseOptions>(true);
@@ -106,6 +106,11 @@ namespace InventorySystem.Tools
 
         private void Update()
         {
+            // Cache UI hover state here — valid during Update, not inside
+            // Input System callbacks like OnAttack.
+            _pointerOverUI = EventSystem.current != null &&
+                             EventSystem.current.IsPointerOverGameObject();
+
             if (_cooldownTimer > 0f)
                 _cooldownTimer -= Time.deltaTime;
 
@@ -154,6 +159,8 @@ namespace InventorySystem.Tools
 
         private void OnEquippedChanged(int equippedSlotIndex)
         {
+            fluteTool?.ForceClose();
+
             var item = _inventory.EquippedItem;
             Debug.Log($"[ToolUseSystem] OnEquippedChanged fired — slot={equippedSlotIndex}, item={item?.Data?.id ?? "none"}");
 
@@ -208,15 +215,16 @@ namespace InventorySystem.Tools
             if (InventorySystem.Building.PlacementSystem.Instance != null &&
                 InventorySystem.Building.PlacementSystem.Instance.IsPlacing) return;
 
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
-
-            // ── Structure damage takes priority over interaction priority ──
+            if (_pointerOverUI) return;
             // If the equipped tool has structureDamage > 0 (e.g. Hammer) AND a
             // structure is in attack range, damage it directly. This bypasses
             // the InteractionDetector check below so the player can demolish
             // a campfire even though CampfireInteractable would normally
             // intercept the click and route to fueling.
             if (TryHitStructure()) return;
+
+            // ── Instrument check FIRST — opening the flute ring takes priority ──
+            if (TryPlayInstrument()) return;
 
             // ── Interaction priority: if hovering an interactable, walk to it ──
             if (interactionDetector != null && interactionDetector.CurrentTarget != null)
@@ -226,8 +234,6 @@ namespace InventorySystem.Tools
                 playerStateManager.SwitchState(playerStateManager.moveToInteractState);
                 return;
             }
-
-            if (TryPlayInstrument()) return;
 
             // ── Otherwise: existing tool/combat logic ──
             if (TryHitMob()) return;
@@ -259,8 +265,8 @@ namespace InventorySystem.Tools
                 }
             }
 
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
-
+            // _pointerOverUI intentionally NOT checked — right-clicking a hotbar
+            // slot IS a UI click, so blocking here would prevent berry/potion eating.
             TryConsumeHotbarItem();
         }
 
@@ -362,15 +368,8 @@ namespace InventorySystem.Tools
             // Can't attack with an instrument equipped
             if (toolData != null && toolData.isInstrument) return;
 
-            // ── Net: attempt catch instead of dealing damage ──
-            if (toolData != null && toolData.toolType == ToolType.Net)
-            {
-                TryCatchMob(mob, toolData, equippedInstance);
-                return;
-            }
-
             if (toolData != null)
-            {   
+            {
                 playerStateManager.animationQue = $"Harvest{toolData.toolType}";
                 playerStateManager.StartHarvest();
                 mob.TakeDamage(toolData.damage, transform.position);
@@ -462,43 +461,6 @@ namespace InventorySystem.Tools
             }
 
             _cooldownTimer = toolData.cooldown;
-        }
-
-        // ───────────── Bug Catching ─────────────
-
-            private bool TryCatchMob(MobController mob, ToolData toolData, ItemInstance equippedInstance)        {
-            var catchable = mob.GetComponent<MobSystem.CatchableMob>();
-
-            if (catchable == null)
-            {
-                // Mob isn't catchable — shrug so the player gets clear feedback.
-                playerStateManager.SwitchState(playerStateManager.playerShrugState);
-                _cooldownTimer = toolData.cooldown;
-                return true;
-            }
-
-            playerStateManager.animationQue = "HarvestNet";
-            playerStateManager.StartHarvest();
-
-            catchable.AttemptCatch();
-
-            // Durability cost — same as every other tool swing.
-            if (equippedInstance != null
-                && equippedInstance.Data.hasInstanceState
-                && toolData.durabilityCost > 0)
-            {
-                bool broke = equippedInstance.ReduceDurability(toolData.durabilityCost);
-                if (broke)
-                    _inventory.RemoveItem(equippedInstance.Data.id, 1);
-                else
-                {
-                    _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
-                    _inventory.NotifyChanged();
-                }
-            }
-
-            _cooldownTimer = toolData.cooldown;
-            return true;
         }
 
         private void TryUseTool()
@@ -643,24 +605,13 @@ namespace InventorySystem.Tools
             if (toolData == null || !toolData.isInstrument)
                 return false;
 
-            if (instrumentAudioSource == null)
+            if (fluteTool == null)
+            {
+                Debug.LogWarning("[ToolUseSystem] isInstrument=true but no FluteTool found on player.");
                 return false;
-
-            if (toolData.instrumentSounds == null || toolData.instrumentSounds.Count == 0)
-            {
-                Debug.LogWarning($"[ToolUseSystem] '{toolData.item?.id ?? "Unknown"}' is marked as an instrument but has no instrument sounds assigned.");
-                _cooldownTimer = toolData.cooldown;
-                return true;
             }
 
-            AudioClip clip = toolData.instrumentSounds[Random.Range(0, toolData.instrumentSounds.Count)];
-            if (clip != null)
-            {
-                instrumentAudioSource.pitch = 1f + Random.Range(-toolData.instrumentPitchVariation, toolData.instrumentPitchVariation);
-                instrumentAudioSource.PlayOneShot(clip, toolData.instrumentVolume);
-            }
-
-            _cooldownTimer = toolData.cooldown;
+            fluteTool.OnFluteUsed();
             return true;
         }
 
