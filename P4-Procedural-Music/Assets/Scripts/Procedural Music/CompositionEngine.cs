@@ -491,6 +491,11 @@ namespace ProceduralMusic.Composition
                 float beatPos = pattern[i];
                 if (beatPos >= beatsPerChord) continue;
 
+                // Rest probability: bass breathes more at low tension
+                float restChance = Mathf.Lerp(0.18f, 0.04f, tension);
+                if (i > 0 && (float)_rng.NextDouble() < restChance)
+                    continue;
+
                 float nextBeat = (i + 1 < pattern.Length) ? pattern[i + 1] : beatsPerChord;
                 float duration = Mathf.Max((nextBeat - beatPos) * 0.85f, 0.15f);
 
@@ -499,13 +504,13 @@ namespace ProceduralMusic.Composition
 
                 float velocity;
                 if (beatPos < 0.05f)
-                    velocity = 0.85f;
+                    velocity = 0.68f;           // Was 0.85f — downbeat still punchy but not dominant
                 else if (beatPos % 1f < 0.05f)
-                    velocity = 0.7f;
+                    velocity = 0.54f;           // Was 0.7f
                 else
-                    velocity = 0.5f + (float)_rng.NextDouble() * 0.15f;
+                    velocity = 0.38f + (float)_rng.NextDouble() * 0.12f; // Was 0.5f + 0.15f
 
-                velocity *= Mathf.Lerp(0.7f, 1f, tension);
+                velocity *= Mathf.Lerp(0.65f, 0.82f, tension); // Was Lerp(0.7f, 1f) — no longer peaks at full
 
                 events.Add(new NoteEvent(note, Mathf.Clamp01(velocity), duration,
                     instrumentIndex, beatPos));
@@ -610,9 +615,8 @@ namespace ProceduralMusic.Composition
             if (noteIndex == totalNotes - 1 && beatPos > beatsPerChord * 0.7f)
             {
                 float r = (float)_rng.NextDouble();
-                if (r < 0.35f) return fifth;
-                if (r < 0.55f) return root - 1;
-                if (r < 0.75f) return third;
+                if (r < 0.4f) return fifth;
+                if (r < 0.6f) return root - 1;
                 return root;
             }
 
@@ -633,32 +637,24 @@ namespace ProceduralMusic.Composition
                 return octaveUp;
             }
 
-            // Weak beats: walk between chord/scale tones.
-            // Active even at low tension for melodic bass movement.
-            if (_lastNote >= 0)
+            // Weak beats at medium tension: walk between chord tones
+            if (tension > 0.4f && _lastNote >= 0)
             {
-                if (tension > 0.2f)
-                {
-                    // Walking bass: step toward alternating chord tone targets
-                    int direction = (_rng.Next(2) == 0) ? 1 : -1;
-                    int target = ((noteIndex + 1) % 2 == 0) ? root : fifth;
-                    if (_lastNote < target) direction = 1;
-                    else if (_lastNote > target) direction = -1;
+                int direction = (_rng.Next(2) == 0) ? 1 : -1;
+                int target = ((noteIndex + 1) % 2 == 0) ? root : fifth;
+                if (_lastNote < target) direction = 1;
+                else if (_lastNote > target) direction = -1;
 
-                    int candidate = _lastNote + direction * (_rng.Next(1, 3));
-                    return SnapToScale(candidate, scalePCs, Octave);
-                }
-                else
-                {
-                    // Low tension: gentle root/fifth/third variety instead of always root
-                    float r = (float)_rng.NextDouble();
-                    if (r < 0.45f) return root;
-                    if (r < 0.78f) return fifth;
-                    return third;
-                }
+                int candidate = _lastNote + direction * (_rng.Next(1, 3));
+                return SnapToScale(candidate, scalePCs, Octave);
             }
 
-            return root;
+            // Low tension, weak beat: walk between chord tones instead of camping on root
+            float rWalk = (float)_rng.NextDouble();
+            if (rWalk < 0.40f) return root;
+            if (rWalk < 0.65f) return fifth;
+            if (rWalk < 0.85f) return third;
+            return octaveUp;
         }
 
         private int SnapToScale(int midiNote, int[] scalePCs, int baseOctave)

@@ -616,15 +616,16 @@ namespace ProceduralMusic.Synthesis
             switch (Type)
             {
                 case SynthType.Subtractive:
+                    // Main osc through filter — waveform set by preset (saw, triangle, etc.)
                     float sawSample = _oscillator.NextSample();
                     _filter.Cutoff = _filterBaseFreq + _filterEnvAmount * env;
                     sawSample = _filter.Process(sawSample);
 
-                    // Sub-sine kept low — just enough for body without muddying the mix
+                    // Sub-sine adds deep, clean low end that cuts through
                     float subSample = _subOsc.NextSample();
 
-                    // Mix: 78% filtered saw + 22% sub-sine
-                    sample = sawSample * 0.78f + subSample * 0.22f;
+                    // Mix: 75% main osc + 25% sub-sine — enough depth without mud
+                    sample = sawSample * 0.75f + subSample * 0.25f;
                     break;
 
                 case SynthType.FM:
