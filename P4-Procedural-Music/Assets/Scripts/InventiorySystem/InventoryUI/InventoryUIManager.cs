@@ -8,9 +8,13 @@ namespace InventorySystem.UI
     /// <summary>
     /// Central UI orchestrator. Bridges between the Inventory data layer
     /// and all visual elements (slots, tooltip, drag ghost, split slider).
-    /// 
+    ///
     /// Initialized explicitly by InventoryBootstrap.Start() — not by Awake.
     /// This guarantees InventoryInputProvider has resolved its actions first.
+    ///
+    /// IMPORTANT: This manager no longer subscribes to OnToggleInventory itself.
+    /// Open/close is driven exclusively by UICoordinator via ForceOpen/ForceClose
+    /// so both panels always move together.
     /// </summary>
     public class InventoryUIManager : MonoBehaviour
     {
@@ -133,10 +137,13 @@ namespace InventorySystem.UI
             _inventory.OnEquippedChanged += OnEquippedChanged;
             _inventory.OnItemConsumed += OnItemConsumed;
 
-            // Input events
+            // NOTE: OnToggleInventory is intentionally NOT subscribed here.
+            // UICoordinator owns that subscription and drives open/close via
+            // ForceOpen() / ForceClose() so both panels always move together.
+
+            // Hotbar & scroll still come directly from input
             if (inputProvider != null)
             {
-                inputProvider.OnToggleInventory += ToggleInventory;
                 inputProvider.OnHotbarSelect += OnHotbarKeyPressed;
                 inputProvider.OnScrollHotbar += OnScrollHotbar;
             }
@@ -161,7 +168,6 @@ namespace InventorySystem.UI
 
             if (inputProvider != null)
             {
-                inputProvider.OnToggleInventory -= ToggleInventory;
                 inputProvider.OnHotbarSelect -= OnHotbarKeyPressed;
                 inputProvider.OnScrollHotbar -= OnScrollHotbar;
             }
@@ -327,31 +333,45 @@ namespace InventorySystem.UI
         public bool IsSlotActiveHotbar(int slotIndex) => slotIndex == _inventory.ActiveHotbarIndex;
 
         // =====================================================================
-        // Inventory panel toggle
+        // Panel open / close — driven by UICoordinator
         // =====================================================================
 
-        public void ToggleInventory()
+        /// <summary>
+        /// Unconditionally open the inventory panel.
+        /// Called by UICoordinator only — do not call directly from other systems.
+        /// </summary>
+        public void ForceOpen()
         {
-            _inventoryOpen = !_inventoryOpen;
-            inventoryPanel.SetActive(_inventoryOpen);
+            if (_inventoryOpen) return;
 
-            if (_inventoryOpen)
-            {
-                RefreshAllSlots();
-                inputProvider?.DisableMovement();
-                if (playerStateManager != null)
-                    playerStateManager.SwitchState(playerStateManager.inventoryState);
-            }
-            else
-            {
-                HideTooltip();
-                CloseSplitSlider();
-                inputProvider?.EnableMovement();
-                if (playerStateManager != null)
-                    playerStateManager.SwitchState(playerStateManager.idleState);
-            }
+            _inventoryOpen = true;
+            inventoryPanel.SetActive(true);
+
+            RefreshAllSlots();
+            inputProvider?.DisableMovement();
+            if (playerStateManager != null)
+                playerStateManager.SwitchState(playerStateManager.inventoryState);
         }
 
+        /// <summary>
+        /// Unconditionally close the inventory panel.
+        /// Called by UICoordinator only — do not call directly from other systems.
+        /// </summary>
+        public void ForceClose()
+        {
+            if (!_inventoryOpen) return;
+
+            _inventoryOpen = false;
+            inventoryPanel.SetActive(false);
+
+            HideTooltip();
+            CloseSplitSlider();
+            inputProvider?.EnableMovement();
+            if (playerStateManager != null)
+                playerStateManager.SwitchState(playerStateManager.idleState);
+        }
+
+        /// <summary>Whether the inventory panel is currently visible.</summary>
         public bool IsInventoryOpen => _inventoryOpen;
 
         // =====================================================================
@@ -412,35 +432,35 @@ namespace InventorySystem.UI
 
         private void OnSplitSliderCancel() { }
 
-      // =====================================================================
-// World drops
-// =====================================================================
+        // =====================================================================
+        // World drops
+        // =====================================================================
 
-private Vector2 GetPlayerFacingDirection()
-{
-    if (playerStateManager == null) return Vector2.down; // safe fallback
+        private Vector2 GetPlayerFacingDirection()
+        {
+            if (playerStateManager == null) return Vector2.down;
 
-    return playerStateManager.playerDir switch
-    {
-        "Up"    => Vector2.up,
-        "Down"  => Vector2.down,
-        "Left"  => Vector2.left,
-        "Right" => Vector2.right,
-        _       => Vector2.down
-    };
-}
+            return playerStateManager.playerDir switch
+            {
+                "Up"    => Vector2.up,
+                "Down"  => Vector2.down,
+                "Left"  => Vector2.left,
+                "Right" => Vector2.right,
+                _       => Vector2.down
+            };
+        }
 
-private void SpawnWorldDrop(ItemInstance instance, int quantity)
-{
-    if (worldItemPrefab == null || playerTransform == null) return;
+        private void SpawnWorldDrop(ItemInstance instance, int quantity)
+        {
+            if (worldItemPrefab == null || playerTransform == null) return;
 
-    Vector2 dropDir = GetPlayerFacingDirection();
-    Vector2 dropPos = (Vector2)playerTransform.position + dropDir * dropDistance;
+            Vector2 dropDir = GetPlayerFacingDirection();
+            Vector2 dropPos = (Vector2)playerTransform.position + dropDir * dropDistance;
 
-    var go = Instantiate(worldItemPrefab, dropPos, Quaternion.identity);
-    var worldItem = go.GetComponent<WorldItem>();
-    worldItem?.Initialise(instance, quantity, dropDir);
-}
+            var go = Instantiate(worldItemPrefab, dropPos, Quaternion.identity);
+            var worldItem = go.GetComponent<WorldItem>();
+            worldItem?.Initialise(instance, quantity, dropDir);
+        }
 
         // =====================================================================
         // Refresh
