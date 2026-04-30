@@ -610,8 +610,9 @@ namespace ProceduralMusic.Composition
             if (noteIndex == totalNotes - 1 && beatPos > beatsPerChord * 0.7f)
             {
                 float r = (float)_rng.NextDouble();
-                if (r < 0.4f) return fifth;
-                if (r < 0.6f) return root - 1;
+                if (r < 0.35f) return fifth;
+                if (r < 0.55f) return root - 1;
+                if (r < 0.75f) return third;
                 return root;
             }
 
@@ -632,16 +633,29 @@ namespace ProceduralMusic.Composition
                 return octaveUp;
             }
 
-            // Weak beats at medium tension: walk between chord tones
-            if (tension > 0.4f && _lastNote >= 0)
+            // Weak beats: walk between chord/scale tones.
+            // Active even at low tension for melodic bass movement.
+            if (_lastNote >= 0)
             {
-                int direction = (_rng.Next(2) == 0) ? 1 : -1;
-                int target = ((noteIndex + 1) % 2 == 0) ? root : fifth;
-                if (_lastNote < target) direction = 1;
-                else if (_lastNote > target) direction = -1;
+                if (tension > 0.2f)
+                {
+                    // Walking bass: step toward alternating chord tone targets
+                    int direction = (_rng.Next(2) == 0) ? 1 : -1;
+                    int target = ((noteIndex + 1) % 2 == 0) ? root : fifth;
+                    if (_lastNote < target) direction = 1;
+                    else if (_lastNote > target) direction = -1;
 
-                int candidate = _lastNote + direction * (_rng.Next(1, 3));
-                return SnapToScale(candidate, scalePCs, Octave);
+                    int candidate = _lastNote + direction * (_rng.Next(1, 3));
+                    return SnapToScale(candidate, scalePCs, Octave);
+                }
+                else
+                {
+                    // Low tension: gentle root/fifth/third variety instead of always root
+                    float r = (float)_rng.NextDouble();
+                    if (r < 0.45f) return root;
+                    if (r < 0.78f) return fifth;
+                    return third;
+                }
             }
 
             return root;

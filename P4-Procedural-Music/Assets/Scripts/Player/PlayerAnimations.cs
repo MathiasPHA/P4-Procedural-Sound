@@ -13,8 +13,8 @@ public class PlayerAnimations : MonoBehaviour
 
     private void Update()
     {
-        Animate();
         animationQue = playerStateManager.animationQue;
+        Animate();
     }
 
     void Animate()
@@ -106,6 +106,26 @@ public class PlayerAnimations : MonoBehaviour
                 playerAnimator.Play("PlayerHurtRight");
             else if (playerStateManager.playerDir == "Up")
                 playerAnimator.Play("PlayerHurtBack");
+        }
+
+        if (animationQue == "Death")
+        {
+            if (playerStateManager.playerDir == "Down")
+            {
+                playerAnimator.Play("PlayerDeathFront");
+            }
+            else if (playerStateManager.playerDir == "Left")
+            {
+                playerAnimator.Play("PlayerDeathLeft");
+            }
+            else if (playerStateManager.playerDir == "Right")
+            {
+                playerAnimator.Play("PlayerDeathRight");
+            }
+            else if (playerStateManager.playerDir == "Up")
+            {
+                playerAnimator.Play("PlayerDeathBack");
+            }
         }
     }
 }

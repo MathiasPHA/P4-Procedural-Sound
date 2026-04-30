@@ -191,6 +191,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3991372108596138464}
+  - component: {fileID: 6268821244972469724}
   m_Layer: 0
   m_Name: FishingSystem
   m_TagString: Untagged
@@ -217,6 +218,28 @@ Transform:
   - {fileID: 1574964105190308477}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6268821244972469724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2564630636838900317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925dd02bf81628d47b9551df7c5dfe77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.FishingManager
+  minigameRoot: {fileID: 2564630636838900317}
+  minigame: {fileID: 7606427396537577047}
+  hook: {fileID: 4748161832535060775}
+  progressBar: {fileID: 8379242095714569086}
+  dropItem: {fileID: 11400000, guid: c0a6464a70d857447977c8661cfa78cf, type: 2}
+  dropAmount: 1
+  catchSound: {fileID: 0}
+  catchVolume: 0.6
+  catchPitchVariation: 0.1
+  uiOffsetFromPlayer: {x: 2, y: 1.5, z: 0}
 --- !u!1 &2916897298399846897
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,11 +346,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ab8d1b369831004f914f87b7a04a492, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hook
-  fishingScript: {fileID: 0}
-  hookT: {fileID: 0}
-  minHeight: {x: 0, y: 0, z: 0}
-  maxHeight: {x: 0, y: 0, z: 0}
+  clampY: 2.55
   hookMoveSpeed: 3
+  smoothZone: 0.05
 --- !u!70 &4267306374610483962
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -435,11 +456,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7861531236465729394}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 263fa004ab8266a4bb3bbfbbc6f6cc2d, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a27bc5023b1c69438081f32025ebf2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConsoleProgressBar
-  progT: {fileID: 0}
-  currentProgress: 
+  fillTransform: {fileID: 209722383247404571}
+  minY: -8.25
+  maxY: 8.25
 --- !u!331 &3794430895652903473
 SpriteMask:
   m_ObjectHideFlags: 0
@@ -637,25 +659,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8780896673511769795}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8f9a957b540d824aa634f119ffac06a, type: 3}
+  m_Script: {fileID: 11500000, guid: 28558e622ddea504999b24ddc57fd1bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingV1
-  fishingTime: 8
-  fishPos: {x: 0, y: 0, z: 0}
-  targetPos: {x: 0, y: 0, z: 0}
+  baseFishingTime: 8
+  fishingTimeJitter: 2
   posClamp: 3
-  deltaDistance: 0
-  canFishMove: 1
-  isFishMoving: 0
-  fishMoveSpeed: 1.5
-  isFishCaught: 0
-  addedToInventory: 0
-  fishingPoints: 0
-  targetPoints: 0
-  initialFishingTime: 0
-  tFraction: 0.7
-  dropItem: {fileID: 0}
-  dropAmount: 1
-  pickupSound: {fileID: 0}
-  pickupVolume: 0.5
-  pitchVariation: 0.15
+  minMoveSpeed: 0.8
+  maxMoveSpeed: 2
+  arriveDistance: 0.4
+  catchFraction: 0.7

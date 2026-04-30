@@ -16,6 +16,7 @@ public class PlayerDeathHandler : MonoBehaviour
     [SerializeField] private HappinessSystem happinessSystem;
     [SerializeField] private CanvasGroup deathCanvasGroup;
     [SerializeField] private Rigidbody2D playerRigidbody;
+    [SerializeField] private PlayerStateManager playerStateManager;
     [SerializeField] private MonoBehaviour[] componentsToDisable;
 
     [Header("Fade")]
@@ -94,6 +95,20 @@ public class PlayerDeathHandler : MonoBehaviour
             Debug.LogWarning("[PlayerDeathHandler] No Rigidbody2D assigned.");
         }
 
+        // 1b. Switch player into the death state so the death animation plays.
+        // IMPORTANT: do this BEFORE disabling componentsToDisable, since
+        // PlayerStateManager is almost certainly in that list — disabling it
+        // first would prevent EnterState from running.
+        if (playerStateManager != null)
+        {
+            playerStateManager.StartDeath();
+            Log("Step 1b: Player switched to PlayerDeathState.");
+        }
+        else
+        {
+            Debug.LogWarning("[PlayerDeathHandler] No PlayerStateManager assigned — death animation will not play.");
+        }
+
         // 2. Disable gameplay scripts.
         if (componentsToDisable != null && componentsToDisable.Length > 0)
         {
@@ -152,6 +167,10 @@ public class PlayerDeathHandler : MonoBehaviour
             foreach (var c in componentsToDisable)
                 if (c != null) c.enabled = true;
         }
+
+        // Return the player to idle so movement/input work again.
+        if (playerStateManager != null)
+            playerStateManager.SwitchState(playerStateManager.idleState);
 
         if (fadeRoutine != null) StopCoroutine(fadeRoutine);
         fadeRoutine = StartCoroutine(FadeCanvas(

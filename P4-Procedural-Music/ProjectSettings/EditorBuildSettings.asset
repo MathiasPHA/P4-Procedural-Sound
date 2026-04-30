@@ -17,15 +17,21 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Work in Progress/Comfort System.unity
     guid: b3d3fba8d205e254c9921ccc392ad366
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Procedural Terrain.unity
     guid: 39c38dad3bf7b4d44bb45bda37b464d3
+  - enabled: 1
+    path: Assets/Scenes/Procedural_Terrain.unity
+    guid: 8343edd75bfef444e9ef3f242fe66524
   - enabled: 1
     path: Assets/Scenes/DungeonScene.unity
     guid: 8313d53d3abb3c447940d2a88e26af85
   - enabled: 1
     path: Assets/Scenes/Game Over.unity
     guid: 3b02cab68d0517f48b52c1ee82625c1c
+  - enabled: 1
+    path: Assets/Scenes/Work in Progress/End.unity
+    guid: 1b09ea79549851a4aa9324dda1482c0e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

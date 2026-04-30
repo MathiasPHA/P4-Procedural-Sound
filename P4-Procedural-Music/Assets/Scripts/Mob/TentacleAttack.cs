@@ -1,25 +1,25 @@
 using UnityEngine;
 using System.Collections;
 using MobSystem.Data;
+using MobSystem;
 
 public class TentacleAttack : MonoBehaviour
 {
     [Header("Data")]
-    public MobData mobData; // create a Shadow MobData asset, set happinessPenalty
+    public MobData mobData;
 
     [Header("Visuals")]
-    public Sprite tentacleSprite;
-    public float tentacleLength = 5f;
+    public float spriteScale = 3f;
 
     [Header("Spawn")]
+    public GameObject tentaclePrefab;
     public Transform player;
-    public float edgeOffsetDistance = 3f; // how far off-screen it spawns
+    public float spawnOffset = 3f; // distance from player to spawn
 
-    private SpriteRenderer sr;
-    private Collider2D hitbox;
-    private bool hasDealtDamage;
+    [Header("Intensity")]
+    public PostProcessingManager postProcessingManager;
+    public float intensityDecreaseSpeed = 0.2f;
 
-    // Call this to trigger a tentacle attack from a given screen edge direction
     public void Trigger(Vector2 spawnDirection)
     {
         StartCoroutine(AttackSequence(spawnDirection));
@@ -27,67 +27,59 @@ public class TentacleAttack : MonoBehaviour
 
     IEnumerator AttackSequence(Vector2 direction)
     {
-        // ── Spawn off-screen ──────────────────────────────────────
-        GameObject tentacleObj = new GameObject("Tentacle");
-        tentacleObj.transform.position = player.position + 
-            (Vector3)(direction.normalized * edgeOffsetDistance);
+        // ── Spawn offset from player ──────────────────────────────
+        Vector3 spawnPos = player.position + (Vector3)(direction.normalized * spawnOffset);
 
-        sr = tentacleObj.AddComponent<SpriteRenderer>();
-        sr.sprite = tentacleSprite;
-        sr.sortingLayerName = "Entities"; // match your other mobs
+        // Point toward player
+        Vector2 toPlayer = (player.position - spawnPos).normalized;
+        float angle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
+
+        GameObject tentacleObj = Instantiate(tentaclePrefab, spawnPos, Quaternion.Euler(0, 0, angle));
+        tentacleObj.transform.localScale = new Vector3(0f, spriteScale, 1f);
+
+        SpriteRenderer sr = tentacleObj.GetComponent<SpriteRenderer>();
         sr.color = new Color(1, 1, 1, 0);
 
-        // Rotate to face the player
-        float angle = Mathf.Atan2(-direction.y, -direction.x) * Mathf.Rad2Deg;
-        tentacleObj.transform.rotation = Quaternion.Euler(0, 0, angle);
+        // ── Subscribe to death event ──────────────────────────────
+        MobController mobController = tentacleObj.GetComponent<MobController>();
+        if (mobController != null)
+            mobController.OnDeath += OnTentacleDied;
 
-        // Trigger collider for damage
-        CircleCollider2D col = tentacleObj.AddComponent<CircleCollider2D>();
-        col.isTrigger = true;
-        col.radius = mobData.attackHitboxRadius / 100f;
-        hitbox = col;
-        hasDealtDamage = false;
-
-        // Listen for hits
-        TentacleDamager damager = tentacleObj.AddComponent<TentacleDamager>();
-        damager.mobData = mobData;
-
-        // ── Windup — fade in slowly ───────────────────────────────
-        yield return Fade(sr, 0f, 1f, mobData.attackWindupDuration);
+        // ── Windup — stretch toward player ────────────────────────
+        float distance = Vector2.Distance(spawnPos, player.position);
+        float elapsed = 0f;
+        while (elapsed < mobData.attackWindupDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / mobData.attackWindupDuration;
+            float currentLength = Mathf.Lerp(0f, distance, t);
+            tentacleObj.transform.localScale = new Vector3(currentLength * spriteScale, spriteScale, 1f);
+            sr.color = new Color(1, 1, 1, t);
+            yield return null;
+        }
 
         if (mobData.attackWindupSound != null)
-            AudioSource.PlayClipAtPoint(mobData.attackWindupSound, 
+            AudioSource.PlayClipAtPoint(mobData.attackWindupSound,
                 tentacleObj.transform.position, mobData.attackWindupVolume);
 
-        // ── Strike — lunge toward player ──────────────────────────
-        Vector3 strikeTarget = player.position;
-        float elapsed = 0f;
-        Vector3 startPos = tentacleObj.transform.position;
+        // ── Stay extended — player must kill it ───────────────────
+        // MobController handles death, OnTentacleDied fires when killed
+    }
 
-        while (elapsed < mobData.attackStrikeDuration)
+    private void OnTentacleDied(MobController mob)
+    {
+        mob.OnDeath -= OnTentacleDied;
+        StartCoroutine(DrainIntensity());
+    }
+
+    IEnumerator DrainIntensity()
+    {
+        while (postProcessingManager.masterIntensity > 0f)
         {
-            elapsed += Time.deltaTime;
-            float t = elapsed / mobData.attackStrikeDuration;
-            tentacleObj.transform.position = Vector3.Lerp(startPos, strikeTarget, t);
+            postProcessingManager.SetMasterIntensity(
+                postProcessingManager.masterIntensity - intensityDecreaseSpeed * Time.deltaTime);
             yield return null;
         }
-
-        // ── Recovery — retract and fade out ──────────────────────
-        col.enabled = false; // stop dealing damage on retract
-        elapsed = 0f;
-        Vector3 retractTarget = startPos;
-        Vector3 retractStart = tentacleObj.transform.position;
-
-        while (elapsed < mobData.attackRecoveryDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / mobData.attackRecoveryDuration;
-            tentacleObj.transform.position = Vector3.Lerp(retractStart, retractTarget, t);
-            sr.color = new Color(1, 1, 1, 1f - t);
-            yield return null;
-        }
-
-        Destroy(tentacleObj);
     }
 
     IEnumerator Fade(SpriteRenderer target, float from, float to, float duration)
@@ -102,4 +94,3 @@ public class TentacleAttack : MonoBehaviour
         }
     }
 }
-

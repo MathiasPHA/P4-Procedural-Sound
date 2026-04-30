@@ -77,14 +77,14 @@ namespace ProceduralMusic.Synthesis
             Name = "Bass",
             SynthType = SynthVoice.SynthType.Subtractive,
             MaxPolyphony = 1,
-            Attack = 0.003f,
-            Decay = 0.2f,
-            Sustain = 0.75f,
-            Release = 0.15f,
+            Attack = 0.005f,
+            Decay = 0.25f,
+            Sustain = 0.6f,
+            Release = 0.18f,
             OscWaveform = Waveform.Saw,
-            FilterCutoff = 400f,
-            FilterEnvAmount = 800f,
-            Volume = 0.38f
+            FilterCutoff = 650f,
+            FilterEnvAmount = 550f,
+            Volume = 0.28f
         };
 
         public static InstrumentPreset Kick => new InstrumentPreset

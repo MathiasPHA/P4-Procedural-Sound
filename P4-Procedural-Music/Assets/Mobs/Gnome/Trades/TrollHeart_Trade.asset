@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TradeOffer
   costItem: {fileID: 11400000, guid: 98297e918cb0aab419db37bdaff8acee, type: 2}
   costAmount: 1
-  rewardItem: {fileID: 11400000, guid: c2d6da9322312b3429e54a1362febb2c, type: 2}
+  rewardItem: {fileID: 11400000, guid: 3f9632874b5b8114e84cd44eb39d7d44, type: 2}
   rewardAmount: 1
   isLocked: 0
   lockHint: 
