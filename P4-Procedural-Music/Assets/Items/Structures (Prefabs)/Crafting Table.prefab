@@ -53,6 +53,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacedStructure
   sourceData: {fileID: 11400000, guid: ac2de69023ef2dd49b6e247d5c014356, type: 2}
   wasSaveLoaded: 0
+  shakeIntensity: 0.08
+  shakeDuration: 0.12
+  hitSound: {fileID: 0}
+  hitVolume: 0.5
+  demolishSound: {fileID: 0}
+  demolishVolume: 0.6
 --- !u!114 &6379968897288913679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +162,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 89ccd0954437c8d418a4b4b167338d3a, type: 2}
   - {fileID: 11400000, guid: 81e62febcf160407cab5f12720a99a16, type: 2}
   - {fileID: 11400000, guid: 8d44597e159083b49a457c85b827a197, type: 2}
+  - {fileID: 11400000, guid: aecfbf218917d5f468f413b46902f7d4, type: 2}
+  - {fileID: 11400000, guid: e035036679eb25b4c940f76ac81ee102, type: 2}
+  - {fileID: 11400000, guid: 96a6d1a55ffef3f40935c30881e291db, type: 2}
   discoverAllOnStart: 1
 --- !u!114 &8140156133144896154
 MonoBehaviour:

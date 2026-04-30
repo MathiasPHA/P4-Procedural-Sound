@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Metal Axe
   displayName: Metal Axe
   description: Sturdier axe for more heavy duty chopping
-  loreNote: 
+  loreNote: A little sharper
   icon: {fileID: 21300000, guid: 05be6b8379129f347bed57bf13476ada, type: 3}
   category: 1
   maxStackSize: 1
@@ -29,4 +29,7 @@ MonoBehaviour:
   customEffects: []
   isFuel: 0
   burnFuelValue: 0
-  displayStats: []
+  displayStats:
+  - label: Attack Power
+    value: 7
+    colour: 0

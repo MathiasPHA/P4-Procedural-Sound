@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ToolData
   item: {fileID: 11400000, guid: fc16535d1c4556442bcfa07b3f3e901a, type: 2}
   toolType: 1
-  damage: 8
+  damage: 7
   structureDamage: 0
   cooldown: 0.5
   range: 1.5

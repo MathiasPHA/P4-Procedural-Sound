@@ -14,7 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ToolData
   item: {fileID: 11400000, guid: 6335b07588d670749b5b290e7f8e383c, type: 2}
   toolType: 6
-  damage: 7
+  damage: 6
+  structureDamage: 0
   cooldown: 0.5
   range: 1.5
   durabilityCost: 1
+  drainsOverTime: 0
+  drainInterval: 5
+  drainAmount: 1
+  isInstrument: 0
+  instrumentSounds: []
+  instrumentVolume: 1
+  instrumentPitchVariation: 0.05

@@ -12,21 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
   m_Name: Stone and Metal_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: 
-  displayName: 
-  description: 
-  loreNote: 
+  id: Flint and Steel
+  displayName: Flint and Steel
+  description: Useful for keeping a fire going, unfortunate it somehow melts after
+    using it
+  loreNote: The risk of forest fires has just increased
   icon: {fileID: 0}
   category: 0
-  maxStackSize: 1
+  maxStackSize: 16
   isDroppable: 1
   hasInstanceState: 0
-  maxDurability: 100
+  maxDurability: 50
   hungerRestore: 0
   happinessRestore: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
   customEffects: []
-  isFuel: 0
-  burnFuelValue: 0
+  isFuel: 1
+  burnFuelValue: 12
   displayStats: []
