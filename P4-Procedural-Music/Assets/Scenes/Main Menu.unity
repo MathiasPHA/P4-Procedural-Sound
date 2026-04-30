@@ -324,7 +324,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameSettings
   worldName: default
   seed: 12345
-  gameSceneName: Procedural Terrain
+  gameSceneName: Procedural_Terrain
 --- !u!1 &76040269
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48822c4b9f2eaf542a897f51bd8c20c6, type: 3}
   m_Name: Entity
   m_EditorClassIdentifier: Assembly-CSharp::MobSystem.Data.MobData
-  id: entity
+  id: the_entity
   displayName: The Entity
   behaviour: 1
-  maxHealth: 10
-  moveSpeed: 40
+  maxHealth: 20
+  moveSpeed: 30
   detectionRange: 100
   hearingRange: 160
   detectionInterval: 0.25
