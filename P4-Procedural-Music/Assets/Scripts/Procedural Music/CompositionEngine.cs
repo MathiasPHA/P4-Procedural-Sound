@@ -491,6 +491,11 @@ namespace ProceduralMusic.Composition
                 float beatPos = pattern[i];
                 if (beatPos >= beatsPerChord) continue;
 
+                // Rest probability: bass breathes more at low tension
+                float restChance = Mathf.Lerp(0.18f, 0.04f, tension);
+                if (i > 0 && (float)_rng.NextDouble() < restChance)
+                    continue;
+
                 float nextBeat = (i + 1 < pattern.Length) ? pattern[i + 1] : beatsPerChord;
                 float duration = Mathf.Max((nextBeat - beatPos) * 0.85f, 0.15f);
 
@@ -499,13 +504,13 @@ namespace ProceduralMusic.Composition
 
                 float velocity;
                 if (beatPos < 0.05f)
-                    velocity = 0.85f;
+                    velocity = 0.68f;           // Was 0.85f — downbeat still punchy but not dominant
                 else if (beatPos % 1f < 0.05f)
-                    velocity = 0.7f;
+                    velocity = 0.54f;           // Was 0.7f
                 else
-                    velocity = 0.5f + (float)_rng.NextDouble() * 0.15f;
+                    velocity = 0.38f + (float)_rng.NextDouble() * 0.12f; // Was 0.5f + 0.15f
 
-                velocity *= Mathf.Lerp(0.7f, 1f, tension);
+                velocity *= Mathf.Lerp(0.65f, 0.82f, tension); // Was Lerp(0.7f, 1f) — no longer peaks at full
 
                 events.Add(new NoteEvent(note, Mathf.Clamp01(velocity), duration,
                     instrumentIndex, beatPos));
@@ -644,7 +649,12 @@ namespace ProceduralMusic.Composition
                 return SnapToScale(candidate, scalePCs, Octave);
             }
 
-            return root;
+            // Low tension, weak beat: walk between chord tones instead of camping on root
+            float rWalk = (float)_rng.NextDouble();
+            if (rWalk < 0.40f) return root;
+            if (rWalk < 0.65f) return fifth;
+            if (rWalk < 0.85f) return third;
+            return octaveUp;
         }
 
         private int SnapToScale(int midiNote, int[] scalePCs, int baseOctave)

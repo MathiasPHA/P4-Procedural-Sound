@@ -7,14 +7,21 @@ namespace InventorySystem.Crafting
 {
     /// <summary>
     /// Abstract base for crafting stations.
-    /// Handles the shared logic: recipe filtering, material checks,
+    /// Handles the shared logic: recipe loading, material checks,
     /// recipe discovery, and ingredient consumption.
+    ///
+    /// Authoring model:
+    ///   The station's Recipe Database in the Inspector is the single source
+    ///   of truth for what this station can craft. A recipe can be assigned
+    ///   to multiple stations — drag it into each station's database. The
+    ///   recipe's own stationType field is now an authoring tag (the recipe's
+    ///   "primary home") and is NOT used to filter at runtime.
     ///
     /// If a recipe's result is a Buildable item, crafting enters placement
     /// mode instead of adding the item to inventory. This applies to ALL
     /// stations — HandCraft, BuildHammer, Workbench, etc. — so structures
     /// like campfires can be built from hand-crafting without needing a hammer.
-    /// 
+    ///
     /// Concrete stations (Workbench, CookingStation, BuildHammer)
     /// inherit from this and override only what's unique.
     /// </summary>
@@ -23,12 +30,14 @@ namespace InventorySystem.Crafting
         [Header("Station Configuration")]
         [SerializeField] private CraftingStationType stationType;
 
-        [Tooltip("All recipes in the game. The station filters by its own type at runtime.")]
+        [Tooltip("Recipes this station can craft. Authoritative — a recipe " +
+                 "shows up here if and only if it appears in this list. " +
+                 "The same recipe can be assigned to multiple stations.")]
         [SerializeField] private List<Recipe> recipeDatabase;
 
         public CraftingStationType StationType => stationType;
 
-        // Recipes that match this station type
+        // All recipes this station offers (resolved from the database in Awake)
         private List<Recipe> _stationRecipes = new();
 
         // Recipes the player has discovered (persisted per-save via IDs)
@@ -40,14 +49,35 @@ namespace InventorySystem.Crafting
 
         protected virtual void Awake()
         {
-            // Filter the global recipe list down to this station's type
+            // The database itself is the source of truth — no type filtering.
+            // Just copy non-null entries so the runtime list is safe to iterate.
             _stationRecipes = new List<Recipe>();
+
+            if (recipeDatabase == null || recipeDatabase.Count == 0)
+            {
+                Debug.LogWarning(
+                    $"[{name}] Crafting station has no recipes assigned " +
+                    $"(StationType={stationType}). " +
+                    "Drag Recipe assets into the Recipe Database in the Inspector.");
+                return;
+            }
+
+            int nullCount = 0;
             foreach (var recipe in recipeDatabase)
             {
-                if (recipe != null && recipe.stationType == stationType)
+                if (recipe == null)
                 {
-                    _stationRecipes.Add(recipe);
+                    nullCount++;
+                    continue;
                 }
+                _stationRecipes.Add(recipe);
+            }
+
+            if (nullCount > 0)
+            {
+                Debug.LogWarning(
+                    $"[{name}] Recipe Database contains {nullCount} null " +
+                    "entry(ies). Clean up the list in the Inspector.");
             }
         }
 

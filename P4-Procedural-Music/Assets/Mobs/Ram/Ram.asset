@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48822c4b9f2eaf542a897f51bd8c20c6, type: 3}
+  m_Name: Ram
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.Data.MobData
+  id: ram
+  displayName: Ram
+  behaviour: 0
+  maxHealth: 20
+  moveSpeed: 10
+  detectionRange: 20
+  hearingRange: 30
+  detectionInterval: 0.797
+  visualGainRate: 3.21
+  auditoryGainRate: 0.81
+  awarenessDecayRate: 1.69
+  suspiciousThreshold: 0.613
+  separationRadius: 30
+  separationWeight: 1.2
+  avoidanceDistance: 40
+  avoidanceWeight: 1.5
+  wanderStrength: 0.4
+  fleeSpeedMultiplier: 1.5
+  fleeDistance: 50
+  fleeHealthThreshold: 0
+  aggroRange: 120
+  attackRange: 24
+  happinessPenalty: 0.08
+  threatComfortValue: 0.3
+  threatRadius: 300
+  hurtStunDuration: 0.3
+  attackWindupDuration: 0.5
+  attackStrikeDuration: 0.25
+  attackRecoveryDuration: 0.4
+  attackAimLockRatio: 0.5
+  attackHitboxActivationRatio: 0
+  attackHitboxOffset: 14
+  attackHitboxYOffset: 0
+  attackHitboxRadius: 16
+  attackLungeSpeed: 80
+  horizontalAttackOnly: 0
+  attackHitboxHeight: 10
+  searchDuration: 4
+  searchRadius: 60
+  roamRadius: 80
+  roamIdleTime: 2
+  packAlertRadius: 200
+  packAlertBoost: 0.7
+  allowedTerrain: 00000000
+  spawnTimeStart: 0
+  spawnTimeEnd: 24
+  groupSizeMin: 1
+  groupSizeMax: 1
+  prefab: {fileID: 1087766931806613640, guid: 2e2ccf36e1d444c47a736fa8482962f8, type: 3}
+  ambientSound: {fileID: 8300000, guid: 7156f9101a6130244b078a7be3082956, type: 3}
+  ambientVolume: 0.3
+  hitSound: {fileID: 8300000, guid: c5c9710cf08b13e4882dfac4c0adf677, type: 3}
+  hitVolume: 0.5
+  deathSound: {fileID: 8300000, guid: 8d2fa786bf930c04f84ba0df08a9d2e6, type: 3}
+  deathVolume: 0.5
+  attackWindupSound: {fileID: 0}
+  attackWindupVolume: 0.5
+  attackStrikeSound: {fileID: 0}
+  attackStrikeVolume: 0.5
+  lootTable: {fileID: 11400000, guid: a1cef617ebc4179489779bcda43ccbbb, type: 2}
+  worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
+  isCatchable: 0
+  catchResultItem: {fileID: 0}

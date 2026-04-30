@@ -185,9 +185,10 @@ MonoBehaviour:
   promptOffset: {x: 0, y: 1.2}
   gnomeName: 
   tradeOffers:
-  - {fileID: 11400000, guid: 50b7673ee1535d841b2e2e7be517165c, type: 2}
-  - {fileID: 11400000, guid: b30e56ad45927a84da304356d1f46752, type: 2}
-  - {fileID: 11400000, guid: fafb2bdf8a4473d4b9d3019459d1177f, type: 2}
+  - {fileID: 11400000, guid: 8f1c07bef5ca7f045b6b5240d1f3fba3, type: 2}
+  - {fileID: 11400000, guid: 7b1b2059984ed1347830b90f2319c18c, type: 2}
+  - {fileID: 11400000, guid: 4da6f9ce3a6018e4ea54b8944d9ba3b8, type: 2}
+  - {fileID: 11400000, guid: 0da817c03b5602b4e97cd9f2efa3c43b, type: 2}
   MyOffer: {fileID: 0}
 --- !u!95 &8737546276844972407
 Animator:
