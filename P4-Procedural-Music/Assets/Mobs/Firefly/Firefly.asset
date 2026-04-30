@@ -15,7 +15,7 @@ MonoBehaviour:
   id: firefly
   displayName: Firefly
   behaviour: 0
-  maxHealth: 5
+  maxHealth: 2
   moveSpeed: 2
   detectionRange: 5
   hearingRange: 160
@@ -65,7 +65,7 @@ MonoBehaviour:
   ambientVolume: 0.486
   hitSound: {fileID: 0}
   hitVolume: 0.5
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: ea6b0e2190f5e9849bbe4be31959102c, type: 3}
   deathVolume: 0.5
   attackWindupSound: {fileID: 0}
   attackWindupVolume: 0.5

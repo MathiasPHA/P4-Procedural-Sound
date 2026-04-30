@@ -61,13 +61,13 @@ MonoBehaviour:
   groupSizeMin: 1
   groupSizeMax: 3
   prefab: {fileID: 7533120962837240174, guid: f5e0da7755236d841996db9af255473b, type: 3}
-  ambientSound: {fileID: 0}
-  ambientVolume: 0.3
-  hitSound: {fileID: 8300000, guid: 5fdbe4f6c61f3174a99af8fd98773e97, type: 3}
+  ambientSound: {fileID: 8300000, guid: 0ec4bf10044baa641b9d07b3ac2f2ba4, type: 3}
+  ambientVolume: 0.205
+  hitSound: {fileID: 8300000, guid: 74d44f6554e6ef04ab1ce8db48efc920, type: 3}
   hitVolume: 0.5
-  deathSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
-  deathVolume: 0.5
-  attackWindupSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: 6ecd0bab9ca54954a9ee35db725d37e0, type: 3}
+  deathVolume: 0.39
+  attackWindupSound: {fileID: 8300000, guid: 9e946a2e9d4d21a43815fc3146747d64, type: 3}
   attackWindupVolume: 0.5
   attackStrikeSound: {fileID: 8300000, guid: 13385f8c99e532d40abb205764182552, type: 3}
   attackStrikeVolume: 0.5
