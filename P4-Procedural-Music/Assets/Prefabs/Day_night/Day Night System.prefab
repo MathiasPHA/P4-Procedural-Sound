@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4368935485830263750}
   - component: {fileID: 7230665982664784449}
   - component: {fileID: 8804788307281323027}
+  - component: {fileID: 5099165680270774262}
   m_Layer: 0
   m_Name: Day Night System
   m_TagString: TimeInteractive
@@ -93,3 +94,18 @@ MonoBehaviour:
   time: 0
   timeRounded: 0
   timeReferenceArray: 
+--- !u!114 &5099165680270774262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8031143485192898488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7c5972501f37e24ba1cfddc2869daf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.UI.UICoordinator
+  inventoryUI: {fileID: 0}
+  craftingUI: {fileID: 0}
+  inputProvider: {fileID: 0}

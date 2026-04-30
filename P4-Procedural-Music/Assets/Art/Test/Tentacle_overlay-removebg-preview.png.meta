@@ -1,0 +1,377 @@
+fileFormatVersion: 2
+guid: aa891f6eba3399c43a0326f749bd9420
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8680636085457969168
+    second: Tentacle_overlay-removebg-preview_0
+  - first:
+      213: -8516039918890599017
+    second: Tentacle_overlay-removebg-preview_1
+  - first:
+      213: 8711359106094419206
+    second: Tentacle_overlay-removebg-preview_2
+  - first:
+      213: 1883479453154280508
+    second: Tentacle_overlay-removebg-preview_3
+  - first:
+      213: 3245109647295403880
+    second: Tentacle_overlay-removebg-preview_4
+  - first:
+      213: 973466347180168953
+    second: Tentacle_overlay-removebg-preview_5
+  - first:
+      213: -4759442839340041162
+    second: Tentacle_overlay-removebg-preview_6
+  - first:
+      213: 1901320094646212184
+    second: Tentacle_overlay-removebg-preview_7
+  - first:
+      213: 5564161905497182052
+    second: Tentacle_overlay-removebg-preview_8
+  - first:
+      213: -1196069354024407479
+    second: Tentacle_overlay-removebg-preview_9
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 241
+        width: 129
+        height: 142
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 010e82a1780d77870800000000000000
+      internalID: 8680636085457969168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_1
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 280
+        width: 76
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79dba7d40d2f0d980800000000000000
+      internalID: -8516039918890599017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_2
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 221
+        width: 89
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60d4f95c3f6f4e870800000000000000
+      internalID: 8711359106094419206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 177
+        width: 127
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3402036596732a10800000000000000
+      internalID: 1883479453154280508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_4
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 117
+        width: 65
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8675c38e702f80d20800000000000000
+      internalID: 3245109647295403880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 83
+        width: 110
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f698703c72728d00800000000000000
+      internalID: 973466347180168953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_6
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 0
+        width: 92
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63c3c5844ff03fdb0800000000000000
+      internalID: -4759442839340041162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_7
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 0
+        width: 58
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85613bd6d88d26a10800000000000000
+      internalID: 1901320094646212184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_8
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 0
+        width: 56
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46f8be9d5cfd73d40800000000000000
+      internalID: 5564161905497182052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tentacle_overlay-removebg-preview_9
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 40
+        width: 89
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94ee4a27245b66fe0800000000000000
+      internalID: -1196069354024407479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Tentacle_overlay-removebg-preview_0: 8680636085457969168
+      Tentacle_overlay-removebg-preview_1: -8516039918890599017
+      Tentacle_overlay-removebg-preview_2: 8711359106094419206
+      Tentacle_overlay-removebg-preview_3: 1883479453154280508
+      Tentacle_overlay-removebg-preview_4: 3245109647295403880
+      Tentacle_overlay-removebg-preview_5: 973466347180168953
+      Tentacle_overlay-removebg-preview_6: -4759442839340041162
+      Tentacle_overlay-removebg-preview_7: 1901320094646212184
+      Tentacle_overlay-removebg-preview_8: 5564161905497182052
+      Tentacle_overlay-removebg-preview_9: -1196069354024407479
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
