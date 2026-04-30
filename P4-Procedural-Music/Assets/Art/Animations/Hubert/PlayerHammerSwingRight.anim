@@ -28,6 +28,8 @@ AnimationClip:
       value: {fileID: 21300000, guid: 79cf30d55cc64e4499fe2fde8096b9e8, type: 3}
     - time: 0.05
       value: {fileID: 21300000, guid: 98a807a78cb154f4eaec4ced7b306635, type: 3}
+    - time: 0.06666667
+      value: {fileID: 21300000, guid: 98a807a78cb154f4eaec4ced7b306635, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -54,12 +56,13 @@ AnimationClip:
     - {fileID: 21300000, guid: 3b472153dd623154494f6fac71cc4b22, type: 3}
     - {fileID: 21300000, guid: 79cf30d55cc64e4499fe2fde8096b9e8, type: 3}
     - {fileID: 21300000, guid: 98a807a78cb154f4eaec4ced7b306635, type: 3}
+    - {fileID: 21300000, guid: 98a807a78cb154f4eaec4ced7b306635, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.06666667
+    m_StopTime: 0.083333336
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -78,4 +81,11 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0.06666667
+    functionName: OnHarvestAnimationComplete
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
