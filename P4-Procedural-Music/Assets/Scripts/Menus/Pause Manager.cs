@@ -53,6 +53,12 @@ public class PauseManager : MonoBehaviour
     /// </summary>
     private void HandleEscape()
     {
+        // 0. Fishing — PlayerFishingState handles Escape itself (cancels the
+        //    minigame). Skip pause so the menu doesn't pop up at the same time.
+        if (FishingSystem.FishingManager.Instance != null &&
+            FishingSystem.FishingManager.Instance.IsFishing)
+            return;
+
         // 1. Placement mode — PlacementSystem.Update() handles Escape itself.
         //    Skip pausing so the pause menu doesn't pop up over the ghost.
         if (PlacementSystem.Instance != null && PlacementSystem.Instance.IsPlacing)
@@ -98,11 +104,11 @@ public class PauseManager : MonoBehaviour
     {
         // Close all sub-panels so they don't reappear next pause
         if (settingsPopup != null) settingsPopup.SetActive(false);
-        if (controlsUI != null)    controlsUI.SetActive(false);
-        if (soundUI != null)       soundUI.SetActive(false);
+        if (controlsUI != null) controlsUI.SetActive(false);
+        if (soundUI != null) soundUI.SetActive(false);
         if (mainMenuUI != null) mainMenuUI.SetActive(false);
-        if (OptionsUI.activeSelf)  OptionsUI.SetActive(false);
-        if (ExitUI.activeSelf)     ExitUI.SetActive(false);
+        if (OptionsUI.activeSelf) OptionsUI.SetActive(false);
+        if (ExitUI.activeSelf) ExitUI.SetActive(false);
 
         // Restore from PlayerPrefs (picks up any settings changes)
         for (int i = 0; i < volumeController.groups.Length; i++)

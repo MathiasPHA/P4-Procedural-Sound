@@ -2331,33 +2331,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 395579056343213146, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 395579056343213146, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1671474923
-      objectReference: {fileID: 0}
-    - target: {fileID: 813551977061376914, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 813551977061376914, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1671474923
-      objectReference: {fileID: 0}
-    - target: {fileID: 1642698647480313779, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2564630636838900317, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
       propertyPath: m_Name
       value: FishingSystem
-      objectReference: {fileID: 0}
-    - target: {fileID: 3794430895652903473, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3991372108596138464, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
       propertyPath: m_LocalScale.x
@@ -2426,14 +2402,6 @@ PrefabInstance:
     - target: {fileID: 6268821244972469724, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
       propertyPath: uiOffsetFromPlayer.x
       value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7138081384908000842, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7138081384908000842, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1671474923
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

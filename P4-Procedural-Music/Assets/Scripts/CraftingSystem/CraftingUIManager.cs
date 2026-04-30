@@ -238,6 +238,12 @@ namespace InventorySystem.UI
 
         private void SpawnTabButtons()
         {
+            // Block opening the inventory while fishing — the player is locked
+            // into the minigame and shouldn't be able to swap gear / craft mid-cast.
+            if (FishingSystem.FishingManager.Instance != null &&
+                FishingSystem.FishingManager.Instance.IsFishing)
+                return;
+
             if (tabBarContainer == null || tabButtonPrefab == null || tabs.Count == 0)
                 return;
 
