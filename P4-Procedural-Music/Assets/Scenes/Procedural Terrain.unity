@@ -1064,14 +1064,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 873610791549647746, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1096685723378879691, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1096685723378879691, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1624446560024405410, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: m_Name
       value: PauseMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 1624446560024405410, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2862067803819105686, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: volumeController
       value: 
       objectReference: {fileID: 1306677253}
+    - target: {fileID: 3304269416517448174, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3304269416517448174, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3304269416517448174, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -17
+      objectReference: {fileID: 0}
     - target: {fileID: 5314289383621980106, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1151,6 +1179,22 @@ PrefabInstance:
     - target: {fileID: 5314289383621980106, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334761140022944529, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5550864010800728160, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8467194388290986800, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8645843855887199724, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2626,6 +2670,10 @@ PrefabInstance:
     - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: tentacleTriggerThreshold
       value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8010458251646217796, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: player
