@@ -16,6 +16,8 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private GameObject settingsPopup;
     [SerializeField] private GameObject controlsUI;
     [SerializeField] private GameObject soundUI;
+    [SerializeField] private GameObject mainMenuUI;
+
 
     [Header("Audio")]
     public MixerVolumeController volumeController;
@@ -98,6 +100,7 @@ public class PauseManager : MonoBehaviour
         if (settingsPopup != null) settingsPopup.SetActive(false);
         if (controlsUI != null)    controlsUI.SetActive(false);
         if (soundUI != null)       soundUI.SetActive(false);
+        if (mainMenuUI != null) mainMenuUI.SetActive(false);
         if (OptionsUI.activeSelf)  OptionsUI.SetActive(false);
         if (ExitUI.activeSelf)     ExitUI.SetActive(false);
 

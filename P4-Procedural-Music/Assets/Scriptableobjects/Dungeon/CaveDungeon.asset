@@ -66,6 +66,15 @@ MonoBehaviour:
     useNoise: 0
     noiseScale: 0.42
     noiseThreshold: 0.717
+  - enabled: 1
+    prefab: {fileID: 5511241277875091019, guid: 5b4956f63a48342d4aaad2a78a258cb7, type: 3}
+    density: 0.17
+    maxCount: 20
+    minSpacing: 0
+    wallPadding: 2
+    useNoise: 0
+    noiseScale: 0.42
+    noiseThreshold: 0.717
   maxTotalCorridorSpawns: 120
   corridorSpawns:
   - enabled: 1
