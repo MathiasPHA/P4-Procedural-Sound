@@ -411,6 +411,7 @@ MonoBehaviour:
   settingsPopup: {fileID: 5334761140022944529}
   controlsUI: {fileID: 8467194388290986800}
   soundUI: {fileID: 2562910946784959366}
+  mainMenuUI: {fileID: 6437261020951739626}
   volumeController: {fileID: 0}
   inventoryUI: {fileID: 0}
   craftingUI: {fileID: 0}
@@ -1463,7 +1464,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6437261020951739626}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: LoadMainMenu
+        m_MethodName: SetActive
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6429,7 +6430,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &119225378228796682
 RectTransform:
   m_ObjectHideFlags: 0
