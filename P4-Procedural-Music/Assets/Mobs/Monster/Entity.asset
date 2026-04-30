@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48822c4b9f2eaf542a897f51bd8c20c6, type: 3}
   m_Name: Entity
   m_EditorClassIdentifier: Assembly-CSharp::MobSystem.Data.MobData
-  id: the_entity
+  id: entity
   displayName: The Entity
   behaviour: 1
-  maxHealth: 20
-  moveSpeed: 30
+  maxHealth: 10
+  moveSpeed: 40
   detectionRange: 100
   hearingRange: 160
   detectionInterval: 0.25
@@ -61,15 +61,15 @@ MonoBehaviour:
   groupSizeMin: 1
   groupSizeMax: 3
   prefab: {fileID: 4249446092522875181, guid: 516841ffb7220854bb05e9467db2ceab, type: 3}
-  ambientSound: {fileID: 8300000, guid: 4e0302b13f2c044409fa4fe7796622a1, type: 3}
+  ambientSound: {fileID: 0}
   ambientVolume: 0.3
-  hitSound: {fileID: 8300000, guid: 180bfe56640c5d546afedd1e68654dca, type: 3}
+  hitSound: {fileID: 0}
   hitVolume: 0.5
   deathSound: {fileID: 0}
   deathVolume: 0.5
   attackWindupSound: {fileID: 0}
   attackWindupVolume: 0.5
-  attackStrikeSound: {fileID: 8300000, guid: 9ebc54774c8e52f408b11573939afc99, type: 3}
+  attackStrikeSound: {fileID: 0}
   attackStrikeVolume: 0.5
   lootTable: {fileID: 0}
   worldItemPrefab: {fileID: 0}

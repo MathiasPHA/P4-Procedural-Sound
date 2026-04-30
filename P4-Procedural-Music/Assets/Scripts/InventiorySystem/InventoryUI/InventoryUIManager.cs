@@ -8,13 +8,9 @@ namespace InventorySystem.UI
     /// <summary>
     /// Central UI orchestrator. Bridges between the Inventory data layer
     /// and all visual elements (slots, tooltip, drag ghost, split slider).
-    ///
+    /// 
     /// Initialized explicitly by InventoryBootstrap.Start() — not by Awake.
     /// This guarantees InventoryInputProvider has resolved its actions first.
-    ///
-    /// IMPORTANT: This manager no longer subscribes to OnToggleInventory itself.
-    /// Open/close is driven exclusively by UICoordinator via ForceOpen/ForceClose
-    /// so both panels always move together.
     /// </summary>
     public class InventoryUIManager : MonoBehaviour
     {
@@ -137,13 +133,10 @@ namespace InventorySystem.UI
             _inventory.OnEquippedChanged += OnEquippedChanged;
             _inventory.OnItemConsumed += OnItemConsumed;
 
-            // NOTE: OnToggleInventory is intentionally NOT subscribed here.
-            // UICoordinator owns that subscription and drives open/close via
-            // ForceOpen() / ForceClose() so both panels always move together.
-
-            // Hotbar & scroll still come directly from input
+            // Input events
             if (inputProvider != null)
             {
+                inputProvider.OnToggleInventory += ToggleInventory;
                 inputProvider.OnHotbarSelect += OnHotbarKeyPressed;
                 inputProvider.OnScrollHotbar += OnScrollHotbar;
             }
@@ -168,6 +161,7 @@ namespace InventorySystem.UI
 
             if (inputProvider != null)
             {
+                inputProvider.OnToggleInventory -= ToggleInventory;
                 inputProvider.OnHotbarSelect -= OnHotbarKeyPressed;
                 inputProvider.OnScrollHotbar -= OnScrollHotbar;
             }
@@ -333,45 +327,37 @@ namespace InventorySystem.UI
         public bool IsSlotActiveHotbar(int slotIndex) => slotIndex == _inventory.ActiveHotbarIndex;
 
         // =====================================================================
-        // Panel open / close — driven by UICoordinator
+        // Inventory panel toggle
         // =====================================================================
 
-        /// <summary>
-        /// Unconditionally open the inventory panel.
-        /// Called by UICoordinator only — do not call directly from other systems.
-        /// </summary>
-        public void ForceOpen()
+        public void ToggleInventory()
         {
-            if (_inventoryOpen) return;
+            // Block opening the inventory while fishing — the player is locked
+            // into the minigame and shouldn't be able to swap gear / craft mid-cast.
+            if (FishingSystem.FishingManager.Instance != null &&
+                FishingSystem.FishingManager.Instance.IsFishing)
+                return;
 
-            _inventoryOpen = true;
-            inventoryPanel.SetActive(true);
+            _inventoryOpen = !_inventoryOpen;
+            inventoryPanel.SetActive(_inventoryOpen);
 
-            RefreshAllSlots();
-            inputProvider?.DisableMovement();
-            if (playerStateManager != null)
-                playerStateManager.SwitchState(playerStateManager.inventoryState);
+            if (_inventoryOpen)
+            {
+                RefreshAllSlots();
+                inputProvider?.DisableMovement();
+                if (playerStateManager != null)
+                    playerStateManager.SwitchState(playerStateManager.inventoryState);
+            }
+            else
+            {
+                HideTooltip();
+                CloseSplitSlider();
+                inputProvider?.EnableMovement();
+                if (playerStateManager != null)
+                    playerStateManager.SwitchState(playerStateManager.idleState);
+            }
         }
 
-        /// <summary>
-        /// Unconditionally close the inventory panel.
-        /// Called by UICoordinator only — do not call directly from other systems.
-        /// </summary>
-        public void ForceClose()
-        {
-            if (!_inventoryOpen) return;
-
-            _inventoryOpen = false;
-            inventoryPanel.SetActive(false);
-
-            HideTooltip();
-            CloseSplitSlider();
-            inputProvider?.EnableMovement();
-            if (playerStateManager != null)
-                playerStateManager.SwitchState(playerStateManager.idleState);
-        }
-
-        /// <summary>Whether the inventory panel is currently visible.</summary>
         public bool IsInventoryOpen => _inventoryOpen;
 
         // =====================================================================
@@ -438,15 +424,15 @@ namespace InventorySystem.UI
 
         private Vector2 GetPlayerFacingDirection()
         {
-            if (playerStateManager == null) return Vector2.down;
+            if (playerStateManager == null) return Vector2.down; // safe fallback
 
             return playerStateManager.playerDir switch
             {
-                "Up"    => Vector2.up,
-                "Down"  => Vector2.down,
-                "Left"  => Vector2.left,
+                "Up" => Vector2.up,
+                "Down" => Vector2.down,
+                "Left" => Vector2.left,
                 "Right" => Vector2.right,
-                _       => Vector2.down
+                _ => Vector2.down
             };
         }
 

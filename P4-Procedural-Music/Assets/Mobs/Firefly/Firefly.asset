@@ -15,7 +15,7 @@ MonoBehaviour:
   id: firefly
   displayName: Firefly
   behaviour: 0
-  maxHealth: 2
+  maxHealth: 5
   moveSpeed: 2
   detectionRange: 5
   hearingRange: 160
@@ -37,18 +37,13 @@ MonoBehaviour:
   happinessPenalty: 0.01
   threatComfortValue: 0.3
   threatRadius: 300
-  hurtStunDuration: 0.3
   attackWindupDuration: 0.5
   attackStrikeDuration: 0.25
   attackRecoveryDuration: 0.4
   attackAimLockRatio: 0.5
-  attackHitboxActivationRatio: 0
   attackHitboxOffset: 14
-  attackHitboxYOffset: 0
   attackHitboxRadius: 16
   attackLungeSpeed: 80
-  horizontalAttackOnly: 0
-  attackHitboxHeight: 10
   searchDuration: 4
   searchRadius: 3
   roamRadius: 20
@@ -61,11 +56,11 @@ MonoBehaviour:
   groupSizeMin: 3
   groupSizeMax: 5
   prefab: {fileID: 7533120962837240174, guid: 1abb9c8faf305d44fa5521289f0778c3, type: 3}
-  ambientSound: {fileID: 8300000, guid: c9c30c17ed3580e4bb1b5885fbccd46b, type: 3}
-  ambientVolume: 0.486
+  ambientSound: {fileID: 0}
+  ambientVolume: 0.3
   hitSound: {fileID: 0}
   hitVolume: 0.5
-  deathSound: {fileID: 8300000, guid: ea6b0e2190f5e9849bbe4be31959102c, type: 3}
+  deathSound: {fileID: 0}
   deathVolume: 0.5
   attackWindupSound: {fileID: 0}
   attackWindupVolume: 0.5

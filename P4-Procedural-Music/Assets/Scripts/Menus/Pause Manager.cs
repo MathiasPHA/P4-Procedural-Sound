@@ -18,12 +18,16 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private GameObject soundUI;
     [SerializeField] private GameObject mainMenuUI;
 
+
     [Header("Audio")]
     public MixerVolumeController volumeController;
 
-    [Header("UI Coordinator (for Escape priority chain)")]
-    [Tooltip("UICoordinator that owns open/close state for inventory + crafting panels.")]
-    [SerializeField] private UICoordinator uiCoordinator;
+    [Header("UI Managers (for Escape priority chain)")]
+    [Tooltip("When Escape is pressed and the inventory is open, close it instead of pausing.")]
+    [SerializeField] private InventoryUIManager inventoryUI;
+
+    [Tooltip("When Escape is pressed and the crafting panel is open, close it instead of pausing.")]
+    [SerializeField] private CraftingUIManager craftingUI;
 
     private float[] savedVolumes;
 
@@ -44,20 +48,34 @@ public class PauseManager : MonoBehaviour
     /// <summary>
     /// Escape key priority chain:
     ///   1. If placing a structure  → PlacementSystem cancels placement (we skip pause)
-    ///   2. If inventory/crafting is open → close both via coordinator (we skip pause)
+    ///   2. If inventory/crafting is open → close them (we skip pause)
     ///   3. Otherwise → toggle pause menu
     /// </summary>
     private void HandleEscape()
     {
+        // 0. Fishing — PlayerFishingState handles Escape itself (cancels the
+        //    minigame). Skip pause so the menu doesn't pop up at the same time.
+        if (FishingSystem.FishingManager.Instance != null &&
+            FishingSystem.FishingManager.Instance.IsFishing)
+            return;
+
         // 1. Placement mode — PlacementSystem.Update() handles Escape itself.
         //    Skip pausing so the pause menu doesn't pop up over the ghost.
         if (PlacementSystem.Instance != null && PlacementSystem.Instance.IsPlacing)
             return;
 
-        // 2. Panels open — close them together via coordinator instead of pausing.
-        if (uiCoordinator != null && uiCoordinator.ArePanelsOpen)
+        // 2. Inventory/crafting open — close them instead of pausing.
+        bool inventoryOpen = inventoryUI != null && inventoryUI.IsInventoryOpen;
+        bool craftingOpen = craftingUI != null && craftingUI.IsOpen;
+
+        if (inventoryOpen || craftingOpen)
         {
-            uiCoordinator.ClosePanels();
+            if (inventoryOpen)
+                inventoryUI.ToggleInventory();
+
+            if (craftingOpen)
+                craftingUI.ClosePanel();
+
             return;
         }
 
@@ -68,6 +86,7 @@ public class PauseManager : MonoBehaviour
 
     void Pause()
     {
+        // Save current dB values
         savedVolumes = new float[volumeController.groups.Length];
         for (int i = 0; i < volumeController.groups.Length; i++)
         {
@@ -83,18 +102,20 @@ public class PauseManager : MonoBehaviour
 
     public void Resume()
     {
+        // Close all sub-panels so they don't reappear next pause
         if (settingsPopup != null) settingsPopup.SetActive(false);
-        if (controlsUI != null)    controlsUI.SetActive(false);
-        if (soundUI != null)       soundUI.SetActive(false);
-        if (mainMenuUI != null)    mainMenuUI.SetActive(false);
-        if (OptionsUI.activeSelf)  OptionsUI.SetActive(false);
-        if (ExitUI.activeSelf)     ExitUI.SetActive(false);
+        if (controlsUI != null) controlsUI.SetActive(false);
+        if (soundUI != null) soundUI.SetActive(false);
+        if (mainMenuUI != null) mainMenuUI.SetActive(false);
+        if (OptionsUI.activeSelf) OptionsUI.SetActive(false);
+        if (ExitUI.activeSelf) ExitUI.SetActive(false);
 
+        // Restore from PlayerPrefs (picks up any settings changes)
         for (int i = 0; i < volumeController.groups.Length; i++)
         {
             var g = volumeController.groups[i];
             float vol = PlayerPrefs.GetFloat(g.exposedParam, g.defaultVolume);
-            float dB  = Mathf.Log10(Mathf.Max(vol, 0.001f)) * 20f;
+            float dB = Mathf.Log10(Mathf.Max(vol, 0.001f)) * 20f;
             g.mixer.SetFloat(g.exposedParam, dB);
         }
 

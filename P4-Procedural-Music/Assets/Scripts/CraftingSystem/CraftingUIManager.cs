@@ -23,7 +23,9 @@ namespace InventorySystem.UI
 
     /// <summary>
     /// Independent UI orchestrator for the crafting panel.
-    /// Manages its own panel hierarchy, recipe list, detail pane, and tab bar.
+    /// Opens and closes in sync with the inventory (listens to the same
+    /// toggle event) but manages its own panel hierarchy, recipe list,
+    /// detail pane, and tab bar.
     ///
     /// The tab bar lets the player switch between stations (e.g. Crafting,
     /// Building) without needing a specific tool equipped. Each tab maps
@@ -36,9 +38,9 @@ namespace InventorySystem.UI
     ///   tabs list), the tab bar is hidden so the player can't accidentally
     ///   switch off the world station's recipe set.
     ///
-    /// IMPORTANT: This manager no longer subscribes to OnToggleInventory itself.
-    /// Open/close is driven exclusively by UICoordinator via ForceOpen/ForceClose
-    /// so both panels always move together.
+    /// Communicates with the inventory purely through the Inventory API
+    /// and the crafting station abstraction — no direct coupling to
+    /// InventoryUIManager.
     ///
     /// Setup:
     ///   1. Create a CraftingPanel under your UI Canvas (sibling to InventoryPanel)
@@ -47,7 +49,6 @@ namespace InventorySystem.UI
     ///   4. Assign references in the inspector
     ///   5. Populate the Tabs list with label + station pairs
     ///   6. Call Initialise() from InventoryBootstrap after inventory creation
-    ///   7. Call UICoordinator.Initialise() last
     /// </summary>
     public class CraftingUIManager : MonoBehaviour
     {
@@ -108,12 +109,9 @@ namespace InventorySystem.UI
         private readonly List<CraftingTabButton> _tabButtons = new();
 
         // Placement re-open: when the player clicks Build on a Buildable recipe,
-        // the panel closes for placement. When placement ends UICoordinator
-        // re-opens both panels via ReopenAfterPlacement().
+        // the panel closes for placement. When placement ends we re-open on the
+        // same tab so the player can continue building.
         private bool _closedForPlacement;
-
-        // Reference to coordinator for placement re-open callback.
-        private UICoordinator _coordinator;
 
         private readonly List<RecipeEntryUI> _recipeEntries = new();
         private Recipe _selectedRecipe;
@@ -141,9 +139,9 @@ namespace InventorySystem.UI
 
             _activeTabIndex = 0;
 
-            // NOTE: OnToggleInventory is intentionally NOT subscribed here.
-            // UICoordinator owns that subscription and drives open/close via
-            // ForceOpen() / ForceClose() so both panels always move together.
+            // Wire events
+            if (inputProvider != null)
+                inputProvider.OnToggleInventory += OnToggleInventory;
 
             _inventory.OnInventoryChanged += OnInventoryChanged;
 
@@ -165,9 +163,6 @@ namespace InventorySystem.UI
                 PlacementSystem.Instance.OnPlacementFinished += OnPlacementEnded;
             }
 
-            // Cache coordinator for placement re-open
-            _coordinator = FindAnyObjectByType<UICoordinator>();
-
             // Audio setup
             _audioSource = GetComponent<AudioSource>();
             if (_audioSource == null)
@@ -180,6 +175,9 @@ namespace InventorySystem.UI
 
         private void OnDestroy()
         {
+            if (inputProvider != null)
+                inputProvider.OnToggleInventory -= OnToggleInventory;
+
             if (_inventory != null)
                 _inventory.OnInventoryChanged -= OnInventoryChanged;
 
@@ -196,6 +194,12 @@ namespace InventorySystem.UI
         private bool ValidateReferences()
         {
             bool valid = true;
+
+            if (inputProvider == null)
+            {
+                Debug.LogError("[CraftingUIManager] InputProvider is not assigned!");
+                valid = false;
+            }
 
             if (craftingPanel == null)
             {
@@ -263,6 +267,7 @@ namespace InventorySystem.UI
                 _tabButtons.Add(tabButton);
             }
 
+            // Highlight the default tab
             UpdateTabHighlights();
         }
 
@@ -281,6 +286,7 @@ namespace InventorySystem.UI
 
             _activeStation = tab.station;
 
+            // Refresh discovery for the new station
             if (_activeStation is BaseCraftingStation baseStation)
                 baseStation.RefreshDiscovery(_inventory);
 
@@ -290,6 +296,7 @@ namespace InventorySystem.UI
             UpdateTabBarVisibility();
             UpdateStationHeader();
 
+            // Auto-select first recipe
             if (_recipeEntries.Count > 0)
                 SelectRecipe(_recipeEntries[0].Recipe);
         }
@@ -297,7 +304,9 @@ namespace InventorySystem.UI
         private void UpdateTabHighlights()
         {
             for (int i = 0; i < _tabButtons.Count; i++)
+            {
                 _tabButtons[i].SetActive(i == _activeTabIndex);
+            }
         }
 
         /// <summary>
@@ -329,18 +338,19 @@ namespace InventorySystem.UI
         }
 
         // =====================================================================
-        // Public API — called by UICoordinator
+        // Public API — called by CraftingStationInteraction
         // =====================================================================
 
         /// <summary>
-        /// Set the active crafting station without opening or closing the panel.
+        /// Set the active crafting station. Called when the player interacts
+        /// with a world station (workbench, cooking pot, etc.).
         /// Pass null to revert to the default tab's station.
-        /// Called by UICoordinator.OpenWithStation() before ForceOpen().
         /// </summary>
         public void SetActiveStation(ICraftingStation station)
         {
             if (station == null)
             {
+                // Revert to default tab
                 _activeStation = tabs.Count > 0 && tabs[0].station != null
                     ? tabs[0].station
                     : (ICraftingStation)handCraftingStation;
@@ -349,6 +359,8 @@ namespace InventorySystem.UI
             else
             {
                 _activeStation = station;
+
+                // -1 means the active station isn't a tab — world-only.
                 _activeTabIndex = FindTabIndexForStation(station);
             }
 
@@ -372,39 +384,18 @@ namespace InventorySystem.UI
         }
 
         /// <summary>
-        /// Unconditionally open the crafting panel.
-        /// Called by UICoordinator only — do not call directly from other systems.
+        /// Set the active station AND open the crafting panel.
+        /// Used by click-to-interact handlers (e.g. CookingStationInteractable)
+        /// that need to pop the panel open in response to a world click, rather
+        /// than waiting for the inventory toggle key.
+        /// If the panel is already open, this just re-targets to the new station.
         /// </summary>
-        public void ForceOpen()
+        public void OpenWithStation(ICraftingStation station)
         {
-            if (_isOpen) return;
+            SetActiveStation(station);
 
-            _isOpen = true;
-            craftingPanel.SetActive(true);
-
-            if (_activeStation is BaseCraftingStation baseStation)
-                baseStation.RefreshDiscovery(_inventory);
-
-            RebuildRecipeList();
-            UpdateTabHighlights();
-            UpdateTabBarVisibility();
-            UpdateStationHeader();
-
-            if (_selectedRecipe == null && _recipeEntries.Count > 0)
-                SelectRecipe(_recipeEntries[0].Recipe);
-        }
-
-        /// <summary>
-        /// Unconditionally close the crafting panel.
-        /// Called by UICoordinator only — do not call directly from other systems.
-        /// </summary>
-        public void ForceClose()
-        {
-            if (!_isOpen) return;
-
-            _isOpen = false;
-            craftingPanel.SetActive(false);
-            ClearSelection();
+            if (!_isOpen)
+                OpenPanel();
         }
 
         // =====================================================================
@@ -413,19 +404,55 @@ namespace InventorySystem.UI
 
         private void OnPlacementEnded()
         {
-            if (!_closedForPlacement) return;
-
-            _closedForPlacement = false;
-
-            // Re-open both panels through the coordinator so they stay in sync.
-            if (_coordinator != null)
-                _coordinator.ReopenAfterPlacement();
-            else
+            // Re-open the crafting panel on the same tab the player was on
+            // when they clicked Build. This lets them continue placing structures.
+            if (_closedForPlacement)
             {
-                // Fallback: coordinator not found — open crafting panel alone.
-                Debug.LogWarning("[CraftingUIManager] UICoordinator not found — re-opening crafting panel alone.");
-                ForceOpen();
+                _closedForPlacement = false;
+                OpenPanel();
             }
+        }
+
+        // =====================================================================
+        // Toggle (synced with inventory)
+        // =====================================================================
+
+        private void OnToggleInventory()
+        {
+            if (_isOpen)
+                ClosePanel();
+            else
+                OpenPanel();
+        }
+
+        private void OpenPanel()
+        {
+            _isOpen = true;
+            craftingPanel.SetActive(true);
+
+            // Refresh discovery before showing
+            if (_activeStation is BaseCraftingStation baseStation)
+                baseStation.RefreshDiscovery(_inventory);
+
+            RebuildRecipeList();
+            UpdateTabHighlights();
+            UpdateTabBarVisibility();
+            UpdateStationHeader();
+
+            // Auto-select first recipe if nothing is selected
+            if (_selectedRecipe == null && _recipeEntries.Count > 0)
+                SelectRecipe(_recipeEntries[0].Recipe);
+        }
+
+        /// <summary>
+        /// Close the crafting panel. Public so external systems (pause menu,
+        /// scene transitions, etc.) can dismiss the panel cleanly.
+        /// </summary>
+        public void ClosePanel()
+        {
+            _isOpen = false;
+            craftingPanel.SetActive(false);
+            ClearSelection();
         }
 
         // =====================================================================
@@ -436,15 +463,18 @@ namespace InventorySystem.UI
         {
             if (!_isOpen) return;
 
+            // Refresh discovery — player may have picked up new materials
             if (_activeStation is BaseCraftingStation baseStation)
                 baseStation.RefreshDiscovery(_inventory);
 
+            // Refresh craftability indicators on all visible entries
             foreach (var entry in _recipeEntries)
             {
                 bool canCraft = _activeStation.CanCraft(entry.Recipe, _inventory);
                 entry.SetCraftable(canCraft);
             }
 
+            // Refresh the detail pane ingredient counts
             if (_selectedRecipe != null && recipeDetail != null)
                 recipeDetail.Refresh(_selectedRecipe, _inventory, _activeStation);
         }
@@ -455,6 +485,7 @@ namespace InventorySystem.UI
 
         private void RebuildRecipeList()
         {
+            // Clear existing entries
             foreach (var entry in _recipeEntries)
             {
                 if (entry != null)
@@ -464,6 +495,7 @@ namespace InventorySystem.UI
 
             if (_activeStation == null) return;
 
+            // Spawn an entry for each discovered recipe
             var recipes = _activeStation.DiscoveredRecipes;
 
             for (int i = 0; i < recipes.Count; i++)
@@ -492,12 +524,14 @@ namespace InventorySystem.UI
         {
             if (stationNameText == null) return;
 
+            // Tab-backed station: use the tab label
             if (_activeTabIndex >= 0 && _activeTabIndex < tabs.Count)
             {
                 stationNameText.text = tabs[_activeTabIndex].label.ToUpper();
                 return;
             }
 
+            // World-only station (cooking, workbench, ...): use station type
             if (_activeStation != null)
             {
                 stationNameText.text = GetStationDisplayName(_activeStation.StationType);
@@ -507,15 +541,19 @@ namespace InventorySystem.UI
             stationNameText.text = "CRAFTING";
         }
 
+        /// <summary>
+        /// Pretty-prints a CraftingStationType for the panel header when no tab
+        /// label is available. Adjust here if you rename a station type.
+        /// </summary>
         private static string GetStationDisplayName(CraftingStationType type)
         {
             return type switch
             {
-                CraftingStationType.HandCraft      => "CRAFTING",
-                CraftingStationType.Workbench      => "WORKBENCH",
-                CraftingStationType.CookingStation => "COOKING",
-                CraftingStationType.BuildHammer    => "BUILDING",
-                _                                  => type.ToString().ToUpper()
+                CraftingStationType.HandCraft       => "CRAFTING",
+                CraftingStationType.Workbench       => "WORKBENCH",
+                CraftingStationType.CookingStation  => "COOKING",
+                CraftingStationType.BuildHammer     => "BUILDING",
+                _                                   => type.ToString().ToUpper()
             };
         }
 
@@ -532,9 +570,11 @@ namespace InventorySystem.UI
         {
             _selectedRecipe = recipe;
 
+            // Update visual selection on list entries
             foreach (var entry in _recipeEntries)
                 entry.SetSelected(entry.Recipe == recipe);
 
+            // Show detail
             if (recipeDetail != null && recipe != null)
                 recipeDetail.Show(recipe, _inventory, _activeStation);
         }
@@ -565,25 +605,25 @@ namespace InventorySystem.UI
                 Debug.Log($"[Crafting] Crafted {_selectedRecipe.resultAmount}x " +
                           $"{_selectedRecipe.result.displayName}");
 
-                if (craftSound != null && _audioSource != null &&
-                    Time.time >= lastCraftSoundTime + craftSoundCooldown)
+                // Play craft sound
+                if (craftSound != null && _audioSource != null && Time.time >= lastCraftSoundTime + craftSoundCooldown)
                 {
                     lastCraftSoundTime = Time.time;
-                    _audioSource.pitch = 1f + UnityEngine.Random.Range(-craftPitchVariation, craftPitchVariation);
+                   _audioSource.pitch = 1f + UnityEngine.Random.Range(-craftPitchVariation, craftPitchVariation);
                     _audioSource.PlayOneShot(craftSound, craftVolume);
                 }
 
+                // If the result was a Buildable, close the panel for placement.
+                // PlacementSystem is now in ghost mode. Mark _closedForPlacement
+                // so we re-open on the same tab when placement ends.
                 if (_selectedRecipe.result.category == ItemCategory.Buildable)
                 {
-                    // Mark for re-open, then close both panels via coordinator.
                     _closedForPlacement = true;
-                    if (_coordinator != null)
-                        _coordinator.ClosePanels();
-                    else
-                        ForceClose(); // fallback
+                    ClosePanel();
                     return;
                 }
 
+                // Normal crafting — refresh everything
                 OnInventoryChanged();
             }
         }

@@ -24,10 +24,7 @@ namespace InventorySystem.Crafting
         [Header("Identity")]
         public string recipeId;
 
-        [Tooltip("Authoring tag — the recipe's 'primary' station for organisation. " +
-                 "NOT enforced at runtime: a recipe is craftable wherever it's added " +
-                 "to that station's Recipe Database. The same recipe can live in " +
-                 "multiple station databases (e.g. a stick recipe at HandCraft AND Workbench).")]
+        [Tooltip("Which station type can craft this recipe")]
         public CraftingStationType stationType;
 
         [Header("Ingredients")]

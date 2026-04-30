@@ -446,8 +446,6 @@ namespace MobSystem
 
             Destroy(gameObject);
         }
-        public PostProcessingManager postProcessingManager;
-        public float intensityDecreaseSpeed = 0.2f; // how fast it fades down
 
         private void SpawnLoot(Vector2 scatterDirection)
         {

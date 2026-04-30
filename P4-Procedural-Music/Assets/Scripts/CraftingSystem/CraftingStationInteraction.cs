@@ -4,58 +4,43 @@ using InventorySystem.UI;
 namespace InventorySystem.Crafting
 {
     /// <summary>
-    /// Tracks the player's presence in a crafting station's interaction range
-    /// and updates CraftingUIManager.ActiveStation accordingly. Two supported
-    /// modes:
-    ///
-    ///   1. PROXIMITY MODE  (requireInteract = false)
-    ///      Entering the trigger auto-activates the station; leaving clears it.
-    ///      Used by stations that should open the panel just by being near them
-    ///      (Valheim-style benches, simple cooking pots, etc.).
-    ///
-    ///   2. CLICK + LEASH MODE  (requireInteract = true)
-    ///      Entering the trigger does NOT open the panel — opening is handled
-    ///      by a separate click-to-interact path (WorldStationInteractable +
-    ///      OpenCraftingUIAction). This component just acts as a "leash":
-    ///      when the player walks out of range, it clears the station so the
-    ///      crafting panel reverts to hand-craft instead of leaving the world
-    ///      station active forever.
-    ///
-    ///      Use this on workbenches, forges, or any station whose UI is
-    ///      opened by a deliberate click rather than by proximity.
+    /// Handles player interaction with a crafting station in the world.
+    /// When the player enters the trigger area, this station becomes the
+    /// active station on the CraftingUIManager. When the player leaves,
+    /// it reverts to hand-crafting.
     ///
     /// SETUP:
     ///   1. Add a BaseCraftingStation subclass to your station GameObject
-    ///      (e.g. a Workbench with StationType = Workbench).
-    ///   2. Add a trigger Collider2D (circle or box) sized to the interaction range.
-    ///   3. Attach this script.
-    ///   4. Wire the station and craftingUIManager references (auto-found if left empty).
-    ///   5. Tag the player GameObject as "Player".
-    ///   6. For click-opened stations, tick "Require Interact" so the trigger
-    ///      doesn't auto-activate on enter — it'll only deactivate on exit.
+    ///      (e.g. a Workbench with StationType = Workbench)
+    ///   2. Add a trigger Collider2D (circle or box) for the interaction range
+    ///   3. Attach this script
+    ///   4. Wire the station and craftingUIManager references
+    ///   5. Tag the player GameObject as "Player"
+    ///
+    /// INTERACTION MODES:
+    ///   - Proximity (default): Entering the trigger auto-activates the station.
+    ///     Good for Valheim-style where being near the bench is enough.
+    ///   - Interact key: Set requireInteract to true. The station only activates
+    ///     when the player presses E (or whatever your interact binding is).
+    ///     You'd wire that up to your own interact system.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class CraftingStationInteraction : MonoBehaviour
     {
         [Header("References")]
-        [Tooltip("The crafting station component on this GameObject. " +
-                 "Auto-resolved from this GameObject if left empty.")]
+        [Tooltip("The crafting station component on this GameObject.")]
         [SerializeField] private BaseCraftingStation station;
 
-        [Tooltip("Reference to the CraftingUIManager in the scene. " +
-                 "Auto-resolved if left empty.")]
+        [Tooltip("Reference to the CraftingUIManager in the scene.")]
         [SerializeField] private CraftingUIManager craftingUIManager;
-
-        [Header("Mode")]
-        [Tooltip("If true, entering the trigger does NOT open the panel — only " +
-                 "leaving it clears the active station (leash mode for click-opened " +
-                 "stations like the workbench). If false, entering auto-activates " +
-                 "the station (proximity mode, e.g. cooking pot).")]
-        [SerializeField] private bool requireInteract = false;
 
         [Header("Settings")]
         [Tooltip("Tag used to identify the player. Must match the player's tag.")]
         [SerializeField] private string playerTag = "Player";
+
+        [Tooltip("If true, the player must press an interact key (not implemented here). " +
+                 "If false, entering the trigger range is enough.")]
+        [SerializeField] private bool requireInteract = false;
 
         private bool _playerInRange;
 
@@ -96,8 +81,6 @@ namespace InventorySystem.Crafting
 
             _playerInRange = true;
 
-            // Proximity mode: auto-open on enter.
-            // Leash mode (requireInteract): do nothing — opening is handled elsewhere.
             if (!requireInteract)
             {
                 ActivateStation();
@@ -109,11 +92,6 @@ namespace InventorySystem.Crafting
             if (!other.CompareTag(playerTag)) return;
 
             _playerInRange = false;
-
-            // Always clear on exit, regardless of mode. This is what makes
-            // leash mode useful — even a click-opened station gets cleaned up
-            // when the player walks away. DeactivateStation is guarded so it
-            // only clears if this station is currently the active one.
             DeactivateStation();
         }
 
@@ -122,10 +100,7 @@ namespace InventorySystem.Crafting
         // =====================================================================
 
         /// <summary>
-        /// Call this from your interact system if requireInteract is true and
-        /// you want the trigger itself to also support a toggle interaction.
-        /// (Most click-opened stations don't need this — they open via
-        /// OpenCraftingUIAction instead.)
+        /// Call this from your interact system if requireInteract is true.
         /// </summary>
         public void InteractPressed()
         {
@@ -149,9 +124,7 @@ namespace InventorySystem.Crafting
         {
             if (craftingUIManager == null) return;
 
-            // Only clear if WE are the current station. Prevents a workbench
-            // from clearing the cooking pot's active state when the player
-            // walks past one on the way out of the other.
+            // Only clear if WE are the current station
             if (craftingUIManager.ActiveStation == station)
             {
                 craftingUIManager.ClearStation();

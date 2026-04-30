@@ -17,8 +17,6 @@ GameObject:
   - component: {fileID: 8140156133144896154}
   - component: {fileID: -4385503815344065204}
   - component: {fileID: -1712244191936315416}
-  - component: {fileID: 5313537067204317127}
-  - component: {fileID: 7108145661659194233}
   m_Layer: 6
   m_Name: Crafting Table
   m_TagString: Untagged
@@ -55,12 +53,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacedStructure
   sourceData: {fileID: 11400000, guid: ac2de69023ef2dd49b6e247d5c014356, type: 2}
   wasSaveLoaded: 0
-  shakeIntensity: 0.08
-  shakeDuration: 0.12
-  hitSound: {fileID: 0}
-  hitVolume: 0.5
-  demolishSound: {fileID: 0}
-  demolishVolume: 0.6
 --- !u!114 &6379968897288913679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,7 +156,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 89ccd0954437c8d418a4b4b167338d3a, type: 2}
   - {fileID: 11400000, guid: 81e62febcf160407cab5f12720a99a16, type: 2}
   - {fileID: 11400000, guid: 8d44597e159083b49a457c85b827a197, type: 2}
-  - {fileID: 11400000, guid: be74306c8374440068733ac28d4242b5, type: 2}
   discoverAllOnStart: 1
 --- !u!114 &8140156133144896154
 MonoBehaviour:
@@ -196,7 +187,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.OpenCraftingUIAction
   station: {fileID: 0}
-  coordinator: {fileID: 0}
+  inventoryUI: {fileID: 0}
+  craftingUI: {fileID: 0}
 --- !u!212 &-1712244191936315416
 SpriteRenderer:
   serializedVersion: 2
@@ -256,42 +248,3 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &5313537067204317127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a93e187d64c969d4c87fb62b0503cfab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.StructureHealthBar
-  widthRatio: 0.8
-  heightRatio: 0.04
-  yOffset: 0.15
-  fullColour: {r: 0.15, g: 0.85, b: 0.15, a: 1}
-  lowColour: {r: 0.85, g: 0.15, b: 0.15, a: 1}
-  backgroundColour: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
-  borderColour: {r: 0, g: 0, b: 0, a: 0.9}
-  hideDelay: 2.5
-  fadeDuration: 0.4
-  sortingOrder: 10
-  sortingLayerName: 
---- !u!114 &7108145661659194233
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd5e88f8fef05424c982deeba847caa0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.CraftingStationInteraction
-  station: {fileID: 0}
-  craftingUIManager: {fileID: 0}
-  requireInteract: 1
-  playerTag: Player

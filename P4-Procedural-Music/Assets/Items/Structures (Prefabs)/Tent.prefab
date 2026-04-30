@@ -106,7 +106,6 @@ GameObject:
   - component: {fileID: 3578511633562600573}
   - component: {fileID: 4861363729842834169}
   - component: {fileID: 5264495890279824989}
-  - component: {fileID: 4993873722724481849}
   m_Layer: 6
   m_Name: Tent
   m_TagString: Untagged
@@ -144,12 +143,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacedStructure
   sourceData: {fileID: 0}
   wasSaveLoaded: 0
-  shakeIntensity: 0.08
-  shakeDuration: 0.12
-  hitSound: {fileID: 0}
-  hitVolume: 0.5
-  demolishSound: {fileID: 0}
-  demolishVolume: 0.6
 --- !u!114 &6379968897288913679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,7 +225,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
   actionVerb: Interact
   interactRange: 9
-  interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
 --- !u!70 &5264495890279824989
 CapsuleCollider2D:
@@ -271,26 +263,3 @@ CapsuleCollider2D:
   m_Offset: {x: -0.28, y: -3.77}
   m_Size: {x: 6.35, y: 7.1}
   m_Direction: 0
---- !u!114 &4993873722724481849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a93e187d64c969d4c87fb62b0503cfab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.StructureHealthBar
-  widthRatio: 0.8
-  heightRatio: 0.04
-  yOffset: 0.15
-  fullColour: {r: 0.15, g: 0.85, b: 0.15, a: 1}
-  lowColour: {r: 0.85, g: 0.15, b: 0.15, a: 1}
-  backgroundColour: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
-  borderColour: {r: 0, g: 0, b: 0, a: 0.9}
-  hideDelay: 2.5
-  fadeDuration: 0.4
-  sortingOrder: 10
-  sortingLayerName: 

@@ -233,7 +233,6 @@ GameObject:
   - component: {fileID: 4378696072532226969}
   - component: {fileID: 851314945430049803}
   - component: {fileID: 4093903545421048378}
-  - component: {fileID: 2454598924614776705}
   m_Layer: 6
   m_Name: Campfire_World
   m_TagString: Untagged
@@ -415,12 +414,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacedStructure
   sourceData: {fileID: 11400000, guid: 9bb0b9522cbff8147af80d40c66aa4bf, type: 2}
   wasSaveLoaded: 0
-  shakeIntensity: 0.08
-  shakeDuration: 0.12
-  hitSound: {fileID: 0}
-  hitVolume: 0.5
-  demolishSound: {fileID: 0}
-  demolishVolume: 0.6
 --- !u!114 &-8538655097096910356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,7 +479,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
   actionVerb: Interact
   interactRange: 9
-  interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
 --- !u!114 &3875033480923864871
 MonoBehaviour:
@@ -569,7 +561,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.WorldStationInteractable
   actionVerb: Interact
   interactRange: 1.5
-  interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
   logActions: 0
 --- !u!114 &851314945430049803
@@ -604,26 +595,3 @@ MonoBehaviour:
   radius: 50
   influenceName: Influence
   useFalloff: 1
---- !u!114 &2454598924614776705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a93e187d64c969d4c87fb62b0503cfab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.StructureHealthBar
-  widthRatio: 0.8
-  heightRatio: 0.04
-  yOffset: 0.15
-  fullColour: {r: 0.15, g: 0.85, b: 0.15, a: 1}
-  lowColour: {r: 0.85, g: 0.15, b: 0.15, a: 1}
-  backgroundColour: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
-  borderColour: {r: 0, g: 0, b: 0, a: 0.9}
-  hideDelay: 2.5
-  fadeDuration: 0.4
-  sortingOrder: 10
-  sortingLayerName: 

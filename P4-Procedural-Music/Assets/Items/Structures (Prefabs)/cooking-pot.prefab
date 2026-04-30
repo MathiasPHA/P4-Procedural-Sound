@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 3455197286441480644}
   - component: {fileID: -55101933661581049}
   - component: {fileID: -5648824164581605508}
-  - component: {fileID: -8539712497983428936}
   m_Layer: 6
   m_Name: cooking-pot
   m_TagString: Untagged
@@ -159,12 +158,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacedStructure
   sourceData: {fileID: 11400000, guid: b4a223a398ec44f8ba59d383b5c366c4, type: 2}
   wasSaveLoaded: 0
-  shakeIntensity: 0.08
-  shakeDuration: 0.12
-  hitSound: {fileID: 0}
-  hitVolume: 0.5
-  demolishSound: {fileID: 0}
-  demolishVolume: 0.6
 --- !u!114 &4587687224067442618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,29 +235,6 @@ MonoBehaviour:
   station: {fileID: 0}
   inventoryUI: {fileID: 0}
   craftingUI: {fileID: 0}
---- !u!114 &-8539712497983428936
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3306544976526998673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a93e187d64c969d4c87fb62b0503cfab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.StructureHealthBar
-  widthRatio: 0.8
-  heightRatio: 0.04
-  yOffset: 0.15
-  fullColour: {r: 0.15, g: 0.85, b: 0.15, a: 1}
-  lowColour: {r: 0.85, g: 0.15, b: 0.15, a: 1}
-  backgroundColour: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
-  borderColour: {r: 0, g: 0, b: 0, a: 0.9}
-  hideDelay: 2.5
-  fadeDuration: 0.4
-  sortingOrder: 10
-  sortingLayerName: 
 --- !u!1 &7987785868330144806
 GameObject:
   m_ObjectHideFlags: 0
