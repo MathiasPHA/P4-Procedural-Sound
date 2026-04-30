@@ -87,7 +87,11 @@ namespace ProceduralTerrain
             var colliderObj = new GameObject($"WaterCollision_{chunk.ChunkCoord.x}_{chunk.ChunkCoord.y}");
             colliderObj.transform.SetParent(parent, false);
             colliderObj.transform.localPosition = Vector3.zero;
-            colliderObj.layer = parent.gameObject.layer;
+
+            // Put on the Interactable layer so InteractionDetector picks it up.
+            // Falls back to the parent's layer if Interactable doesn't exist.
+            int interactableLayer = LayerMask.NameToLayer("Interactable");
+            colliderObj.layer = interactableLayer >= 0 ? interactableLayer : parent.gameObject.layer;
 
             var polyCollider = colliderObj.AddComponent<PolygonCollider2D>();
             polyCollider.pathCount = allPaths.Count;
@@ -96,6 +100,9 @@ namespace ProceduralTerrain
             {
                 polyCollider.SetPath(i, allPaths[i]);
             }
+
+            // Attach the fishing interactable so the player can fish on hover-click.
+            colliderObj.AddComponent<InteractionSystem.WaterFishingInteractable>();
 
             _chunkColliders[chunk.ChunkCoord] = colliderObj;
         }

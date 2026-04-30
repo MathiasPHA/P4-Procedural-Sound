@@ -52,7 +52,10 @@ public class DungeonManager : MonoBehaviour
         IsInDungeon = true;
 
         SceneManager.sceneLoaded += OnDungeonLoaded;
-        SceneManager.LoadScene(dungeonSceneName);
+        if (SceneTransition.Instance != null)
+            SceneTransition.Instance.LoadScene(dungeonSceneName);
+        else
+            SceneManager.LoadScene(dungeonSceneName); // fallback if transition prefab missing
     }
 
     /// <summary>
@@ -73,7 +76,10 @@ public class DungeonManager : MonoBehaviour
         ActiveConfig = null;
 
         SceneManager.sceneLoaded += OnOverworldLoaded;
-        SceneManager.LoadScene(returnSceneName);
+        if (SceneTransition.Instance != null)
+            SceneTransition.Instance.LoadScene(returnSceneName);
+        else
+            SceneManager.LoadScene(returnSceneName); // fallback if transition prefab missing
     }
 
     private void OnDungeonLoaded(Scene scene, LoadSceneMode mode)

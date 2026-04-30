@@ -41,7 +41,7 @@ namespace InteractionSystem
         public Vector3 InteractCenter => transform.position + (Vector3)interactCenterOffset;
 
         /// <summary>World position where the prompt UI should appear.</summary>
-        public Vector3 PromptPosition => transform.position + (Vector3)promptOffset;
+        public virtual Vector3 PromptPosition => transform.position + (Vector3)promptOffset;
 
         /// <summary>Change the action verb at runtime (e.g. MobInteractable sets "Attack").</summary>
         public void SetActionVerb(string verb) => actionVerb = verb;
@@ -61,6 +61,15 @@ namespace InteractionSystem
         /// (e.g. depleted resource, already picked up). The detector will skip it.
         /// </summary>
         public virtual bool CanInteract() => true;
+
+        /// <summary>
+        /// Override to return true to skip the walk-to-interact step. Used when
+        /// the interaction is meant to fire from the player's current position
+        /// (e.g. fishing — the player casts from where they stand, not where the
+        /// water is). When true, ToolUseSystem calls Interact() directly on click
+        /// instead of switching to moveToInteractState.
+        /// </summary>
+        public virtual bool InteractImmediately => false;
 
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
