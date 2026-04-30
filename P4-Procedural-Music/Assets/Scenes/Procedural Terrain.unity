@@ -2008,17 +2008,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c63d748f8160c428690a46dddd188972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audiosettings2
---- !u!114 &1456805559 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8470669982361081032, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
-  m_PrefabInstance: {fileID: 773878942}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1554304eb3ef9ea4dbc1f894d776e57d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Input.InventoryInputProvider
 --- !u!114 &1339962032 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3321460352209395124, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
@@ -2030,6 +2019,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bada78ddd18e448468e569bc1624fc87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralMusic.Bridge.ProceduralMusicController
+--- !u!114 &1456805559 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8470669982361081032, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+  m_PrefabInstance: {fileID: 773878942}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1554304eb3ef9ea4dbc1f894d776e57d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Input.InventoryInputProvider
 --- !u!1 &1460417690
 GameObject:
   m_ObjectHideFlags: 0
@@ -2690,6 +2690,10 @@ PrefabInstance:
     - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: tentacleTriggerThreshold
       value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8010458251646217796, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: player
