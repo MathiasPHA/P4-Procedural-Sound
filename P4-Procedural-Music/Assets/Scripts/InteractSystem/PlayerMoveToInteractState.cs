@@ -50,13 +50,22 @@ namespace InteractionSystem
             }
 
             // Walk toward the closest point on the collider (natural path into the object).
-            // Distance check, however, is measured from the InteractCenter so that
-            // interactCenterOffset on the Interactable actually controls where "in range" is.
+            // Distance is measured from the SAME point so interactables with large or
+            // blocking colliders (e.g. water — the player can't physically pass through it
+            // to reach an InteractCenter that's inside the lake) still trigger correctly.
+            // For small colliders (bushes, items) ClosestPoint ≈ center, so behavior is
+            // effectively unchanged.
+            // Walk toward the closest point on the collider (natural path into the object).
+            // Distance is measured from the SAME point so interactables with large or
+            // blocking colliders (e.g. water — the player can't physically pass through it
+            // to reach an InteractCenter that's inside the lake) still trigger correctly.
+            // For small colliders (bushes, items) ClosestPoint ≈ center, so behavior is
+            // effectively unchanged.
             Vector2 destination = _targetCollider != null
                 ? _targetCollider.ClosestPoint(player.transform.position)
                 : (Vector2)_target.InteractCenter;
 
-            float distance = Vector2.Distance(player.transform.position, _target.InteractCenter);
+            float distance = Vector2.Distance(player.transform.position, destination);
 
             // Arrived — interact
             if (distance <= _target.InteractRange)
@@ -92,8 +101,51 @@ namespace InteractionSystem
             player.animationQue = "Run";
         }
 
+        // Cached on first lookup. -1 means "Water layer doesn't exist" — in
+        // that case the water-collision shortcut is skipped and the normal
+        // distance-based arrival logic still works for everything else.
+        private int _waterLayer = -2; // -2 = uninitialised, -1 = doesn't exist
+
         public override void OnCollisionEnter(PlayerStateManager player)
         {
+            // If we're walking toward a WaterFishingInteractable, the normal
+            // distance check won't trigger because the cursor is inside the
+            // lake (player can't physically reach it). Instead, treat the
+            // moment we collide with any water tile as "arrived" and trigger interact.
+            if (_target == null) return;
+            if (!(_target is WaterFishingInteractable)) return;
+
+            var col = player.LastCollision;
+            if (col == null) return;
+
+            // Lazy-init the cached layer index.
+            if (_waterLayer == -2) _waterLayer = LayerMask.NameToLayer("Water");
+            if (_waterLayer == -1) return; // Water layer doesn't exist — bail.
+
+            // Layer check: only react if the thing we hit is on the Water layer.
+            if (col.gameObject.layer != _waterLayer) return;
+
+            // Stop, face the collision point, and trigger interact.
+            player.playerRB.linearVelocity = Vector2.zero;
+
+            Vector2 dir = (col.GetContact(0).point - (Vector2)player.transform.position).normalized;
+            if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+                player.playerDir = dir.x < 0 ? "Left" : "Right";
+            else
+                player.playerDir = dir.y < 0 ? "Down" : "Up";
+
+            // Use whichever water collider we actually hit (it may be a different
+            // chunk than the originally-clicked one — fine, any water tile is
+            // valid for fishing).
+            var hitWater = col.collider.GetComponent<WaterFishingInteractable>();
+            if (hitWater != null)
+                hitWater.Interact(player);
+            else
+                _target.Interact(player); // fallback to original target
+
+            // If Interact() didn't switch state itself, fall back to idle.
+            if (player.CurrentState == this)
+                player.SwitchState(player.idleState);
         }
 
         private void Cancel()

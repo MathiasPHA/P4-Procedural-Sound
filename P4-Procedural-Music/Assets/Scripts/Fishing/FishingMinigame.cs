@@ -36,36 +36,60 @@ namespace FishingSystem
                  "the available time.")]
         [Range(0.1f, 1f)][SerializeField] private float catchFraction = 0.7f;
 
-        // ── Public state read by FishingProgressBar ──
+        // ── Public state read by FishingProgressBar / FishingTimer ──
         public float fishingPoints { get; private set; }
         public float targetPoints { get; private set; }
         public bool IsActive { get; private set; }
+        /// <summary>Seconds remaining in the session. 0 when expired.</summary>
+        public float TimeLeft { get; private set; }
+        /// <summary>Total seconds the session was given (after jitter). Used for normalising TimeLeft into 0–1.</summary>
+        public float InitialTime { get; private set; }
 
         // ── Session state ──
-        private Vector3 _initialFishPos;
-        private Vector3 _targetPos;
+        private Vector3 _initialFishLocal;
+        private Vector3 _targetLocal;
         private float _moveSpeed;
         private bool _needsNewTarget;
         private float _timeLeft;
         private bool _caught;
+        private bool _restCaptured;
         private System.Action<bool> _onSessionEnded;
+
+        private void Awake()
+        {
+            // Capture the authored rest position ONCE so subsequent sessions
+            // don't inherit drift from where the fish ended up last time.
+            _initialFishLocal = transform.localPosition;
+            _restCaptured = true;
+        }
 
         /// <summary>
         /// Called by FishingManager.StartFishing. Resets all state and begins
-        /// the session at the current transform position (which the manager has
-        /// already placed relative to the player).
+        /// the session at the originally-authored localPosition (captured in Awake).
         /// </summary>
         public void BeginSession(System.Action<bool> onEnded)
         {
+            // Defensive: capture now if Awake somehow didn't run.
+            if (!_restCaptured)
+            {
+                _initialFishLocal = transform.localPosition;
+                _restCaptured = true;
+            }
+
+            // Snap back to the authored rest position so the fish starts each
+            // session in the same spot regardless of where it drifted last time.
+            transform.localPosition = _initialFishLocal;
+
             _onSessionEnded = onEnded;
-            _initialFishPos = transform.position;
-            _targetPos = _initialFishPos;
+            _targetLocal = _initialFishLocal;
             _needsNewTarget = true;
             _timeLeft = baseFishingTime + Random.Range(-fishingTimeJitter, fishingTimeJitter);
             _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
 
             fishingPoints = 0f;
             targetPoints = _timeLeft * catchFraction;
+            InitialTime = _timeLeft;
+            TimeLeft = _timeLeft;
             _caught = false;
             IsActive = true;
         }
@@ -87,6 +111,7 @@ namespace FishingSystem
             UpdateFishMovement();
 
             _timeLeft -= Time.deltaTime;
+            TimeLeft = Mathf.Max(0f, _timeLeft);
 
             // Win condition: enough overlap accumulated.
             if (fishingPoints >= targetPoints)
@@ -106,18 +131,18 @@ namespace FishingSystem
         {
             if (_needsNewTarget)
             {
-                _targetPos = new Vector3(
-                    _initialFishPos.x,
-                    _initialFishPos.y + Random.Range(-posClamp, posClamp),
-                    _initialFishPos.z);
+                _targetLocal = new Vector3(
+                    _initialFishLocal.x,
+                    _initialFishLocal.y + Random.Range(-posClamp, posClamp),
+                    _initialFishLocal.z);
                 _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
                 _needsNewTarget = false;
                 return;
             }
 
-            transform.position = Vector3.Lerp(transform.position, _targetPos, _moveSpeed * Time.deltaTime);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, _targetLocal, _moveSpeed * Time.deltaTime);
 
-            if (Vector3.Distance(transform.position, _targetPos) < arriveDistance)
+            if (Vector3.Distance(transform.localPosition, _targetLocal) < arriveDistance)
                 _needsNewTarget = true;
         }
 
