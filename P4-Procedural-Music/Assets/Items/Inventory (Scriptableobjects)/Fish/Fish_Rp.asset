@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4dbc57ffa34cf544b98aa16558f3ff3, type: 3}
   m_Name: Fish_Rp
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.Recipe
-  recipeId: 
+  recipeId: Fish
   stationType: 2
   ingredients:
   - item: {fileID: 11400000, guid: c0a6464a70d857447977c8661cfa78cf, type: 2}
     amount: 1
-  result: {fileID: 0}
+  result: {fileID: 11400000, guid: c3f02e1f29dfaea4fbfc2a4a2cade9ec, type: 2}
   resultAmount: 1
   craftTime: 0

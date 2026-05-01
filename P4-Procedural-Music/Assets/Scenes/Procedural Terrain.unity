@@ -519,6 +519,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 795951859908026514, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: recipeDatabase.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 795951859908026514, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 8c17779159f296f42bca9a5bd0e90709, type: 2}
+    - target: {fileID: 795951859908026514, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 568aab7d06b6c43dcb4fcb57c4018096, type: 2}
     - target: {fileID: 1217215406953174457, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_Name
       value: Crafting
@@ -1445,8 +1457,16 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1502604247847220309, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1460417691}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3123444977881018676, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1145731299}
   m_SourcePrefab: {fileID: 100100000, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
+--- !u!1 &1093400979 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3123444977881018676, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
+  m_PrefabInstance: {fileID: 1093400978}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1105228300
 GameObject:
   m_ObjectHideFlags: 0
@@ -1678,6 +1698,27 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1502604247847220309, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
   m_PrefabInstance: {fileID: 1093400978}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1145731299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093400979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e4239a8bd5cf964884c31dbe0318b79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TentacleSpawner
+  tentacleAttack: {fileID: 5297504137905860943}
+  timeReference: {fileID: 1130893953}
+  postProcessing: {fileID: 5297504137905860939}
+  nightStartHour: 20
+  nightEndHour: 6
+  nightSpawnInterval: 30
+  nightSpawnChance: 0.4
+  globalCooldown: 15
+  showDebugGUI: 0
 --- !u!1 &1182456104
 GameObject:
   m_ObjectHideFlags: 0
@@ -2805,12 +2846,28 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1446724875971297114, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446724875971297114, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: m_BlocksRaycasts
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2455360707030247012, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: m_SortingOrder
       value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 2719573852231188633, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6388114179512588953, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6388114179512588953, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: m_BlocksRaycasts
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
@@ -2828,8 +2885,79 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4227593545026455722, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5297504137905860942}
+    - targetCorrespondingSourceObject: {fileID: 4227593545026455722, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5297504137905860941}
   m_SourcePrefab: {fileID: 100100000, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+--- !u!114 &5297504137905860939 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+  m_PrefabInstance: {fileID: 5297504137905860938}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5297504137905860940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5309511721baddd4dbd98ed168b7751f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PostProcessingManager
+--- !u!1 &5297504137905860940 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4227593545026455722, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+  m_PrefabInstance: {fileID: 5297504137905860938}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5297504137905860941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5297504137905860940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9acad1d1f898be4aa79f5ae0e9cb70a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntensityMoodModifier
+  postProcessing: {fileID: 5297504137905860939}
+  timeReference: {fileID: 1130893953}
+  nightStartHour: 20
+  nightEndHour: 6
+  activationThreshold: 0.2
+  maxDrainRate: -0.08
+--- !u!114 &5297504137905860942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5297504137905860940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd9e311f3a74e254e8b95a0735635114, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoodIntensityDriver
+  postProcessing: {fileID: 5297504137905860939}
+  timeReference: {fileID: 1130893953}
+  nightStartHour: 20
+  nightEndHour: 6
+  activationTier: 0
+  riseSpeed: 0.05
+  fallSpeed: 0.08
+  maxDrivenIntensity: 0.9
+--- !u!114 &5297504137905860943 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+  m_PrefabInstance: {fileID: 5297504137905860938}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e2ecc39fedb80142926f0a0f1f8a76b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TentacleAttack
 --- !u!1001 &5779260070297747632
 PrefabInstance:
   m_ObjectHideFlags: 0
