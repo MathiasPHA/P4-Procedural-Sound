@@ -36,6 +36,11 @@ namespace InteractionSystem
         {
             _cam = Camera.main;
             SetActionVerb("Fish");
+            // NOTE: this component does NOT change its GameObject's layer.
+            // Water colliders stay on the Water layer (set by WaterCollisionGenerator,
+            // inherited from the chunk's water tilemap parent). For the prompt to
+            // appear, add the Water layer to InteractionDetector.interactableLayer
+            // on the player.
         }
 
         private void Update()
@@ -50,10 +55,19 @@ namespace InteractionSystem
         // Show the prompt over the cursor, not at the chunk's pivot.
         public override Vector3 PromptPosition => _cursorWorld + new Vector3(0f, 0.6f, 0f);
 
-        // Skip walk-to-interact — fishing happens from the player's current position.
-        public override bool InteractImmediately => true;
+        // Walk toward the cursor; PlayerMoveToInteractState detects when the
+        // player physically collides with water and triggers Interact() at
+        // that moment. The cursor's InteractCenter just gives moveToInteract
+        // a direction to walk in.
+        public override bool InteractImmediately => false;
+
+        public override Vector3 InteractCenter => _cursorWorld;
 
         // Only valid when a fishing rod is equipped — otherwise the prompt is hidden.
+        // (Range is no longer enforced here. The player walks toward the cursor
+        // and PlayerMoveToInteractState triggers Interact() when they actually
+        // collide with water. The rod's range is effectively "infinite" but the
+        // player has to physically walk to the shore.)
         public override bool CanInteract()
         {
             if (FishingManager.Instance == null) return false;
@@ -67,8 +81,17 @@ namespace InteractionSystem
         {
             if (!CanInteract()) return;
 
-            // Fishing happens at the cursor, not at the player.
-            player.fishingState.CastPosition = _cursorWorld;
+            // Spend the rod's durability on cast (regardless of catch outcome).
+            // Uses the same pattern as other tool uses, so a rod about to break
+            // disappears from inventory just like an axe or pickaxe would.
+            if (_playerTools != null)
+                _playerTools.SpendEquippedDurability();
+
+            // Cast at the player's current position — they walked to the water's
+            // edge, so this is "in front of them" relative to where they stopped.
+            // (Used by FishingManager for catch SFX positioning; the minigame UI
+            // follows the player anyway.)
+            player.fishingState.CastPosition = player.transform.position;
             player.SwitchState(player.fishingState);
         }
 

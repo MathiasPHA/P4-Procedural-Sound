@@ -56,6 +56,23 @@ public class PlayerStateManager : MonoBehaviour
         currentState.EnterState(this);
     }
 
+    /// <summary>
+    /// Most recent Collision2D received by the player. Set immediately before
+    /// the current state's OnCollisionEnter callback is invoked, so states
+    /// can read collision info without changing the abstract signature.
+    /// Null between collision events.
+    /// </summary>
+    public Collision2D LastCollision { get; private set; }
+
+    // Forward physics collisions to the current state so states like
+    // moveToInteractState can react (e.g. "I bumped into water → start fishing").
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        LastCollision = collision;
+        currentState?.OnCollisionEnter(this);
+        LastCollision = null;
+    }
+
     public void StartHarvest()
     {
         SwitchState(harvestState);

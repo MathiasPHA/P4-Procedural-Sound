@@ -218,6 +218,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
   actionVerb: Mine
-  interactRange: 7.59
+  interactRange: 10.79
   interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
