@@ -56,7 +56,7 @@ namespace InventorySystem
 
             if (uiCoordinator == null)
             {
-                FindObjectsByType<UICoordinator>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+                uiCoordinator = FindFirstObjectByType<UICoordinator>(FindObjectsInactive.Include);
             }
 
             if (itemDatabase != null)
