@@ -6,31 +6,34 @@ using UnityEngine.SceneManagement;
 public class ExitButton : MonoBehaviour
 {
     ComfortMusicBridge comfortMusicBridge;
+
     public void ExitGame()
     {
         Debug.Log("Exiting game...");
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-    Application.Quit();
+        Application.Quit();
 #endif
     }
+
     public void ReturnToMainMenu()
     {
-        Time.timeScale = 1;
+        // Save everything before leaving the game scene.
+        if (SaveSystemManager.Instance != null)
+            SaveSystemManager.Instance.SaveModifiedChunks();
+        else
+            Debug.LogWarning("[ExitButton] SaveSystemManager not found — game was not saved.");
+
+        Time.timeScale = 1f;
+
         comfortMusicBridge = FindObjectOfType<ComfortMusicBridge>();
         if (comfortMusicBridge != null)
-        {
             comfortMusicBridge.OverrideGameState(GameMusicState.Cozy, PitchClass.C, MusicalMode.Major);
-        }
-        else
-        {
-            Debug.Log("ComfortMusicBridge not found. Cannot set music state to Exploring.");
-        }
+
         if (SceneTransition.Instance != null)
             SceneTransition.Instance.LoadScene("Main Menu");
         else
-            SceneManager.LoadScene("Main Menu"); // fallback if transition prefab missing
-
+            SceneManager.LoadScene("Main Menu");
     }
 }

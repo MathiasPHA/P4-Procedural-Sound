@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using InventorySystem.Crafting;
 using InventorySystem.Input;
 
@@ -20,79 +19,27 @@ namespace InventorySystem.UI
 
         private bool _initialized;
 
-        // =====================================================================
-        // Lifetime
-        // =====================================================================
-
         private void Awake()
         {
-            // Singleton
             if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-
             Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-
-        private void OnEnable()
-        {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        private void OnDisable()
-        {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         private void OnDestroy()
         {
+            if (Instance == this)
+                Instance = null;
+
             if (inputProvider != null)
                 inputProvider.OnToggleInventory -= Toggle;
         }
 
         // =====================================================================
-        // Scene handling
-        // =====================================================================
-
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            AutoAssignIfNeeded();
-
-            if (!_initialized)
-                Initialise();
-        }
-
-        // =====================================================================
-        // Auto wiring
-        // =====================================================================
-
-        private void AutoAssignIfNeeded()
-        {
-            if (inventoryUI == null)
-                inventoryUI = FindSingle<InventoryUIManager>();
-
-            if (craftingUI == null)
-                craftingUI = FindSingle<CraftingUIManager>();
-
-            if (inputProvider == null)
-                inputProvider = FindSingle<InventoryInputProvider>();
-        }
-
-        private T FindSingle<T>() where T : Object
-        {
-            var all = FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-
-            if (all.Length > 1)
-                Debug.LogWarning($"[UICoordinator] Multiple {typeof(T).Name} found — using first.");
-
-            return all.Length > 0 ? all[0] : null;
-        }
-
-        // =====================================================================
-        // Initialisation
+        // Initialisation — called by InventoryBootstrap.Start()
         // =====================================================================
 
         public void Initialise()
@@ -107,16 +54,29 @@ namespace InventorySystem.UI
 
             if (inventoryUI == null || craftingUI == null || inputProvider == null)
             {
-                Debug.LogError("[UICoordinator] Missing references EVEN AFTER auto-assign.");
+                Debug.LogError("[UICoordinator] Missing references after auto-assign. " +
+                               "Assign InventoryUIManager, CraftingUIManager, and " +
+                               "InventoryInputProvider in the Inspector.");
                 return;
             }
 
             inputProvider.OnToggleInventory += Toggle;
-
             ArePanelsOpen = false;
             _initialized = true;
 
             Debug.Log("[UICoordinator] Initialized successfully.");
+        }
+
+        private void AutoAssignIfNeeded()
+        {
+            if (inventoryUI == null)
+                inventoryUI = FindFirstObjectByType<InventoryUIManager>(FindObjectsInactive.Include);
+
+            if (craftingUI == null)
+                craftingUI = FindFirstObjectByType<CraftingUIManager>(FindObjectsInactive.Include);
+
+            if (inputProvider == null)
+                inputProvider = FindFirstObjectByType<InventoryInputProvider>(FindObjectsInactive.Include);
         }
 
         // =====================================================================
@@ -132,16 +92,13 @@ namespace InventorySystem.UI
                 return;
             }
 
-            if (ArePanelsOpen)
-                ClosePanels();
-            else
-                OpenPanels();
+            if (ArePanelsOpen) ClosePanels();
+            else OpenPanels();
         }
 
         public void OpenPanels()
         {
             if (ArePanelsOpen) return;
-
             ArePanelsOpen = true;
             inventoryUI.ForceOpen();
             craftingUI.ForceOpen();
@@ -150,7 +107,6 @@ namespace InventorySystem.UI
         public void ClosePanels()
         {
             if (!ArePanelsOpen) return;
-
             ArePanelsOpen = false;
             inventoryUI.ForceClose();
             craftingUI.ForceClose();
