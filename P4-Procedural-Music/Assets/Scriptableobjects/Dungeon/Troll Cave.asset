@@ -51,7 +51,7 @@ MonoBehaviour:
   maxTotalCorridorSpawns: 0
   corridorSpawns: []
   happinessModifier: -0
-  dungeonComfortValue: 0.15
+  dungeonComfortValue: 0.455
   threshold1Max: 0.3
   threshold2Min: 0.55
   threshold3Min: 0.8

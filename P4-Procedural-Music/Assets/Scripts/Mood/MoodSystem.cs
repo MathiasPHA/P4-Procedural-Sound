@@ -44,13 +44,13 @@ public class MoodSystem : MonoBehaviour
 
     [Header("Tier Thresholds")]
     [Tooltip("Mood >= this = Elated")]
-    [SerializeField] private float elatedThreshold   = 0.80f;
+    [SerializeField] private float elatedThreshold = 0.80f;
     [Tooltip("Mood >= this = Content")]
-    [SerializeField] private float contentThreshold   = 0.60f;
+    [SerializeField] private float contentThreshold = 0.60f;
     [Tooltip("Mood >= this = Neutral")]
-    [SerializeField] private float neutralThreshold   = 0.40f;
+    [SerializeField] private float neutralThreshold = 0.40f;
     [Tooltip("Mood >= this = Uneasy")]
-    [SerializeField] private float uneasyThreshold    = 0.20f;
+    [SerializeField] private float uneasyThreshold = 0.20f;
     // Below uneasy = Horrified (implicit)
 
     [Header("Debug")]
@@ -64,6 +64,22 @@ public class MoodSystem : MonoBehaviour
     private float lastSummedRate;
 
     private readonly List<IMoodModifier> modifiers = new List<IMoodModifier>();
+
+    // ───────────────────────── Cross-Scene Persistence ─────────────────────────
+
+    // Static cache survives scene unload — see HappinessSystem for the full
+    // explanation. -1f = "nothing cached yet".
+    private static float _persistedMood = -1f;
+
+    /// <summary>
+    /// Wipe the cross-scene mood cache. Call from "New Game" flows so the
+    /// player starts with startingMood rather than carrying over a previous
+    /// session's value.
+    /// </summary>
+    public static void ResetPersistedState()
+    {
+        _persistedMood = -1f;
+    }
 
     // ───────────────────────── Public API ─────────────────────────
 
@@ -109,6 +125,11 @@ public class MoodSystem : MonoBehaviour
     public void AdjustMood(float delta)
     {
         moodTarget = Mathf.Clamp01(moodTarget + delta);
+
+        // Mirror to the cross-scene cache so a one-shot adjustment landed
+        // after Update already ran this frame still survives a same-frame
+        // scene unload.
+        _persistedMood = mood;
     }
 
     /// <summary>
@@ -120,6 +141,8 @@ public class MoodSystem : MonoBehaviour
         mood = Mathf.Clamp01(value);
         moodTarget = mood;
         moodVelocity = 0f;
+
+        _persistedMood = mood;
     }
 
     // ───────────────────────── Lifecycle ─────────────────────────
@@ -133,14 +156,25 @@ public class MoodSystem : MonoBehaviour
         }
         Instance = this;
 
-        mood = startingMood;
-        moodTarget = startingMood;
+        // Restore from cross-scene cache if anything's there; otherwise start fresh.
+        if (_persistedMood >= 0f)
+        {
+            mood = _persistedMood;
+            moodTarget = _persistedMood;
+        }
+        else
+        {
+            mood = startingMood;
+            moodTarget = startingMood;
+        }
     }
 
     private void Update()
     {
         SumModifiers();
         ApplySmoothing();
+
+        _persistedMood = mood;
     }
 
     // ───────────────────────── Core ─────────────────────────
@@ -183,10 +217,10 @@ public class MoodSystem : MonoBehaviour
 
     private MoodTier GetTier(float value)
     {
-        if (value >= elatedThreshold)  return MoodTier.Elated;
+        if (value >= elatedThreshold) return MoodTier.Elated;
         if (value >= contentThreshold) return MoodTier.Content;
         if (value >= neutralThreshold) return MoodTier.Neutral;
-        if (value >= uneasyThreshold)  return MoodTier.Uneasy;
+        if (value >= uneasyThreshold) return MoodTier.Uneasy;
         return MoodTier.Miserable;
     }
 
@@ -273,12 +307,12 @@ public class MoodSystem : MonoBehaviour
     {
         switch (tier)
         {
-            case MoodTier.Elated:    return new Color(0.2f, 1f, 0.2f);    // bright green
-            case MoodTier.Content:   return new Color(0.6f, 0.9f, 0.3f);  // yellow-green
-            case MoodTier.Neutral:   return new Color(1f, 0.9f, 0.3f);    // yellow
-            case MoodTier.Uneasy:    return new Color(1f, 0.5f, 0.2f);    // orange
+            case MoodTier.Elated: return new Color(0.2f, 1f, 0.2f);    // bright green
+            case MoodTier.Content: return new Color(0.6f, 0.9f, 0.3f);  // yellow-green
+            case MoodTier.Neutral: return new Color(1f, 0.9f, 0.3f);    // yellow
+            case MoodTier.Uneasy: return new Color(1f, 0.5f, 0.2f);    // orange
             case MoodTier.Miserable: return new Color(1f, 0.2f, 0.2f);    // red
-            default:                 return Color.white;
+            default: return Color.white;
         }
     }
 }

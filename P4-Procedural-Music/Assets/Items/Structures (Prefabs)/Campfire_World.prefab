@@ -433,7 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e705c3c11fe791646b2de9f5b4e9df68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Harvesting.HarvestableResource
-  requiredToolType: 1
+  requiredToolType: 5
   maxHealth: 10
   dropItem: {fileID: 11400000, guid: 0576000b88c22c04f9bd4868ac2161b1, type: 2}
   dropAmount: 1
