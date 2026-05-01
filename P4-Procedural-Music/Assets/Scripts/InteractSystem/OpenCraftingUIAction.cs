@@ -13,14 +13,18 @@ namespace InventorySystem.Crafting
     /// Works for every crafting station type (CookingStation, Workbench, Forge, …)
     /// because it targets the shared BaseCraftingStation abstraction.
     ///
+    /// Open/close is routed through UICoordinator so both panels always open
+    /// together. This script no longer calls InventoryUIManager or
+    /// CraftingUIManager directly for open/close operations.
+    ///
     /// SETUP:
     ///   1. Attach to the same GameObject as a BaseCraftingStation subclass
     ///   2. Also attach a WorldStationInteractable (the router)
-    ///   3. Station ref auto-found via GetComponent; UI refs auto-found in scene
+    ///   3. Station ref auto-found via GetComponent; coordinator auto-found in scene
     ///
     /// Note: Awake/Start do NOT error when refs are missing. Placement ghosts
     /// instantiate this prefab too, and ghosts don't need functional refs.
-    /// Validation is deferred to Execute, which only runs on real placed pots.
+    /// Validation is deferred to Execute, which only runs on real placed objects.
     /// </summary>
     public class OpenCraftingUIAction : MonoBehaviour, IWorldInteractAction
     {
@@ -29,9 +33,8 @@ namespace InventorySystem.Crafting
                  "player clicks this structure. Auto-found on this GameObject.")]
         [SerializeField] private BaseCraftingStation station;
 
-        [Header("UI References (auto-found if empty)")]
-        [SerializeField] private InventoryUIManager inventoryUI;
-        [SerializeField] private CraftingUIManager craftingUI;
+        [Header("UI Coordinator (auto-found if empty)")]
+        [SerializeField] private UICoordinator coordinator;
 
         private void Awake()
         {
@@ -41,12 +44,9 @@ namespace InventorySystem.Crafting
 
         private void Start()
         {
-            if (inventoryUI == null)
-                inventoryUI = FindAnyObjectByType<InventoryUIManager>();
-
-            if (craftingUI == null)
-                craftingUI = FindAnyObjectByType<CraftingUIManager>();
-            // No errors here — see class-doc note about ghost previews.
+            if (coordinator == null)
+                coordinator = FindAnyObjectByType<UICoordinator>();
+            // No errors here — ghost previews don't need functional refs.
         }
 
         public void Execute(PlayerStateManager player)
@@ -57,29 +57,21 @@ namespace InventorySystem.Crafting
                 return;
             }
 
-            if (craftingUI == null)
+            if (coordinator == null)
             {
                 // Last-chance lookup in case Start hadn't fired yet
-                craftingUI = FindAnyObjectByType<CraftingUIManager>();
-                if (craftingUI == null)
+                coordinator = FindAnyObjectByType<UICoordinator>();
+                if (coordinator == null)
                 {
-                    Debug.LogError($"[OpenCraftingUIAction] {name}: no CraftingUIManager in scene — can't open panel.");
+                    Debug.LogError($"[OpenCraftingUIAction] {name}: no UICoordinator in scene — can't open panels.");
                     return;
                 }
             }
 
-            if (inventoryUI == null)
-                inventoryUI = FindAnyObjectByType<InventoryUIManager>();
+            // Opens both inventory + crafting panels together and targets this station.
+            coordinator.OpenWithStation(station);
 
-            // Open the inventory panel if it isn't already — puts player in
-            // inventoryState (stops movement) and reveals the inventory UI.
-            if (inventoryUI != null && !inventoryUI.IsInventoryOpen)
-                inventoryUI.ToggleInventory();
-
-            // Focus the crafting panel on this station. If already open, re-targets.
-            craftingUI.OpenWithStation(station);
-
-            Debug.Log($"[OpenCraftingUIAction] Opened crafting panel on {station.StationType}.");
+            Debug.Log($"[OpenCraftingUIAction] Opened panels for station: {station.StationType}.");
         }
     }
 }
