@@ -2680,18 +2680,32 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1339962032}
     - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: overlayTentacles2
+      value: 
+      objectReference: {fileID: 5297504137905860939}
+    - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: overlayTentacleSpawn
-      value: 0.2
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: overlayTentacleSpawn2
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 381852574}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 3609611315831603896, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+--- !u!225 &5297504137905860939 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 6388114179512588953, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+  m_PrefabInstance: {fileID: 5297504137905860938}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5779260070297747632
 PrefabInstance:
   m_ObjectHideFlags: 0
