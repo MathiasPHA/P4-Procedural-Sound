@@ -44,7 +44,7 @@ namespace ProceduralTerrain
             [Tooltip("Minimum distance (in tiles) this object claims from any other spawned object, " +
                      "across all rules. When two objects are checked, the larger of the two minSpacing " +
                      "values is used as the required clearance.")]
-            [Range(0f, 5f)]
+            [Range(0f, 50f)]
             public float minSpacing = 1.5f;
 
             [Tooltip("Required distance (in WORLD UNITS) from any disallowed terrain. 0 = no check " +

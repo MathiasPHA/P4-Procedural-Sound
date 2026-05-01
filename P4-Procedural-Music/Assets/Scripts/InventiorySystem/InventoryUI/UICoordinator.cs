@@ -29,7 +29,7 @@ namespace InventorySystem.UI
     {
         [Header("Managed Panels")]
         [SerializeField] private InventoryUIManager inventoryUI;
-        [SerializeField] private CraftingUIManager  craftingUI;
+        [SerializeField] private CraftingUIManager craftingUI;
 
         [Header("Input")]
         [SerializeField] private InventoryInputProvider inputProvider;
@@ -60,8 +60,8 @@ namespace InventorySystem.UI
 
             inputProvider.OnToggleInventory += Toggle;
 
-            ArePanelsOpen  = false;
-            _initialized   = true;
+            ArePanelsOpen = false;
+            _initialized = true;
 
             Debug.Log("[UICoordinator] Initialized successfully.");
         }
@@ -78,9 +78,21 @@ namespace InventorySystem.UI
 
         /// <summary>
         /// Toggle both panels together. Bound to the inventory toggle input action.
+        ///
+        /// If the fishing minigame is active, cancels fishing instead of opening
+        /// the panels — the inventory key shouldn't pop a UI on top of the
+        /// minigame. (Escape is handled separately by PlayerFishingState.)
         /// </summary>
         public void Toggle()
         {
+            // Fishing takes priority — close the minigame, don't open the inventory.
+            var fishing = FishingSystem.FishingManager.Instance;
+            if (fishing != null && fishing.IsFishing)
+            {
+                fishing.CancelFishing();
+                return;
+            }
+
             if (ArePanelsOpen)
                 ClosePanels();
             else

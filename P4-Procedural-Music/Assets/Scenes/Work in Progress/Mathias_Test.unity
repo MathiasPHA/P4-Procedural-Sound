@@ -562,6 +562,50 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -176
       objectReference: {fileID: 0}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: recipeDatabase.Array.size
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 8d44597e159083b49a457c85b827a197, type: 2}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: a79ea9fa4f7ac459eaefbe4f7b5d08b1, type: 2}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: a619de73b22ceab42a3f43c5299a342a, type: 2}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: fac8eb7d68fc4401283077d00b6da3fb, type: 2}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[4]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 89ccd0954437c8d418a4b4b167338d3a, type: 2}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[5]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 9e8a0ac6e5208914f8fd0326f5eab248, type: 2}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[6]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 3460484d83b054dfabf5246cd0ae54dc, type: 2}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[7]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 20599ac605c4e314d9fdd593fe7e6427, type: 2}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[8]'
+      value: 
+      objectReference: {fileID: 11400000, guid: be74306c8374440068733ac28d4242b5, type: 2}
+    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+      propertyPath: 'recipeDatabase.Array.data[9]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 46ec31a3c76604905a950480166c986f, type: 2}
     - target: {fileID: 1733907004063470630, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -2695,6 +2739,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 381852574}
+    - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: spriteScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 3609611315831603896, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
