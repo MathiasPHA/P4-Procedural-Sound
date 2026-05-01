@@ -21,7 +21,9 @@ public class PostProcessingManager : MonoBehaviour
     [Header("Overlay Sprites")]
     public CanvasGroup overlayEyes;
     public CanvasGroup overlayTentacles;
+    public CanvasGroup overlayTentacles2;
     public float overlayTentacleSpawn;
+    public float overlayTentacleSpawn2;
 
     [Header("Fade In Settings")]
     [SerializeField] float minimumIntensity;
@@ -85,11 +87,20 @@ public class PostProcessingManager : MonoBehaviour
             if (overlayTentacles != null) overlayTentacles.alpha = 0f;
         }
 
+        if (masterIntensity > overlayTentacleSpawn2)
+        {
+            if (overlayTentacles2 != null) overlayTentacles2.alpha = 1f;
+        }
+        else
+        {
+            if (overlayTentacles2 != null) overlayTentacles2.alpha = 0f;
+        }
+
 
         // Update entity active flag
         EntityIsActive = masterIntensity >= musicTriggerSpookyThreshold;
 
-        // Music — highest threshold checked first
+        // Music ï¿½ highest threshold checked first
         if (musicController != null)
         {
             if (masterIntensity >= musicTriggerHorrorThreshold)
