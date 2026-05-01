@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TimeMilestoneManager : MonoBehaviour
 {
@@ -6,130 +7,182 @@ public class TimeMilestoneManager : MonoBehaviour
     [SerializeField]
     private string[] timeMilestones = new string[]
     {
-        "Midnight",     // 0
-        "Dawn",         // 1
-        "Sunrise",      // 2
-        "Morning",      // 3
-        "Noon",         // 4
-        "Midday",       // 5
-        "Afternoon",    // 6
-        "Sunset",       // 7
-        "Dusk",         // 8
-        "Night",        // 9
+        "Midnight",
+        "Dawn",
+        "Sunrise",
+        "Morning",
+        "Noon",
+        "Midday",
+        "Afternoon",
+        "Sunset",
+        "Dusk",
+        "Night",
     };
 
     [Header("References")]
     [SerializeField] private ComfortSystem comfortSystem;
     [SerializeField] private ComfortMusicBridge comfortMusicBridge;
-
-    // Det her er lort, men det virker ikke hvis man bruger et array, da de ikke kan v�re sat til at v�re const
-    private const int DawnTime = 3;         // Dawn starts at 3:00
-    private const int SunriseTime = 6;      // Sunrise at 6:00
-    private const int MorningTime = 7;      // Morning starts at 7:00
-    private const int MiddayTime = 11;      // Midday starts at 11:00
-    private const int NoonTime = 12;        // Noon at 12:00
-    private const int AfternoonTime = 14;   // Afternoon starts at 14:00
-    private const int SunsetTime = 18;      // Sunset at 18:00
-    private const int DuskTime = 19;        // Dusk starts at 19:00
-    private const int NightTime = 23;       // Night starts at 23:00
-    private const int MidnightTime24 = 24;  // Midnight at 24:00 - Kun gjordt for ikke at misse den ved uheld
-    private const int MidnightTime0 = 0;    // Midnight at 00:00 - Kun gjordt for ikke at misse den ved uheld
-
-    public int[] timeMilestoneTimes = new int[]
-    {
-        DawnTime,       // 0    
-        SunriseTime,    // 1
-        MorningTime,    // 2
-        NoonTime,       // 3
-        MiddayTime,     // 4
-        AfternoonTime,  // 5
-        SunsetTime,     // 6
-        DuskTime,       // 7
-        NightTime,      // 8
-        MidnightTime24, // 9
-        MidnightTime0,  // 10
-    };
-
+    [SerializeField] private DayNightMaster dayNightMaster;
 
     [Header("Others")]
     public string currentTimeMilestone;
     private int roundedTime;
-    private DayNightMaster dayNightMaster;
 
+    private bool _initialized;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    // =====================================================================
+    // Lifetime
+    // =====================================================================
+
+    private void Awake()
     {
-        dayNightMaster = GetComponent<DayNightMaster>();
+        AutoAssignIfNeeded();
     }
 
-    // Update is called once per frame
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        AutoAssignIfNeeded();
+    }
+
+    // =====================================================================
+    // Auto wiring
+    // =====================================================================
+
+    private void AutoAssignIfNeeded()
+    {
+        if (dayNightMaster == null)
+            dayNightMaster = FindSingle<DayNightMaster>();
+
+        if (comfortSystem == null)
+            comfortSystem = FindSingle<ComfortSystem>();
+
+        if (comfortMusicBridge == null)
+            comfortMusicBridge = FindSingle<ComfortMusicBridge>();
+    }
+
+    private T FindSingle<T>() where T : Object
+    {
+        var all = FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        if (all.Length > 1)
+            Debug.LogWarning($"[TimeMilestoneManager] Multiple {typeof(T).Name} found — using first.");
+
+        return all.Length > 0 ? all[0] : null;
+    }
+
+    // =====================================================================
+    // Update loop
+    // =====================================================================
+
     void Update()
     {
+        if (dayNightMaster == null)
+        {
+            // Try to recover dynamically if it wasn't ready at load
+            AutoAssignIfNeeded();
+            return;
+        }
+
         roundedTime = Mathf.RoundToInt(dayNightMaster.currentTime);
         CheckTime();
     }
+
+    // =====================================================================
+    // Time logic (unchanged)
+    // =====================================================================
+
+    private const int DawnTime = 3;
+    private const int SunriseTime = 6;
+    private const int MorningTime = 7;
+    private const int MiddayTime = 11;
+    private const int NoonTime = 12;
+    private const int AfternoonTime = 14;
+    private const int SunsetTime = 18;
+    private const int DuskTime = 19;
+    private const int NightTime = 23;
+    private const int MidnightTime24 = 24;
+    private const int MidnightTime0 = 0;
+
+    public int[] timeMilestoneTimes = new int[]
+    {
+        DawnTime,
+        SunriseTime,
+        MorningTime,
+        NoonTime,
+        MiddayTime,
+        AfternoonTime,
+        SunsetTime,
+        DuskTime,
+        NightTime,
+        MidnightTime24,
+        MidnightTime0,
+    };
 
     private void CheckTime()
     {
         switch (roundedTime)
         {
             case DawnTime:
-                // 5:00 - 5:59 is Dawn
                 currentTimeMilestone = timeMilestones[1];
                 break;
+
             case SunriseTime:
-                // 6:00 - 7:59 is Sunrise
                 currentTimeMilestone = timeMilestones[2];
-                if (comfortSystem != null) comfortSystem.SetDayNightValue(1); // 1 = day
+                if (comfortSystem != null) comfortSystem.SetDayNightValue(1);
                 break;
+
             case MorningTime:
-                // 7:00 - 10:59 is Morning
                 currentTimeMilestone = timeMilestones[3];
                 break;
+
             case MiddayTime:
-                // 11:00 - 11:59 is Midday
                 currentTimeMilestone = timeMilestones[5];
                 break;
+
             case NoonTime:
-                // 12:00 - 12:59 is Noon - Jeg lavede en fejl i arrayet
                 currentTimeMilestone = timeMilestones[4];
                 break;
+
             case NoonTime + 1:
-                // 13:00 - 13:59 is Midday
                 currentTimeMilestone = timeMilestones[5];
-                if (comfortMusicBridge != null) comfortMusicBridge.SetExploring2(true);  // switch to upbeat exploring
+                if (comfortMusicBridge != null) comfortMusicBridge.SetExploring2(true);
                 break;
+
             case AfternoonTime:
-                // 14:00 - 17:59 is Afternoon
                 currentTimeMilestone = timeMilestones[6];
                 break;
+
             case SunsetTime:
-                // 18:00 - 18:59 is Sunset
                 currentTimeMilestone = timeMilestones[7];
                 break;
+
             case DuskTime:
-                // 19:00 - 20:59 is Dusk
                 currentTimeMilestone = timeMilestones[8];
-                if (comfortSystem != null) comfortSystem.SetDayNightValue(0); // 0 = night
+                if (comfortSystem != null) comfortSystem.SetDayNightValue(0);
                 break;
+
             case NightTime:
-                // 23:00 - 23:59 is Night
                 currentTimeMilestone = timeMilestones[9];
                 break;
+
             case MidnightTime24:
-                // 24:00 - 0:59 is Midnight
-                currentTimeMilestone = timeMilestones[0];
-                break;
             case MidnightTime0:
-                // 00:00 - 0:59 is Midnight
                 currentTimeMilestone = timeMilestones[0];
                 break;
+
             case MidnightTime0 + 1:
-                // 1:00 - 4:59 is still Night
                 currentTimeMilestone = timeMilestones[9];
                 break;
         }
     }
-
 }

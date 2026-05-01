@@ -207,6 +207,8 @@ MonoBehaviour:
   mobMask:
     serializedVersion: 2
     m_Bits: 1024
+  postProcessingManager: {fileID: 0}
+  intensityDecreaseSpeed: 0.2
 --- !u!114 &1047452697214651576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,7 +277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobInteractable
   actionVerb: Attack!
-  interactRange: 7.69
+  interactRange: 3
   interactCenterOffset: {x: -1.43, y: -2.85}
   promptOffset: {x: 0, y: 1.2}
 --- !u!114 &7816410967112638691

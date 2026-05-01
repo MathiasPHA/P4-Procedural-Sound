@@ -61,6 +61,10 @@ namespace InventorySystem
             {
                 Debug.LogError("[InventoryBootstrap] ItemDatabase is not assigned!");
             }
+            if (uiCoordinator == null)
+            {
+                uiCoordinator = FindFirstObjectByType<UICoordinator>(FindObjectsInactive.Include);
+            }
         }
 
         private void Start()
