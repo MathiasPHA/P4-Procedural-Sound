@@ -40,66 +40,6 @@ namespace InventorySystem.UI
         private bool _initialized;
 
         // =====================================================================
-        // Scene load re-wiring
-        // =====================================================================
-
-        private void OnEnable()
-        {
-            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        private void OnDisable()
-        {
-            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
-        }
-
-        private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene,
-                                    UnityEngine.SceneManagement.LoadSceneMode mode)
-        {
-            // When a new scene loads, the old panel instances are gone.
-            // Re-resolve references and re-initialise so the coordinator
-            // stays wired up to the fresh scene objects.
-            _initialized = false;
-            ArePanelsOpen = false;
-
-            ResolveReferences();
-
-            // Re-subscribe the toggle — ResolveReferences may have found a new inputProvider.
-            if (inputProvider != null)
-                inputProvider.OnToggleInventory += Toggle;
-
-            Debug.Log("[UICoordinator] Re-wired after scene load.");
-        }
-
-        /// <summary>
-        /// Fills any missing inspector references by searching the scene.
-        /// Inspector assignments always win — this only kicks in when a ref is null.
-        /// </summary>
-        private void ResolveReferences()
-        {
-            if (inventoryUI == null)
-            {
-                inventoryUI = FindAnyObjectByType<InventoryUIManager>();
-                if (inventoryUI == null)
-                    Debug.LogWarning("[UICoordinator] InventoryUIManager not found in scene.");
-            }
-
-            if (craftingUI == null)
-            {
-                craftingUI = FindAnyObjectByType<CraftingUIManager>();
-                if (craftingUI == null)
-                    Debug.LogWarning("[UICoordinator] CraftingUIManager not found in scene.");
-            }
-
-            if (inputProvider == null)
-            {
-                inputProvider = FindAnyObjectByType<InventoryInputProvider>();
-                if (inputProvider == null)
-                    Debug.LogWarning("[UICoordinator] InventoryInputProvider not found in scene.");
-            }
-        }
-
-        // =====================================================================
         // Initialisation — called by InventoryBootstrap after both managers
         // =====================================================================
 
@@ -110,9 +50,6 @@ namespace InventorySystem.UI
                 Debug.LogWarning("[UICoordinator] Initialise() called more than once — ignoring.");
                 return;
             }
-
-            // Fill any gaps before checking for nulls.
-            ResolveReferences();
 
             if (inventoryUI == null || craftingUI == null || inputProvider == null)
             {
@@ -133,8 +70,6 @@ namespace InventorySystem.UI
         {
             if (inputProvider != null)
                 inputProvider.OnToggleInventory -= Toggle;
-
-            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         // =====================================================================
@@ -150,6 +85,7 @@ namespace InventorySystem.UI
         /// </summary>
         public void Toggle()
         {
+            // Fishing takes priority — close the minigame, don't open the inventory.
             var fishing = FishingSystem.FishingManager.Instance;
             if (fishing != null && fishing.IsFishing)
             {
@@ -196,6 +132,7 @@ namespace InventorySystem.UI
         /// </summary>
         public void OpenWithStation(ICraftingStation station)
         {
+            // Set the station first so OpenPanel() rebuilds with the right recipes.
             craftingUI.SetActiveStation(station);
             OpenPanels();
         }
