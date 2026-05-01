@@ -2739,10 +2739,6 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 381852574}
-    - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
-      propertyPath: spriteScale
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 3609611315831603896, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}

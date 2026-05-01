@@ -53,12 +53,6 @@ namespace InventorySystem
         {
             // Only initialise the item database in Awake — it's a ScriptableObject
             // with no dependency on scene objects, so it's safe to do early.
-
-            if (uiCoordinator == null)
-            {
-                FindObjectsByType<UICoordinator>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            }
-
             if (itemDatabase != null)
             {
                 itemDatabase.Initialise();

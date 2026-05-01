@@ -9,7 +9,7 @@ public class TentacleAttack : MonoBehaviour
     public MobData mobData;
 
     [Header("Visuals")]
-    public float spriteScale ;
+    public float spriteScale = 3f;
 
     [Header("Spawn")]
     public GameObject tentaclePrefab;

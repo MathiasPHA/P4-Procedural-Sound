@@ -10,12 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 3236635870413745145}
   - component: {fileID: 3078909830274367139}
-  - component: {fileID: 4856003411573688890}
   - component: {fileID: 8241529211120284983}
   - component: {fileID: 6166074398387733694}
   - component: {fileID: 2794193486422891529}
   - component: {fileID: 5556467927611290304}
   - component: {fileID: 1623993693388570980}
+  - component: {fileID: -7035556612366402063}
   - component: {fileID: 3500028683508259091}
   m_Layer: 10
   m_Name: Tentacle
@@ -33,8 +33,8 @@ Transform:
   m_GameObject: {fileID: 926544784483756400}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.015775258, z: -0, w: 0.99987555}
-  m_LocalPosition: {x: 330.73, y: -337.02, z: -0.26}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalPosition: {x: 326.864, y: -339.813, z: -0.14065512}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -88,7 +88,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: c9270102273a6614dbc1f87975bf7789, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8acccf381617854479d7205ca45a043b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -98,28 +98,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!95 &4856003411573688890
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 926544784483756400}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 91dad8ba69423d3429566db1d4574f2d, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!50 &8241529211120284983
 Rigidbody2D:
   serializedVersion: 5
@@ -183,9 +161,9 @@ BoxCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 1.05, y: 0.2}
   m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 50, y: 35.009766}
+    border: {x: 0.88, y: 1.26, z: 0, w: 1.75}
+    pivot: {x: 0.29635763, y: 0.38219148}
+    oldSize: {x: 3.02, y: 3.83}
     newSize: {x: 3.02, y: 3.83}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -246,6 +224,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TentacleDamager
   mobData: {fileID: 11400000, guid: 9f883aa29f6282340bc88e70657f92cc, type: 2}
+--- !u!114 &-7035556612366402063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926544784483756400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c02ed322f491bd4cbec1a9e2e7dbe17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobHealthBar
+  widthRatio: 0.311
+  heightRatio: 0.017
+  verticalPadding: 0.15
+  showDuration: 3
+  fadeDuration: 0.5
+  backgroundColor: {r: 0.15, g: 0.15, b: 0.15, a: 0.8}
+  healthyColor: {r: 0.3, g: 0.9, b: 0.3, a: 1}
+  hurtColor: {r: 0.9, g: 0.9, b: 0.2, a: 1}
+  criticalColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+  sortingOrder: 100
 --- !u!114 &3500028683508259091
 MonoBehaviour:
   m_ObjectHideFlags: 0

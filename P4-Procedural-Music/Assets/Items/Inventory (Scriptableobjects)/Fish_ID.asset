@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28726cdc121622449abe7530f16aadd1, type: 3}
-  m_Name: CookedFish_ID
+  m_Name: Fish_ID
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ItemData
-  id: CookedFish
-  displayName: Cooked Fish
-  description: Fish that has been cooked
-  loreNote: 'Hubert is good at cooking fish though he does not remember why. '
+  id: Fish
+  displayName: Fish
+  description: It is a fish! Additionally tasty when roasted.
+  loreNote: 'Companion of those who feel drowned '
   icon: {fileID: -3040762595238011028, guid: a96e185f1343f27448331b5325d09d57, type: 3}
   category: 2
   maxStackSize: 64
   isDroppable: 1
   hasInstanceState: 0
   maxDurability: 100
-  hungerRestore: 0.2
+  hungerRestore: 0.1
   happinessRestore: 0.1
   consumeSound: {fileID: 0}
-  consumeSoundVolume: 1
+  consumeSoundVolume: 0.5
   customEffects: []
   isFuel: 0
   burnFuelValue: 0
