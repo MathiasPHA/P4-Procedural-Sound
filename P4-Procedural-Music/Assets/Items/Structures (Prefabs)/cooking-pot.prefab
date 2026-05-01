@@ -209,6 +209,7 @@ MonoBehaviour:
   recipeDatabase:
   - {fileID: 11400000, guid: c650546ba34cbad4b827e9063c606284, type: 2}
   - {fileID: 11400000, guid: aed7ae12ea555b74dbb7b585c756e48b, type: 2}
+  - {fileID: 11400000, guid: 7f5f5aaa0da2645449f1ee40bfa3a7e5, type: 2}
   discoverAllOnStart: 1
 --- !u!114 &-55101933661581049
 MonoBehaviour:
@@ -240,8 +241,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.OpenCraftingUIAction
   station: {fileID: 0}
-  inventoryUI: {fileID: 0}
-  craftingUI: {fileID: 0}
+  coordinator: {fileID: 0}
 --- !u!114 &-8539712497983428936
 MonoBehaviour:
   m_ObjectHideFlags: 0
