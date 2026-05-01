@@ -87,11 +87,7 @@ namespace ProceduralTerrain
             var colliderObj = new GameObject($"WaterCollision_{chunk.ChunkCoord.x}_{chunk.ChunkCoord.y}");
             colliderObj.transform.SetParent(parent, false);
             colliderObj.transform.localPosition = Vector3.zero;
-
-            // Put on the Interactable layer so InteractionDetector picks it up.
-            // Falls back to the parent's layer if Interactable doesn't exist.
-            int interactableLayer = LayerMask.NameToLayer("Interactable");
-            colliderObj.layer = interactableLayer >= 0 ? interactableLayer : parent.gameObject.layer;
+            colliderObj.layer = parent.gameObject.layer; // WaterFishingInteractable.Awake reassigns to Interactable layer
 
             var polyCollider = colliderObj.AddComponent<PolygonCollider2D>();
             polyCollider.pathCount = allPaths.Count;

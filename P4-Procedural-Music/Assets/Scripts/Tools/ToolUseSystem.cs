@@ -51,6 +51,35 @@ namespace InventorySystem.Tools
         /// </summary>
         public ToolData EquippedToolData => _equippedToolData;
 
+        /// <summary>
+        /// Spend durability on the currently equipped tool using its
+        /// configured durabilityCost. Mirrors the per-swing/per-attack pattern
+        /// used internally — used by WaterFishingInteractable so fishing
+        /// follows the same durability rules as other tool uses.
+        /// Returns true if the tool broke and was removed from the inventory.
+        /// </summary>
+        public bool SpendEquippedDurability()
+        {
+            if (_inventory == null || _equippedToolData == null) return false;
+
+            var equipped = _inventory.EquippedItem;
+            if (equipped == null) return false;
+            if (!equipped.Data.hasInstanceState) return false;
+            if (_equippedToolData.durabilityCost <= 0) return false;
+
+            bool broke = equipped.ReduceDurability(_equippedToolData.durabilityCost);
+            if (broke)
+            {
+                _inventory.RemoveItem(equipped.Data.id, 1);
+            }
+            else
+            {
+                _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                _inventory.NotifyChanged();
+            }
+            return broke;
+        }
+
         // Cached every Update — IsPointerOverGameObject() is invalid inside
         // Input System callbacks (it queries last-frame UI state), so we
         // sample it here and read the cached value in OnAttack / OnUseItem.
@@ -62,8 +91,8 @@ namespace InventorySystem.Tools
         [Header("Wrong Tool Feedback")]
         [SerializeField] private ResponseOptions wrongToolFeedback;
 
-        [Header("Flute / Instrument")]
-        [SerializeField] private FluteTool fluteTool;
+        [Header("Instrument Audio")]
+        [SerializeField] private AudioSource instrumentAudioSource;
 
         private void Start()
         {
@@ -102,10 +131,15 @@ namespace InventorySystem.Tools
                 interactionDetector = GetComponent<InteractionDetector>();
             }
 
-            if (fluteTool == null)
-                fluteTool = GetComponent<FluteTool>();
-            if (fluteTool == null)
-                fluteTool = FindObjectOfType<FluteTool>();
+            if (instrumentAudioSource == null)
+            {
+                instrumentAudioSource = GetComponent<AudioSource>();
+                if (instrumentAudioSource == null)
+                    instrumentAudioSource = gameObject.AddComponent<AudioSource>();
+            }
+
+            instrumentAudioSource.playOnAwake = false;
+            instrumentAudioSource.spatialBlend = 0f;
 
             if (wrongToolFeedback == null)
                 wrongToolFeedback = GetComponentInChildren<ResponseOptions>(true);
@@ -166,8 +200,6 @@ namespace InventorySystem.Tools
 
         private void OnEquippedChanged(int equippedSlotIndex)
         {
-            fluteTool?.ForceClose();
-
             var item = _inventory.EquippedItem;
             Debug.Log($"[ToolUseSystem] OnEquippedChanged fired — slot={equippedSlotIndex}, item={item?.Data?.id ?? "none"}");
 
@@ -230,9 +262,6 @@ namespace InventorySystem.Tools
             // intercept the click and route to fueling.
             if (TryHitStructure()) return;
 
-            // ── Instrument check FIRST — opening the flute ring takes priority ──
-            if (TryPlayInstrument()) return;
-
             // ── Interaction priority: if hovering an interactable, walk to it ──
             // Some interactables (e.g. WaterFishingInteractable) opt out of the
             // walk-to-interact step via InteractImmediately and run from where
@@ -251,6 +280,8 @@ namespace InventorySystem.Tools
                 }
                 return;
             }
+
+            if (TryPlayInstrument()) return;
 
             // ── Otherwise: existing tool/combat logic ──
             if (TryHitMob()) return;
@@ -622,13 +653,24 @@ namespace InventorySystem.Tools
             if (toolData == null || !toolData.isInstrument)
                 return false;
 
-            if (fluteTool == null)
-            {
-                Debug.LogWarning("[ToolUseSystem] isInstrument=true but no FluteTool found on player.");
+            if (instrumentAudioSource == null)
                 return false;
+
+            if (toolData.instrumentSounds == null || toolData.instrumentSounds.Count == 0)
+            {
+                Debug.LogWarning($"[ToolUseSystem] '{toolData.item?.id ?? "Unknown"}' is marked as an instrument but has no instrument sounds assigned.");
+                _cooldownTimer = toolData.cooldown;
+                return true;
             }
 
-            fluteTool.OnFluteUsed();
+            AudioClip clip = toolData.instrumentSounds[Random.Range(0, toolData.instrumentSounds.Count)];
+            if (clip != null)
+            {
+                instrumentAudioSource.pitch = 1f + Random.Range(-toolData.instrumentPitchVariation, toolData.instrumentPitchVariation);
+                instrumentAudioSource.PlayOneShot(clip, toolData.instrumentVolume);
+            }
+
+            _cooldownTimer = toolData.cooldown;
             return true;
         }
 
