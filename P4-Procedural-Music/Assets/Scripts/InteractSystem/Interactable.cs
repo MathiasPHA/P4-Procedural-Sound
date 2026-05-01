@@ -38,7 +38,7 @@ namespace InteractionSystem
         /// PlayerMoveToInteractState measure from the player to this point.
         /// Defaults to transform.position when interactCenterOffset is zero.
         /// </summary>
-        public Vector3 InteractCenter => transform.position + (Vector3)interactCenterOffset;
+        public virtual Vector3 InteractCenter => transform.position + (Vector3)interactCenterOffset;
 
         /// <summary>World position where the prompt UI should appear.</summary>
         public virtual Vector3 PromptPosition => transform.position + (Vector3)promptOffset;

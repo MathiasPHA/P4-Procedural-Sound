@@ -330,17 +330,6 @@ CanvasGroup:
   m_CorrespondingSourceObject: {fileID: 4254097958352710514, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
   m_PrefabInstance: {fileID: 7094929175993385431}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &321389489 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3537296947420161221, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
-  m_PrefabInstance: {fileID: 773878942}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e9d234cbbb451542a5493ae2c44e510, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.UI.InventoryUIManager
 --- !u!4 &381852574 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6496137450566507929, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
@@ -453,7 +442,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2156536043447579553, guid: 41423c013fc9cf24689c720c4e932d72, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5723577484499738029, guid: 41423c013fc9cf24689c720c4e932d72, type: 3}
       propertyPath: m_LocalPosition.x
@@ -571,14 +560,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -176
       objectReference: {fileID: 0}
-    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
-      propertyPath: recipeDatabase.Array.size
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
-      propertyPath: 'recipeDatabase.Array.data[7]'
-      value: 
-      objectReference: {fileID: 11400000, guid: be74306c8374440068733ac28d4242b5, type: 2}
     - target: {fileID: 1733907004063470630, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -637,10 +618,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2315353143642569263, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695918752553692459, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2866696755060590633, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
@@ -723,10 +700,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4002829876537943146, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
-      propertyPath: uiCoordinator
-      value: 
-      objectReference: {fileID: 1130893957}
     - target: {fileID: 4332384995412474388, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -821,7 +794,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5750511888308149230, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.0005484335
+      value: -0.00028978492
       objectReference: {fileID: 0}
     - target: {fileID: 5841306582511853635, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchorMax.y
@@ -940,6 +913,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+--- !u!1 &837121255 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2564630636838900317, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
+  m_PrefabInstance: {fileID: 1855447645}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &837121257 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3991372108596138464, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
+  m_PrefabInstance: {fileID: 1855447645}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &884177755
 GameObject:
   m_ObjectHideFlags: 0
@@ -1113,10 +1096,6 @@ PrefabInstance:
       value: PauseMenu
       objectReference: {fileID: 0}
     - target: {fileID: 2862067803819105686, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
-      propertyPath: uiCoordinator
-      value: 
-      objectReference: {fileID: 1130893957}
-    - target: {fileID: 2862067803819105686, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: volumeController
       value: 
       objectReference: {fileID: 1306677253}
@@ -1271,28 +1250,6 @@ Canvas:
   m_CorrespondingSourceObject: {fileID: 6191453365563253831, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
   m_PrefabInstance: {fileID: 1304071100}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1036690435 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5548861199716356723, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
-  m_PrefabInstance: {fileID: 773878942}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f561b4f771657b344b672746165bf8d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.UI.CraftingUIManager
---- !u!114 &1038665780 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3479696002335915198, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-  m_PrefabInstance: {fileID: 1855447645}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba2360bcd6bfb1c4694fd908bbe19095, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.FishingTimer
 --- !u!1 &1070298102
 GameObject:
   m_ObjectHideFlags: 0
@@ -1441,10 +1398,7 @@ PrefabInstance:
       objectReference: {fileID: 1130893953}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 1502604247847220309, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1460417691}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
 --- !u!1 &1105228300
@@ -1622,18 +1576,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5099165680270774262, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
-      propertyPath: craftingUI
-      value: 
-      objectReference: {fileID: 1036690435}
-    - target: {fileID: 5099165680270774262, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
-      propertyPath: inventoryUI
-      value: 
-      objectReference: {fileID: 321389489}
-    - target: {fileID: 5099165680270774262, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
-      propertyPath: inputProvider
-      value: 
-      objectReference: {fileID: 1456805559}
     - target: {fileID: 7230665982664784449, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
       propertyPath: comfortSystem
       value: 
@@ -1662,22 +1604,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9a795fc29d0e914dabd815c8f61276e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeReference
---- !u!114 &1130893957 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5099165680270774262, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
-  m_PrefabInstance: {fileID: 1130893952}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7c5972501f37e24ba1cfddc2869daf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.UI.UICoordinator
---- !u!4 &1145731298 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1502604247847220309, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
-  m_PrefabInstance: {fileID: 1093400978}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1182456104
 GameObject:
   m_ObjectHideFlags: 0
@@ -1915,16 +1841,12 @@ PrefabInstance:
       objectReference: {fileID: 892208754}
     - target: {fileID: 1591661159947031898, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: placeables.Array.size
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1591661159947031898, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: 'placeables.Array.data[3]'
       value: 
       objectReference: {fileID: 11400000, guid: ac2de69023ef2dd49b6e247d5c014356, type: 2}
-    - target: {fileID: 1591661159947031898, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
-      propertyPath: 'placeables.Array.data[4]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 6005497a727202642b0df0f372973341, type: 2}
     - target: {fileID: 3043719320757778836, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: m_SortingLayer
       value: 2
@@ -1941,10 +1863,6 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 892208754}
-    - target: {fileID: 3340332575720080812, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
-      propertyPath: interactableLayer.m_Bits
-      value: 1488
-      objectReference: {fileID: 0}
     - target: {fileID: 3721937245322308527, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -2059,29 +1977,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c63d748f8160c428690a46dddd188972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audiosettings2
---- !u!114 &1339962032 stripped
+--- !u!114 &1368451598 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3321460352209395124, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
-  m_PrefabInstance: {fileID: 961445390}
+  m_CorrespondingSourceObject: {fileID: 7606427396537577047, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
+  m_PrefabInstance: {fileID: 1855447645}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bada78ddd18e448468e569bc1624fc87, type: 3}
+  m_Script: {fileID: 11500000, guid: 28558e622ddea504999b24ddc57fd1bc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProceduralMusic.Bridge.ProceduralMusicController
---- !u!114 &1456805559 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8470669982361081032, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
-  m_PrefabInstance: {fileID: 773878942}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1554304eb3ef9ea4dbc1f894d776e57d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Input.InventoryInputProvider
---- !u!1 &1460417690
+  m_EditorClassIdentifier: Assembly-CSharp::FishingV1
+--- !u!1 &1537723919
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2089,29 +1996,73 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1460417691}
+  - component: {fileID: 1537723920}
+  - component: {fileID: 1537723922}
+  - component: {fileID: 1537723921}
   m_Layer: 0
-  m_Name: Entity Controller
+  m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1460417691
-Transform:
+--- !u!224 &1537723920
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1460417690}
-  serializedVersion: 2
+  m_GameObject: {fileID: 1537723919}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1145731298}
+  m_Father: {fileID: 1572344636}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 2, y: 2}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1537723921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1537723919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 3
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 0
+  m_FillOrigin: 2
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1537723922
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1537723919}
+  m_CullTransparentMesh: 1
 --- !u!1001 &1548800414
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2180,6 +2131,127 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63009d0333697374ab22117b824557e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComfortMusicBridge
+--- !u!1 &1572344635
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1572344636}
+  - component: {fileID: 1572344640}
+  - component: {fileID: 1572344639}
+  - component: {fileID: 1572344638}
+  - component: {fileID: 1572344637}
+  m_Layer: 0
+  m_Name: TimerCanvas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1572344636
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572344635}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1537723920}
+  m_Father: {fileID: 837121257}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0.98, y: 5.03}
+  m_SizeDelta: {x: 2, y: 2}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1572344637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572344635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba2360bcd6bfb1c4694fd908bbe19095, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.FishingTimer
+  minigame: {fileID: 1368451598}
+  fillImage: {fileID: 1537723921}
+  colorFull: {r: 0.3, g: 0.85, b: 0.3, a: 1}
+  colorMid: {r: 0.95, g: 0.85, b: 0.2, a: 1}
+  colorLow: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+  visualRoot: {fileID: 837121255}
+--- !u!114 &1572344638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572344635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &1572344639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572344635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
+  m_UiScaleMode: 0
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 800, y: 600}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 1
+--- !u!223 &1572344640
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572344635}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 892208754}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 28
+  m_TargetDisplay: 0
 --- !u!114 &1605264514 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4859490917234952540, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
@@ -2239,7 +2311,7 @@ MonoBehaviour:
   detector: {fileID: 1605264524}
   checkLayer:
     serializedVersion: 2
-    m_Bits: 16
+    m_Bits: 4294967295
 --- !u!114 &1662382092 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7742910431107130035, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
@@ -2259,37 +2331,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 395579056343213146, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 395579056343213146, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1671474923
-      objectReference: {fileID: 0}
-    - target: {fileID: 813551977061376914, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 813551977061376914, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1671474923
-      objectReference: {fileID: 0}
-    - target: {fileID: 1642698647480313779, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingOrder
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 2564630636838900317, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
       propertyPath: m_Name
       value: FishingSystem
-      objectReference: {fileID: 0}
-    - target: {fileID: 2564630636838900317, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3794430895652903473, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3991372108596138464, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
       propertyPath: m_LocalScale.x
@@ -2354,30 +2398,17 @@ PrefabInstance:
     - target: {fileID: 6268821244972469724, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
       propertyPath: timer
       value: 
-      objectReference: {fileID: 1038665780}
+      objectReference: {fileID: 1572344637}
     - target: {fileID: 6268821244972469724, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
       propertyPath: uiOffsetFromPlayer.x
       value: 25
       objectReference: {fileID: 0}
-    - target: {fileID: 7138081384908000842, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7138081384908000842, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7138081384908000842, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1671474923
-      objectReference: {fileID: 0}
-    - target: {fileID: 7606427396537577047, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
-      propertyPath: catchFraction
-      value: 0.65
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3991372108596138464, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1572344636}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
 --- !u!1 &1917623467 stripped
@@ -2816,11 +2847,11 @@ PrefabInstance:
     - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: tentacleAttack
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5297504137905860939}
     - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
-      propertyPath: musicController
-      value: 
-      objectReference: {fileID: 1339962032}
+      propertyPath: tentacleTriggerThreshold
+      value: 0.9
+      objectReference: {fileID: 0}
     - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: player
       value: 
@@ -2830,6 +2861,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+--- !u!114 &5297504137905860939 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+  m_PrefabInstance: {fileID: 5297504137905860938}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e2ecc39fedb80142926f0a0f1f8a76b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TentacleAttack
 --- !u!1001 &5779260070297747632
 PrefabInstance:
   m_ObjectHideFlags: 0

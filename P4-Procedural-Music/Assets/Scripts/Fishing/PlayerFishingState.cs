@@ -29,20 +29,21 @@ public class PlayerFishingState : PlayerBaseState
         _outcomeReceived = false;
         _wasCaught = false;
 
-        // Face the cast point.
+        // Face the cast point. (When walked-to via moveToInteractState, the
+        // player is already facing the water, but recompute defensively in
+        // case the cast was triggered some other way.)
         float xDiff = CastPosition.x - player.transform.position.x;
-        player.playerDir = xDiff < 0 ? "Left" : "Right";
+        if (Mathf.Abs(xDiff) > 0.01f)
+            player.playerDir = xDiff < 0 ? "Left" : "Right";
 
         // Stop the player moving.
         if (player.playerRB != null)
             player.playerRB.linearVelocity = Vector2.zero;
 
-        // Drive animation directly. Convention from ToolUseSystem is "Harvest{toolType}",
-        // but we DON'T call StartHarvest() because that would switch states out of fishing.
-        // Your animator should have a "HarvestFishingRod" state (or similar — change the
-        // string below to match whatever you set up). If you don't have one yet, set this
-        // to "Idle" temporarily so the loop still works.
-        player.animationQue = "HarvestFishingRod";
+        // Set the action name; PlayerAnimations picks the direction-specific
+        // clip (PlayerFishingLeft vs PlayerFishingRight) based on playerDir.
+        // Matches the convention used by the other tool-action animations.
+        player.animationQue = "Fishing";
 
         if (FishingManager.Instance == null)
         {

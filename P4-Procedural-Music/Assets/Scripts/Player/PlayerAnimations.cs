@@ -91,6 +91,14 @@ public class PlayerAnimations : MonoBehaviour
                 playerAnimator.Play("PlayerHarvestHandRight");
         }
 
+        if (animationQue == "Fishing")
+        {
+            if (playerStateManager.playerDir == "Left" || playerStateManager.playerDir == "Up")
+                playerAnimator.Play("PlayerFishingLeft");
+            else
+                playerAnimator.Play("PlayerFishingRight");
+        }
+
         if (animationQue == "Shrug")
         {
             playerAnimator.Play("PlayerShrug");
