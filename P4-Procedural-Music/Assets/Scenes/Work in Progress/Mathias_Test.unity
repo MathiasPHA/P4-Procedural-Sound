@@ -2715,14 +2715,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6209631377851865035, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -60.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6209631377851865035, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 28.2
-      objectReference: {fileID: 0}
     - target: {fileID: 7658765726653544607, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
       propertyPath: masterIntensity
       value: 0
@@ -2747,14 +2739,6 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 381852574}
-    - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
-      propertyPath: maxStretch
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
-      propertyPath: spriteScale
-      value: 2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 3609611315831603896, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}

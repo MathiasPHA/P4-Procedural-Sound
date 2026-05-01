@@ -10,7 +10,6 @@ public class TentacleAttack : MonoBehaviour
 
     [Header("Visuals")]
     public float spriteScale = 3f;
-    public float maxStretch = 5f; // cap the X scale here
 
     [Header("Spawn")]
     public GameObject tentaclePrefab;
@@ -54,7 +53,7 @@ public class TentacleAttack : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / mobData.attackWindupDuration;
             float currentLength = Mathf.Lerp(0f, distance, t);
-            tentacleObj.transform.localScale = new Vector3(Mathf.Min(currentLength * spriteScale, maxStretch), spriteScale, 1f); 
+            tentacleObj.transform.localScale = new Vector3(currentLength * spriteScale, spriteScale, 1f);
             sr.color = new Color(1, 1, 1, t);
             yield return null;
         }
