@@ -91,7 +91,7 @@ MonoBehaviour:
     densityNoiseScale: 0.2
     densityCutoff: 0.8
     densityMultiplier: 1
-    minSpacing: 5
+    minSpacing: 40.2
     clearanceRadius: 20
     objectClearance: 20
     maxCountPerChunk: 1
@@ -104,11 +104,11 @@ MonoBehaviour:
     enabled: 1
     prefabs:
     - {fileID: 601663009861402173, guid: ce10bc2b85f570a4a870e7e9429989a9, type: 3}
-    baseChance: 0.03
+    baseChance: 0.02
     densityNoiseScale: 0.2
     densityCutoff: 0.8
     densityMultiplier: 1
-    minSpacing: 5
+    minSpacing: 50
     clearanceRadius: 20
     objectClearance: 20
     maxCountPerChunk: 1
@@ -125,7 +125,7 @@ MonoBehaviour:
     densityNoiseScale: 0.2
     densityCutoff: 0.8
     densityMultiplier: 1
-    minSpacing: 5
+    minSpacing: 50
     clearanceRadius: 25
     objectClearance: 25
     maxCountPerChunk: 1
