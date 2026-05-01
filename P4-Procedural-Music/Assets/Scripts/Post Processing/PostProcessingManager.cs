@@ -21,6 +21,7 @@ public class PostProcessingManager : MonoBehaviour
     [Header("Overlay Sprites")]
     public CanvasGroup overlayEyes;
     public CanvasGroup overlayTentacles;
+    public float overlayTentacleSpawn;
 
     [Header("Fade In Settings")]
     [SerializeField] float minimumIntensity;
@@ -73,9 +74,17 @@ public class PostProcessingManager : MonoBehaviour
 
         float alpha = Mathf.InverseLerp(minimumIntensity, maximumIntensity, masterIntensity);
         if (overlayEyes != null) overlayEyes.alpha = alpha;
-        if (overlayTentacles != null) overlayTentacles.alpha = alpha;
+        //if (overlayTentacles != null) overlayTentacles.alpha = alpha ;
 
-        if (!isReady) return;
+        if (masterIntensity > overlayTentacleSpawn)
+        {
+            if (overlayTentacles != null) overlayTentacles.alpha = 1f;
+        }
+        else
+        {
+            if (overlayTentacles != null) overlayTentacles.alpha = 0f;
+        }
+
 
         // Update entity active flag
         EntityIsActive = masterIntensity >= musicTriggerSpookyThreshold;
