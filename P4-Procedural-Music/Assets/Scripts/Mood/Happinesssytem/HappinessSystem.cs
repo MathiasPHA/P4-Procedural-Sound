@@ -90,6 +90,30 @@ public class HappinessSystem : MonoBehaviour
 
     private MoodSystem moodSystem;
 
+    // ───────────────────────── Cross-Scene Persistence ─────────────────────────
+
+    // Static caches survive scene unload (statics live until app quit OR until
+    // the editor reloads the assembly). On Awake the new instance reads these
+    // back; on every Update / SetHappiness we write the latest values.
+    //
+    // -1f is the "nothing cached yet" sentinel (no real happiness can be
+    // negative). Call ResetPersistedState() to wipe the cache when starting
+    // a fresh game.
+    private static float _persistedHappiness = -1f;
+    private static bool _persistedIsDead = false;
+
+    /// <summary>
+    /// Wipe the cross-scene happiness cache. Call this before loading the
+    /// gameplay scene from a "New Game" flow so the player starts with
+    /// startingHappiness instead of whatever value carried over from a prior
+    /// session in the same Unity process.
+    /// </summary>
+    public static void ResetPersistedState()
+    {
+        _persistedHappiness = -1f;
+        _persistedIsDead = false;
+    }
+
     // ───────────────────────── Public API ─────────────────────────
 
     /// <summary>Current happiness (0–1). This is the visible bar value.</summary>
@@ -130,6 +154,10 @@ public class HappinessSystem : MonoBehaviour
             happiness = Mathf.Clamp01(happiness + delta * 0.7f);
             OnDamaged?.Invoke(-delta);
         }
+
+        // Mirror to the cross-scene cache so a hit landed after Update has
+        // already run this frame still survives a same-frame scene unload.
+        _persistedHappiness = happiness;
     }
 
     /// <summary>
@@ -142,6 +170,9 @@ public class HappinessSystem : MonoBehaviour
         happinessTarget = happiness;
         happinessVelocity = 0f;
         isDead = false;
+
+        _persistedHappiness = happiness;
+        _persistedIsDead = false;
     }
 
     // ───────────────────────── Lifecycle ─────────────────────────
@@ -155,8 +186,18 @@ public class HappinessSystem : MonoBehaviour
         }
         Instance = this;
 
-        happiness = startingHappiness;
-        happinessTarget = startingHappiness;
+        // Restore from cross-scene cache if anything's there; otherwise start fresh.
+        if (_persistedHappiness >= 0f)
+        {
+            happiness = _persistedHappiness;
+            happinessTarget = _persistedHappiness;
+            isDead = _persistedIsDead;
+        }
+        else
+        {
+            happiness = startingHappiness;
+            happinessTarget = startingHappiness;
+        }
     }
 
     private void Start()
@@ -173,11 +214,21 @@ public class HappinessSystem : MonoBehaviour
 
     private void Update()
     {
-        if (isDead) return;
+        if (isDead)
+        {
+            // Even when dead we still keep the cache fresh — otherwise a
+            // scene transition could lose the dead state.
+            _persistedHappiness = happiness;
+            _persistedIsDead = true;
+            return;
+        }
 
         ApplyMoodDrift();
         ApplySmoothing();
         CheckDeath();
+
+        _persistedHappiness = happiness;
+        _persistedIsDead = isDead;
     }
 
     // ───────────────────────── Core ─────────────────────────
