@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1828994288715957585}
   - component: {fileID: 3135014998427476470}
   - component: {fileID: 1029091525035382191}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Sugarcane
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -73,12 +73,12 @@ namespace InteractionSystem
             player.animationQue = "PickUp";
             player.StartHarvest();
 
-            // Remove the world object
-            // Overworld: notify ChunkManager so it stays gone on reload
-            // Dungeon: DungeonSpawnedObject.OnDestroy handles tracking automatically
-            int spawnId = ChunkManager.GetSpawnIdFromObject(gameObject);
-            if (spawnId != 0 && ChunkManager.Instance != null)
-                ChunkManager.Instance.RemoveSpawnedObject(transform.position, spawnId);
+            // Remove the world object via the tracker if present — it holds the correct
+            // chunk coord and spawnId so ChunkManager lookup is always accurate.
+            // Dungeon: DungeonSpawnedObject.OnDestroy handles tracking automatically.
+            var tracker = GetComponent<SpawnedObjectTracker>();
+            if (tracker != null)
+                tracker.Remove();
             else
                 Destroy(gameObject);
         }

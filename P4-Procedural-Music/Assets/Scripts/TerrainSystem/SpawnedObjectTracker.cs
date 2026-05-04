@@ -16,12 +16,18 @@ namespace ProceduralTerrain
     {
         private ChunkManager _chunkManager;
         private int _spawnId;
+        private Vector2Int _chunkCoord;
         private bool _handled;
+
+        public void Init(int spawnId, Vector2Int chunkCoord)
+        {
+            _spawnId = spawnId;
+            _chunkCoord = chunkCoord;
+        }
 
         private void Start()
         {
             _chunkManager = FindFirstObjectByType<ChunkManager>();
-            _spawnId = ChunkManager.GetSpawnIdFromObject(gameObject);
 
             // Auto-hook into HarvestableResource if present
             var harvestable = GetComponent<InventorySystem.Harvesting.HarvestableResource>();
@@ -42,7 +48,7 @@ namespace ProceduralTerrain
             _handled = true;
 
             if (_chunkManager == null || _spawnId == 0) return;
-            _chunkManager.DepleteSpawnedObject(transform.position, _spawnId);
+            _chunkManager.DepleteSpawnedObject(_chunkCoord, _spawnId);
         }
 
         /// <summary>
@@ -56,7 +62,7 @@ namespace ProceduralTerrain
 
             if (_chunkManager != null && _spawnId != 0)
             {
-                _chunkManager.RemoveSpawnedObject(transform.position, _spawnId);
+                _chunkManager.RemoveSpawnedObject(_chunkCoord, _spawnId);
             }
 
             Destroy(gameObject);
