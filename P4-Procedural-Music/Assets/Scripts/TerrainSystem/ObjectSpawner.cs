@@ -139,14 +139,16 @@ namespace ProceduralTerrain
                     System.Random rng = new System.Random(spawnId);
 
                     // Sample density noise.
-                    // IMPORTANT: the seed/rule offsets are added AFTER scaling so they translate
-                    // the sample window in noise-space by a fixed amount regardless of seed magnitude.
-                    // Previously they were inside the scale multiplication, meaning large seed values
-                    // (e.g. 1000) were amplified through densityNoiseScale and could push the entire
-                    // world into a permanently high or low density region of the Perlin field.
+                    // Seed and rule offsets are pre-hashed into a bounded float in [0, 256) so
+                    // that extreme seed values (e.g. int.MaxValue) never push Perlin coordinates
+                    // into ranges where float precision degrades and noise becomes near-constant.
+                    // The hash mixes seed + ruleIdx + a direction constant so X and Y offsets
+                    // are uncorrelated, and different rules never share a sample window.
+                    float seedOffsetX = (HashSpawnId(worldSeed, rule.seedOffset, 0x3D6B, 0) & 0xFFFF) / 256f;
+                    float seedOffsetY = (HashSpawnId(worldSeed, rule.seedOffset, 0x9E3B, 0) & 0xFFFF) / 256f;
                     float densityNoise = Mathf.PerlinNoise(
-                        wx * rule.densityNoiseScale + worldSeed * 3.7f + rule.seedOffset * 137.3f,
-                        wy * rule.densityNoiseScale + worldSeed * 7.1f + rule.seedOffset * 241.7f
+                        wx * rule.densityNoiseScale + seedOffsetX,
+                        wy * rule.densityNoiseScale + seedOffsetY
                     );
 
                     // Below cutoff = no spawning in this area
