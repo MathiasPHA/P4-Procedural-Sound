@@ -105,7 +105,7 @@ MonoBehaviour:
     noiseScale: 0.42
     noiseThreshold: 0.229
   happinessModifier: 0
-  dungeonComfortValue: 0.488
+  dungeonComfortValue: 0.498
   threshold1Max: 0.3
   threshold2Min: 0.55
   threshold3Min: 0.8
