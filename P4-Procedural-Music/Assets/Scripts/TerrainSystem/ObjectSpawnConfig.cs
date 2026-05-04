@@ -71,6 +71,10 @@ namespace ProceduralTerrain
             [Tooltip("Which terrain types this can spawn on.")]
             public List<TerrainType> allowedTerrain = new List<TerrainType> { TerrainType.Grass };
 
+            [Tooltip("If enabled, only spawns on water tiles that have at least one grass neighbour " +
+                     "(i.e. shore/edge water tiles). Has no effect unless Water is in allowedTerrain.")]
+            public bool shoreOnly = false;
+
             [Header("Sorting")]
             [Tooltip("Sorting order offset. Higher = renders in front.")]
             public int sortingOrderOffset = 0;

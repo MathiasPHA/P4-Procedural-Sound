@@ -126,6 +126,11 @@ namespace ProceduralTerrain
                     TerrainType terrain = chunkData.GetTerrain(lx, ly);
                     if (!rule.allowedTerrain.Contains(terrain)) continue;
 
+                    // Shore-only check: water tile must have at least one grass cardinal neighbour
+                    if (rule.shoreOnly && terrain == TerrainType.Water &&
+                        !IsShoreWaterTile(lx, ly, chunkData, chunkSize, genConfig, worldSeed))
+                        continue;
+
                     int wx = worldOffsetX + lx;
                     int wy = worldOffsetY + ly;
 
@@ -408,6 +413,39 @@ namespace ProceduralTerrain
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Returns true if the water tile at (lx, ly) is a shore tile —
+        /// i.e. it has at least one grass neighbour in the 4 cardinal directions.
+        /// Uses chunk data for in-bounds neighbours and the generator for cross-boundary ones,
+        /// matching the same pattern used by ChunkRenderer and WaterCollisionGenerator.
+        /// </summary>
+        private static bool IsShoreWaterTile(
+            int lx, int ly,
+            ChunkData chunk, int chunkSize,
+            TerrainGenerationConfig genConfig, int worldSeed)
+        {
+            int wx = chunk.ChunkCoord.x * chunkSize + lx;
+            int wy = chunk.ChunkCoord.y * chunkSize + ly;
+
+            // Check 4 cardinal neighbours — a shore tile has at least one grass cardinal neighbour
+            var cardinals = new (int dx, int dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) };
+            foreach (var (dx, dy) in cardinals)
+            {
+                int nlx = lx + dx;
+                int nly = ly + dy;
+
+                TerrainType neighbour;
+                if (nlx >= 0 && nlx < chunkSize && nly >= 0 && nly < chunkSize)
+                    neighbour = chunk.GetTerrain(nlx, nly);
+                else
+                    neighbour = TerrainGenerator.SampleAt(wx + dx, wy + dy, genConfig, worldSeed);
+
+                if (neighbour == TerrainType.Grass)
+                    return true;
+            }
+            return false;
         }
 
         private static int HashSpawnId(int wx, int wy, int ruleIdx, int seed)
