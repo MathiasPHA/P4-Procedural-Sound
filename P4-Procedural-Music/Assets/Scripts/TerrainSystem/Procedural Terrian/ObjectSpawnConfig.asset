@@ -91,7 +91,7 @@ MonoBehaviour:
     densityNoiseScale: 0.2
     densityCutoff: 0.8
     densityMultiplier: 1
-    minSpacing: 40.2
+    minSpacing: 8.2
     clearanceRadius: 20
     objectClearance: 20
     maxCountPerChunk: 1
@@ -108,7 +108,7 @@ MonoBehaviour:
     densityNoiseScale: 0.2
     densityCutoff: 0.8
     densityMultiplier: 1
-    minSpacing: 50
+    minSpacing: 10
     clearanceRadius: 20
     objectClearance: 20
     maxCountPerChunk: 1
@@ -125,7 +125,7 @@ MonoBehaviour:
     densityNoiseScale: 0.2
     densityCutoff: 0.8
     densityMultiplier: 1
-    minSpacing: 50
+    minSpacing: 10
     clearanceRadius: 25
     objectClearance: 25
     maxCountPerChunk: 1
