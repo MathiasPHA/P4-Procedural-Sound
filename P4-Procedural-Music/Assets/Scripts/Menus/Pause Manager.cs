@@ -92,6 +92,12 @@ public class PauseManager : MonoBehaviour
             FishingSystem.FishingManager.Instance.IsFishing)
             return;
 
+        // 0b. Flute ring — FluteTool.Update() handles Escape itself (closes the ring).
+        //     Skip pause so the menu doesn't pop up at the same time.
+        var flute = FindFirstObjectByType<InventorySystem.Tools.FluteTool>();
+        if (flute != null && flute.IsOpen)
+            return;
+
         // 1. Placement mode — PlacementSystem.Update() handles Escape itself.
         //    Skip pausing so the pause menu doesn't pop up over the ghost.
         if (PlacementSystem.Instance != null && PlacementSystem.Instance.IsPlacing)
