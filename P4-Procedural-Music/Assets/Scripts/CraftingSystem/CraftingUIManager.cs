@@ -394,19 +394,35 @@ namespace InventorySystem.UI
                 SelectRecipe(_recipeEntries[0].Recipe);
         }
 
-        /// <summary>
-        /// Unconditionally close the crafting panel.
-        /// Called by UICoordinator only — do not call directly from other systems.
-        /// </summary>
-        public void ForceClose()
-        {
-            if (!_isOpen) return;
+     /// <summary>
+/// Unconditionally close the crafting panel.
+/// Called by UICoordinator only — do not call directly from other systems.
+/// Resets the active station back to the default tab so the next open
+/// (via the inventory key) shows the player's normal crafting recipes
+/// rather than whichever world station was last opened.
+/// </summary>
+public void ForceClose()
+{
+    if (!_isOpen) return;
 
-            _isOpen = false;
-            craftingPanel.SetActive(false);
-            ClearSelection();
-        }
+    _isOpen = false;
+    craftingPanel.SetActive(false);
+    ClearSelection();
 
+    // Revert to the default tab's station. Without this, _activeStation
+    // remains pinned to the last world station (e.g. the cooking pot),
+    // so re-opening with the inventory key would show that station's
+    // recipes instead of the default crafting tab.
+    // Skip the reset if we're closing for placement — placement re-open
+    // expects to land back on the same station.
+    if (!_closedForPlacement)
+    {
+        _activeStation = tabs.Count > 0 && tabs[0].station != null
+            ? tabs[0].station
+            : (ICraftingStation)handCraftingStation;
+        _activeTabIndex = 0;
+    }
+}
         // =====================================================================
         // PlacementSystem callbacks — re-open after placement
         // =====================================================================
