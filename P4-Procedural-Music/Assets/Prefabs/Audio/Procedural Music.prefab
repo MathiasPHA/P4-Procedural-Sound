@@ -147,8 +147,8 @@ MonoBehaviour:
   Tempo: 100
   BeatsPerChord: 4
   Tension: 0.3
-  CurrentState: 0
+  CurrentState: 1
   MasterVolume: 0.7
-  ShowDebugInfo: 1
+  ShowDebugInfo: 0
   CurrentChordName: 
   CurrentKeyName: 

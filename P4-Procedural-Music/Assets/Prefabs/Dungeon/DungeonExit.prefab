@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 2682774371468859246}
   - component: {fileID: 4922089467639969087}
   - component: {fileID: 2550446410376719551}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Sprite and collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -185,8 +185,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DungeonExit
   actionVerb: Leave
-  interactRange: 20.02
-  interactCenterOffset: {x: 0, y: 0}
+  interactRange: 42.5
+  interactCenterOffset: {x: 0, y: -17.21}
   promptOffset: {x: 0, y: 1.2}
 --- !u!1 &9107357864465463335
 GameObject:

@@ -17,7 +17,6 @@ public class DungeonAtmosphere : MonoBehaviour, IComfortInfluence
     [Header("References (auto-found if empty)")]
     [SerializeField] private ComfortSystem comfortSystem;
     [SerializeField] private ComfortMusicBridge musicBridge;
-    [SerializeField] private HappinessSystem happinessSystem;
 
     [Header("Dungeon Comfort Influence")]
     [Tooltip("Radius — set large enough to cover the entire dungeon")]
@@ -51,18 +50,10 @@ public class DungeonAtmosphere : MonoBehaviour, IComfortInfluence
         if (musicBridge == null)
             musicBridge = FindObjectOfType<ComfortMusicBridge>();
 
-        if (happinessSystem == null)
-            happinessSystem = HappinessSystem.Instance;
-        if (happinessSystem == null)
-            happinessSystem = FindObjectOfType<HappinessSystem>();
-
         // Register as a comfort influence — the low ComfortValue
         // drags comfort down, which raises tension naturally
         if (comfortSystem != null)
             comfortSystem.RegisterInfluence(this);
-
-        if (happinessSystem != null)
-            happinessSystem.AdjustHappiness(config.happinessModifier);
 
         // Tell the bridge to use this dungeon's threshold set
         if (musicBridge != null)

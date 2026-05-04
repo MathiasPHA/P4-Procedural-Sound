@@ -46,7 +46,7 @@ MonoBehaviour:
   attackHitboxOffset: 15.5
   attackHitboxYOffset: -5.6
   attackHitboxRadius: 11.27
-  attackLungeSpeed: 0
+  attackLungeSpeed: -0
   horizontalAttackOnly: 1
   attackHitboxHeight: 10
   searchDuration: 4
