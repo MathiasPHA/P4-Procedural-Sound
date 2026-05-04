@@ -362,6 +362,13 @@ namespace InventorySystem.Tools
             if (toolData != null && toolData.isInstrument)
                 return false;
 
+            // ── Net: attempt catch instead of dealing damage ──
+            if (toolData != null && toolData.toolType == ToolType.Net)
+            {
+                TryCatchMob(mob, toolData, equippedInstance);
+                return true;
+            }
+
             if (toolData != null)
             {
                 playerStateManager.animationQue = $"Harvest{toolData.toolType}";
@@ -413,8 +420,18 @@ namespace InventorySystem.Tools
             if (equippedInstance != null && equippedInstance.Data.category == ItemCategory.Tool)
                 _toolLookup.TryGetValue(equippedInstance.Data.id, out toolData);
 
+            // ── TEMP DEBUG ──
+            Debug.Log($"[AttackMob] equipped={equippedInstance?.Data?.id ?? "none"}, category={equippedInstance?.Data?.category}, toolData={toolData?.toolType.ToString() ?? "NULL"}");
+
             // Can't attack with an instrument equipped
             if (toolData != null && toolData.isInstrument) return;
+
+            // ── Net: attempt catch instead of dealing damage ──
+            if (toolData != null && toolData.toolType == ToolType.Net)
+            {
+                TryCatchMob(mob, toolData, equippedInstance);
+                return;
+            }
 
             if (toolData != null)
             {
@@ -444,6 +461,41 @@ namespace InventorySystem.Tools
                 mob.TakeDamage(handMobDamage, transform.position);
                 _cooldownTimer = handMobCooldown;
             }
+        }
+
+        // ───────────── Bug Catching ─────────────
+
+        private void TryCatchMob(MobController mob, ToolData toolData, ItemInstance equippedInstance)
+        {
+            var catchable = mob.GetComponent<MobSystem.CatchableMob>();
+
+            if (catchable == null)
+            {
+                playerStateManager.SwitchState(playerStateManager.playerShrugState);
+                _cooldownTimer = toolData.cooldown;
+                return;
+            }
+
+            playerStateManager.animationQue = "HarvestNet";
+            playerStateManager.StartHarvest();
+
+            catchable.AttemptCatch();
+
+            if (equippedInstance != null
+                && equippedInstance.Data.hasInstanceState
+                && toolData.durabilityCost > 0)
+            {
+                bool broke = equippedInstance.ReduceDurability(toolData.durabilityCost);
+                if (broke)
+                    _inventory.RemoveItem(equippedInstance.Data.id, 1);
+                else
+                {
+                    _inventory.NotifySlotChanged(_inventory.EquippedSlotIndex);
+                    _inventory.NotifyChanged();
+                }
+            }
+
+            _cooldownTimer = toolData.cooldown;
         }
 
         public void HarvestResource(HarvestableResource resource)

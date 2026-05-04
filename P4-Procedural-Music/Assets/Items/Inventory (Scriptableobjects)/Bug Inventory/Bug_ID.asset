@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: 'Bug '
   description: It's the bugs you have caught
   loreNote: 'Sure are a lot of bugs around here '
-  icon: {fileID: 21300000, guid: a7b52b9a4b3491f48b68d51a13fdd9e6, type: 3}
+  icon: {fileID: 21300000, guid: c7bae8833efd96e4eb7def461a239158, type: 3}
   category: 0
   maxStackSize: 1
   isDroppable: 1
@@ -26,6 +26,7 @@ MonoBehaviour:
   happinessRestore: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
+  customEffects: []
   isFuel: 0
   burnFuelValue: 0
   displayStats: []
