@@ -476,7 +476,7 @@ namespace InventorySystem.Tools
                 return;
             }
 
-            playerStateManager.animationQue = "HarvestNet";
+            playerStateManager.animationQue = "NetSwing";
             playerStateManager.StartHarvest();
 
             catchable.AttemptCatch();
