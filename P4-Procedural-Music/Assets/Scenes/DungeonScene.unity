@@ -468,13 +468,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1096685723378879691, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1096685723378879691, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1624446560024405410, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: m_Name
       value: PauseMenu (1)
       objectReference: {fileID: 0}
     - target: {fileID: 1624446560024405410, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3304269416517448174, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_AnchorMax.x
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3304269416517448174, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3304269416517448174, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -17
       objectReference: {fileID: 0}
     - target: {fileID: 5314289383621980106, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: m_Pivot.x
@@ -1398,7 +1418,7 @@ PrefabInstance:
     - target: {fileID: 4002829876537943146, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: uiCoordinator
       value: 
-      objectReference: {fileID: 1898653204}
+      objectReference: {fileID: 0}
     - target: {fileID: 4332384995412474388, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2194,17 +2214,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9f5b5f0856411a43bb45d24b8b98f78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStateManager
---- !u!114 &1898653204 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5099165680270774262, guid: 8442ed62c0fa7224f8964ed7c81ce951, type: 3}
-  m_PrefabInstance: {fileID: 1526945336}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7c5972501f37e24ba1cfddc2869daf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.UI.UICoordinator
 --- !u!1 &2045197819
 GameObject:
   m_ObjectHideFlags: 0
