@@ -99,7 +99,14 @@ namespace ProceduralTerrain
                 cellPositions[j] = tmp;
             }
 
-            for (int ruleIdx = 0; ruleIdx < config.rules.Count; ruleIdx++)
+            // Sort rules rarest-first (lowest baseChance) so scarce objects claim space before
+            // common ones. The original config index (ruleIdx) is preserved so the deterministic
+            // spawnId hash doesn't change — saves remain valid after this reorder.
+            var ruleOrder = new List<int>(config.rules.Count);
+            for (int i = 0; i < config.rules.Count; i++) ruleOrder.Add(i);
+            ruleOrder.Sort((a, b) => config.rules[a].baseChance.CompareTo(config.rules[b].baseChance));
+
+            foreach (int ruleIdx in ruleOrder)
             {
                 var rule = config.rules[ruleIdx];
                 if (!rule.enabled) continue;
@@ -131,10 +138,17 @@ namespace ProceduralTerrain
                     // Deterministic RNG for this cell + rule
                     System.Random rng = new System.Random(spawnId);
 
-                    // Sample density noise
+                    // Sample density noise.
+                    // Seed and rule offsets are pre-hashed into a bounded float in [0, 256) so
+                    // that extreme seed values (e.g. int.MaxValue) never push Perlin coordinates
+                    // into ranges where float precision degrades and noise becomes near-constant.
+                    // The hash mixes seed + ruleIdx + a direction constant so X and Y offsets
+                    // are uncorrelated, and different rules never share a sample window.
+                    float seedOffsetX = (HashSpawnId(worldSeed, rule.seedOffset, 0x3D6B, 0) & 0xFFFF) / 256f;
+                    float seedOffsetY = (HashSpawnId(worldSeed, rule.seedOffset, 0x9E3B, 0) & 0xFFFF) / 256f;
                     float densityNoise = Mathf.PerlinNoise(
-                        (wx + worldSeed * 3.7f + rule.seedOffset * 137.3f) * rule.densityNoiseScale,
-                        (wy + worldSeed * 7.1f + rule.seedOffset * 241.7f) * rule.densityNoiseScale
+                        wx * rule.densityNoiseScale + seedOffsetX,
+                        wy * rule.densityNoiseScale + seedOffsetY
                     );
 
                     // Below cutoff = no spawning in this area
