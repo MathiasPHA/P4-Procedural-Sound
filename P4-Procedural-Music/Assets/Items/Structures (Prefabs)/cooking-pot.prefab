@@ -165,6 +165,9 @@ MonoBehaviour:
   hitVolume: 0.5
   demolishSound: {fileID: 0}
   demolishVolume: 0.6
+  drops: []
+  worldItemPrefab: {fileID: 0}
+  directToInventory: 0
 --- !u!114 &4587687224067442618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,7 +226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.WorldStationInteractable
   actionVerb: Interact
-  interactRange: 15
+  interactRange: 5
   interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
   logActions: 0
@@ -240,8 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.OpenCraftingUIAction
   station: {fileID: 0}
-  inventoryUI: {fileID: 0}
-  craftingUI: {fileID: 0}
+  coordinator: {fileID: 0}
 --- !u!114 &-8539712497983428936
 MonoBehaviour:
   m_ObjectHideFlags: 0
