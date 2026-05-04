@@ -134,3 +134,20 @@ MonoBehaviour:
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
+  - name: Sugarcane
+    enabled: 1
+    prefabs:
+    - {fileID: 4602211281127180821, guid: 335dab328af943f498ba8f05278f8fcd, type: 3}
+    baseChance: 0.037
+    densityNoiseScale: 0.2
+    densityCutoff: 0.8
+    densityMultiplier: 1
+    minSpacing: 30.4
+    clearanceRadius: 25
+    objectClearance: 25
+    maxCountPerChunk: 1
+    positionJitter: 0
+    allowedTerrain: 00000000
+    sortingOrderOffset: 0
+    seedOffset: 0
+    depletedPrefab: {fileID: 0}
