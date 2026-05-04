@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TradeUI
   tradePanel: {fileID: 0}
-  titleText: {fileID: 0}
   offerContainer: {fileID: 0}
   tradeSlotPrefab: {fileID: 8601455295706632110, guid: c32847b62080a494ab1b4f7a4e9b192f, type: 3}
   inputProvider: {fileID: 0}

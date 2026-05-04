@@ -92,6 +92,14 @@ namespace InventorySystem.UI
                 return;
             }
 
+            // Flute ring open — close it instead of opening inventory.
+            var flute = FindFirstObjectByType<InventorySystem.Tools.FluteTool>();
+            if (flute != null && flute.IsOpen)
+            {
+                flute.ForceClose();
+                return;
+            }
+
             if (ArePanelsOpen) ClosePanels();
             else OpenPanels();
         }

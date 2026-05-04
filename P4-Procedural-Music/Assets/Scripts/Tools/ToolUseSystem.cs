@@ -705,6 +705,16 @@ namespace InventorySystem.Tools
             if (toolData == null || !toolData.isInstrument)
                 return false;
 
+            // Flute: delegate entirely to FluteTool which manages the note ring UI.
+            // Other instruments fall through to the AudioClip path below.
+            var fluteTool = GetComponent<FluteTool>();
+            if (fluteTool != null)
+            {
+                fluteTool.OnFluteUsed();
+                _cooldownTimer = toolData.cooldown;
+                return true;
+            }
+
             if (instrumentAudioSource == null)
                 return false;
 
