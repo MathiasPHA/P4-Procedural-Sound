@@ -51,7 +51,8 @@ namespace InventorySystem.Tools
 
         [Header("Input Actions")]
         [Tooltip("Mouse position. Bind to <Mouse>/position. Type = Value, Control = Vector2.")]
-        [SerializeField] private InputAction PointAction = new InputAction(
+        [SerializeField]
+        private InputAction PointAction = new InputAction(
             "FlutePoint", InputActionType.Value, expectedControlType: "Vector2");
 
         [Header("Ring Layout")]
@@ -71,24 +72,31 @@ namespace InventorySystem.Tools
         public float DuckedVolume = 0.35f;
 
         [Header("Colors")]
-        public Color NoteIdleColor    = new Color(0.80f, 0.93f, 1.00f, 0.85f);
-        public Color NoteHoverColor   = new Color(1.00f, 1.00f, 0.65f, 1.00f);
+        public Color NoteIdleColor = new Color(0.80f, 0.93f, 1.00f, 0.85f);
+        public Color NoteHoverColor = new Color(1.00f, 1.00f, 0.65f, 1.00f);
         public Color NotePlayingColor = new Color(0.45f, 1.00f, 0.70f, 1.00f);
-        public Color LabelIdleColor   = new Color(0.10f, 0.10f, 0.15f, 1.00f);
+        public Color LabelIdleColor = new Color(0.10f, 0.10f, 0.15f, 1.00f);
         public Color LabelActiveColor = Color.white;
 
         // ── Runtime ───────────────────────────────────────────────────────
 
-        private bool _isOpen      = false;
-        private int  _hoveredNote = -1;
-        private int  _activeNote  = -1;
+        /// <summary>True while the note ring is open — PauseManager checks this to skip pause.</summary>
+        public bool IsOpen => _isOpen;
 
-        private int[]    _midiNotes = new int[8];
+        private bool _isOpen = false;
+        private int _hoveredNote = -1;
+        private int _activeNote = -1;
+
+        // Fullscreen invisible blocker — swallows all clicks while the ring is open
+        // so the player can't interact with anything behind it.
+        private GameObject _blockerGO;
+
+        private int[] _midiNotes = new int[8];
         private string[] _noteNames = new string[8];
 
-        private List<RectTransform> _noteRects  = new List<RectTransform>();
-        private List<Image>         _noteImages = new List<Image>();
-        private List<TMP_Text>      _noteLabels = new List<TMP_Text>();
+        private List<RectTransform> _noteRects = new List<RectTransform>();
+        private List<Image> _noteImages = new List<Image>();
+        private List<TMP_Text> _noteLabels = new List<TMP_Text>();
 
         // Dedicated player flute voice — separate from the composition engine's lead
         private VoiceManager _fluteVoice;
@@ -121,7 +129,7 @@ namespace InventorySystem.Tools
         public void OnFluteUsed()
         {
             if (_isOpen) CloseRing();
-            else         OpenRing();
+            else OpenRing();
         }
 
         /// <summary>Force-close the ring (unequip, inventory open, etc).</summary>
@@ -143,6 +151,21 @@ namespace InventorySystem.Tools
             _isOpen = true;
             CacheFluteVoice();
             RebuildNoteData();
+
+            // Spawn a fullscreen invisible blocker on the same canvas BEFORE note buttons
+            // so it sits behind them in draw order but in front of everything else in the world.
+            // This swallows all pointer events so the player can't click interactables.
+            _blockerGO = new GameObject("FluteBlocker");
+            _blockerGO.transform.SetParent(RingCanvas.transform, false);
+            var blockerRT = _blockerGO.AddComponent<RectTransform>();
+            blockerRT.anchorMin = Vector2.zero;
+            blockerRT.anchorMax = Vector2.one;
+            blockerRT.offsetMin = Vector2.zero;
+            blockerRT.offsetMax = Vector2.zero;
+            var blockerImg = _blockerGO.AddComponent<UnityEngine.UI.Image>();
+            blockerImg.color = Color.clear;  // Fully transparent but still raycasts
+            _blockerGO.transform.SetAsFirstSibling(); // Behind note buttons
+
             SpawnNoteButtons();
 
             PointAction.Enable();
@@ -154,10 +177,16 @@ namespace InventorySystem.Tools
 
         void CloseRing()
         {
-            _isOpen      = false;
+            _isOpen = false;
             _hoveredNote = -1;
             StopCurrentNote();
             DestroyNoteButtons();
+
+            if (_blockerGO != null)
+            {
+                Destroy(_blockerGO);
+                _blockerGO = null;
+            }
 
             PointAction.Disable();
 
@@ -195,7 +224,7 @@ namespace InventorySystem.Tools
                 TMP_Text label = btn.GetComponentInChildren<TMP_Text>();
                 if (label != null)
                 {
-                    label.text  = _noteNames[i];
+                    label.text = _noteNames[i];
                     label.color = LabelIdleColor;
                 }
 
@@ -221,6 +250,25 @@ namespace InventorySystem.Tools
         {
             if (!_isOpen) return;
 
+            // Escape closes the ring — consumed here so PauseManager skips pause.
+            if (UnityEngine.InputSystem.Keyboard.current != null &&
+                UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                CloseRing();
+                return;
+            }
+
+            // Close if the player enters a hurt or death state (took damage).
+            if (StateManager != null)
+            {
+                var current = StateManager.CurrentState;
+                if (current == StateManager.hurtState || current == StateManager.deathState)
+                {
+                    CloseRing();
+                    return;
+                }
+            }
+
             UpdateHover();
             UpdateButtonVisuals();
 
@@ -240,8 +288,8 @@ namespace InventorySystem.Tools
 
             Vector2 mouseScreen = PointAction.ReadValue<Vector2>();
 
-            float best    = float.MaxValue;
-            int   bestIdx = -1;
+            float best = float.MaxValue;
+            int bestIdx = -1;
 
             for (int i = 0; i < _noteRects.Count; i++)
             {
@@ -284,10 +332,10 @@ namespace InventorySystem.Tools
             {
                 if (_noteImages[i] == null) continue;
 
-                bool isActive  = (i == _activeNote);
+                bool isActive = (i == _activeNote);
                 bool isHovered = (i == _hoveredNote);
 
-                _noteImages[i].color = isActive  ? NotePlayingColor
+                _noteImages[i].color = isActive ? NotePlayingColor
                                      : isHovered ? NoteHoverColor
                                      : NoteIdleColor;
 
@@ -324,7 +372,7 @@ namespace InventorySystem.Tools
         {
             ProceduralMusic.Core.Key key = GetCurrentKey();
             int[] degrees = key.GetScaleDegrees();
-            int   root    = (BaseOctave + 1) * 12 + (int)key.Root;
+            int root = (BaseOctave + 1) * 12 + (int)key.Root;
 
             for (int i = 0; i < 7; i++)
             {
