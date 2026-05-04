@@ -152,19 +152,26 @@ namespace InventorySystem.Tools
             CacheFluteVoice();
             RebuildNoteData();
 
-            // Spawn a fullscreen invisible blocker on the same canvas BEFORE note buttons
-            // so it sits behind them in draw order but in front of everything else in the world.
-            // This swallows all pointer events so the player can't click interactables.
+            // Create a dedicated Screen Space Overlay canvas for the blocker.
+            // The RingCanvas is World Space (tiny, parented to the player) so stretching
+            // a RectTransform there won't cover the screen. A separate overlay canvas
+            // sits on top of everything and swallows all pointer events.
             _blockerGO = new GameObject("FluteBlocker");
-            _blockerGO.transform.SetParent(RingCanvas.transform, false);
-            var blockerRT = _blockerGO.AddComponent<RectTransform>();
+            var blockerCanvas = _blockerGO.AddComponent<UnityEngine.Canvas>();
+            blockerCanvas.renderMode = UnityEngine.RenderMode.ScreenSpaceOverlay;
+            blockerCanvas.sortingOrder = 900; // High enough to be above game UI, below note ring
+            _blockerGO.AddComponent<UnityEngine.UI.CanvasScaler>();
+            _blockerGO.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+            var blockerImgGO = new GameObject("BlockerImage");
+            blockerImgGO.transform.SetParent(_blockerGO.transform, false);
+            var blockerRT = blockerImgGO.AddComponent<RectTransform>();
             blockerRT.anchorMin = Vector2.zero;
             blockerRT.anchorMax = Vector2.one;
             blockerRT.offsetMin = Vector2.zero;
             blockerRT.offsetMax = Vector2.zero;
-            var blockerImg = _blockerGO.AddComponent<UnityEngine.UI.Image>();
-            blockerImg.color = Color.clear;  // Fully transparent but still raycasts
-            _blockerGO.transform.SetAsFirstSibling(); // Behind note buttons
+            var blockerImg = blockerImgGO.AddComponent<UnityEngine.UI.Image>();
+            blockerImg.color = Color.clear; // Transparent but blocks raycasts
 
             SpawnNoteButtons();
 
@@ -249,14 +256,6 @@ namespace InventorySystem.Tools
         void Update()
         {
             if (!_isOpen) return;
-
-            // Escape closes the ring — consumed here so PauseManager skips pause.
-            if (UnityEngine.InputSystem.Keyboard.current != null &&
-                UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
-            {
-                CloseRing();
-                return;
-            }
 
             // Close if the player enters a hurt or death state (took damage).
             if (StateManager != null)

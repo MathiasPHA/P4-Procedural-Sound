@@ -92,11 +92,14 @@ public class PauseManager : MonoBehaviour
             FishingSystem.FishingManager.Instance.IsFishing)
             return;
 
-        // 0b. Flute ring — FluteTool.Update() handles Escape itself (closes the ring).
-        //     Skip pause so the menu doesn't pop up at the same time.
+
+        // 0b. Flute ring — close it and consume Escape so pause doesn't open.
         var flute = FindFirstObjectByType<InventorySystem.Tools.FluteTool>();
         if (flute != null && flute.IsOpen)
+        {
+            flute.ForceClose();
             return;
+        }
 
         // 1. Placement mode — PlacementSystem.Update() handles Escape itself.
         //    Skip pausing so the pause menu doesn't pop up over the ghost.
@@ -125,7 +128,6 @@ public class PauseManager : MonoBehaviour
             g.mixer.SetFloat(g.exposedParam, -80f);
         }
 
-        uiCoordinator?.SetScrollBlocked(true);
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         isPaused = true;
@@ -151,7 +153,6 @@ public class PauseManager : MonoBehaviour
         pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
-        uiCoordinator?.SetScrollBlocked(false);
     }
 
     public void QuitGame() => Application.Quit();
