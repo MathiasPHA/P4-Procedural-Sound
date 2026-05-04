@@ -690,6 +690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9f5b5f0856411a43bb45d24b8b98f78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStateManager
+  consumableEffect: {fileID: 0}
   animationQue: 
   playerRB: {fileID: 0}
   moveInput: {x: 0, y: 0}
@@ -765,12 +766,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: badd5b9eb08a47d4f98a5d4c7934daa2, type: 2}
   - {fileID: 11400000, guid: c9c9ac932e3dc48119a052c57cf376e2, type: 2}
   - {fileID: 11400000, guid: 1bfb98d5d171a4ed186f1743632d2a1a, type: 2}
+  - {fileID: 11400000, guid: ba943e36e971647b891f8c815031b7e5, type: 2}
   resourceLayer:
     serializedVersion: 2
     m_Bits: 448
   mobLayer:
     serializedVersion: 2
     m_Bits: 1024
+  structureLayer:
+    serializedVersion: 2
+    m_Bits: 0
   interactRadius: 8.84
   detectionOffset: {x: 0, y: -3.41}
   handDamage: 1
@@ -1190,12 +1195,15 @@ MonoBehaviour:
   happinessSystem: {fileID: 5049543004024689469}
   deathCanvasGroup: {fileID: 0}
   playerRigidbody: {fileID: 50687759397478212}
+  playerStateManager: {fileID: 0}
   componentsToDisable: []
   delayBeforeFade: 0.4
   fadeInDuration: 2
   fadeOutDuration: 0.6
   deathSound: {fileID: 0}
   deathVolume: 1
+  deleteWorldOnDeath: 1
+  verboseLogging: 1
 --- !u!1 &5674004506485464730
 GameObject:
   m_ObjectHideFlags: 0
