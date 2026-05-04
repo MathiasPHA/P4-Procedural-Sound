@@ -125,6 +125,7 @@ public class PauseManager : MonoBehaviour
             g.mixer.SetFloat(g.exposedParam, -80f);
         }
 
+        uiCoordinator?.SetScrollBlocked(true);
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         isPaused = true;
@@ -150,6 +151,7 @@ public class PauseManager : MonoBehaviour
         pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
+        uiCoordinator?.SetScrollBlocked(false);
     }
 
     public void QuitGame() => Application.Quit();

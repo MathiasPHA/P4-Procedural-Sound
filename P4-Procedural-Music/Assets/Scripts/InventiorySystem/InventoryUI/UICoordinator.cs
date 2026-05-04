@@ -126,6 +126,8 @@ namespace InventorySystem.UI
             OpenPanels();
         }
 
+        public void SetScrollBlocked(bool blocked) => inventoryUI?.SetScrollBlocked(blocked);
+
         public void ReopenAfterPlacement()
         {
             ArePanelsOpen = false;

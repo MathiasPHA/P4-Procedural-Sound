@@ -484,7 +484,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67fd9947978f09b41955464610c850f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
-  actionVerb: Interact
+  actionVerb: Break
+  mouseButton: 0
   interactRange: 9
   interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
@@ -567,8 +568,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1072beb254b4dc0468d9d1cc5f671952, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.WorldStationInteractable
-  actionVerb: Interact
-  interactRange: 1.5
+  actionVerb: Add Fuel
+  mouseButton: 1
+  interactRange: 9
   interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
   logActions: 0
