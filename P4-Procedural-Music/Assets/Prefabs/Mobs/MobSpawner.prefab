@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComfortToEntityBridge
   postProcessingManager: {fileID: 0}
-  comfortThreshold: 0.3
+  comfortThreshold: 0.38
   intensityIncreaseSpeed: 0.2
 --- !u!1 &3123444977881018676
 GameObject:

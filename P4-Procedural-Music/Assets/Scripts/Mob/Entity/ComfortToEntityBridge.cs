@@ -4,6 +4,7 @@ public class ComfortToEntityBridge : MonoBehaviour
 {
     [Header("References")]
     public PostProcessingManager postProcessingManager;
+    public static bool IsDraining { get; set; } = false;
 
     [Header("Thresholds")]
     [Tooltip("Below this comfort level the entity starts appearing")]
@@ -25,17 +26,14 @@ public class ComfortToEntityBridge : MonoBehaviour
     }
 
     void Update()
+{
+    if (comfortSystem == null || postProcessingManager == null) return;
+    if (IsDraining) return; // wait for entity drain to finish
+
+    if (comfortSystem.Comfort < comfortThreshold)
     {
-        if (comfortSystem == null || postProcessingManager == null) return;
-
-        if (comfortSystem.Comfort < comfortThreshold)
-        {
-            // Map how far below the threshold comfort is to a target intensity
-            float targetIntensity = Mathf.InverseLerp(comfortThreshold, 0f, comfortSystem.Comfort);
-
-            postProcessingManager.SetIntensity(
-                Mathf.MoveTowards(postProcessingManager.masterIntensity,
-                    targetIntensity, intensityIncreaseSpeed * Time.deltaTime));
-        }
+        postProcessingManager.SetIntensity(
+            postProcessingManager.masterIntensity + intensityIncreaseSpeed * Time.deltaTime);
     }
+}
 }
