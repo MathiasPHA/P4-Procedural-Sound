@@ -549,7 +549,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: recipeDatabase.Array.size
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 1675543017461387510, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
       propertyPath: 'recipeDatabase.Array.data[0]'
