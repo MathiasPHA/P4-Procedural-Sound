@@ -68,6 +68,7 @@ namespace ProceduralTerrain
             int worldSeed,
             Transform chunkParent,
             float cellSize,
+            UnityEngine.Tilemaps.Tilemap tilemap,
             HashSet<int> removedIds = null,
             HashSet<int> depletedIds = null)
         {
@@ -81,6 +82,12 @@ namespace ProceduralTerrain
 
             int worldOffsetX = chunkCoord.x * chunkSize;
             int worldOffsetY = chunkCoord.y * chunkSize;
+
+            // Read tile anchor from the tilemap — matches the same offset WaterCollisionGenerator
+            // applies to collision vertices. With a 0.5,0.5 anchor the sprites are shifted half
+            // a cell, so spawn positions must include the same offset before scaling by cellSize.
+            float anchorX = tilemap != null ? tilemap.tileAnchor.x : 0.5f;
+            float anchorY = tilemap != null ? tilemap.tileAnchor.y : 0.5f;
 
             // Build a shuffled list of cell positions so we don't iterate row-by-row
             // (row-by-row + minSpacing creates visible line patterns)
@@ -99,7 +106,14 @@ namespace ProceduralTerrain
                 cellPositions[j] = tmp;
             }
 
-            for (int ruleIdx = 0; ruleIdx < config.rules.Count; ruleIdx++)
+            // Sort rules rarest-first (lowest baseChance) so scarce objects claim space before
+            // common ones. The original config index (ruleIdx) is preserved so the deterministic
+            // spawnId hash doesn't change — saves remain valid after this reorder.
+            var ruleOrder = new List<int>(config.rules.Count);
+            for (int i = 0; i < config.rules.Count; i++) ruleOrder.Add(i);
+            ruleOrder.Sort((a, b) => config.rules[a].baseChance.CompareTo(config.rules[b].baseChance));
+
+            foreach (int ruleIdx in ruleOrder)
             {
                 var rule = config.rules[ruleIdx];
                 if (!rule.enabled) continue;
@@ -119,6 +133,11 @@ namespace ProceduralTerrain
                     TerrainType terrain = chunkData.GetTerrain(lx, ly);
                     if (!rule.allowedTerrain.Contains(terrain)) continue;
 
+                    // Shore-only check: water tile must have at least one grass cardinal neighbour
+                    if (rule.shoreOnly && terrain == TerrainType.Water &&
+                        !IsShoreWaterTile(lx, ly, chunkData, chunkSize, genConfig, worldSeed))
+                        continue;
+
                     int wx = worldOffsetX + lx;
                     int wy = worldOffsetY + ly;
 
@@ -131,10 +150,17 @@ namespace ProceduralTerrain
                     // Deterministic RNG for this cell + rule
                     System.Random rng = new System.Random(spawnId);
 
-                    // Sample density noise
+                    // Sample density noise.
+                    // Seed and rule offsets are pre-hashed into a bounded float in [0, 256) so
+                    // that extreme seed values (e.g. int.MaxValue) never push Perlin coordinates
+                    // into ranges where float precision degrades and noise becomes near-constant.
+                    // The hash mixes seed + ruleIdx + a direction constant so X and Y offsets
+                    // are uncorrelated, and different rules never share a sample window.
+                    float seedOffsetX = (HashSpawnId(worldSeed, rule.seedOffset, 0x3D6B, 0) & 0xFFFF) / 256f;
+                    float seedOffsetY = (HashSpawnId(worldSeed, rule.seedOffset, 0x9E3B, 0) & 0xFFFF) / 256f;
                     float densityNoise = Mathf.PerlinNoise(
-                        (wx + worldSeed * 3.7f + rule.seedOffset * 137.3f) * rule.densityNoiseScale,
-                        (wy + worldSeed * 7.1f + rule.seedOffset * 241.7f) * rule.densityNoiseScale
+                        wx * rule.densityNoiseScale + seedOffsetX,
+                        wy * rule.densityNoiseScale + seedOffsetY
                     );
 
                     // Below cutoff = no spawning in this area
@@ -155,25 +181,64 @@ namespace ProceduralTerrain
                     float jitterX = ((float)rng.NextDouble() * 2f - 1f) * rule.positionJitter;
                     float jitterY = ((float)rng.NextDouble() * 2f - 1f) * rule.positionJitter;
 
-                    // Final tile-space position (cell center + jitter)
+                    // Shore bias: push the spawn position toward the grass edge of the tile.
+                    // We already know this is a shore tile, so we sum the directions of all
+                    // grass cardinal neighbours to get a bias vector, then push the spawn
+                    // 0.25 tiles in that direction — keeping it inside the tile but near the
+                    // water/grass boundary where it looks correct visually. Cost is near-zero
+                    // since the neighbour samples are the same ones IsShoreWaterTile already did.
+                    if (rule.shoreOnly && terrain == TerrainType.Water)
+                    {
+                        float biasX = 0f, biasY = 0f;
+                        var cardinals = new (int dx, int dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) };
+                        foreach (var (dx, dy) in cardinals)
+                        {
+                            int nlx = lx + dx;
+                            int nly = ly + dy;
+                            TerrainType neighbour;
+                            if (nlx >= 0 && nlx < chunkSize && nly >= 0 && nly < chunkSize)
+                                neighbour = chunkData.GetTerrain(nlx, nly);
+                            else
+                                neighbour = TerrainGenerator.SampleAt(wx + dx, wy + dy, genConfig, worldSeed);
+                            if (neighbour == TerrainType.Grass)
+                            {
+                                biasX += dx;
+                                biasY += dy;
+                            }
+                        }
+                        // Normalise so corner tiles (two grass neighbours) don't double-push
+                        float biasLen = Mathf.Sqrt(biasX * biasX + biasY * biasY);
+                        if (biasLen > 0f)
+                        {
+                            jitterX += (biasX / biasLen) * 0.25f;
+                            jitterY += (biasY / biasLen) * 0.25f;
+                        }
+                    }
+
+                    // Final tile-space position (cell center + jitter + optional shore bias)
                     Vector2 candidateTilePos = new Vector2(lx + 0.5f + jitterX, ly + 0.5f + jitterY);
 
                     // Post-jitter terrain check: re-verify the tile under the FINAL position is allowed.
-                    // With positionJitter <= 0.5 (the inspector slider cap), the position can't leave
-                    // the spawn cell, so this is mostly a defensive safety net — but if positionJitter
-                    // has been set higher via YAML, this catches the case where jitter pushes the spawn
-                    // across a cell boundary onto disallowed terrain (e.g. water).
-                    int finalTileX = Mathf.FloorToInt(candidateTilePos.x);
-                    int finalTileY = Mathf.FloorToInt(candidateTilePos.y);
-                    if (finalTileX >= 0 && finalTileX < chunkSize &&
-                        finalTileY >= 0 && finalTileY < chunkSize)
+                    // Handles both in-chunk and cross-chunk-boundary cases so jitter can never
+                    // push a spawn onto disallowed terrain regardless of positionJitter magnitude.
                     {
-                        if (!rule.allowedTerrain.Contains(chunkData.GetTerrain(finalTileX, finalTileY)))
-                            continue;
+                        int finalTileX = Mathf.FloorToInt(candidateTilePos.x);
+                        int finalTileY = Mathf.FloorToInt(candidateTilePos.y);
+                        TerrainType finalTerrain;
+                        if (finalTileX >= 0 && finalTileX < chunkSize &&
+                            finalTileY >= 0 && finalTileY < chunkSize)
+                        {
+                            finalTerrain = chunkData.GetTerrain(finalTileX, finalTileY);
+                        }
+                        else
+                        {
+                            // Jitter pushed across a chunk boundary — sample the generator
+                            finalTerrain = TerrainGenerator.SampleAt(
+                                worldOffsetX + finalTileX, worldOffsetY + finalTileY,
+                                genConfig, worldSeed);
+                        }
+                        if (!rule.allowedTerrain.Contains(finalTerrain)) continue;
                     }
-                    // (If jitter pushed across a chunk boundary, fall through and trust the
-                    //  spawn-cell check at the top of the loop. With positionJitter <= 0.5 this
-                    //  branch is unreachable.)
 
                     // Clearance check (world units): every tile whose center lies within
                     // clearanceRadius world units of the candidate must be in allowedTerrain.
@@ -236,15 +301,23 @@ namespace ProceduralTerrain
                         if (prefab == null) continue;
                     }
 
+                    // World position — matches WaterCollisionGenerator's vertex formula exactly:
+                    // (tileCoord + subCellOffset + anchor) * cellSize
                     Vector3 worldPos = new Vector3(
-                        (worldOffsetX + candidateTilePos.x) * cellSize,
-                        (worldOffsetY + candidateTilePos.y) * cellSize,
+                        (worldOffsetX + candidateTilePos.x + anchorX) * cellSize,
+                        (worldOffsetY + candidateTilePos.y + anchorY) * cellSize,
                         0f
                     );
 
                     // Spawn
                     GameObject instance = Object.Instantiate(prefab, worldPos, Quaternion.identity, chunkParent);
                     instance.name = $"{rule.name}_{spawnId}";
+
+                    // Give the tracker its ID and chunk coord directly — avoids reverse-lookup
+                    // from world position which breaks near chunk boundaries after anchor offsets.
+                    var tracker = instance.GetComponent<SpawnedObjectTracker>();
+                    if (tracker != null)
+                        tracker.Init(spawnId, chunkCoord);
 
                     chunkObjects.Objects.Add(new SpawnedObject
                     {
@@ -394,6 +467,39 @@ namespace ProceduralTerrain
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Returns true if the water tile at (lx, ly) is a shore tile —
+        /// i.e. it has at least one grass neighbour in the 4 cardinal directions.
+        /// Uses chunk data for in-bounds neighbours and the generator for cross-boundary ones,
+        /// matching the same pattern used by ChunkRenderer and WaterCollisionGenerator.
+        /// </summary>
+        private static bool IsShoreWaterTile(
+            int lx, int ly,
+            ChunkData chunk, int chunkSize,
+            TerrainGenerationConfig genConfig, int worldSeed)
+        {
+            int wx = chunk.ChunkCoord.x * chunkSize + lx;
+            int wy = chunk.ChunkCoord.y * chunkSize + ly;
+
+            // Check 4 cardinal neighbours — a shore tile has at least one grass cardinal neighbour
+            var cardinals = new (int dx, int dy)[] { (0, 1), (0, -1), (1, 0), (-1, 0) };
+            foreach (var (dx, dy) in cardinals)
+            {
+                int nlx = lx + dx;
+                int nly = ly + dy;
+
+                TerrainType neighbour;
+                if (nlx >= 0 && nlx < chunkSize && nly >= 0 && nly < chunkSize)
+                    neighbour = chunk.GetTerrain(nlx, nly);
+                else
+                    neighbour = TerrainGenerator.SampleAt(wx + dx, wy + dy, genConfig, worldSeed);
+
+                if (neighbour == TerrainType.Grass)
+                    return true;
+            }
+            return false;
         }
 
         private static int HashSpawnId(int wx, int wy, int ruleIdx, int seed)

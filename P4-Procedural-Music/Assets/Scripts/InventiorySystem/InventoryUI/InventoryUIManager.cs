@@ -46,6 +46,7 @@ namespace InventorySystem.UI
         private readonly List<InventorySlotUI> _hotbarSlotUIs = new();
         private bool _inventoryOpen;
         private bool _initialized;
+        private bool _scrollBlocked;
 
         // Drag state
         private bool _isDragging;
@@ -390,8 +391,11 @@ namespace InventorySystem.UI
             _inventory.SelectHotbar(slotIndex);
         }
 
+        public void SetScrollBlocked(bool blocked) => _scrollBlocked = blocked;
+
         private void OnScrollHotbar(float scrollValue)
         {
+            if (_inventoryOpen || _scrollBlocked) return;
             int current = _inventory.ActiveHotbarIndex;
             current = scrollValue > 0
                 ? (current - 1 + Inventory.HotbarSize) % Inventory.HotbarSize

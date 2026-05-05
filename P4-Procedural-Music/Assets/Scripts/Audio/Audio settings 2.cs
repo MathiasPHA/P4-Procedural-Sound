@@ -45,11 +45,13 @@ public class MixerVolumeController : MonoBehaviour
 
     public void ResetAll()
     {
-        foreach (var group in groups)
+    foreach (var group in groups)
         {
-            if (group.slider == null) continue;
-            group.slider.value = group.defaultVolume;
-            PlayerPrefs.DeleteKey(group.exposedParam);
+            if (group.slider == null || group.mixer == null) continue;
+            group.slider.value = 1f;
+            ApplyVolume(group.exposedParam, group.mixer, 1f);
+            PlayerPrefs.SetFloat(group.exposedParam, 1f);
         }
+        PlayerPrefs.Save();
     }
 }

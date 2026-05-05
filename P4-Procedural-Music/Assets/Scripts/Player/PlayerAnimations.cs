@@ -75,6 +75,14 @@ public class PlayerAnimations : MonoBehaviour
                 playerAnimator.Play("PlayerSpearSwingRight");
         }
 
+        if (animationQue == "NetSwing")
+        {
+            if (playerStateManager.playerDir == "Left" || playerStateManager.playerDir == "Up")
+                playerAnimator.Play("PlayerNetSwingLeft");
+            else if (playerStateManager.playerDir == "Right" || playerStateManager.playerDir == "Down")
+                playerAnimator.Play("PlayerNetSwingRight");
+        }
+
         if (animationQue == "HarvestHand")
         {
             if (playerStateManager.playerDir == "Left" || playerStateManager.playerDir == "Up")

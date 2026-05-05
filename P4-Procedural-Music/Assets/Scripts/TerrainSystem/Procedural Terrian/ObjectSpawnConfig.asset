@@ -27,6 +27,7 @@ MonoBehaviour:
     maxCountPerChunk: 0
     positionJitter: 0.45
     allowedTerrain: 00000000
+    shoreOnly: 0
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 8946883767646482474, guid: c512959c9a01793409ed4039bc3325a3, type: 3}
@@ -44,6 +45,7 @@ MonoBehaviour:
     maxCountPerChunk: 0
     positionJitter: 0.45
     allowedTerrain: 00000000
+    shoreOnly: 0
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
@@ -62,6 +64,7 @@ MonoBehaviour:
     maxCountPerChunk: 0
     positionJitter: 0.45
     allowedTerrain: 00000000
+    shoreOnly: 0
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
@@ -80,6 +83,7 @@ MonoBehaviour:
     maxCountPerChunk: 0
     positionJitter: 0.45
     allowedTerrain: 00000000
+    shoreOnly: 0
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
@@ -91,12 +95,13 @@ MonoBehaviour:
     densityNoiseScale: 0.2
     densityCutoff: 0.8
     densityMultiplier: 1
-    minSpacing: 40.2
+    minSpacing: 8.2
     clearanceRadius: 20
     objectClearance: 20
     maxCountPerChunk: 1
     positionJitter: 0.45
     allowedTerrain: 00000000
+    shoreOnly: 0
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
@@ -108,12 +113,13 @@ MonoBehaviour:
     densityNoiseScale: 0.2
     densityCutoff: 0.8
     densityMultiplier: 1
-    minSpacing: 50
+    minSpacing: 10
     clearanceRadius: 20
     objectClearance: 20
     maxCountPerChunk: 1
     positionJitter: 0.45
     allowedTerrain: 00000000
+    shoreOnly: 0
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
@@ -125,12 +131,31 @@ MonoBehaviour:
     densityNoiseScale: 0.2
     densityCutoff: 0.8
     densityMultiplier: 1
-    minSpacing: 50
+    minSpacing: 10
     clearanceRadius: 25
     objectClearance: 25
     maxCountPerChunk: 1
     positionJitter: 0
     allowedTerrain: 00000000
+    shoreOnly: 0
+    sortingOrderOffset: 0
+    seedOffset: 0
+    depletedPrefab: {fileID: 0}
+  - name: Sugarcane
+    enabled: 1
+    prefabs:
+    - {fileID: 1046357200212330553, guid: 69fb5d7bc45097d44ac5583b422c3152, type: 3}
+    baseChance: 0.612
+    densityNoiseScale: 0.2
+    densityCutoff: 0.027
+    densityMultiplier: 1
+    minSpacing: 0
+    clearanceRadius: 0
+    objectClearance: 0
+    maxCountPerChunk: 1
+    positionJitter: 0.302
+    allowedTerrain: 01000000
+    shoreOnly: 1
     sortingOrderOffset: 0
     seedOffset: 0
     depletedPrefab: {fileID: 0}
