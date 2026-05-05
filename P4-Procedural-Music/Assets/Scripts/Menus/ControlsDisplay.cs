@@ -4,8 +4,8 @@ using UnityEngine.InputSystem;
 using TMPro;
 
 /// <summary>
-/// Reads the Player action map and displays each binding as a text row.
-/// Groups duplicate composite parts (e.g. WASD + Arrows) into one row.
+/// Reads the Player action map and selected UI actions, displaying each
+/// binding as a text row. Groups duplicate composite parts into one row.
 /// No rebinding — display only.
 /// </summary>
 public class ControlsDisplay : MonoBehaviour
@@ -20,6 +20,9 @@ public class ControlsDisplay : MonoBehaviour
     [SerializeField] private int fontSize = 18;
     [SerializeField] private float rowHeight = 45f;
 
+    // UI actions to include by name
+    private static readonly string[] IncludedUIActions = { "Toggle Inventory", "Pause" };
+
     private void OnEnable()
     {
         BuildRows();
@@ -30,43 +33,55 @@ public class ControlsDisplay : MonoBehaviour
         foreach (Transform child in rowContainer)
             Destroy(child.gameObject);
 
-        var playerMap = inputActions.FindActionMap("Player", throwIfNotFound: true);
-
-        // Key: "ActionName (partName)" or "ActionName", Value: list of key strings
         var grouped = new Dictionary<string, List<string>>();
         var order = new List<string>();
 
+        // ── Player map ────────────────────────────────────────────────────────
+        var playerMap = inputActions.FindActionMap("Player", throwIfNotFound: true);
         foreach (var action in playerMap.actions)
+            ProcessAction(action, grouped, order);
+
+        // ── Selected UI actions ───────────────────────────────────────────────
+        var uiMap = inputActions.FindActionMap("UI", throwIfNotFound: true);
+        foreach (var actionName in IncludedUIActions)
         {
-            for (int i = 0; i < action.bindings.Count; i++)
-            {
-                var binding = action.bindings[i];
-                if (binding.isComposite) continue;
-                if (binding.path.Contains("Gamepad")) continue;
-
-                string rowKey = binding.isPartOfComposite
-                    ? $"{action.name} ({binding.name})"
-                    : action.name;
-
-                string keyName = InputControlPath.ToHumanReadableString(
-                    binding.effectivePath,
-                    InputControlPath.HumanReadableStringOptions.OmitDevice);
-
-                if (!grouped.ContainsKey(rowKey))
-                {
-                    grouped[rowKey] = new List<string>();
-                    order.Add(rowKey);
-                }
-
-                if (!string.IsNullOrEmpty(keyName) && !grouped[rowKey].Contains(keyName))
-                    grouped[rowKey].Add(keyName);
-            }
+            var action = uiMap.FindAction(actionName);
+            if (action != null)
+                ProcessAction(action, grouped, order);
         }
 
+        // ── Build rows ────────────────────────────────────────────────────────
         foreach (var rowKey in order)
         {
             string keys = string.Join(" / ", grouped[rowKey]);
             CreateRow(rowKey, keys);
+        }
+    }
+
+    private void ProcessAction(InputAction action, Dictionary<string, List<string>> grouped, List<string> order)
+    {
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            var binding = action.bindings[i];
+            if (binding.isComposite) continue;
+            if (binding.path.Contains("Gamepad")) continue;
+
+            string rowKey = binding.isPartOfComposite
+                ? $"{action.name} ({binding.name})"
+                : action.name;
+
+            string keyName = InputControlPath.ToHumanReadableString(
+                binding.effectivePath,
+                InputControlPath.HumanReadableStringOptions.OmitDevice);
+
+            if (!grouped.ContainsKey(rowKey))
+            {
+                grouped[rowKey] = new List<string>();
+                order.Add(rowKey);
+            }
+
+            if (!string.IsNullOrEmpty(keyName) && !grouped[rowKey].Contains(keyName))
+                grouped[rowKey].Add(keyName);
         }
     }
 

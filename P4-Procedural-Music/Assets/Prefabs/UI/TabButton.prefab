@@ -139,6 +139,8 @@ MonoBehaviour:
   activeTextColour: {r: 1, g: 0.95, b: 0.85, a: 1}
   inactiveTextColour: {r: 0.6, g: 0.55, b: 0.5, a: 1}
   underlineColour: {r: 0.654902, g: 0.5568628, b: 0.4666667, a: 1}
+  activeAlpha: 1
+  inactiveAlpha: 1
 --- !u!1 &3269569009504013867
 GameObject:
   m_ObjectHideFlags: 0
