@@ -22,7 +22,14 @@ MonoBehaviour:
   isDroppable: 1
   hasInstanceState: 1
   maxDurability: 50
+  hungerRestore: 0
+  happinessRestore: 0
+  consumeSound: {fileID: 0}
+  consumeSoundVolume: 1
+  customEffects: []
+  isFuel: 0
+  burnFuelValue: 0
   displayStats:
   - label: Attack power
-    value: 5
+    value: 4
     colour: 0
