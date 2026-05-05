@@ -225,9 +225,7 @@ GameObject:
   - component: {fileID: 1626463313000977171}
   - component: {fileID: 4589884889179511114}
   - component: {fileID: 7775883068081880350}
-  - component: {fileID: -8538655097096910356}
   - component: {fileID: 3578511633562600573}
-  - component: {fileID: 4861363729842834169}
   - component: {fileID: 3875033480923864871}
   - component: {fileID: 5264495890279824989}
   - component: {fileID: 4378696072532226969}
@@ -421,34 +419,11 @@ MonoBehaviour:
   hitVolume: 0.5
   demolishSound: {fileID: 0}
   demolishVolume: 0.6
---- !u!114 &-8538655097096910356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e705c3c11fe791646b2de9f5b4e9df68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Harvesting.HarvestableResource
-  requiredToolType: 5
-  maxHealth: 10
-  dropItem: {fileID: 11400000, guid: 0576000b88c22c04f9bd4868ac2161b1, type: 2}
-  dropAmount: 1
-  directToInventory: 0
+  drops:
+  - item: {fileID: 11400000, guid: 9d78585a34684a9449ac55e5637cfdce, type: 2}
+    amount: 3
   worldItemPrefab: {fileID: 4056178134944621012, guid: dad91b2a462ee174d806a9a031b566e4, type: 3}
-  hitSound: {fileID: 0}
-  hitVolume: 0.5
-  depleteSound: {fileID: 0}
-  depleteVolume: 0.5
-  pickupSound: {fileID: 0}
-  pickupVolume: 0.5
-  pitchVariation: 0.15
-  depletedPrefab: {fileID: 0}
-  shakeIntensity: 0.45
-  shakeDuration: 0.15
+  directToInventory: 0
 --- !u!114 &3578511633562600573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,22 +447,6 @@ MonoBehaviour:
   additionalYOffset: 0
   unifySortingLayer: 1
   unifiedSortingLayerName: World
---- !u!114 &4861363729842834169
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393102421888571362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67fd9947978f09b41955464610c850f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.HarvestInteractable
-  actionVerb: Interact
-  interactRange: 9
-  interactCenterOffset: {x: 0, y: 0}
-  promptOffset: {x: 0, y: 1.2}
 --- !u!114 &3875033480923864871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -503,9 +462,9 @@ MonoBehaviour:
   bigThreshold: 60
   mediumThreshold: 25
   maxFuel: 100
-  burnRateBig: 3
-  burnRateMedium: 2
-  burnRateLow: 1
+  burnRateBig: 1
+  burnRateMedium: 0.5
+  burnRateLow: 0.25
   lightChild: {fileID: 2319465394022386072}
   torchFlicker: {fileID: 9122419163685939560}
   flickerMinBig: 1.2
@@ -567,8 +526,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1072beb254b4dc0468d9d1cc5f671952, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem.WorldStationInteractable
-  actionVerb: Interact
-  interactRange: 1.5
+  actionVerb: Fuel
+  interactRange: 5
   interactCenterOffset: {x: 0, y: 0}
   promptOffset: {x: 0, y: 1.2}
   logActions: 0
@@ -584,7 +543,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e26135a335066184c8cccd1ead8f643b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AddFuelAction
-  fuelTarget: {fileID: 0}
+  fuelTarget: {fileID: 3875033480923864871}
   fuelSound: {fileID: 0}
   fuelVolume: 0.6
 --- !u!114 &4093903545421048378
