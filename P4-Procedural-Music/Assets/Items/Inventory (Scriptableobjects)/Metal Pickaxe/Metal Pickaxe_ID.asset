@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Metal Pickaxe
   displayName: Metal Pickaxe
   description: More durable than ever before
-  loreNote: 
+  loreNote: diggy diggy hole
   icon: {fileID: 5807921338739458136, guid: 2d4638076b95b8144bb30ccf77e87bfa, type: 3}
   category: 1
   maxStackSize: 1
