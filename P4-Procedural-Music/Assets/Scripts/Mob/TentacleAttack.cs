@@ -10,6 +10,7 @@ public class TentacleAttack : MonoBehaviour
 
     [Header("Visuals")]
     public float spriteScale = 3f;
+    public float maxStretch = 1f;
 
     [Header("Spawn")]
     public GameObject tentaclePrefab;
@@ -53,7 +54,7 @@ public class TentacleAttack : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / mobData.attackWindupDuration;
             float currentLength = Mathf.Lerp(0f, distance, t);
-            tentacleObj.transform.localScale = new Vector3(currentLength * spriteScale, spriteScale, 1f);
+            tentacleObj.transform.localScale = new Vector3(Mathf.Min(currentLength * spriteScale, maxStretch), spriteScale, 1f);            
             sr.color = new Color(1, 1, 1, t);
             yield return null;
         }
@@ -67,20 +68,23 @@ public class TentacleAttack : MonoBehaviour
     }
 
     private void OnTentacleDied(MobController mob)
+{
+    mob.OnDeath -= OnTentacleDied;
+    ComfortToEntityBridge.IsDraining = true;
+    StartCoroutine(DrainIntensity());
+}
+
+IEnumerator DrainIntensity()
+{
+    while (postProcessingManager.masterIntensity > 0f)
     {
-        mob.OnDeath -= OnTentacleDied;
-        StartCoroutine(DrainIntensity());
+        postProcessingManager.SetIntensity(
+            postProcessingManager.masterIntensity - intensityDecreaseSpeed * Time.deltaTime);
+        yield return null;
     }
 
-    IEnumerator DrainIntensity()
-    {
-        while (postProcessingManager.masterIntensity > 0f)
-        {
-            postProcessingManager.SetMasterIntensity(
-                postProcessingManager.masterIntensity - intensityDecreaseSpeed * Time.deltaTime);
-            yield return null;
-        }
-    }
+    ComfortToEntityBridge.IsDraining = false; // resume comfort trigger
+}
 
     IEnumerator Fade(SpriteRenderer target, float from, float to, float duration)
     {
