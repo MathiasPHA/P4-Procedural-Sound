@@ -21,7 +21,7 @@ public class HappinessMeter : MonoBehaviour
     [Tooltip("UI Image that displays a sprite reflecting the player's current mood tier")]
     [SerializeField] private Image moodImage;
 
-    [Header("Mood Sprites (mapped to MoodTier)")]
+    [Header("Mood Sprites (mapped to ComfortTier)")]
     [SerializeField] private Sprite veryComfySprite;     // MoodTier.Elated
     [SerializeField] private Sprite comfySprite;    // MoodTier.Content
     [SerializeField] private Sprite contentSprite;    // MoodTier.Neutral
@@ -29,17 +29,14 @@ public class HappinessMeter : MonoBehaviour
     [SerializeField] private Sprite horrifiedSprite;  // MoodTier.Miserable
 
     private HappinessSystem happinessSystem;
-    private MoodSystem moodSystem;
+    private ComfortSystemV2 comfortSystem;
+
 
     private void Start()
     {
         happinessSystem = HappinessSystem.Instance;
         if (happinessSystem == null)
             happinessSystem = FindObjectOfType<HappinessSystem>();
-
-        moodSystem = MoodSystem.Instance;
-        if (moodSystem == null)
-            moodSystem = FindObjectOfType<MoodSystem>();
 
         if (happinessSlider == null)
             happinessSlider = GetComponent<Slider>();
@@ -60,15 +57,15 @@ public class HappinessMeter : MonoBehaviour
 
     private void UpdateMoodImage()
     {
-        if (moodImage == null || moodSystem == null) return;
+        if (moodImage == null || comfortSystem == null) return;
 
-        Sprite newSprite = moodSystem.CurrentTier switch
+        Sprite newSprite = comfortSystem.CurrentTier switch
         {
-            MoodTier.Elated    => veryComfySprite,
-            MoodTier.Content   => comfySprite,
-            MoodTier.Neutral   => contentSprite,
-            MoodTier.Uneasy    => uneasySprite,
-            MoodTier.Miserable => horrifiedSprite,
+            ComfortSystemV2.ComfortTier.Elated    => veryComfySprite,
+            ComfortSystemV2.ComfortTier.Content   => comfySprite,
+            ComfortSystemV2.ComfortTier.Neutral   => contentSprite,
+            ComfortSystemV2.ComfortTier.Uneasy    => uneasySprite,
+            ComfortSystemV2.ComfortTier.Miserable => horrifiedSprite,
             _                  => null
         };
 

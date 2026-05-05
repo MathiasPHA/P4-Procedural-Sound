@@ -426,7 +426,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 2140032, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -472,8 +472,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
+  m_sharedMaterial: {fileID: 2140032, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -586,10 +586,6 @@ GameObject:
   - component: {fileID: 3721937245322308527}
   - component: {fileID: 9012754896137519032}
   - component: {fileID: 3340332575720080812}
-  - component: {fileID: 7540234304014331847}
-  - component: {fileID: 5049543004024689469}
-  - component: {fileID: 7459378878359402859}
-  - component: {fileID: 4590042985337584114}
   - component: {fileID: 5360917103592190494}
   - component: {fileID: 4726844026393616103}
   - component: {fileID: 1398216102474507775}
@@ -770,6 +766,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1bfb98d5d171a4ed186f1743632d2a1a, type: 2}
   - {fileID: 11400000, guid: f048d790656f64efeae146e8437a7fa1, type: 2}
   - {fileID: 11400000, guid: 737d631576b134cdd9e67b94f3cc4a70, type: 2}
+  - {fileID: 11400000, guid: ba943e36e971647b891f8c815031b7e5, type: 2}
   resourceLayer:
     serializedVersion: 2
     m_Bits: 384
@@ -1039,88 +1036,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1488
   detectionRadius: 1
---- !u!114 &7540234304014331847
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4968789950358026991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a05f6bc5edaf7fa4d95174f25d61cd0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MoodSystem
-  startingMood: 0.6
-  moodSmoothTime: 0.2
-  maxMoodRatePerSecond: 0.2
-  elatedThreshold: 0.9
-  contentThreshold: 0.6
-  neutralThreshold: 0.4
-  uneasyThreshold: 0.1
-  showDebugGUI: 0
---- !u!114 &5049543004024689469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4968789950358026991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b46bccf7ea56d41478d98689080da589, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HappinessSystem
-  startingHappiness: 0.7
-  elatedRate: 0.0125
-  contentRate: 0.005
-  neutralRate: 0
-  uneasyRate: 0.005
-  miserableRate: 0.0125
-  smoothTime: 0.4
-  deathEnabled: 1
-  showDebugGUI: 0
---- !u!114 &7459378878359402859
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4968789950358026991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72da9d865e74d4d4d927aeddf8ab3674, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HungerSystem
-  startingHunger: 0.8
-  drainPerSecond: 0.0005
-  satiatedThreshold: 0.7
-  hungryThreshold: 0.3
-  wellFedMoodRate: 0.04
-  starvingMoodRate: 0.08
-  showDebugGUI: 0
---- !u!114 &4590042985337584114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4968789950358026991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08b961b239d0c9d4eb11568e3c7203ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComfortSystem
-  dayBaselineComfort: 0.55
-  nightBaselineComfort: 0.45
-  comfortSmoothTime: 0.3
-  comfortNeutralPoint: 0.55
-  maxPositiveMoodRate: 0.06
-  maxNegativeMoodRate: 0.08
-  dayStartHour: 6
-  dayEndHour: 18
-  transitionHours: 2
-  showDebugGUI: 0
 --- !u!114 &5360917103592190494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1178,8 +1093,8 @@ MonoBehaviour:
   playerSprite: {fileID: 3043719320757778836}
   audioSource: {fileID: -1374152125123140291}
   playerLight: {fileID: 3879887650259570354}
-  happinessSystem: {fileID: 5049543004024689469}
-  hungerSystem: {fileID: 7459378878359402859}
+  happinessSystem: {fileID: 0}
+  hungerSystem: {fileID: 0}
   playerStateManager: {fileID: 4859490917234952540}
   logEffects: 1
   invertControls: 0
@@ -1195,7 +1110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 592ab056e1565c84295c4d1e8bc596cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDeathHandler
-  happinessSystem: {fileID: 5049543004024689469}
+  happinessSystem: {fileID: 0}
   deathCanvasGroup: {fileID: 0}
   playerRigidbody: {fileID: 50687759397478212}
   playerStateManager: {fileID: 4859490917234952540}
