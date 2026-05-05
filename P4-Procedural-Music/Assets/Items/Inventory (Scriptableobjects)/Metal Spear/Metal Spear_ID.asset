@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Metal Spear
   description: purpose-built to keep you safe
   loreNote: pointy end towards enemies
-  icon: {fileID: 6108012597462862368, guid: bc41bb2681ad5f04f9e4d24d25d86085, type: 3}
+  icon: {fileID: 2579249882399475204, guid: 6393446d5e5c9954e9b4339b7504c660, type: 3}
   category: 1
   maxStackSize: 1
   isDroppable: 1
