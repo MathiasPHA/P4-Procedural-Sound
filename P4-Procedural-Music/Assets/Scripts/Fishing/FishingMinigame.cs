@@ -19,7 +19,7 @@ namespace FishingSystem
     {
         [Header("Fishing Time")]
         [Tooltip("Base session duration before timeout. Randomised each session.")]
-        [SerializeField] private float baseFishingTime = 8f;
+        [SerializeField] private float baseFishingTime = 13f;
         [Tooltip("Random ± seconds added to baseFishingTime each session.")]
         [SerializeField] private float fishingTimeJitter = 2f;
 
@@ -32,9 +32,9 @@ namespace FishingSystem
 
         [Header("Catch Tuning")]
         [Tooltip("Fraction of total time the hook must overlap the fish to catch it. " +
-                 "0.7 means the player needs to hold the hook on the fish for 70% of " +
+                 "0.65 means the player needs to hold the hook on the fish for 65% of " +
                  "the available time.")]
-        [Range(0.1f, 1f)][SerializeField] private float catchFraction = 0.7f;
+        [Range(0.1f, 1f)][SerializeField] private float catchFraction = 0.65f;
 
         // ── Public state read by FishingProgressBar / FishingTimer ──
         public float fishingPoints { get; private set; }

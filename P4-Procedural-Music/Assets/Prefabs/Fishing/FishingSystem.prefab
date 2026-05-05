@@ -471,8 +471,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hook
   clampY: 2.55
-  gravity: 12
-  thrust: 22
+  gravity: 13
+  thrust: 27
   damping: 1.5
   bounceCoefficient: 0.3
   maxSpeed: 8
@@ -510,8 +510,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.014254613}
-  m_Size: {x: 2.7, y: 3.1589425}
+  m_Offset: {x: -0.049728043, y: 0.06087505}
+  m_Size: {x: 2.5508156, y: 3.376501}
   m_Direction: 0
 --- !u!50 &4145846942325937931
 Rigidbody2D:
@@ -939,10 +939,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28558e622ddea504999b24ddc57fd1bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingV1
-  baseFishingTime: 8
+  baseFishingTime: 13
   fishingTimeJitter: 2
   posClamp: 3
   minMoveSpeed: 0.8
   maxMoveSpeed: 2
   arriveDistance: 0.4
-  catchFraction: 0.65
+  catchFraction: 1

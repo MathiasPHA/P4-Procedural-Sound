@@ -10,15 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a4dbc57ffa34cf544b98aa16558f3ff3, type: 3}
-  m_Name: Pot_RP
+  m_Name: Metal Pickaxe_RP
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.Recipe
-  recipeId: Pot
-  stationType: 3
+  recipeId: Metal Pickaxe
+  stationType: 1
   ingredients:
+  - item: {fileID: 11400000, guid: 27a15c6de8c49f54abe8af3e01bcf0a0, type: 2}
+    amount: 1
   - item: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
-    amount: 3
+    amount: 4
   - item: {fileID: 11400000, guid: 655c34cbdf2d44085891bd8cf65fe554, type: 2}
-    amount: 8
-  result: {fileID: 11400000, guid: 1631bb5a5190f44f88e4d09104ffc4c1, type: 2}
+    amount: 4
+  result: {fileID: 11400000, guid: 773e91ea53bc1f44b9afbf7753b1be81, type: 2}
   resultAmount: 1
   craftTime: 0
