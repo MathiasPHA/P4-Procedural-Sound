@@ -31,5 +31,5 @@ MonoBehaviour:
   burnFuelValue: 0
   displayStats:
   - label: Attack Power
-    value: 7
+    value: 6
     colour: 0

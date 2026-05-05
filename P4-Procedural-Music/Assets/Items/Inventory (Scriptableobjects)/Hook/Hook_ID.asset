@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Hook
   description: It's sharp
   loreNote: It's worm sized
-  icon: {fileID: 0}
+  icon: {fileID: -1426486914805705407, guid: 0ed3bbee48831514c95b4e02fe310381, type: 3}
   category: 0
   maxStackSize: 16
   isDroppable: 1
@@ -26,6 +26,7 @@ MonoBehaviour:
   happinessRestore: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
+  customEffects: []
   isFuel: 0
   burnFuelValue: 0
   displayStats: []
