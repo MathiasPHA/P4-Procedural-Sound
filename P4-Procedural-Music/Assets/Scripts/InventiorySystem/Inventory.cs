@@ -139,9 +139,31 @@ namespace InventorySystem.Data
 
             int remaining = amount;
 
+            // Pull from the equipped slot first if it matches. Tools call
+            // RemoveItem(id, 1) when they break — without this, two identical
+            // tools would cause the wrong slot (the unequipped one, found
+            // first by the end-to-start scan below) to be cleared instead.
+            if (EquippedSlotIndex >= 0 && remaining > 0)
+            {
+                var equippedSlot = Slots[EquippedSlotIndex];
+                if (!equippedSlot.IsEmpty && equippedSlot.ItemData.id == itemId)
+                {
+                    int removed = equippedSlot.RemoveFromStack(remaining);
+                    remaining -= removed;
+                    NotifySlotChanged(EquippedSlotIndex);
+
+                    if (equippedSlot.IsEmpty)
+                    {
+                        EquippedSlotIndex = -1;
+                        OnEquippedChanged?.Invoke(-1);
+                    }
+                }
+            }
+
             // Remove from end first to preserve hotbar items
             for (int i = Slots.Length - 1; i >= 0 && remaining > 0; i--)
             {
+                if (i == EquippedSlotIndex) continue; // already handled above
                 if (Slots[i].IsEmpty || Slots[i].ItemData.id != itemId) continue;
 
                 int removed = Slots[i].RemoveFromStack(remaining);
