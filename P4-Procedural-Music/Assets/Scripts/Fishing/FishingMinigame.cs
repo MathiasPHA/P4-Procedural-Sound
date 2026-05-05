@@ -32,9 +32,9 @@ namespace FishingSystem
 
         [Header("Catch Tuning")]
         [Tooltip("Fraction of total time the hook must overlap the fish to catch it. " +
-                 "0.55 means the player needs to hold the hook on the fish for 55% of " +
+                 "0.65 means the player needs to hold the hook on the fish for 65% of " +
                  "the available time.")]
-        [Range(0.1f, 1f)][SerializeField] private float catchFraction = 0.55f;
+        [Range(0.1f, 1f)][SerializeField] private float catchFraction = 0.65f;
 
         // ── Public state read by FishingProgressBar / FishingTimer ──
         public float fishingPoints { get; private set; }
