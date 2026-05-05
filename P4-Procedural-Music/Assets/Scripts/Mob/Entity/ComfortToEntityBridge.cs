@@ -25,12 +25,32 @@ public class ComfortToEntityBridge : MonoBehaviour
             Debug.LogWarning("[EntityComfortTrigger] No PostProcessingManager assigned!");
     }
 
-    void Update()
+    [Header("Death Boost")]
+public float comfortBoostDuration = 30f; // how long the boost lasts in seconds
+
+private float boostTimer = 0f;
+private bool isBoosted = false;
+
+public void TriggerComfortBoost()
+{
+    isBoosted = true;
+    boostTimer = comfortBoostDuration;
+}
+
+void Update()
 {
     if (comfortSystem == null || postProcessingManager == null) return;
-    if (IsDraining) return; // wait for entity drain to finish
+    if (IsDraining) return;
 
-    if (comfortSystem.Comfort < comfortThreshold)
+    // Tick boost timer
+    if (isBoosted)
+    {
+        boostTimer -= Time.deltaTime;
+        if (boostTimer <= 0f)
+            isBoosted = false;
+    }
+
+    if (comfortSystem.Comfort < comfortThreshold && !isBoosted)
     {
         postProcessingManager.SetIntensity(
             postProcessingManager.masterIntensity + intensityIncreaseSpeed * Time.deltaTime);
