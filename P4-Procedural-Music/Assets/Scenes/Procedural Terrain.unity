@@ -1097,6 +1097,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 278af8a3309f7af45879c9dea76576ca, type: 3}
+--- !u!114 &921840075 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2847878104748206796, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
+  m_PrefabInstance: {fileID: 1093400978}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 563c83156c2c9034fb8bbf3fd6f01418, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ComfortToEntityBridge
 --- !u!1001 &960564700
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2488,6 +2499,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 381852574}
+    - target: {fileID: 8327087191408862021, guid: ed4a9b46dbfea1d4da5ef75dcb8fb902, type: 3}
+      propertyPath: comfortToEntityBridge
+      value: 
+      objectReference: {fileID: 921840075}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
