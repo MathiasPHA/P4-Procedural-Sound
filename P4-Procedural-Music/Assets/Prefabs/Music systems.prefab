@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7011410923571891674
 Transform:
   m_ObjectHideFlags: 0
@@ -72,7 +72,7 @@ MonoBehaviour:
   - State: 2
     Clip: {fileID: 8300000, guid: cee45dd69ed22ce45a44f22b7fc3f79e, type: 3}
     VolumeScale: 1
-  masterVolume: 0.7
+  masterVolume: 1
   crossfadeDuration: 2
   preservePlaybackPosition: 0
   ShowDebugInfo: 0
@@ -123,7 +123,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 242840640128939848, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1459837516537605292, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
       propertyPath: m_LocalPosition.x

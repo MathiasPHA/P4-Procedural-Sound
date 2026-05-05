@@ -301,6 +301,31 @@ namespace ProceduralTerrain
             Debug.LogError("[ChunkManager] Could not find land within search radius! Player remains on water.");
         }
 
+        /// <summary>
+        /// Explicitly saves all loaded chunk object state (removed/depleted IDs) to disk.
+        /// Call before a scene transition so picked-up items are persisted.
+        /// </summary>
+        public void FlushObjectState()
+        {
+            int totalRemoved = 0, totalDepleted = 0;
+            foreach (var kvp in _loadedObjects)
+            {
+                var r = kvp.Value.GetRemovedIds();
+                var d = kvp.Value.GetDepletedIds();
+                if (r != null) totalRemoved += r.Count;
+                if (d != null) totalDepleted += d.Count;
+            }
+            Debug.Log($"[ChunkManager] FlushObjectState: {_loadedChunks.Count} chunks, " +
+                      $"{_loadedObjects.Count} object chunks, " +
+                      $"{totalRemoved} removed IDs, {totalDepleted} depleted IDs");
+
+            ChunkPersistence.SaveModifiedChunks(
+                _loadedChunks,
+                _loadedObjects,
+                SaveSystemManager.Instance != null ? SaveSystemManager.Instance.worldName : "default"
+            );
+        }
+
         private void UpdateChunks(Vector2Int centerChunk)
         {
             for (int dy = -loadRadius; dy <= loadRadius; dy++)
@@ -385,18 +410,23 @@ namespace ProceduralTerrain
         {
             if (_loadedChunks.TryGetValue(coord, out var chunk))
             {
-                if (chunk.IsDirty)
-                    SaveSystemManager.Instance.SaveModifiedChunks();
-
+                bool objectsDirty = false;
                 if (_loadedObjects.TryGetValue(coord, out var chunkObjects))
                 {
+                    var removed = chunkObjects.GetRemovedIds();
+                    var depleted = chunkObjects.GetDepletedIds();
+                    objectsDirty = (removed != null && removed.Count > 0)
+                                || (depleted != null && depleted.Count > 0);
                     ObjectSpawner.DespawnChunk(chunkObjects);
                     _loadedObjects.Remove(coord);
                 }
 
-                // Clean up placed structures in this chunk
+                if (chunk.IsDirty || objectsDirty)
+                    SaveSystemManager.Instance.SaveModifiedChunks();
+
                 if (PlacedStructureManager.Instance != null)
                 {
+                    PlacedStructureManager.Instance.SyncAndSaveChunk(coord);
                     PlacedStructureManager.Instance.UnloadStructuresForChunk(coord);
                 }
 

@@ -221,6 +221,46 @@ namespace ProceduralTerrain
         }
 
         /// <summary>
+        /// Sync a single chunk's live structures into save data and write to disk.
+        /// Called by ChunkManager just before unloading a chunk.
+        /// </summary>
+        public void SyncAndSaveChunk(Vector2Int chunkCoord)
+        {
+            if (!_activeStructures.TryGetValue(chunkCoord, out var liveList))
+                return;
+
+            liveList.RemoveAll(s => s == null);
+
+            var saveEntries = new List<StructureSaveData>();
+            foreach (var s in liveList)
+            {
+                if (s.sourceData == null || s.sourceData.item == null) continue;
+
+                string stateJson = "";
+                var persistent = s.GetComponent<IPersistentStructureState>();
+                if (persistent != null)
+                    stateJson = persistent.SerializeState() ?? "";
+
+                int hp = s.CurrentHealth;
+                if (hp <= 0) hp = s.MaxHealth;
+
+                saveEntries.Add(new StructureSaveData(
+                    s.sourceData.item.id,
+                    s.transform.position,
+                    stateJson,
+                    hp
+                ));
+            }
+
+            _savedStructures[chunkCoord] = saveEntries;
+
+            string worldName = SaveSystemManager.Instance != null
+                ? SaveSystemManager.Instance.worldName
+                : "default";
+            SaveToDisk(worldName);
+        }
+
+        /// <summary>
         /// Save all structure data to disk.
         /// Called by SaveSystemManager during auto-save / quit / pause.
         /// </summary>
@@ -322,29 +362,30 @@ namespace ProceduralTerrain
 
         private void SyncActiveToSaveData()
         {
-            // Rebuild save data for loaded chunks from live GameObjects
+            // Rebuild save data for loaded chunks from live GameObjects.
             foreach (var kvp in _activeStructures)
             {
                 var coord = kvp.Key;
                 var liveList = kvp.Value;
 
-                // Remove destroyed structures
+                // Separate live from destroyed. If everything is already null
+                // (e.g. scene unloaded before SaveAll ran on dungeon entry),
+                // skip rebuilding so we don't wipe data written by SyncAndSaveChunk.
+                var alive = liveList.FindAll(s => s != null);
                 liveList.RemoveAll(s => s == null);
 
-                // Rebuild save entries for this chunk
+                if (alive.Count == 0) continue;
+
                 var saveEntries = new List<StructureSaveData>();
-                foreach (var s in liveList)
+                foreach (var s in alive)
                 {
                     if (s.sourceData == null || s.sourceData.item == null) continue;
 
-                    // Capture optional per-instance runtime state (campfire fuel, etc.)
                     string stateJson = "";
                     var persistent = s.GetComponent<IPersistentStructureState>();
                     if (persistent != null)
                         stateJson = persistent.SerializeState() ?? "";
 
-                    // Capture HP. Demolished structures (HP=0) never reach here because
-                    // Demolish() unregisters them, but guard anyway.
                     int hp = s.CurrentHealth;
                     if (hp <= 0) hp = s.MaxHealth;
 

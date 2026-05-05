@@ -61,28 +61,38 @@ public class PlayerSaveSystem : MonoBehaviour
 
     public void SavePlayer(string worldName)
     {
-        // Don't overwrite overworld position while in a dungeon
-        if (DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon)
-            return;
+        bool inDungeon = DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon;
+        string path = GetSavePath(worldName);
+        PlayerSaveData data;
 
-        if (playerTransform == null)
+        if (inDungeon)
         {
-            Debug.LogWarning("[PlayerSaveSystem] No player Transform — nothing to save.");
-            return;
+            // In a dungeon: preserve the saved overworld position but update stats.
+            data = File.Exists(path)
+                ? JsonUtility.FromJson<PlayerSaveData>(File.ReadAllText(path)) ?? new PlayerSaveData()
+                : new PlayerSaveData();
+        }
+        else
+        {
+            if (playerTransform == null)
+            {
+                Debug.LogWarning("[PlayerSaveSystem] No player Transform — nothing to save.");
+                return;
+            }
+            data = new PlayerSaveData
+            {
+                positionX = playerTransform.position.x,
+                positionY = playerTransform.position.y,
+            };
         }
 
-        var data = new PlayerSaveData
-        {
-            positionX = playerTransform.position.x,
-            positionY = playerTransform.position.y,
-            happiness = happinessSystem != null ? happinessSystem.Happiness : 0.5f,
-            hunger = hungerSystem != null ? hungerSystem.Hunger : 0.8f,
-            mood = moodSystem != null ? moodSystem.Mood : 0.6f
-        };
+        data.happiness = happinessSystem != null ? happinessSystem.Happiness : 0.5f;
+        data.hunger = hungerSystem != null ? hungerSystem.Hunger : 0.8f;
+        data.mood = moodSystem != null ? moodSystem.Mood : 0.6f;
 
-        File.WriteAllText(GetSavePath(worldName), JsonUtility.ToJson(data, prettyPrint: true));
-        Debug.Log($"[PlayerSaveSystem] Saved player at {playerTransform.position} " +
-                  $"(happiness={data.happiness:F2}, hunger={data.hunger:F2}, mood={data.mood:F2})");
+        File.WriteAllText(path, JsonUtility.ToJson(data, prettyPrint: true));
+        Debug.Log($"[PlayerSaveSystem] Saved player (inDungeon={inDungeon}) " +
+                  $"happiness={data.happiness:F2}, hunger={data.hunger:F2}, mood={data.mood:F2}");
     }
 
     public void LoadPlayer(string worldName)

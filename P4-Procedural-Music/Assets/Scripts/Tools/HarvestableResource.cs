@@ -4,19 +4,6 @@ using InventorySystem.Data;
 
 namespace InventorySystem.Harvesting
 {
-    /// <summary>
-    /// A world object that can be harvested with the correct tool type.
-    /// Trees, rocks, bushes, ore deposits — anything the player hits
-    /// with a tool to extract resources.
-    ///
-    /// SETUP:
-    ///   1. Attach to the resource GameObject (e.g. a tree)
-    ///   2. Add a Collider2D (non-trigger) so OverlapCircle can detect it
-    ///   3. Set the required tool type (Axe for trees, Pickaxe for rocks)
-    ///   4. Configure health and drops
-    ///   5. Optionally assign a stump/depleted prefab to swap in when destroyed
-    ///   6. Assign the worldItemPrefab (same one used by InventoryUIManager for drops)
-    /// </summary>
     public class HarvestableResource : MonoBehaviour
     {
         [Header("Tool Requirement")]
@@ -75,16 +62,10 @@ namespace InventorySystem.Harvesting
         private Vector3 _originalPosition;
         private float _shakeTimer;
 
-        /// <summary>The tool type required to harvest this resource.</summary>
         public ToolType RequiredToolType => requiredToolType;
-
-        /// <summary>Whether this resource has been fully depleted.</summary>
         public bool IsDepleted => _currentHealth <= 0;
 
-        /// <summary>Fired when the resource takes a hit. (currentHealth, maxHealth)</summary>
         public event Action<int, int> OnHit;
-
-        /// <summary>Fired when the resource is fully destroyed.</summary>
         public event Action OnDepleted;
 
         private void Awake()
@@ -107,9 +88,6 @@ namespace InventorySystem.Harvesting
             }
         }
 
-        /// <summary>
-        /// Apply damage from a tool hit. Returns true if the resource was destroyed.
-        /// </summary>
         public bool TakeDamage(int damage, Vector2 hitDirection)
         {
             if (IsDepleted) return false;
@@ -117,13 +95,11 @@ namespace InventorySystem.Harvesting
             _currentHealth -= damage;
             _currentHealth = Mathf.Max(0, _currentHealth);
 
-            // Shake feedback
             _shakeTimer = shakeDuration;
             _originalPosition = transform.position;
 
             OnHit?.Invoke(_currentHealth, maxHealth);
 
-            // Play hit sound
             if (hitSound != null)
                 PlaySoundWithPitch(hitSound, transform.position, hitVolume);
 
@@ -142,7 +118,6 @@ namespace InventorySystem.Harvesting
             {
                 if (directToInventory)
                 {
-                    // Add straight to player inventory
                     var inventory = InventoryBootstrap.PlayerInventory;
                     if (inventory != null)
                     {
@@ -151,7 +126,6 @@ namespace InventorySystem.Harvesting
                             Debug.LogWarning($"[Harvestable] {overflow}x {dropItem.displayName} didn't fit.");
                     }
 
-                    // Play sound with pitch variation (survives Destroy)
                     if (pickupSound != null)
                         PlaySoundWithPitch(pickupSound, transform.position, pickupVolume);
                 }
@@ -163,11 +137,9 @@ namespace InventorySystem.Harvesting
 
             OnDepleted?.Invoke();
 
-            // Play deplete sound
             if (depleteSound != null)
                 PlaySoundWithPitch(depleteSound, transform.position, depleteVolume);
 
-            // Swap to stump or destroy
             if (depletedPrefab != null)
             {
                 var sr = GetComponent<SpriteRenderer>();
@@ -190,7 +162,6 @@ namespace InventorySystem.Harvesting
                 var go = Instantiate(worldItemPrefab, transform.position, Quaternion.identity);
                 var worldItem = go.GetComponent<UI.WorldItem>();
 
-                // Items scatter away from the hit direction with some randomness
                 Vector2 scatterDir = -hitDirection.normalized + UnityEngine.Random.insideUnitCircle * 0.8f;
                 worldItem?.Initialise(instance, 1, scatterDir);
             }
@@ -216,7 +187,6 @@ namespace InventorySystem.Harvesting
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            // Show health as a label
             UnityEditor.Handles.Label(
                 transform.position + Vector3.up * 1f,
                 $"HP: {(Application.isPlaying ? _currentHealth : maxHealth)}/{maxHealth}");
