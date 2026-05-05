@@ -19,6 +19,8 @@ public class TentacleAttack : MonoBehaviour
 
     [Header("Intensity")]
     public PostProcessingManager postProcessingManager;
+    public ComfortToEntityBridge comfortToEntityBridge; 
+
     public float intensityDecreaseSpeed = 0.2f;
 
     public void Trigger(Vector2 spawnDirection)
@@ -67,12 +69,14 @@ public class TentacleAttack : MonoBehaviour
         // MobController handles death, OnTentacleDied fires when killed
     }
 
-    private void OnTentacleDied(MobController mob)
-{
-    mob.OnDeath -= OnTentacleDied;
-    ComfortToEntityBridge.IsDraining = true;
-    StartCoroutine(DrainIntensity());
-}
+        private void OnTentacleDied(MobController mob)
+    {
+        mob.OnDeath -= OnTentacleDied;
+        ComfortToEntityBridge.IsDraining = true;
+        if (comfortToEntityBridge != null)
+            comfortToEntityBridge.TriggerComfortBoost();
+        StartCoroutine(DrainIntensity());
+    }
 
 IEnumerator DrainIntensity()
 {

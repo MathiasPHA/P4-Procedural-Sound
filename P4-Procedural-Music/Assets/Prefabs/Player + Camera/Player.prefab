@@ -928,7 +928,7 @@ MonoBehaviour:
   minimumHitPenalty: 3
   hurtStunDuration: 0.3
   iFrameDuration: 0.6
-  hitSound: {fileID: 8300000, guid: a6c5d632ad03c874dbd8eebeb538666a, type: 3}
+  hitSound: {fileID: 8300000, guid: 469b12079293f244f8e0439c74bb9f2f, type: 3}
   hitVolume: 0.6
   showDebugGUI: 0
 --- !u!114 &1784580168925146788
