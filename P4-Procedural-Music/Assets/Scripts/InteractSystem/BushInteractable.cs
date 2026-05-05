@@ -98,11 +98,9 @@ namespace InteractionSystem
 
         private void NotifyChunkAndDestroy()
         {
-            // Overworld: notify ChunkManager so it stays gone on reload
-            // Dungeon: DungeonSpawnedObject.OnDestroy handles tracking automatically
-            int spawnId = ChunkManager.GetSpawnIdFromObject(gameObject);
-            if (spawnId != 0 && ChunkManager.Instance != null)
-                ChunkManager.Instance.RemoveSpawnedObject(transform.position, spawnId);
+            var tracker = GetComponent<SpawnedObjectTracker>();
+            if (tracker != null)
+                tracker.Remove();
             else
                 Destroy(gameObject);
         }

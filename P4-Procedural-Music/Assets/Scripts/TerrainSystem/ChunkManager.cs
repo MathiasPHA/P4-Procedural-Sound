@@ -195,9 +195,8 @@ namespace ProceduralTerrain
         /// <summary>
         /// Fully remove a spawned object — it will never come back.
         /// </summary>
-        public void RemoveSpawnedObject(Vector3 objectWorldPos, int spawnId)
+        public void RemoveSpawnedObject(Vector2Int chunkCoord, int spawnId)
         {
-            Vector2Int chunkCoord = WorldToChunkCoord(objectWorldPos);
             if (_loadedObjects.TryGetValue(chunkCoord, out var chunkObjects))
             {
                 ObjectSpawner.RemoveObject(chunkObjects, spawnId);
@@ -207,9 +206,8 @@ namespace ProceduralTerrain
         /// <summary>
         /// Mark a spawned object as depleted.
         /// </summary>
-        public void DepleteSpawnedObject(Vector3 objectWorldPos, int spawnId)
+        public void DepleteSpawnedObject(Vector2Int chunkCoord, int spawnId)
         {
-            Vector2Int chunkCoord = WorldToChunkCoord(objectWorldPos);
             if (_loadedObjects.TryGetValue(chunkCoord, out var chunkObjects))
             {
                 ObjectSpawner.DepleteObject(chunkObjects, spawnId);
@@ -371,7 +369,7 @@ namespace ProceduralTerrain
 
                 var chunkObjects = ObjectSpawner.SpawnChunk(
                     coord, chunkSize, chunk, objectSpawnConfig,
-                    generationConfig, _runtimeSeed, chunkParent, cellSize, removedIds, depletedIds);
+                    generationConfig, _runtimeSeed, chunkParent, cellSize, groundTilemap, removedIds, depletedIds);
 
                 _loadedObjects[coord] = chunkObjects;
             }

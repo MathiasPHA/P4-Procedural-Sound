@@ -7693,7 +7693,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2156536043447579553, guid: 41423c013fc9cf24689c720c4e932d72, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5290324250502785687, guid: 41423c013fc9cf24689c720c4e932d72, type: 3}
       propertyPath: cursorTexture
