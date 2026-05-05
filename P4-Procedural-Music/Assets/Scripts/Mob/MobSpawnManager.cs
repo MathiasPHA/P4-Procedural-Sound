@@ -335,7 +335,6 @@ namespace MobSystem
                 if (sqrDist > cullSqr)
                 {
                     RemoveMob(mob, destroy: true);
-                    i--; // List shifted
                 }
             }
         }
