@@ -98,6 +98,10 @@ public class DungeonSpawnEntry
     [Tooltip("Enable/disable this spawn entry for testing")]
     public bool enabled = true;
 
+    [Tooltip("If true, this object is exempt from the post-spawn overlap removal pass. " +
+             "Use for unique/boss spawns (e.g. Troll) that must always appear.")]
+    public bool guaranteedSpawn = false;
+
     [Tooltip("Prefab to spawn")]
     public GameObject prefab;
 

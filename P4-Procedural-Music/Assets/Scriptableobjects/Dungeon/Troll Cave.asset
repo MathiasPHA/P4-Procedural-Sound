@@ -31,6 +31,7 @@ MonoBehaviour:
   maxTotalRoomSpawns: 50
   roomSpawns:
   - enabled: 1
+    guaranteedSpawn: 1
     prefab: {fileID: 1099063152185500091, guid: 950359b4791a3fa49b04e3a7c1ac1b68, type: 3}
     density: 1
     maxCount: 1
@@ -40,9 +41,10 @@ MonoBehaviour:
     noiseScale: 0
     noiseThreshold: 0
   - enabled: 1
+    guaranteedSpawn: 0
     prefab: {fileID: 6315253869175331180, guid: ce9b34fc55a1f2a47980aa3156cb9c24, type: 3}
     density: 0.232
-    maxCount: 49
+    maxCount: 48
     minSpacing: 0
     wallPadding: 0
     useNoise: 0

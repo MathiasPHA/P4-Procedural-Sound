@@ -15,22 +15,23 @@ MonoBehaviour:
   dungeonName: Cave
   dungeonType: 0
   minRooms: 1
-  maxRooms: 10
-  minRoomWidth: 5
-  maxRoomWidth: 12
-  minRoomHeight: 5
-  maxRoomHeight: 12
+  maxRooms: 4
+  minRoomWidth: 4
+  maxRoomWidth: 10
+  minRoomHeight: 4
+  maxRoomHeight: 10
   corridorWidth: 2
   entranceHallwayLength: 6
   wallThickness: 4
-  gridWidth: 60
-  gridHeight: 60
+  gridWidth: 40
+  gridHeight: 40
   difficultyTier: 1
   enemyDensity: 0.3
   lootDensity: 0.2
   maxTotalRoomSpawns: 120
   roomSpawns:
   - enabled: 1
+    guaranteedSpawn: 0
     prefab: {fileID: 5511241277875091019, guid: 24b2adab2d184f44e935f55a55e7bcce, type: 3}
     density: 0.244
     maxCount: 0
@@ -40,6 +41,7 @@ MonoBehaviour:
     noiseScale: 0.669
     noiseThreshold: 0.148
   - enabled: 1
+    guaranteedSpawn: 0
     prefab: {fileID: 6315253869175331180, guid: ce9b34fc55a1f2a47980aa3156cb9c24, type: 3}
     density: 0.277
     maxCount: 0
@@ -49,6 +51,7 @@ MonoBehaviour:
     noiseScale: 0.317
     noiseThreshold: 0.472
   - enabled: 1
+    guaranteedSpawn: 0
     prefab: {fileID: 478931609876907041, guid: 34cf77f38678fe04aafc64668bbb5e50, type: 3}
     density: 0.259
     maxCount: 0
@@ -58,6 +61,7 @@ MonoBehaviour:
     noiseScale: 0.42
     noiseThreshold: 0.229
   - enabled: 1
+    guaranteedSpawn: 0
     prefab: {fileID: 7533120962837240174, guid: f5e0da7755236d841996db9af255473b, type: 3}
     density: 0.17
     maxCount: 20
@@ -67,6 +71,7 @@ MonoBehaviour:
     noiseScale: 0.42
     noiseThreshold: 0.717
   - enabled: 1
+    guaranteedSpawn: 0
     prefab: {fileID: 5511241277875091019, guid: 5b4956f63a48342d4aaad2a78a258cb7, type: 3}
     density: 0.17
     maxCount: 20
@@ -78,6 +83,7 @@ MonoBehaviour:
   maxTotalCorridorSpawns: 120
   corridorSpawns:
   - enabled: 1
+    guaranteedSpawn: 0
     prefab: {fileID: 6315253869175331180, guid: ce9b34fc55a1f2a47980aa3156cb9c24, type: 3}
     density: 0.277
     maxCount: 0
@@ -87,6 +93,7 @@ MonoBehaviour:
     noiseScale: 0.898
     noiseThreshold: 0.565
   - enabled: 1
+    guaranteedSpawn: 0
     prefab: {fileID: 5511241277875091019, guid: 24b2adab2d184f44e935f55a55e7bcce, type: 3}
     density: 0.214
     maxCount: 0
@@ -96,6 +103,7 @@ MonoBehaviour:
     noiseScale: 0.317
     noiseThreshold: 0.545
   - enabled: 1
+    guaranteedSpawn: 0
     prefab: {fileID: 478931609876907041, guid: 34cf77f38678fe04aafc64668bbb5e50, type: 3}
     density: 0.259
     maxCount: 0
