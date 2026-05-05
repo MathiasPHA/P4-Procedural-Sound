@@ -10,15 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a4dbc57ffa34cf544b98aa16558f3ff3, type: 3}
-  m_Name: Pot_RP
+  m_Name: Metal Spear_RP
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.Recipe
-  recipeId: Pot
-  stationType: 3
+  recipeId: Metal Spear
+  stationType: 1
   ingredients:
+  - item: {fileID: 11400000, guid: 6335b07588d670749b5b290e7f8e383c, type: 2}
+    amount: 1
   - item: {fileID: 11400000, guid: 5701525cf03ca2a4f8f5f1ee644e0de6, type: 2}
-    amount: 3
-  - item: {fileID: 11400000, guid: 655c34cbdf2d44085891bd8cf65fe554, type: 2}
-    amount: 8
-  result: {fileID: 11400000, guid: 1631bb5a5190f44f88e4d09104ffc4c1, type: 2}
+    amount: 4
+  - item: {fileID: 11400000, guid: ea53e826b3bb6f74dbf5978079446cc6, type: 2}
+    amount: 4
+  result: {fileID: 11400000, guid: 3ecd0c445f001be45a2355e0108a0f82, type: 2}
   resultAmount: 1
   craftTime: 0

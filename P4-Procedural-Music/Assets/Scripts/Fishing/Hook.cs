@@ -29,7 +29,7 @@ namespace FishingSystem
 
         [Tooltip("Upward acceleration applied while left mouse is held (local units / sec²). " +
                  "Should be larger than gravity so the hook can rise when held.")]
-        [SerializeField] private float thrust = 22f;
+        [SerializeField] private float thrust = 27f;
 
         [Tooltip("Per-second velocity damping. 0 = no damping (oscillates forever), " +
                  "higher = velocity bleeds off faster. Around 1–3 feels controllable.")]
@@ -41,7 +41,7 @@ namespace FishingSystem
 
         [Tooltip("Max velocity in either direction (local units / sec). Stops the hook " +
                  "from getting absurd if held against gravity for a long time.")]
-        [SerializeField] private float maxSpeed = 8f;
+        [SerializeField] private float maxSpeed = 7f;
 
         private Vector3 _startLocal;
         private float _minY, _maxY;
