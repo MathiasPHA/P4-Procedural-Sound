@@ -375,6 +375,15 @@ namespace InventorySystem.UI
         /// <summary>Whether the inventory panel is currently visible.</summary>
         public bool IsInventoryOpen => _inventoryOpen;
 
+        /// <summary>
+        /// Close the inventory if it is open. Used by PauseManager's Escape chain.
+        /// Only closes — never opens — to match the "Escape = close" convention.
+        /// </summary>
+        public void ToggleInventory()
+        {
+            if (_inventoryOpen) ForceClose();
+        }
+
         // =====================================================================
         // Hotbar
         // =====================================================================
