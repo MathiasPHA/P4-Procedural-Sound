@@ -2104,7 +2104,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7606427396537577047, guid: 50b66be180be4544caf8df9d93eda1b6, type: 3}
       propertyPath: catchFraction
-      value: 0.65
+      value: 0.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
