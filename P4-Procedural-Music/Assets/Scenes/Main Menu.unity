@@ -13059,6 +13059,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7338929470385880063, guid: 2f5808459e13d324d98584ca18a87b83, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -3.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7338929470385880063, guid: 2f5808459e13d324d98584ca18a87b83, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -2.64
+      objectReference: {fileID: 0}
     - target: {fileID: 8495983880304799460, guid: 2f5808459e13d324d98584ca18a87b83, type: 3}
       propertyPath: m_Name
       value: Scenetransition
