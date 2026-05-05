@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 205e307909aad3848b29b5bce337aa3d, type: 3}
-  m_Name: Stone Pickaxe_TD
+  m_Name: Metal Spear_TD
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Data.ToolData
-  item: {fileID: 11400000, guid: 27a15c6de8c49f54abe8af3e01bcf0a0, type: 2}
-  toolType: 2
-  damage: 3
+  item: {fileID: 11400000, guid: 3ecd0c445f001be45a2355e0108a0f82, type: 2}
+  toolType: 6
+  damage: 12
   structureDamage: 0
   cooldown: 0.5
   range: 1.5
