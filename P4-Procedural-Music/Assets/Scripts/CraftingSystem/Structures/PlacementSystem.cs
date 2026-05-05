@@ -338,11 +338,16 @@ namespace InventorySystem.Building
             foreach (var mb in _ghost.GetComponentsInChildren<MonoBehaviour>())
                 mb.enabled = false;
 
-            // Cache renderers and set sorting order
+            // Unlit material so the ghost is always visible regardless of ambient light
+            // (URP 2D lighting would otherwise darken it at night just like the real world).
+            var unlitMat = new Material(Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default"));
+
+            // Cache renderers, set sorting order, and apply unlit material
             _ghostRenderers = _ghost.GetComponentsInChildren<SpriteRenderer>();
             foreach (var sr in _ghostRenderers)
             {
                 sr.sortingOrder = ghostSortingOrder;
+                sr.material = unlitMat;
             }
         }
 

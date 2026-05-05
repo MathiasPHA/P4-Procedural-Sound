@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Fishing Rod
   displayName: Fishing Rod
   description: Used for fishing
-  loreNote: fish that sh*t
+  loreNote: Fish that sh*t
   icon: {fileID: 21300000, guid: 340fb43ac47ab0f4db572cc5cdd7e56c, type: 3}
   category: 1
   maxStackSize: 1
@@ -26,6 +26,7 @@ MonoBehaviour:
   happinessRestore: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
+  customEffects: []
   isFuel: 0
   burnFuelValue: 0
   displayStats: []
