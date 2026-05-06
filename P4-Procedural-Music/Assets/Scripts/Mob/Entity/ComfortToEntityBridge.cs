@@ -12,6 +12,7 @@ public class ComfortToEntityBridge : MonoBehaviour
 
     [Header("Intensity Settings")]
     public float intensityIncreaseSpeed = 0.2f;
+    public float intensityDecreaseSpeed = 0.1f;
 
     private ComfortSystem comfortSystem;
 
@@ -54,6 +55,11 @@ void Update()
     {
         postProcessingManager.SetIntensity(
             postProcessingManager.masterIntensity + intensityIncreaseSpeed * Time.deltaTime);
+    }
+    else
+    {
+        postProcessingManager.SetIntensity(
+            postProcessingManager.masterIntensity - intensityDecreaseSpeed * Time.deltaTime);
     }
 }
 }
