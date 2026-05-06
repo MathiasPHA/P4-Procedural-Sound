@@ -15,6 +15,8 @@ public class DungeonExit : Interactable
             return;
         }
 
+        SaveSystemManager.Instance?.SaveModifiedChunks();
+
         DungeonManager.Instance.ExitDungeon();
     }
 }

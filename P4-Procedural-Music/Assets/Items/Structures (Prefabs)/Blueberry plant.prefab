@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8742374092893415099}
   - component: {fileID: 1856559873834934828}
   - component: {fileID: 4632026036573499104}
+  - component: {fileID: -7546186403908109061}
   m_Layer: 8
   m_Name: Blueberry plant
   m_TagString: Untagged
@@ -193,3 +194,15 @@ MonoBehaviour:
   harvestSound: {fileID: 8300000, guid: 0fa6545b998569c488a78ea6d7f66301, type: 3}
   volume: 0.5
   pitchVariation: 0.15
+--- !u!114 &-7546186403908109061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 415707547045968234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e6748cc4ef6c2b40bc2f2c0848567a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralTerrain.SpawnedObjectTracker

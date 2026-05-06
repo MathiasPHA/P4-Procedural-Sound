@@ -47,6 +47,10 @@ namespace ProceduralTerrain
 
                 if (hasTerrainMods || hasRemovedObjects || hasDepletedObjects)
                 {
+                    Debug.Log($"[ChunkPersistence] Saving chunk {kvp.Key}: " +
+                              $"terrainMods={hasTerrainMods}, " +
+                              $"removed={removedIds?.Count ?? 0}, " +
+                              $"depleted={depletedIds?.Count ?? 0}");
                     saveData.chunks.Add(ChunkSaveData.FromChunkData(kvp.Value, removedIds, depletedIds));
                     kvp.Value.MarkClean();
                 }

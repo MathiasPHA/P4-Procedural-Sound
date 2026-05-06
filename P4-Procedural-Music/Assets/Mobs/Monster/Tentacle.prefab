@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 2794193486422891529}
   - component: {fileID: 5556467927611290304}
   - component: {fileID: 1623993693388570980}
-  - component: {fileID: -7035556612366402063}
   - component: {fileID: 3500028683508259091}
   - component: {fileID: 5867780215122136204}
   m_Layer: 10
@@ -225,28 +224,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TentacleDamager
   mobData: {fileID: 11400000, guid: 9f883aa29f6282340bc88e70657f92cc, type: 2}
---- !u!114 &-7035556612366402063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 926544784483756400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c02ed322f491bd4cbec1a9e2e7dbe17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobSystem.MobHealthBar
-  widthRatio: 0.311
-  heightRatio: 0.017
-  verticalPadding: 0.15
-  showDuration: 3
-  fadeDuration: 0.5
-  backgroundColor: {r: 0.15, g: 0.15, b: 0.15, a: 0.8}
-  healthyColor: {r: 0.3, g: 0.9, b: 0.3, a: 1}
-  hurtColor: {r: 0.9, g: 0.9, b: 0.2, a: 1}
-  criticalColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
-  sortingOrder: 100
 --- !u!114 &3500028683508259091
 MonoBehaviour:
   m_ObjectHideFlags: 0
