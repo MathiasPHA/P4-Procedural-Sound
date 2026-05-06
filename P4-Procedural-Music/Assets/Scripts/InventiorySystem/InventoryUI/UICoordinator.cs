@@ -85,6 +85,9 @@ namespace InventorySystem.UI
 
         public void Toggle()
         {
+            // Don't open inventory while the game is paused
+            if (PauseManager.isPaused && !ArePanelsOpen) return;
+
             var fishing = FishingSystem.FishingManager.Instance;
             if (fishing != null && fishing.IsFishing)
             {
