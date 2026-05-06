@@ -193,15 +193,6 @@ public class ComfortMusicBridge : MonoBehaviour
 
     private void Update()
     {
-        _debugTimer += Time.deltaTime;
-        if (_debugTimer >= 1f)
-        {
-            _debugTimer = 0f;
-            Debug.Log($"[Bridge] backend={activeBackend} tension={_currentTension:F2} " +
-                      $"pending={_pendingState} current={_currentMusicState} " +
-                      $"timer={_stateTimer:F1}/{stateChangeDelay} override={_manualStateOverride}");
-        }
-
         bool hasSystem = _moodSystem != null || _happinessSystem != null;
         bool hasMusic = activeBackend == MusicBackend.Procedural
                          ? ProceduralMusic != null

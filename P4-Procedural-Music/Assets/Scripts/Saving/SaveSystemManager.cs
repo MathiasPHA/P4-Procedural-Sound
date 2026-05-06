@@ -48,6 +48,12 @@ public class SaveSystemManager : MonoBehaviour
 
     private void Start()
     {
+        // Re-enable any subsystems that may have been disabled by a previous
+        // session's permadeath wipe. DontDestroyOnLoad singletons (DayNightMaster,
+        // etc.) survive scene loads with enabled=false if ShutdownSaveSubsystems()
+        // was called — they must be re-enabled here before we load from them.
+        ReenableSaveSubsystems();
+
         if (InventorySaveSystem.Instance != null)
             InventorySaveSystem.Instance.LoadInventory(worldName);
         else
@@ -181,6 +187,27 @@ public class SaveSystemManager : MonoBehaviour
             ChunkManager.Instance.enabled = false;
 
         autoSaveInterval = 0f;
+    }
+
+    /// <summary>
+    /// Re-enables any subsystems that ShutdownSaveSubsystems() disabled during
+    /// a previous session's permadeath wipe. DontDestroyOnLoad singletons
+    /// (DayNightMaster, etc.) survive scene loads and will still be disabled
+    /// when the player starts a new game — this is the counterpart that brings
+    /// them back to life at the start of each new game scene.
+    /// </summary>
+    private void ReenableSaveSubsystems()
+    {
+        // Only DontDestroyOnLoad objects need re-enabling here — scene-local
+        // objects (InventorySaveSystem, PlayerSaveSystem, PlacedStructureManager,
+        // ChunkManager) are freshly instantiated each scene load, so they always
+        // start enabled. We only need to repair persistent singletons.
+
+        if (DayNightMaster.Instance != null && !DayNightMaster.Instance.enabled)
+        {
+            DayNightMaster.Instance.enabled = true;
+            Debug.Log("[SaveSystemManager] Re-enabled DayNightMaster after permadeath.");
+        }
     }
 
     /// <summary>

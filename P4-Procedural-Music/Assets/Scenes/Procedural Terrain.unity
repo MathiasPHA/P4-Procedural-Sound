@@ -2717,38 +2717,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Death Canvas
       objectReference: {fileID: 0}
-    - target: {fileID: 4254097958352710514, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_Alpha
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6857323611807678710, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
-    - target: {fileID: 6857323611807678710, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 2140032, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
-    - target: {fileID: 6857323611807678710, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7976720562517508778, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_SortingOrder
-      value: 999
-      objectReference: {fileID: 0}
-    - target: {fileID: 8490353735202154679, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
-    - target: {fileID: 8490353735202154679, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 2140032, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
-    - target: {fileID: 8490353735202154679, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
