@@ -18,36 +18,51 @@ namespace ProceduralTerrain
         private int _spawnId;
         private Vector2Int _chunkCoord;
         private bool _handled;
+        private bool _initialized;
 
         public void Init(int spawnId, Vector2Int chunkCoord)
         {
             _spawnId = spawnId;
             _chunkCoord = chunkCoord;
+            _initialized = true;
         }
 
         private void Start()
         {
-            _chunkManager = FindFirstObjectByType<ChunkManager>();
+            _chunkManager = ChunkManager.Instance;
+            if (_chunkManager == null)
+                _chunkManager = FindFirstObjectByType<ChunkManager>();
+
+            if (!_initialized)
+                Debug.LogWarning($"[SpawnedObjectTracker] {gameObject.name} — Init() was never called! SpawnId will be 0.");
 
             // Auto-hook into HarvestableResource if present
             var harvestable = GetComponent<InventorySystem.Harvesting.HarvestableResource>();
             if (harvestable != null)
             {
                 harvestable.OnDepleted += OnHarvestableDepleted;
+                Debug.Log($"[SpawnedObjectTracker] Hooked OnDepleted on {gameObject.name} (spawnId={_spawnId}, chunk={_chunkCoord})");
             }
         }
 
-        /// <summary>
-        /// Called automatically when HarvestableResource is depleted.
-        /// Marks the object as DEPLETED so the stump/remnant spawns on reload.
-        /// HarvestableResource handles destroying the GO and spawning the stump itself.
-        /// </summary>
         private void OnHarvestableDepleted()
         {
             if (_handled) return;
             _handled = true;
 
-            if (_chunkManager == null || _spawnId == 0) return;
+            if (_chunkManager == null)
+            {
+                Debug.LogWarning($"[SpawnedObjectTracker] {gameObject.name} depleted but ChunkManager is null — not tracked!");
+                return;
+            }
+
+            if (_spawnId == 0)
+            {
+                Debug.LogWarning($"[SpawnedObjectTracker] {gameObject.name} depleted but spawnId is 0 — not tracked!");
+                return;
+            }
+
+            Debug.Log($"[SpawnedObjectTracker] Depleting {gameObject.name} spawnId={_spawnId} chunk={_chunkCoord}");
             _chunkManager.DepleteSpawnedObject(_chunkCoord, _spawnId);
         }
 
@@ -60,8 +75,17 @@ namespace ProceduralTerrain
             if (_handled) return;
             _handled = true;
 
-            if (_chunkManager != null && _spawnId != 0)
+            if (_chunkManager == null)
             {
+                Debug.LogWarning($"[SpawnedObjectTracker] {gameObject.name} removed but ChunkManager is null — not tracked!");
+            }
+            else if (_spawnId == 0)
+            {
+                Debug.LogWarning($"[SpawnedObjectTracker] {gameObject.name} removed but spawnId is 0 — not tracked!");
+            }
+            else
+            {
+                Debug.Log($"[SpawnedObjectTracker] Removing {gameObject.name} spawnId={_spawnId} chunk={_chunkCoord}");
                 _chunkManager.RemoveSpawnedObject(_chunkCoord, _spawnId);
             }
 

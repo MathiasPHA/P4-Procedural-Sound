@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3810362152200292771}
   - component: {fileID: 6776591974306299187}
   - component: {fileID: 3569090700284772056}
+  - component: {fileID: 3351787933390581295}
   m_Layer: 7
   m_Name: Tree Stump
   m_TagString: Untagged
@@ -184,3 +185,15 @@ MonoBehaviour:
   interactRange: 6.61
   interactCenterOffset: {x: 0, y: 1.69}
   promptOffset: {x: 0, y: 1.2}
+--- !u!114 &3351787933390581295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8946883767646482474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e6748cc4ef6c2b40bc2f2c0848567a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralTerrain.SpawnedObjectTracker
