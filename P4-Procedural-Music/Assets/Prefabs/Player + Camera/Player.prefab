@@ -734,6 +734,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: feee236670a750e4f9bd4974e4e7ead1, type: 2}
   - {fileID: 11400000, guid: b4a223a398ec44f8ba59d383b5c366c4, type: 2}
   - {fileID: 11400000, guid: ac2de69023ef2dd49b6e247d5c014356, type: 2}
+  - {fileID: 11400000, guid: 2058d5b440c938143aebfb5eebcebbee, type: 2}
   gridSize: 2
   skipGroundCheck: 1
   groundLayer:
