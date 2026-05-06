@@ -23,6 +23,11 @@ public class PlayerSaveSystem : MonoBehaviour
     [Tooltip("The player's Transform to save/restore position from.")]
     [SerializeField] private Transform playerTransform;
 
+    [Header("New Game Defaults")]
+    [SerializeField][Range(0f, 1f)] private float defaultHappiness = 1f;
+    [SerializeField][Range(0f, 1f)] private float defaultHunger = 1f;
+    [SerializeField][Range(0f, 1f)] private float defaultMood = 0.6f;
+
     private HappinessSystem happinessSystem;
     private HungerSystem hungerSystem;
     private MoodSystem moodSystem;
@@ -86,9 +91,9 @@ public class PlayerSaveSystem : MonoBehaviour
             };
         }
 
-        data.happiness = happinessSystem != null ? happinessSystem.Happiness : 0.5f;
-        data.hunger = hungerSystem != null ? hungerSystem.Hunger : 0.8f;
-        data.mood = moodSystem != null ? moodSystem.Mood : 0.6f;
+        data.happiness = happinessSystem != null ? happinessSystem.Happiness : defaultHappiness;
+        data.hunger = hungerSystem != null ? hungerSystem.Hunger : defaultHunger;
+        data.mood = moodSystem != null ? moodSystem.Mood : defaultMood;
 
         File.WriteAllText(path, JsonUtility.ToJson(data, prettyPrint: true));
         Debug.Log($"[PlayerSaveSystem] Saved player (inDungeon={inDungeon}) " +
@@ -104,14 +109,19 @@ public class PlayerSaveSystem : MonoBehaviour
         string path = GetSavePath(worldName);
         if (!File.Exists(path))
         {
-            Debug.Log($"[PlayerSaveSystem] No player save found for '{worldName}' — using defaults.");
+            // ── NEW GAME ── No save exists yet. Explicitly reset stats to starting
+            // defaults so stale static-cache values from a previous session don't
+            // bleed into the new run.
+            Debug.Log($"[PlayerSaveSystem] No player save found for '{worldName}' — applying new-game defaults.");
+            ApplyDefaults();
             return;
         }
 
         var data = JsonUtility.FromJson<PlayerSaveData>(File.ReadAllText(path));
         if (data == null)
         {
-            Debug.LogWarning("[PlayerSaveSystem] Player save data was corrupt.");
+            Debug.LogWarning("[PlayerSaveSystem] Player save data was corrupt — applying new-game defaults.");
+            ApplyDefaults();
             return;
         }
 
@@ -136,6 +146,27 @@ public class PlayerSaveSystem : MonoBehaviour
     // -------------------------------------------------------------------------
     // Internal
     // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Pushes the inspector-configured starting values into every live system.
+    /// Called when no save file exists (new game) or when the save is corrupt.
+    /// This is the single authoritative place that resets stale static-cache
+    /// values that survive scene loads.
+    /// </summary>
+    private void ApplyDefaults()
+    {
+        if (happinessSystem != null)
+            happinessSystem.SetHappiness(defaultHappiness);
+
+        if (hungerSystem != null)
+            hungerSystem.SetHunger(defaultHunger);
+
+        if (moodSystem != null)
+            moodSystem.SetMood(defaultMood);
+
+        Debug.Log($"[PlayerSaveSystem] Defaults applied — " +
+                  $"happiness={defaultHappiness:F2}, hunger={defaultHunger:F2}, mood={defaultMood:F2}");
+    }
 
     private static string GetSavePath(string worldName)
     {

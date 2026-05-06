@@ -734,7 +734,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: feee236670a750e4f9bd4974e4e7ead1, type: 2}
   - {fileID: 11400000, guid: b4a223a398ec44f8ba59d383b5c366c4, type: 2}
   - {fileID: 11400000, guid: ac2de69023ef2dd49b6e247d5c014356, type: 2}
-  - {fileID: 11400000, guid: 2058d5b440c938143aebfb5eebcebbee, type: 2}
   gridSize: 2
   skipGroundCheck: 1
   groundLayer:
@@ -746,7 +745,7 @@ MonoBehaviour:
   validColour: {r: 0.2, g: 1, b: 0.2, a: 0.5}
   invalidColour: {r: 1, g: 0.2, b: 0.2, a: 0.5}
   ghostSortingOrder: 100
-  ghostShader: {fileID: 0}
+  ghostShader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
   audioSource: {fileID: -1374152125123140291}
   placementSound: {fileID: 8300000, guid: 8e17a6d1d3180bd4784e2fbca7536105, type: 3}
   placementVolume: 1
@@ -917,6 +916,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveSystem
   playerTransform: {fileID: 6496137450566507929}
+  defaultHappiness: 1
+  defaultHunger: 0.651
+  defaultMood: 0.75
 --- !u!114 &8506979196779420666
 MonoBehaviour:
   m_ObjectHideFlags: 0

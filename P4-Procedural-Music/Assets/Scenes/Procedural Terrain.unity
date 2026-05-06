@@ -892,6 +892,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+--- !u!114 &773878943 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4338461572147085950, guid: 23bad36e8e8319949a2ffdaee86ab7a9, type: 3}
+  m_PrefabInstance: {fileID: 773878942}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7c5972501f37e24ba1cfddc2869daf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.UI.UICoordinator
 --- !u!1 &884177755
 GameObject:
   m_ObjectHideFlags: 0
@@ -1064,6 +1075,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PauseMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 2862067803819105686, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
+      propertyPath: uiCoordinator
+      value: 
+      objectReference: {fileID: 773878943}
     - target: {fileID: 2862067803819105686, guid: ace177d17fbe8684aa8d08f9b99c7230, type: 3}
       propertyPath: volumeController
       value: 
@@ -1722,10 +1737,6 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 892208754}
-    - target: {fileID: 1591661159947031898, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
-      propertyPath: ghostShader
-      value: 
-      objectReference: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 3340332575720080812, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: promptUI
       value: 
@@ -2636,38 +2647,6 @@ PrefabInstance:
     - target: {fileID: 657321690685858561, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
       propertyPath: m_Name
       value: Death Canvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 4254097958352710514, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_Alpha
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6857323611807678710, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
-    - target: {fileID: 6857323611807678710, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 2140032, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
-    - target: {fileID: 6857323611807678710, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7976720562517508778, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_SortingOrder
-      value: 999
-      objectReference: {fileID: 0}
-    - target: {fileID: 8490353735202154679, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
-    - target: {fileID: 8490353735202154679, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 2140032, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
-    - target: {fileID: 8490353735202154679, guid: eedef5fd7fd5ab04aa7156f19594e528, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
