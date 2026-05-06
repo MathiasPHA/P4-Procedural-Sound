@@ -135,11 +135,6 @@ namespace InventorySystem.Harvesting
                 }
             }
 
-            OnDepleted?.Invoke();
-
-            if (depleteSound != null)
-                PlaySoundWithPitch(depleteSound, transform.position, depleteVolume);
-
             if (depletedPrefab != null)
             {
                 var sr = GetComponent<SpriteRenderer>();
@@ -150,6 +145,11 @@ namespace InventorySystem.Harvesting
 
                 Instantiate(depletedPrefab, spawnPos, transform.rotation, transform.parent);
             }
+
+            OnDepleted?.Invoke();
+
+            if (depleteSound != null)
+                PlaySoundWithPitch(depleteSound, transform.position, depleteVolume);
 
             Destroy(gameObject);
         }

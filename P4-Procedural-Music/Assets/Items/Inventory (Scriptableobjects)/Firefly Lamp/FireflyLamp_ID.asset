@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Firefly Lamp
   description: 'Emits a soft light  '
   loreNote: You would not believe your eyes...
-  icon: {fileID: 515263301826695200, guid: a22b1fd910d109546a05076319096beb, type: 3}
+  icon: {fileID: 21300000, guid: 59dc3ba1ad684474980e0020c2002546, type: 3}
   category: 3
   maxStackSize: 1
   isDroppable: 1
@@ -26,6 +26,7 @@ MonoBehaviour:
   happinessRestore: 0
   consumeSound: {fileID: 0}
   consumeSoundVolume: 1
+  customEffects: []
   isFuel: 0
   burnFuelValue: 0
   displayStats: []

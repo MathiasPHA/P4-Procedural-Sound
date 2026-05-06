@@ -12,6 +12,9 @@ GameObject:
   - component: {fileID: 8767983114536667137}
   - component: {fileID: 754435861024637493}
   - component: {fileID: 1080538737357498259}
+  - component: {fileID: 6017007592890157079}
+  - component: {fileID: 2898219545550715569}
+  - component: {fileID: 6909801779657991848}
   m_Layer: 0
   m_Name: Firefly Lamp
   m_TagString: Untagged
@@ -79,8 +82,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1209571973
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 59dc3ba1ad684474980e0020c2002546, type: 3}
@@ -167,3 +170,77 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6017007592890157079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4573615798231788584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8b1b829e8f57af4eac20cf86bd742c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.PlacedStructure
+  sourceData: {fileID: 11400000, guid: 2058d5b440c938143aebfb5eebcebbee, type: 2}
+  wasSaveLoaded: 0
+  shakeIntensity: 0.08
+  shakeDuration: 0.12
+  hitSound: {fileID: 0}
+  hitVolume: 0.5
+  demolishSound: {fileID: 0}
+  demolishVolume: 0.6
+  drops: []
+  worldItemPrefab: {fileID: 0}
+  directToInventory: 0
+--- !u!114 &2898219545550715569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4573615798231788584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e705c3c11fe791646b2de9f5b4e9df68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Harvesting.HarvestableResource
+  requiredToolType: 5
+  maxHealth: 5
+  dropItem: {fileID: 0}
+  dropAmount: 3
+  directToInventory: 0
+  worldItemPrefab: {fileID: 0}
+  hitSound: {fileID: 0}
+  hitVolume: 0.5
+  depleteSound: {fileID: 0}
+  depleteVolume: 0.5
+  pickupSound: {fileID: 0}
+  pickupVolume: 0.5
+  pitchVariation: 0.15
+  depletedPrefab: {fileID: 0}
+  shakeIntensity: 0.1
+  shakeDuration: 0.15
+--- !u!114 &6909801779657991848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4573615798231788584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a93e187d64c969d4c87fb62b0503cfab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Building.StructureHealthBar
+  widthRatio: 0.8
+  heightRatio: 0.04
+  yOffset: 0.15
+  fullColour: {r: 0.15, g: 0.85, b: 0.15, a: 1}
+  lowColour: {r: 0.85, g: 0.15, b: 0.15, a: 1}
+  backgroundColour: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
+  borderColour: {r: 0, g: 0, b: 0, a: 0.9}
+  hideDelay: 2.5
+  fadeDuration: 0.4
+  sortingOrder: 10
+  sortingLayerName: 
