@@ -417,12 +417,18 @@ namespace ProceduralTerrain
                     var depleted = chunkObjects.GetDepletedIds();
                     objectsDirty = (removed != null && removed.Count > 0)
                                 || (depleted != null && depleted.Count > 0);
-                    ObjectSpawner.DespawnChunk(chunkObjects);
-                    _loadedObjects.Remove(coord);
                 }
 
+                // Save BEFORE despawning/removing from dictionaries — SaveModifiedChunks
+                // iterates _loadedChunks and _loadedObjects, so the data must still be there.
                 if (chunk.IsDirty || objectsDirty)
                     SaveSystemManager.Instance.SaveModifiedChunks();
+
+                if (_loadedObjects.TryGetValue(coord, out var chunkObjectsToRemove))
+                {
+                    ObjectSpawner.DespawnChunk(chunkObjectsToRemove);
+                    _loadedObjects.Remove(coord);
+                }
 
                 if (PlacedStructureManager.Instance != null)
                 {
