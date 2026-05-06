@@ -24,7 +24,7 @@ MonoBehaviour:
   maxDurability: 100
   hungerRestore: 0.1
   happinessRestore: 0.005
-  consumeSound: {fileID: 0}
+  consumeSound: {fileID: 8300000, guid: 2c78bea2e4210c746a24116cd503d40f, type: 3}
   consumeSoundVolume: 1
   customEffects:
   - effectType: 11
@@ -34,6 +34,7 @@ MonoBehaviour:
     effectMessage: 
     effectSound: {fileID: 0}
     effectSoundVolume: 0
+    sceneName: 
   isFuel: 0
   burnFuelValue: 0
   displayStats: []
