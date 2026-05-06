@@ -38,7 +38,6 @@ public class PostProcessingManager : MonoBehaviour
     private bool tentacleTriggered = false;
     private bool isReady = false;
 
-    // Static flag so other systems can check if the entity is active
     public static bool EntityIsActive { get; private set; } = false;
 
     void Start()
@@ -76,7 +75,6 @@ public class PostProcessingManager : MonoBehaviour
 
         float alpha = Mathf.InverseLerp(minimumIntensity, maximumIntensity, masterIntensity);
         if (overlayEyes != null) overlayEyes.alpha = alpha;
-        //if (overlayTentacles != null) overlayTentacles.alpha = alpha ;
 
         if (masterIntensity > overlayTentacleSpawn)
         {
@@ -97,10 +95,8 @@ public class PostProcessingManager : MonoBehaviour
         }
 
 
-        // Update entity active flag
         EntityIsActive = masterIntensity >= musicTriggerSpookyThreshold;
 
-        // Music � highest threshold checked first
         if (musicController != null)
         {
             if (masterIntensity >= musicTriggerHorrorThreshold)

@@ -30,10 +30,10 @@ public class TentacleAttack : MonoBehaviour
 
     IEnumerator AttackSequence(Vector2 direction)
     {
-        // ── Spawn offset from player ──────────────────────────────
+        //Spawn offset from player 
         Vector3 spawnPos = player.position + (Vector3)(direction.normalized * spawnOffset);
 
-        // Point toward player
+        //Point toward player
         Vector2 toPlayer = (player.position - spawnPos).normalized;
         float angle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
 
@@ -43,12 +43,11 @@ public class TentacleAttack : MonoBehaviour
         SpriteRenderer sr = tentacleObj.GetComponent<SpriteRenderer>();
         sr.color = new Color(1, 1, 1, 0);
 
-        // ── Subscribe to death event ──────────────────────────────
+        //Subscribe to death event
         MobController mobController = tentacleObj.GetComponent<MobController>();
         if (mobController != null)
             mobController.OnDeath += OnTentacleDied;
 
-        // ── Windup — stretch toward player ────────────────────────
         float distance = Vector2.Distance(spawnPos, player.position);
         float elapsed = 0f;
         while (elapsed < mobData.attackWindupDuration)
@@ -64,11 +63,8 @@ public class TentacleAttack : MonoBehaviour
         if (mobData.attackWindupSound != null)
             AudioSource.PlayClipAtPoint(mobData.attackWindupSound,
                 tentacleObj.transform.position, mobData.attackWindupVolume);
-
-        // ── Stay extended — player must kill it ───────────────────
-        // MobController handles death, OnTentacleDied fires when killed
     }
-
+    
         private void OnTentacleDied(MobController mob)
     {
         mob.OnDeath -= OnTentacleDied;
