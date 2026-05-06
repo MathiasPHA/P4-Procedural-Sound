@@ -287,13 +287,19 @@ namespace ProceduralTerrain
                         if (tooClose) continue;
                     }
 
-                    // Determine what to spawn: depleted stump or the original
+                    // Determine what to spawn: depleted stump or the original.
+                    // Stumps get their own spawnId (tree's id XOR'd with a constant) so they
+                    // can be saved and removed independently from the tree.
                     GameObject prefab;
+                    int activeSpawnId = spawnId;
                     if (chunkObjects.IsDepleted(spawnId))
                     {
-                        // Spawn the stump/depleted version instead
                         if (rule.depletedPrefab == null) continue; // No stump defined, skip
+                        // Skip if the stump itself has already been harvested
+                        int stumpId = spawnId ^ 0x5EED;
+                        if (chunkObjects.IsGone(stumpId)) continue;
                         prefab = rule.depletedPrefab;
+                        activeSpawnId = stumpId;
                     }
                     else
                     {
@@ -311,17 +317,17 @@ namespace ProceduralTerrain
 
                     // Spawn
                     GameObject instance = Object.Instantiate(prefab, worldPos, Quaternion.identity, chunkParent);
-                    instance.name = $"{rule.name}_{spawnId}";
+                    instance.name = $"{rule.name}_{activeSpawnId}";
 
-                    // Give the tracker its ID and chunk coord directly — avoids reverse-lookup
-                    // from world position which breaks near chunk boundaries after anchor offsets.
+                    // Give the tracker its own ID — stumps use stumpId so Remove() targets the
+                    // stump's entry, not the original tree's depleted entry.
                     var tracker = instance.GetComponent<SpawnedObjectTracker>();
                     if (tracker != null)
-                        tracker.Init(spawnId, chunkCoord);
+                        tracker.Init(activeSpawnId, chunkCoord);
 
                     chunkObjects.Objects.Add(new SpawnedObject
                     {
-                        SpawnId = spawnId,
+                        SpawnId = activeSpawnId,
                         Instance = instance,
                         RuleName = rule.name,
                     });
