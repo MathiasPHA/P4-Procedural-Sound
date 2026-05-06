@@ -147,7 +147,13 @@ public class DungeonObjectSpawner : MonoBehaviour
 
         foreach (var candidate in candidates)
         {
-            if (totalMax > 0 && totalSpawned >= totalMax) break;
+            if (totalMax > 0 && totalSpawned >= totalMax)
+            {
+                var e = entries[candidate.entryIdx];
+                if (e.guaranteedSpawn && spawnedPerEntry[candidate.entryIdx] == 0)
+                    Debug.LogWarning($"[DungeonObjectSpawner] GUARANTEED '{e.prefab?.name}' blocked by maxTotalSpawns cap ({totalMax}).");
+                break;
+            }
 
             var entry = entries[candidate.entryIdx];
             if (entry.maxCount > 0 && spawnedPerEntry[candidate.entryIdx] >= entry.maxCount) continue;
@@ -161,9 +167,23 @@ public class DungeonObjectSpawner : MonoBehaviour
             var obj = Instantiate(entry.prefab, transform);
             obj.transform.position = generator.FloorTilemapTransform.TransformPoint(localPos);
 
+            if (entry.guaranteedSpawn)
+            {
+                obj.AddComponent<GuaranteedDungeonSpawn>();
+                Debug.Log($"[DungeonObjectSpawner] GUARANTEED '{entry.prefab?.name}' spawned at cell {candidate.cell}.");
+            }
+
             placed.Add(candidate.cell);
             spawnedPerEntry[candidate.entryIdx]++;
             totalSpawned++;
+        }
+
+        // Warn if any guaranteed entry produced zero spawns
+        for (int i = 0; i < entries.Length; i++)
+        {
+            if (entries[i].guaranteedSpawn && spawnedPerEntry[i] == 0)
+                Debug.LogWarning($"[DungeonObjectSpawner] GUARANTEED '{entries[i].prefab?.name}' never spawned — no valid candidate survived all checks. " +
+                                 $"Candidates in list: {candidates.Count}.");
         }
     }
 
@@ -244,6 +264,9 @@ public class DungeonObjectSpawner : MonoBehaviour
         {
             if (toDestroy.Contains(child)) continue;
 
+            // Never remove guaranteed spawns regardless of overlap
+            if (child.GetComponent<GuaranteedDungeonSpawn>() != null) continue;
+
             var col = child.GetComponentInChildren<Collider2D>();
             if (col == null) continue;
 
@@ -255,6 +278,9 @@ public class DungeonObjectSpawner : MonoBehaviour
                 if (hit.gameObject == child) continue;
                 if (hit.transform.IsChildOf(child.transform)) continue;
                 if (hit.gameObject.name == "DungeonCollision") continue;
+
+                // Never queue a guaranteed spawn for destruction
+                if (hit.gameObject.GetComponent<GuaranteedDungeonSpawn>() != null) continue;
 
                 if (hit.transform.parent == transform && !toDestroy.Contains(hit.gameObject))
                 {

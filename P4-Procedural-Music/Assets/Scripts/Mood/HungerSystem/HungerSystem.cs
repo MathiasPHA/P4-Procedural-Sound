@@ -54,6 +54,9 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
 
     // ───────────────────────── State ─────────────────────────
 
+    // Static cache survives scene unloads — same pattern as HappinessSystem/MoodSystem.
+    private static float s_cachedHunger = -1f;   // -1 = no cache yet
+
     private float hunger;
     private MoodSystem moodSystem;
 
@@ -104,6 +107,7 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
     {
         float before = hunger;
         hunger = Mathf.Clamp01(hunger + amount);
+        s_cachedHunger = hunger;
         Debug.Log($"[Hunger] +{amount:F2} hunger ({before:F2} → {hunger:F2})");
     }
 
@@ -113,6 +117,7 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
     public void SetHunger(float value)
     {
         hunger = Mathf.Clamp01(value);
+        s_cachedHunger = hunger;
     }
 
     // ───────────────────────── Lifecycle ─────────────────────────
@@ -126,7 +131,7 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
         }
         Instance = this;
 
-        hunger = startingHunger;
+        hunger = s_cachedHunger >= 0f ? s_cachedHunger : startingHunger;
     }
 
     private void Start()
@@ -173,6 +178,7 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
         if (hunger <= 0f) return;
 
         hunger = Mathf.Max(0f, hunger - drainPerSecond * Time.deltaTime);
+        s_cachedHunger = hunger;
     }
 
     /// <summary>

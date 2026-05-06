@@ -15,7 +15,9 @@ MonoBehaviour:
   recipeId: Flute
   stationType: 0
   ingredients:
-  - item: {fileID: 11400000, guid: 9d78585a34684a9449ac55e5637cfdce, type: 2}
+  - item: {fileID: 11400000, guid: ca08bc4e455f7464caeda5ca836365e1, type: 2}
+    amount: 4
+  - item: {fileID: 11400000, guid: 70706f95bacef4ee0bb8bc9dfbae1c02, type: 2}
     amount: 1
   result: {fileID: 11400000, guid: eedb5255e328c4613923f3b8bd8f9259, type: 2}
   resultAmount: 1
