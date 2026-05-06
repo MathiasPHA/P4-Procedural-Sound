@@ -75,6 +75,7 @@ MonoBehaviour:
   masterVolume: 1
   crossfadeDuration: 2
   preservePlaybackPosition: 0
+  musicMixerGroup: {fileID: -180231620686836102, guid: e468cdc6a62c548ffbdaf6ea2854c067, type: 2}
   ShowDebugInfo: 0
 --- !u!1 &5358447644200437816
 GameObject:

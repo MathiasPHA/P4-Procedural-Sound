@@ -96,6 +96,7 @@ namespace ProceduralTerrain
                 ? GameSettings.Instance.seed
                 : generationConfig.seed;
 
+            _runtimeSeed = EnsureViableSeed(_runtimeSeed);
             Log($"[ChunkManager] Using seed: {_runtimeSeed}");
 
             _grid = groundTilemap.layoutGrid;
@@ -326,6 +327,44 @@ namespace ProceduralTerrain
             );
         }
 
+        /// <summary>
+        /// Checks whether a seed produces enough water near the origin.
+        /// If not, increments until a viable seed is found.
+        /// Samples a coarse grid so it's fast (runs once at startup).
+        /// </summary>
+        private int EnsureViableSeed(int seed, float minWaterFraction = 0.08f, int scanRadius = 32)
+        {
+            int attempts = 0;
+            while (attempts < 1000)
+            {
+                int waterCount = 0;
+                int total = 0;
+                for (int y = -scanRadius; y <= scanRadius; y += 4)
+                {
+                    for (int x = -scanRadius; x <= scanRadius; x += 4)
+                    {
+                        if (TerrainGenerator.SampleAt(x, y, generationConfig, seed) == TerrainType.Water)
+                            waterCount++;
+                        total++;
+                    }
+                }
+
+                float fraction = (float)waterCount / total;
+                if (fraction >= minWaterFraction)
+                {
+                    if (attempts > 0)
+                        Debug.Log($"[ChunkManager] Original seed had {fraction * 100:F0}% water near origin — adjusted to seed {seed} after {attempts} attempt(s).");
+                    return seed;
+                }
+
+                seed++;
+                attempts++;
+            }
+
+            Debug.LogWarning("[ChunkManager] Could not find a viable seed after 1000 attempts — using last tried.");
+            return seed;
+        }
+
         private void UpdateChunks(Vector2Int centerChunk)
         {
             for (int dy = -loadRadius; dy <= loadRadius; dy++)
@@ -417,18 +456,12 @@ namespace ProceduralTerrain
                     var depleted = chunkObjects.GetDepletedIds();
                     objectsDirty = (removed != null && removed.Count > 0)
                                 || (depleted != null && depleted.Count > 0);
-                }
-
-                // Save BEFORE despawning/removing from dictionaries — SaveModifiedChunks
-                // iterates _loadedChunks and _loadedObjects, so the data must still be there.
-                if (chunk.IsDirty || objectsDirty)
-                    SaveSystemManager.Instance.SaveModifiedChunks();
-
-                if (_loadedObjects.TryGetValue(coord, out var chunkObjectsToRemove))
-                {
-                    ObjectSpawner.DespawnChunk(chunkObjectsToRemove);
+                    ObjectSpawner.DespawnChunk(chunkObjects);
                     _loadedObjects.Remove(coord);
                 }
+
+                if (chunk.IsDirty || objectsDirty)
+                    SaveSystemManager.Instance.SaveModifiedChunks();
 
                 if (PlacedStructureManager.Instance != null)
                 {

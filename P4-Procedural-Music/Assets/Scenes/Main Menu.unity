@@ -2480,14 +2480,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
+  m_ContentType: 5
   m_InputType: 0
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 0
+  m_CharacterValidation: 5
   m_RegexValue: 
   m_GlobalPointSize: 20
   m_CharacterLimit: 0
@@ -12251,10 +12251,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1122488857114051067, guid: 31d23f1ce471d50419bed1a362bf862e, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3950044213483273358, guid: 31d23f1ce471d50419bed1a362bf862e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -11.49316
@@ -12294,10 +12290,6 @@ PrefabInstance:
     - target: {fileID: 3950044213483273358, guid: 31d23f1ce471d50419bed1a362bf862e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4988177644743606341, guid: 31d23f1ce471d50419bed1a362bf862e, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5358447644200437816, guid: 31d23f1ce471d50419bed1a362bf862e, type: 3}
       propertyPath: m_Name

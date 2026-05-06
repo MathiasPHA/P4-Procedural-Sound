@@ -28,7 +28,7 @@ MonoBehaviour:
   difficultyTier: 1
   enemyDensity: 0.3
   lootDensity: 0.2
-  maxTotalRoomSpawns: 50
+  maxTotalRoomSpawns: 51
   roomSpawns:
   - enabled: 1
     guaranteedSpawn: 1
@@ -38,13 +38,23 @@ MonoBehaviour:
     minSpacing: 0
     wallPadding: 0
     useNoise: 0
-    noiseScale: 0
+    noiseScale: 0.01
     noiseThreshold: 0
   - enabled: 1
     guaranteedSpawn: 0
     prefab: {fileID: 6315253869175331180, guid: ce9b34fc55a1f2a47980aa3156cb9c24, type: 3}
     density: 0.232
     maxCount: 48
+    minSpacing: 0
+    wallPadding: 0
+    useNoise: 0
+    noiseScale: 0
+    noiseThreshold: 0
+  - enabled: 1
+    guaranteedSpawn: 0
+    prefab: {fileID: 41646942654369062, guid: 07ec1a9f047821a4983ff3c61e9f4fca, type: 3}
+    density: 0.232
+    maxCount: 1
     minSpacing: 0
     wallPadding: 0
     useNoise: 0
