@@ -1307,9 +1307,21 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2847878104748206796, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
+      propertyPath: comfortThreshold
+      value: 0.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847878104748206796, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
+      propertyPath: comfortBoostDuration
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847878104748206796, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
       propertyPath: postProcessingManager
       value: 
       objectReference: {fileID: 5297504137905860940}
+    - target: {fileID: 2847878104748206796, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
+      propertyPath: intensityDecreaseSpeed
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 3123444977881018676, guid: ac1ebd150d2bd0d4fb1d82aba317ef73, type: 3}
       propertyPath: m_Name
       value: MobSpawner
