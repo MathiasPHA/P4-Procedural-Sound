@@ -29,7 +29,7 @@ MonoBehaviour:
   avoidanceDistance: 10
   avoidanceWeight: 1.5
   wanderStrength: 0.5
-  fleeSpeedMultiplier: 1.8
+  fleeSpeedMultiplier: 1
   fleeDistance: 120
   fleeHealthThreshold: 0.2
   aggroRange: 50

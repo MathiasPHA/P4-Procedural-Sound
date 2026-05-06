@@ -1,5 +1,6 @@
-using UnityEngine;
 using InteractionSystem;
+using ProceduralTerrain;
+using UnityEngine;
 
 /// <summary>
 /// Attach to a cave entrance structure in the overworld.
@@ -23,6 +24,30 @@ public class DungeonEntrance : Interactable
         {
             Debug.LogError("[DungeonEntrance] No DungeonConfig assigned!");
             return;
+        }
+
+        // Flush picked-up object state before the scene unloads —
+        // overworld chunks won't go through UnloadChunk during a dungeon transition.
+        if (ChunkManager.Instance != null)
+        {
+            Debug.Log("[DungeonEntrance] Flushing chunk object state before dungeon entry...");
+            ChunkManager.Instance.FlushObjectState();
+            Debug.Log("[DungeonEntrance] FlushObjectState complete.");
+        }
+        else
+        {
+            Debug.LogWarning("[DungeonEntrance] ChunkManager.Instance is null — object state NOT flushed!");
+        }
+
+        if (SaveSystemManager.Instance != null)
+        {
+            Debug.Log("[DungeonEntrance] Calling SaveModifiedChunks...");
+            SaveSystemManager.Instance.SaveModifiedChunks();
+            Debug.Log("[DungeonEntrance] SaveModifiedChunks complete.");
+        }
+        else
+        {
+            Debug.LogWarning("[DungeonEntrance] SaveSystemManager.Instance is null — world NOT saved!");
         }
 
         DungeonManager.Instance.EnterDungeon(

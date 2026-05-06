@@ -3,25 +3,58 @@ using ProceduralMusic.Core;
 using UnityEngine;
 
 /// <summary>
-/// Bridges the MoodSystem and HappinessSystem to the ProceduralMusicController.
+/// Bridges the MoodSystem and HappinessSystem to whichever music backend is active.
+///
+/// Two backends are available:
+///   - Procedural : ProceduralMusicController  (runtime synthesis)
+///   - Sample     : SampleMusicController      (pre-recorded clips, one per state)
+///
+/// Switch between them at runtime via SetBackend() or the MusicBackend inspector field.
+/// All tension computation and state-switching logic is shared between both backends,
+/// making this a clean A/B comparison: identical switching logic, different audio engine.
 ///
 /// Tension is derived from mood and happiness:
-///   Low mood + low happiness = high tension = intense music
-///   High mood + high happiness = low tension = calm music
+///   Low mood + low happiness  → high tension → intense music
+///   High mood + high happiness → low tension → calm music
 ///
 /// Maps tension ranges to game music states using three threshold sets:
-///   - Day:     Cozy → Exploring → Pressure
-///   - Night:   Cozy → Night → Spooky → Horror
-///   - Dungeon: Defined per-dungeon via DungeonConfig SO
+///   - Day     : Cozy → Exploring → Pressure
+///   - Night   : Cozy → Night → Spooky → Horror
+///   - Dungeon : Defined per-dungeon via DungeonConfig SO
 ///
 /// Day/night state switching reads from ComfortSystem.DayNightValue
 /// (which auto-reads from DayNightMaster).
 /// </summary>
 public class ComfortMusicBridge : MonoBehaviour
 {
+    // ─────────────────────────────────────────────────────────────
+    //  Backend selection
+    // ─────────────────────────────────────────────────────────────
+
+    public enum MusicBackend { Procedural, Sample }
+
+    [Header("Music Backend")]
+    [Tooltip("Procedural = runtime synthesis (ProceduralMusicController)\n" +
+             "Sample     = pre-recorded clips  (SampleMusicController)\n\n" +
+             "Can also be switched at runtime via SetBackend().")]
+    [SerializeField] private MusicBackend activeBackend = MusicBackend.Procedural;
+
+    [Tooltip("Fade duration (seconds) when switching backends mid-play. " +
+             "The outgoing backend fades to silence; the incoming backend fades in.")]
+    [Range(0f, 5f)]
+    [SerializeField] private float backendSwitchFadeDuration = 1.5f;
+
+    // ─────────────────────────────────────────────────────────────
+    //  References
+    // ─────────────────────────────────────────────────────────────
+
     [Header("References")]
     [Tooltip("Auto-finds if left empty. Only used for DayNightValue.")]
     [SerializeField] private ComfortSystem comfortSystem;
+
+    // ─────────────────────────────────────────────────────────────
+    //  Tension mapping
+    // ─────────────────────────────────────────────────────────────
 
     [Header("Tension Mapping")]
     [Tooltip("Curve to reshape tension before sending to music. " +
@@ -37,6 +70,10 @@ public class ComfortMusicBridge : MonoBehaviour
     [Tooltip("How much mood contributes to tension")]
     [Range(0f, 1f)]
     [SerializeField] private float moodWeight = 0.4f;
+
+    // ─────────────────────────────────────────────────────────────
+    //  Auto state switching
+    // ─────────────────────────────────────────────────────────────
 
     [Header("Automatic State Switching")]
     [Tooltip("Enable to automatically switch GameMusicState based on tension thresholds")]
@@ -58,79 +95,137 @@ public class ComfortMusicBridge : MonoBehaviour
     [Tooltip("How long tension must stay past a threshold before switching state (prevents flickering)")]
     [SerializeField] private float stateChangeDelay = 2f;
 
-    // State switching internals
-    private GameMusicState pendingState;
-    private GameMusicState currentMusicState;
-    private float stateTimer;
-    private bool manualStateOverride;
-    private bool useExploring2;
-    private bool wasNight;
+    // ─────────────────────────────────────────────────────────────
+    //  State machine internals
+    // ─────────────────────────────────────────────────────────────
+
+    private GameMusicState _pendingState;
+    private GameMusicState _currentMusicState;
+    private float _stateTimer;
+    private bool _manualStateOverride;
+    private bool _useExploring2;
+    private bool _wasNight;
 
     // Dungeon mode
-    private bool inDungeonMode;
-    private DungeonConfig activeDungeonConfig;
+    private bool _inDungeonMode;
+    private DungeonConfig _activeDungeonConfig;
 
-    // System references
-    private MoodSystem moodSystem;
-    private HappinessSystem happinessSystem;
+    // Systems
+    private MoodSystem _moodSystem;
+    private HappinessSystem _happinessSystem;
 
-    private float currentTension;
+    private float _currentTension;
+    private float _debugTimer;
 
-    private ProceduralMusicController Music => ProceduralMusicController.Instance;
+    // ─────────────────────────────────────────────────────────────
+    //  Backend accessors
+    // ─────────────────────────────────────────────────────────────
 
-    /// <summary>Current computed tension (0–1) after curve mapping. Useful for debug.</summary>
-    public float Tension => currentTension;
+    private ProceduralMusicController ProceduralMusic => ProceduralMusicController.Instance;
+    private SampleMusicController SampleMusic => SampleMusicController.Instance;
+
+    /// <summary>Currently active backend.</summary>
+    public MusicBackend ActiveBackend => activeBackend;
+
+    /// <summary>Current computed tension (0–1) after curve mapping.</summary>
+    public float Tension => _currentTension;
+
+    // ─────────────────────────────────────────────────────────────
+    //  Helper: call a method on whichever backend is active
+    // ─────────────────────────────────────────────────────────────
+
+    private void MusicSetTension(float t)
+    {
+        if (activeBackend == MusicBackend.Procedural) ProceduralMusic?.SetTension(t);
+        else SampleMusic?.SetTension(t);
+    }
+
+    private void MusicSetGameState(GameMusicState s)
+    {
+        if (activeBackend == MusicBackend.Procedural) ProceduralMusic?.SetGameState(s);
+        else SampleMusic?.SetGameState(s);
+    }
+
+    private void MusicSetGameStateAndModulation(GameMusicState s, PitchClass root, MusicalMode mode)
+    {
+        if (activeBackend == MusicBackend.Procedural)
+        {
+            ProceduralMusic?.SetGameState(s);
+            ProceduralMusic?.ForceModulation(root, mode);
+        }
+        else
+        {
+            SampleMusic?.SetGameState(s);
+            SampleMusic?.ForceModulation(root, mode); // stored for readback, no audio effect
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  Unity lifecycle
+    // ─────────────────────────────────────────────────────────────
 
     private void Start()
     {
         if (comfortSystem == null)
             comfortSystem = FindObjectOfType<ComfortSystem>();
 
-        moodSystem = MoodSystem.Instance;
-        if (moodSystem == null)
-            moodSystem = FindObjectOfType<MoodSystem>();
+        _moodSystem = MoodSystem.Instance ?? FindObjectOfType<MoodSystem>();
+        _happinessSystem = HappinessSystem.Instance ?? FindObjectOfType<HappinessSystem>();
 
-        happinessSystem = HappinessSystem.Instance;
-        if (happinessSystem == null)
-            happinessSystem = FindObjectOfType<HappinessSystem>();
-
-        if (moodSystem == null && happinessSystem == null)
+        if (_moodSystem == null && _happinessSystem == null)
             Debug.LogWarning("[ComfortMusicBridge] No MoodSystem or HappinessSystem found. " +
                              "Tension won't update.");
 
-        if (Music == null)
-            Debug.LogWarning("[ComfortMusicBridge] ProceduralMusicController.Instance is null. " +
-                             "Make sure the music system initializes before this script.");
-        else
-            currentMusicState = Music.CurrentState;
+        bool proceduralReady = ProceduralMusic != null;
+        bool sampleReady = SampleMusic != null;
+
+        if (!proceduralReady)
+            Debug.LogWarning("[ComfortMusicBridge] ProceduralMusicController.Instance is null.");
+        if (!sampleReady)
+            Debug.LogWarning("[ComfortMusicBridge] SampleMusicController.Instance is null.");
+
+        // Read the initial state from whichever controller is active
+        if (activeBackend == MusicBackend.Procedural && proceduralReady)
+            _currentMusicState = ProceduralMusic.CurrentState;
+        else if (activeBackend == MusicBackend.Sample && sampleReady)
+            _currentMusicState = SampleMusic.CurrentState;
     }
 
     private void Update()
     {
-        if (Music == null) return;
-        if (moodSystem == null && happinessSystem == null) return;
+        _debugTimer += Time.deltaTime;
+        if (_debugTimer >= 1f)
+        {
+            _debugTimer = 0f;
+            Debug.Log($"[Bridge] backend={activeBackend} tension={_currentTension:F2} " +
+                      $"pending={_pendingState} current={_currentMusicState} " +
+                      $"timer={_stateTimer:F1}/{stateChangeDelay} override={_manualStateOverride}");
+        }
 
-        // Compute tension from mood and happiness
+        bool hasSystem = _moodSystem != null || _happinessSystem != null;
+        bool hasMusic = activeBackend == MusicBackend.Procedural
+                         ? ProceduralMusic != null
+                         : SampleMusic != null;
+
+        if (!hasSystem || !hasMusic) return;
+
         float rawTension = ComputeTension();
-        currentTension = tensionCurve.Evaluate(rawTension);
+        _currentTension = tensionCurve.Evaluate(rawTension);
 
-        // Send to music system
-        Music.SetTension(currentTension);
+        MusicSetTension(_currentTension);
 
-        // Optionally handle state switching
-        if (autoSwitchStates && !manualStateOverride)
-            UpdateAutoState(currentTension);
+        if (autoSwitchStates && !_manualStateOverride)
+            UpdateAutoState(_currentTension);
     }
 
-    /// <summary>
-    /// Tension = weighted inverse blend of mood and happiness.
-    /// Low values of both = high tension. Same formula as the old
-    /// ComfortSystem.UpdateTension() but reading from the new systems.
-    /// </summary>
+    // ─────────────────────────────────────────────────────────────
+    //  Tension computation (shared between both backends)
+    // ─────────────────────────────────────────────────────────────
+
     private float ComputeTension()
     {
-        float mood = moodSystem != null ? moodSystem.Mood : 0.5f;
-        float happiness = happinessSystem != null ? happinessSystem.Happiness : 0.5f;
+        float mood = _moodSystem != null ? _moodSystem.Mood : 0.5f;
+        float happiness = _happinessSystem != null ? _happinessSystem.Happiness : 0.5f;
 
         float moodContribution = (1f - mood) * moodWeight;
         float happinessContribution = (1f - happiness) * happinessWeight;
@@ -142,88 +237,147 @@ public class ComfortMusicBridge : MonoBehaviour
         return raw * raw * (3f - 2f * raw);
     }
 
+    // ─────────────────────────────────────────────────────────────
+    //  Auto state switching (shared between both backends)
+    // ─────────────────────────────────────────────────────────────
+
     private void UpdateAutoState(float tension)
     {
         GameMusicState suggestedState;
 
-        if (inDungeonMode && activeDungeonConfig != null)
+        if (_inDungeonMode && _activeDungeonConfig != null)
         {
-            // Dungeon: thresholds defined per-dungeon on the DungeonConfig SO
-            suggestedState = activeDungeonConfig.EvaluateState(tension);
+            suggestedState = _activeDungeonConfig.EvaluateState(tension);
         }
         else
         {
             bool isNight = comfortSystem != null && comfortSystem.DayNightValue < nightThreshold;
 
-            // Reset to Exploring when night falls
-            if (isNight && !wasNight)
-                useExploring2 = false;
-            wasNight = isNight;
+            if (isNight && !_wasNight)
+                _useExploring2 = false;
+            _wasNight = isNight;
 
             if (isNight)
             {
-                // Night: Cozy (0–0.2) → Night (0.2–0.6) → Spooky (0.6–0.8) → Horror (0.8–1)
-                if (tension >= nightHorrorMin)
-                    suggestedState = GameMusicState.Horror;
-                else if (tension >= nightSpookyMin)
-                    suggestedState = GameMusicState.Spooky;
-                else if (tension <= nightCozyMax)
-                    suggestedState = GameMusicState.Cozy;
-                else
-                    suggestedState = GameMusicState.Night;
+                if (tension >= nightHorrorMin) suggestedState = GameMusicState.Horror;
+                else if (tension >= nightSpookyMin) suggestedState = GameMusicState.Spooky;
+                else if (tension <= nightCozyMax) suggestedState = GameMusicState.Cozy;
+                else suggestedState = GameMusicState.Night;
             }
             else
             {
-                // Day: Cozy (0–0.15) → Exploring/Exploring2 (0.15–0.6) → Pressure (0.6–1)
-                if (tension >= dayPressureMin)
-                    suggestedState = GameMusicState.Pressure;
-                else if (tension <= dayCozyMax)
-                    suggestedState = GameMusicState.Cozy;
-                else
-                    suggestedState = useExploring2 ? GameMusicState.Exploring2 : GameMusicState.Exploring;
+                if (tension >= dayPressureMin) suggestedState = GameMusicState.Pressure;
+                else if (tension <= dayCozyMax) suggestedState = GameMusicState.Cozy;
+                else suggestedState = _useExploring2 ? GameMusicState.Exploring2 : GameMusicState.Exploring;
             }
         }
 
         // Hysteresis
-        if (suggestedState != pendingState)
+        if (suggestedState != _pendingState)
         {
-            pendingState = suggestedState;
-            stateTimer = 0f;
+            _pendingState = suggestedState;
+            _stateTimer = 0f;
         }
         else
         {
-            stateTimer += Time.deltaTime;
+            _stateTimer += Time.deltaTime;
         }
 
-        if (pendingState != currentMusicState && stateTimer >= stateChangeDelay)
+        if (_pendingState != _currentMusicState && _stateTimer >= stateChangeDelay)
         {
-            currentMusicState = pendingState;
-            Music.SetGameState(currentMusicState);
+            _currentMusicState = _pendingState;
+            MusicSetGameState(_currentMusicState);
         }
     }
 
-    // ───────────────────────── Public API ─────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    //  Public API – Backend switching
+    // ─────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Switch music backend at runtime.
+    /// The outgoing backend fades to silence; the incoming backend fades in from the
+    /// current music state so the transition is seamless.
+    /// </summary>
+    public void SetBackend(MusicBackend backend)
+    {
+        if (backend == activeBackend) return;
+
+        StartCoroutine(SwitchBackendRoutine(backend));
+    }
+
+    private System.Collections.IEnumerator SwitchBackendRoutine(MusicBackend incoming)
+    {
+        float fadeDuration = backendSwitchFadeDuration;
+        float halfDuration = fadeDuration * 0.5f;
+
+        // --- Fade OUT the current backend ---
+        if (activeBackend == MusicBackend.Procedural && ProceduralMusic != null)
+        {
+            float startVol = ProceduralMusic.MasterVolume;
+            float elapsed = 0f;
+            while (elapsed < halfDuration)
+            {
+                elapsed += Time.deltaTime;
+                ProceduralMusic.MasterVolume = Mathf.Lerp(startVol, 0f, elapsed / halfDuration);
+                yield return null;
+            }
+            ProceduralMusic.Panic();
+        }
+        else if (activeBackend == MusicBackend.Sample && SampleMusic != null)
+        {
+            SampleMusic.FadeMasterVolumeTo(0f, halfDuration);
+            yield return new WaitForSeconds(halfDuration);
+            SampleMusic.Panic();
+        }
+
+        // --- Swap backend ---
+        activeBackend = incoming;
+
+        // --- Bring incoming backend to the current state ---
+        MusicSetGameState(_currentMusicState);
+        MusicSetTension(_currentTension);
+
+        // --- Fade IN the incoming backend ---
+        if (incoming == MusicBackend.Procedural && ProceduralMusic != null)
+        {
+            float targetVol = ProceduralMusic.MasterVolume; // read default
+            ProceduralMusic.MasterVolume = 0f;
+            float elapsed = 0f;
+            while (elapsed < halfDuration)
+            {
+                elapsed += Time.deltaTime;
+                ProceduralMusic.MasterVolume = Mathf.Lerp(0f, targetVol, elapsed / halfDuration);
+                yield return null;
+            }
+        }
+        else if (incoming == MusicBackend.Sample && SampleMusic != null)
+        {
+            float target = SampleMusic.MasterVolume;
+            SampleMusic.MasterVolume = 0f;
+            SampleMusic.FadeMasterVolumeTo(target, halfDuration);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  Public API – Dungeon mode
+    // ─────────────────────────────────────────────────────────────
 
     /// <summary>
     /// Enter dungeon mode: tension thresholds are read from the DungeonConfig SO.
-    /// Each dungeon type defines its own state progression.
     /// Called by DungeonAtmosphere on dungeon entry.
     /// </summary>
     public void EnterDungeonMode(DungeonConfig config)
     {
-        inDungeonMode = true;
-        activeDungeonConfig = config;
-        stateTimer = 0f;
+        _inDungeonMode = true;
+        _activeDungeonConfig = config;
+        _stateTimer = 0f;
 
-        // Immediately evaluate so music doesn't lag behind
-        if (Music != null)
-        {
-            float tension = tensionCurve.Evaluate(ComputeTension());
-            GameMusicState initialState = config.EvaluateState(tension);
-            currentMusicState = initialState;
-            pendingState = initialState;
-            Music.SetGameState(initialState);
-        }
+        float tension = tensionCurve.Evaluate(ComputeTension());
+        GameMusicState initial = config.EvaluateState(tension);
+        _currentMusicState = initial;
+        _pendingState = initial;
+        MusicSetGameState(initial);
     }
 
     /// <summary>
@@ -232,34 +386,37 @@ public class ComfortMusicBridge : MonoBehaviour
     /// </summary>
     public void ExitDungeonMode()
     {
-        inDungeonMode = false;
-        activeDungeonConfig = null;
-        stateTimer = 0f;
+        _inDungeonMode = false;
+        _activeDungeonConfig = null;
+        _stateTimer = 0f;
     }
 
+    // ─────────────────────────────────────────────────────────────
+    //  Public API – Manual state overrides
+    // ─────────────────────────────────────────────────────────────
+
     /// <summary>
-    /// Manually override the game music state (e.g. for cutscenes, dialogue).
-    /// Disables auto-switching until you call ReleaseStateOverride().
+    /// Manually override the game music state (e.g. cutscenes, dialogue).
+    /// Disables auto-switching until ReleaseStateOverride() is called.
+    /// Works on whichever backend is currently active.
     /// </summary>
     public void OverrideGameState(GameMusicState state)
     {
-        manualStateOverride = true;
-        currentMusicState = state;
-        Music?.SetGameState(state);
+        _manualStateOverride = true;
+        _currentMusicState = state;
+        MusicSetGameState(state);
     }
 
     /// <summary>
-    /// Override the game music state and force a specific key.
-    /// SetGameState runs first (applies state config), then ForceModulation
-    /// overwrites the key — preventing the state's default mode from winning.
-    /// Disables auto-switching until you call ReleaseStateOverride().
+    /// Override the game music state and force a specific key (procedural backend only;
+    /// stored for readback on the sample backend).
+    /// Disables auto-switching until ReleaseStateOverride() is called.
     /// </summary>
     public void OverrideGameState(GameMusicState state, PitchClass root, MusicalMode mode)
     {
-        manualStateOverride = true;
-        currentMusicState = state;
-        Music?.SetGameState(state);
-        Music?.ForceModulation(root, mode);
+        _manualStateOverride = true;
+        _currentMusicState = state;
+        MusicSetGameStateAndModulation(state, root, mode);
     }
 
     /// <summary>
@@ -267,24 +424,20 @@ public class ComfortMusicBridge : MonoBehaviour
     /// </summary>
     public void ReleaseStateOverride()
     {
-        manualStateOverride = false;
-        stateTimer = 0f;
+        _manualStateOverride = false;
+        _stateTimer = 0f;
     }
 
-    /// <summary>
-    /// Adjust the tension curve at runtime if needed.
-    /// </summary>
-    public void SetTensionCurve(AnimationCurve curve)
-    {
-        tensionCurve = curve;
-    }
+    // ─────────────────────────────────────────────────────────────
+    //  Public API – Misc
+    // ─────────────────────────────────────────────────────────────
+
+    /// <summary>Adjust the tension curve at runtime if needed.</summary>
+    public void SetTensionCurve(AnimationCurve curve) => tensionCurve = curve;
 
     /// <summary>
     /// Switch the daytime default between Exploring and Exploring2.
     /// Automatically resets to Exploring when night falls.
     /// </summary>
-    public void SetExploring2(bool active)
-    {
-        useExploring2 = active;
-    }
+    public void SetExploring2(bool active) => _useExploring2 = active;
 }

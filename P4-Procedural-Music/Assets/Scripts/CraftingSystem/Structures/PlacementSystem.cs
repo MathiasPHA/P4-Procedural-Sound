@@ -97,6 +97,11 @@ namespace InventorySystem.Building
         [Tooltip("Sorting order for the placement ghost so it renders above the world.")]
         [SerializeField] private int ghostSortingOrder = 100;
 
+        [Header("Ghost Material")]
+        [Tooltip("Assign 'Universal Render Pipeline/2D/Sprite-Unlit-Default' here. " +
+                 "Shader.Find fails in builds — this serialized reference is required.")]
+        [SerializeField] private Shader ghostShader;
+
         [Header("Audio")]
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private AudioClip placementSound;
@@ -340,7 +345,12 @@ namespace InventorySystem.Building
 
             // Unlit material so the ghost is always visible regardless of ambient light
             // (URP 2D lighting would otherwise darken it at night just like the real world).
-            var unlitMat = new Material(Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default"));
+            if (ghostShader == null)
+            {
+                Debug.LogError("[PlacementSystem] ghostShader is not assigned in the Inspector!");
+                ghostShader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
+            }
+            var unlitMat = new Material(ghostShader);
 
             // Cache renderers, set sorting order, and apply unlit material
             _ghostRenderers = _ghost.GetComponentsInChildren<SpriteRenderer>();

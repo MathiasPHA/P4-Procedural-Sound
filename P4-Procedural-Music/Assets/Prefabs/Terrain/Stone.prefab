@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2746608715140692157}
   - component: {fileID: 8838825112406955203}
   - component: {fileID: 5361530935983334088}
+  - component: {fileID: -5227719124419126540}
   m_Layer: 8
   m_Name: Stone
   m_TagString: Untagged
@@ -160,3 +161,15 @@ MonoBehaviour:
   pickupSound: {fileID: 8300000, guid: 0fa6545b998569c488a78ea6d7f66301, type: 3}
   volume: 0.5
   pitchVariation: 0.15
+--- !u!114 &-5227719124419126540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478931609876907041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e6748cc4ef6c2b40bc2f2c0848567a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralTerrain.SpawnedObjectTracker
