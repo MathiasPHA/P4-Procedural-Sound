@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Potion of Swiftness
   description: For whenever the wolfs are out to get you
   loreNote: Much better than coffee!
-  icon: {fileID: 7108007138110281842, guid: b622fa704b9af324f852382dea7bd5df, type: 3}
+  icon: {fileID: 21300000, guid: efd430aa4de1c0f4b872095b908c4173, type: 3}
   category: 2
   maxStackSize: 1
   isDroppable: 1
@@ -34,6 +34,7 @@ MonoBehaviour:
     effectMessage: 
     effectSound: {fileID: 0}
     effectSoundVolume: 0
+    sceneName: 
   isFuel: 0
   burnFuelValue: 0
   displayStats: []
