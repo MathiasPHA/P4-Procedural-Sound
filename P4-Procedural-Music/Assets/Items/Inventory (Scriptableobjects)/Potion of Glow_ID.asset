@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Potion of Glow
   description: Should make you glow nice and bright
   loreNote: Hopefully it's not radioactive
-  icon: {fileID: 1481291554636048133, guid: a0fe588c78d693f41868b1172f044540, type: 3}
+  icon: {fileID: 21300000, guid: 1fe78a9061926b646a76822e6e576439, type: 3}
   category: 2
   maxStackSize: 1
   isDroppable: 1
@@ -34,6 +34,7 @@ MonoBehaviour:
     effectMessage: 
     effectSound: {fileID: 0}
     effectSoundVolume: 0
+    sceneName: 
   isFuel: 0
   burnFuelValue: 0
   displayStats: []
