@@ -137,7 +137,10 @@ public class PlayerSaveSystem : MonoBehaviour
         {
             // ── NEW GAME ── No save exists yet. Explicitly reset stats to starting
             // defaults so stale static-cache values from a previous session don't
-            // bleed into the new run.
+            // bleed into the new run. (GameSettings.StartGame() also wipes the
+            // static caches before the scene loads — this is the in-scene
+            // counterpart that pushes the inspector defaults into the live
+            // systems.)
             Debug.Log($"[PlayerSaveSystem] No player save found for '{worldName}' — applying new-game defaults.");
             ApplyDefaults();
             return;
