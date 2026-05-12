@@ -212,6 +212,7 @@ MonoBehaviour:
   recipeDatabase:
   - {fileID: 11400000, guid: c650546ba34cbad4b827e9063c606284, type: 2}
   - {fileID: 11400000, guid: aed7ae12ea555b74dbb7b585c756e48b, type: 2}
+  - {fileID: 11400000, guid: 8764948a9b3720b4c9a028f7cf38fe45, type: 2}
   discoverAllOnStart: 1
 --- !u!114 &-55101933661581049
 MonoBehaviour:

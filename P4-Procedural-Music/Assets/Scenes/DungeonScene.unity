@@ -273,7 +273,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3417104002351556845, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
       propertyPath: activeBackend
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3417104002351556845, guid: ac76687d6eec1754f8bb852f36e408a8, type: 3}
       propertyPath: comfortSystem
