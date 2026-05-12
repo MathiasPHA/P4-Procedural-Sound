@@ -34,7 +34,7 @@ MonoBehaviour:
   fleeHealthThreshold: 0
   aggroRange: 120
   attackRange: 25
-  happinessPenalty: 0.2
+  happinessPenalty: 0.25
   threatComfortValue: 0.236
   threatRadius: 300
   hurtStunDuration: 0.3

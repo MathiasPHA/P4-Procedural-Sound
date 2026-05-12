@@ -146,6 +146,25 @@ public class GameSettings : MonoBehaviour
         worldName = world;
         seed = gameSeed;
 
+        // -------------------------------------------------------------------
+        // CRITICAL: wipe static state caches BEFORE the new scene loads.
+        //
+        // HappinessSystem/HungerSystem/MoodSystem each keep a `private static`
+        // value-cache that survives scene unloads (statics live for the entire
+        // Unity process). After a death, those caches hold {happiness=0,
+        // isDead=true, hunger=~0, mood=~0}. If we don't clear them here, the
+        // freshly-instantiated stat systems in the new gameplay scene will read
+        // those dead values back in their Awake() and the player loads in dead
+        // (or near-dead), even on a brand new world.
+        //
+        // This is the counterpart to DayNightMaster.ResetLoadState() — same
+        // pattern, same reason. Anything with persistent state across the
+        // menu-and-back transition needs to be reset here.
+        // -------------------------------------------------------------------
+        HappinessSystem.ResetPersistedState();
+        HungerSystem.ResetPersistedState();
+        MoodSystem.ResetPersistedState();
+
         // Persistent singletons survive scene loads, which means they also survive
         // returning to the main menu. Reset their "already loaded" flags here so the
         // next scene load hydrates them from the new save's files instead of keeping

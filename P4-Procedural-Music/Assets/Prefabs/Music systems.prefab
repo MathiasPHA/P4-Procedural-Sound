@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7011410923571891674
 Transform:
   m_ObjectHideFlags: 0
@@ -75,6 +75,7 @@ MonoBehaviour:
   masterVolume: 1
   crossfadeDuration: 2
   preservePlaybackPosition: 0
+  musicMixerGroup: {fileID: -180231620686836102, guid: e468cdc6a62c548ffbdaf6ea2854c067, type: 2}
   ShowDebugInfo: 0
 --- !u!1 &5358447644200437816
 GameObject:
@@ -123,7 +124,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 242840640128939848, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1459837516537605292, guid: 77895d27c2858634cba333fd7f17acc7, type: 3}
       propertyPath: m_LocalPosition.x

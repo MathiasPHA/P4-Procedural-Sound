@@ -60,6 +60,21 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
     private float hunger;
     private MoodSystem moodSystem;
 
+    /// <summary>
+    /// Wipe the cross-scene hunger cache. Call from "New Game" / "Load Save"
+    /// flows (GameSettings.StartGame) so the new gameplay scene's HungerSystem
+    /// reads the inspector's startingHunger instead of inheriting whatever
+    /// value the previous session ended with (e.g. ~0 right before a death).
+    ///
+    /// Mirrors HappinessSystem.ResetPersistedState() and
+    /// MoodSystem.ResetPersistedState() — all three must be called together
+    /// or the stat caches drift out of sync across sessions.
+    /// </summary>
+    public static void ResetPersistedState()
+    {
+        s_cachedHunger = -1f;
+    }
+
     // ───────────────────────── IMoodModifier ─────────────────────────
 
     public float MoodRate
@@ -89,6 +104,12 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
     public bool IsActive => enabled;
 
     // ───────────────────────── Public API ─────────────────────────
+
+    /// <summary>
+    /// Fired when the player eats a food item (hungerRestore > 0).
+    /// Subscribe from your player animator to trigger the eating animation.
+    /// </summary>
+    public event System.Action OnFoodEaten;
 
     /// <summary>Current hunger value (0 = starving, 1 = full).</summary>
     public float Hunger => hunger;
@@ -192,7 +213,10 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
 
         // Food → hunger bar
         if (consumed.Data.hungerRestore > 0f)
+        {
             RestoreHunger(consumed.Data.hungerRestore);
+            OnFoodEaten?.Invoke();
+        }
 
         // Potions / special items → happiness directly
         if (consumed.Data.happinessRestore > 0f && HappinessSystem.Instance != null)
