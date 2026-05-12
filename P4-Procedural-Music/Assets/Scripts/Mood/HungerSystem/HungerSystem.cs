@@ -90,6 +90,12 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
 
     // ───────────────────────── Public API ─────────────────────────
 
+    /// <summary>
+    /// Fired when the player eats a food item (hungerRestore > 0).
+    /// Subscribe from your player animator to trigger the eating animation.
+    /// </summary>
+    public event System.Action OnFoodEaten;
+
     /// <summary>Current hunger value (0 = starving, 1 = full).</summary>
     public float Hunger => hunger;
 
@@ -192,7 +198,10 @@ public class HungerSystem : MonoBehaviour, IMoodModifier
 
         // Food → hunger bar
         if (consumed.Data.hungerRestore > 0f)
+        {
             RestoreHunger(consumed.Data.hungerRestore);
+            OnFoodEaten?.Invoke();
+        }
 
         // Potions / special items → happiness directly
         if (consumed.Data.happinessRestore > 0f && HappinessSystem.Instance != null)

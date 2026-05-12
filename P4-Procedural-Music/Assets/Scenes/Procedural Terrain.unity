@@ -1795,7 +1795,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7459378878359402859, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: drainPerSecond
-      value: 0.007
+      value: 0.0025
+      objectReference: {fileID: 0}
+    - target: {fileID: 7459378878359402859, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
+      propertyPath: startingHunger
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7459378878359402859, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: wellFedMoodRate
@@ -1803,7 +1807,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7459378878359402859, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: starvingMoodRate
-      value: 0.08
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 7459378878359402859, guid: d4bf7ad50563017459c9fc8fb34a1425, type: 3}
       propertyPath: satiatedThreshold
@@ -2080,10 +2084,6 @@ PrefabInstance:
     - target: {fileID: 9065397540719651061, guid: f4455b325bf4d5547b8cc785edf1e1d1, type: 3}
       propertyPath: m_Name
       value: DevTool
-      objectReference: {fileID: 0}
-    - target: {fileID: 9065397540719651061, guid: f4455b325bf4d5547b8cc785edf1e1d1, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

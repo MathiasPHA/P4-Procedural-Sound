@@ -33,6 +33,12 @@ namespace InventorySystem.Tools
     ///      - Assign the prefab to "Note Button Prefab" below
     ///
     ///   4. Assign PlayerCamera, StateManager, PointAction as before.
+    ///
+    /// PROCEDURAL MUSIC OFF (b-test scenes):
+    ///   If no ProceduralMusicController is present in the scene, FluteTool
+    ///   auto-spawns a StandaloneFluteAudioHost — a minimal AudioSource that
+    ///   renders a single LegatoLead voice through OnAudioFilterRead. No
+    ///   manual scene setup required: the flute just works.
     /// </summary>
     public class FluteTool : MonoBehaviour
     {
@@ -71,6 +77,12 @@ namespace InventorySystem.Tools
         [Range(0f, 1f)]
         public float DuckedVolume = 0.35f;
 
+        [Header("Standalone Fallback")]
+        [Tooltip("Volume of the standalone flute host when ProceduralMusicController is absent " +
+                 "(e.g. b-test scenes). Has no effect when the full music system is running.")]
+        [Range(0f, 1f)]
+        public float StandaloneVolume = 0.7f;
+
         [Header("Colors")]
         public Color NoteIdleColor = new Color(0.80f, 0.93f, 1.00f, 0.85f);
         public Color NoteHoverColor = new Color(1.00f, 1.00f, 0.65f, 1.00f);
@@ -101,6 +113,10 @@ namespace InventorySystem.Tools
         // Dedicated player flute voice — separate from the composition engine's lead
         private VoiceManager _fluteVoice;
 
+        // Damage event subscription (closes the ring on attack)
+        private HappinessSystem _happinessSystem;
+        private bool _subscribedToDamage;
+
         private static readonly string[] NoteTable =
             { "C","C#","D","D#","E","F","F#","G","G#","A","A#","B" };
 
@@ -118,9 +134,46 @@ namespace InventorySystem.Tools
                 PointAction.AddBinding("<Mouse>/position");
         }
 
+        void Start()
+        {
+            // HappinessSystem may not exist yet in Awake (load order),
+            // so subscribe here. OpenRing also retries in case the system
+            // loads even later (e.g. on first scene where the player is spawned).
+            TrySubscribeToDamage();
+        }
+
         void OnDestroy()
         {
+            if (_happinessSystem != null && _subscribedToDamage)
+            {
+                _happinessSystem.OnDamaged -= HandleDamaged;
+                _subscribedToDamage = false;
+            }
             PointAction.Disable();
+        }
+
+        void TrySubscribeToDamage()
+        {
+            if (_subscribedToDamage) return;
+
+            _happinessSystem = HappinessSystem.Instance
+                               ?? FindObjectOfType<HappinessSystem>();
+
+            if (_happinessSystem != null)
+            {
+                _happinessSystem.OnDamaged += HandleDamaged;
+                _subscribedToDamage = true;
+            }
+        }
+
+        /// <summary>
+        /// Called by HappinessSystem when the player takes damage that survived
+        /// i-frame filtering. We close the ring immediately so the player can't
+        /// keep playing the flute through a hit.
+        /// </summary>
+        void HandleDamaged(float amountLost)
+        {
+            if (_isOpen) CloseRing();
         }
 
         // ── Public API ────────────────────────────────────────────────────
@@ -149,6 +202,7 @@ namespace InventorySystem.Tools
             }
 
             _isOpen = true;
+            TrySubscribeToDamage(); // Late-load safety net
             CacheFluteVoice();
             RebuildNoteData();
 
@@ -257,15 +311,12 @@ namespace InventorySystem.Tools
         {
             if (!_isOpen) return;
 
-            // Close if the player enters a hurt or death state (took damage).
-            if (StateManager != null)
+            // Hurt is handled by the OnDamaged event (closes the ring instantly).
+            // Death polling here catches deaths from non-damage sources (starvation, etc.).
+            if (StateManager != null && StateManager.CurrentState == StateManager.deathState)
             {
-                var current = StateManager.CurrentState;
-                if (current == StateManager.hurtState || current == StateManager.deathState)
-                {
-                    CloseRing();
-                    return;
-                }
+                CloseRing();
+                return;
             }
 
             UpdateHover();
@@ -395,23 +446,47 @@ namespace InventorySystem.Tools
                 ProceduralMusic.Core.MusicalMode.Major);
         }
 
+        // ── Voice resolution ──────────────────────────────────────────────
+
+        /// <summary>
+        /// Resolve the flute VoiceManager. Priority:
+        ///   1. ProceduralMusicController in scene → use its dedicated flute voice.
+        ///   2. Existing StandaloneFluteAudioHost in scene → use its voice.
+        ///   3. Spawn a new StandaloneFluteAudioHost on the fly.
+        /// </summary>
         void CacheFluteVoice()
         {
             _fluteVoice = null;
 
+            // 1. Full procedural music system, when available
             var controller = ProceduralMusicController.Instance
                              ?? FindObjectOfType<ProceduralMusicController>();
 
-            if (controller == null)
+            if (controller != null)
             {
-                Debug.LogWarning("[FluteTool] ProceduralMusicController not found in scene.");
-                return;
+                _fluteVoice = controller.GetPlayerFluteVoice();
+                if (_fluteVoice != null) return;
+
+                Debug.LogWarning("[FluteTool] ProceduralMusicController found but " +
+                                 "GetPlayerFluteVoice() returned null — falling back to standalone host.");
             }
 
-            _fluteVoice = controller.GetPlayerFluteVoice();
+            // 2. & 3. Find or create the standalone audio host (b-test / no procedural music)
+            var host = StandaloneFluteAudioHost.Instance
+                       ?? FindObjectOfType<StandaloneFluteAudioHost>();
+
+            if (host == null)
+            {
+                var go = new GameObject("FluteAudioHost");
+                // RequireComponent ensures the AudioSource is added automatically.
+                host = go.AddComponent<StandaloneFluteAudioHost>();
+            }
+
+            host.Volume = StandaloneVolume;
+            _fluteVoice = host.Voice;
 
             if (_fluteVoice == null)
-                Debug.LogWarning("[FluteTool] GetPlayerFluteVoice() returned null.");
+                Debug.LogWarning("[FluteTool] StandaloneFluteAudioHost has no voice.");
         }
 
 #if UNITY_EDITOR
@@ -427,5 +502,84 @@ namespace InventorySystem.Tools
             }
         }
 #endif
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  Standalone audio host
+    // ─────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Minimal self-contained audio host for the player's flute, used when
+    /// ProceduralMusicController is absent from the scene (b-test setups
+    /// where procedural music is disabled).
+    ///
+    /// Owns a single LegatoLead VoiceManager and renders it into Unity's audio
+    /// output via OnAudioFilterRead. A tiny silent looping clip on the
+    /// AudioSource keeps the filter callback firing every audio buffer.
+    ///
+    /// Spawned automatically by FluteTool — no manual scene setup required.
+    /// Existing instances in the scene are reused.
+    /// </summary>
+    [RequireComponent(typeof(AudioSource))]
+    public class StandaloneFluteAudioHost : MonoBehaviour
+    {
+        public static StandaloneFluteAudioHost Instance { get; private set; }
+
+        [Tooltip("Output volume for the standalone flute host. Overwritten by FluteTool " +
+                 "when it spawns the host, but you can pin it here for manually-placed hosts.")]
+        [Range(0f, 1f)]
+        public float Volume = 0.7f;
+
+        /// <summary>The VoiceManager this host renders. Call NoteOn / NoteOff to play.</summary>
+        public VoiceManager Voice => _voice;
+
+        private VoiceManager _voice;
+        private float _sampleRate;
+
+        void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                // A host already exists — destroy this duplicate but leave its
+                // GameObject alone in case other components share it.
+                Destroy(this);
+                return;
+            }
+            Instance = this;
+
+            _sampleRate = AudioSettings.outputSampleRate;
+            _voice = new VoiceManager(InstrumentPreset.LegatoMelody, _sampleRate);
+
+            // Drive the AudioSource with a tiny silent clip so OnAudioFilterRead
+            // is invoked every audio buffer. The actual audio is generated
+            // procedurally inside that callback.
+            var src = GetComponent<AudioSource>();
+            if (src.clip == null)
+                src.clip = AudioClip.Create("FluteHostSilence", 1, 1, (int)_sampleRate, false);
+            src.loop = true;
+            src.playOnAwake = false;
+            src.spatialBlend = 0f;  // 2D — uniform volume regardless of camera position
+            src.Play();
+        }
+
+        void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
+        // Runs on the AUDIO thread — do NOT call Unity APIs here. Pure math only.
+        void OnAudioFilterRead(float[] data, int channels)
+        {
+            if (_voice == null) return;
+
+            int sampleFrames = data.Length / channels;
+            for (int i = 0; i < sampleFrames; i++)
+            {
+                _voice.GetStereoSample(out float l, out float r);
+                data[i * channels] += l * Volume;
+                if (channels > 1)
+                    data[i * channels + 1] += r * Volume;
+            }
+        }
     }
 }

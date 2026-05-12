@@ -135,6 +135,13 @@ namespace MobSystem
         private ComfortInfluenceSource _comfortSource;
         private float _hurtStunTimer;
 
+        // Flee-roll latch. ShouldFlee() is polled every frame, so when
+        // randomizeFlee is on we resolve the dice roll ONCE per below-threshold
+        // episode and cache the result. The latch clears when HP recovers
+        // back above the threshold, so a heal-then-damage cycle re-rolls.
+        private bool _fleeRollResolved;
+        private bool _fleeRollResult;
+
         // ───────────────────────── Lifecycle ─────────────────────────
 
         private void Awake()
@@ -391,13 +398,41 @@ namespace MobSystem
 
         /// <summary>
         /// Whether this mob should flee based on its current health.
+        ///
+        /// When <see cref="MobData.randomizeFlee"/> is off, this returns true
+        /// the moment HP drops below the threshold (always-flee behaviour).
+        ///
+        /// When randomizeFlee is on, the mob rolls against
+        /// <see cref="MobData.fleeChance"/> the first time HP crosses below
+        /// the threshold. The result is cached for the duration of that
+        /// "below threshold" episode — no per-frame re-rolling — and only
+        /// re-rolls if HP climbs back above the threshold and dips below
+        /// again (e.g. via healing).
         /// </summary>
         public bool ShouldFlee()
         {
             if (data.fleeHealthThreshold <= 0f) return false;
 
             float healthPct = (float)CurrentHealth / data.maxHealth;
-            return healthPct <= data.fleeHealthThreshold;
+            bool belowThreshold = healthPct <= data.fleeHealthThreshold;
+
+            if (!belowThreshold)
+            {
+                // Re-arm the roll for the next time HP dips back below.
+                _fleeRollResolved = false;
+                return false;
+            }
+
+            // First crossing into the threshold — resolve the decision once
+            // and stick with it until HP recovers.
+            if (!_fleeRollResolved)
+            {
+                _fleeRollResolved = true;
+                _fleeRollResult = !data.randomizeFlee
+                                  || UnityEngine.Random.value < data.fleeChance;
+            }
+
+            return _fleeRollResult;
         }
 
         /// <summary>
