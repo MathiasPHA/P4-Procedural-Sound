@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 using ProceduralMusic.Bridge;
 using ProceduralMusic.Core;
 
@@ -73,6 +74,10 @@ public class SampleMusicController : MonoBehaviour
     //  Inspector – Debug
     // ─────────────────────────────────────────────────────────────
 
+    [Header("Audio Mixer")]
+    [Tooltip("Assign the Music group from your Audio Mixer. Both AudioSources will route through it.")]
+    [SerializeField] private AudioMixerGroup musicMixerGroup;
+
     [Header("Debug")]
     public bool ShowDebugInfo = false;
 
@@ -132,6 +137,7 @@ public class SampleMusicController : MonoBehaviour
             _sources[i].playOnAwake = false;
             _sources[i].volume = 0f;
             _sources[i].spatialBlend = 0f; // 2D
+            _sources[i].outputAudioMixerGroup = musicMixerGroup;
         }
     }
 

@@ -18,6 +18,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerHurtState hurtState = new PlayerHurtState();
     public PlayerDeathState deathState = new PlayerDeathState();
     public PlayerFishingState fishingState = new PlayerFishingState();
+    public PlayerEatState eatState = new PlayerEatState();
     public ConsumableEffectManager consumableEffect;
 
     public string animationQue;
@@ -44,7 +45,7 @@ public class PlayerStateManager : MonoBehaviour
     {
         // Don't update facing direction during harvest, hurt, or death —
         // prevents animation restart / direction flip while locked
-        if (currentState != harvestState && currentState != hurtState && currentState != deathState)
+        if (currentState != harvestState && currentState != hurtState && currentState != deathState && currentState != eatState)
             GetDircetion(moveInput.x, moveInput.y);
 
         currentState.UpdateState(this);
@@ -71,6 +72,12 @@ public class PlayerStateManager : MonoBehaviour
         LastCollision = collision;
         currentState?.OnCollisionEnter(this);
         LastCollision = null;
+    }
+
+    public void StartEat(float duration = 0.8f)
+    {
+        eatState.Configure(duration);
+        SwitchState(eatState);
     }
 
     public void StartHarvest()

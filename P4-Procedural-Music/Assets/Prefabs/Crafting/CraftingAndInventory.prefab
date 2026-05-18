@@ -716,17 +716,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySystem.Crafting.HandCraftingStation
   stationType: 0
   recipeDatabase:
-  - {fileID: 11400000, guid: 8d44597e159083b49a457c85b827a197, type: 2}
-  - {fileID: 11400000, guid: a79ea9fa4f7ac459eaefbe4f7b5d08b1, type: 2}
-  - {fileID: 11400000, guid: 9e797a78fd8764528b9cea5f69f3216a, type: 2}
-  - {fileID: 11400000, guid: fac8eb7d68fc4401283077d00b6da3fb, type: 2}
   - {fileID: 11400000, guid: 89ccd0954437c8d418a4b4b167338d3a, type: 2}
   - {fileID: 11400000, guid: 9e8a0ac6e5208914f8fd0326f5eab248, type: 2}
-  - {fileID: 11400000, guid: 3460484d83b054dfabf5246cd0ae54dc, type: 2}
   - {fileID: 11400000, guid: 20599ac605c4e314d9fdd593fe7e6427, type: 2}
+  - {fileID: 11400000, guid: 3460484d83b054dfabf5246cd0ae54dc, type: 2}
+  - {fileID: 11400000, guid: fac8eb7d68fc4401283077d00b6da3fb, type: 2}
   - {fileID: 11400000, guid: be74306c8374440068733ac28d4242b5, type: 2}
-  - {fileID: 11400000, guid: 46ec31a3c76604905a950480166c986f, type: 2}
-  - {fileID: 11400000, guid: a619de73b22ceab42a3f43c5299a342a, type: 2}
+  - {fileID: 11400000, guid: a79ea9fa4f7ac459eaefbe4f7b5d08b1, type: 2}
+  - {fileID: 11400000, guid: 8d44597e159083b49a457c85b827a197, type: 2}
   discoverAllOnStart: 1
 --- !u!1 &2112802766474408795
 GameObject:
@@ -4715,8 +4712,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -100, y: 240}
-  m_SizeDelta: {x: 220, y: 40}
+  m_AnchoredPosition: {x: 10, y: 240}
+  m_SizeDelta: {x: 503.2639, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6145983008590677810
 MonoBehaviour:
@@ -4794,6 +4791,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ad4bc49c0948f2a488cc09ee8cac6955, type: 2}
   - {fileID: 11400000, guid: 568aab7d06b6c43dcb4fcb57c4018096, type: 2}
   - {fileID: 11400000, guid: 8c17779159f296f42bca9a5bd0e90709, type: 2}
+  - {fileID: 11400000, guid: c04f3738e1cab1f4ab66737d4f060169, type: 2}
   discoverAllOnStart: 1
 --- !u!1 &8106799000397714712
 GameObject:

@@ -90,6 +90,7 @@ namespace InventorySystem.Data
                 Slots[emptyIndex].Set(instance, toPlace);
                 remaining -= toPlace;
                 NotifySlotChanged(emptyIndex);
+                TryAutoEquipIfActiveSlot(emptyIndex);
             }
 
             if (remaining < amount)

@@ -9,6 +9,12 @@ using UnityEngine;
 ///   3. Plays an optional death sound
 ///   4. PERMADEATH: wipes the world's save folder
 ///   5. Fades in a death canvas
+///
+/// Note: nothing here clears the dead state on the player. The static stat
+/// caches (HappinessSystem._persistedIsDead etc.) are wiped by
+/// GameSettings.StartGame() when the player starts a new game or loads a
+/// different save — that's the single entry point for "begin a fresh
+/// gameplay session" and it handles all three stat caches together.
 /// </summary>
 public class PlayerDeathHandler : MonoBehaviour
 {
@@ -132,6 +138,10 @@ public class PlayerDeathHandler : MonoBehaviour
         }
 
         // 4. PERMADEATH — wipe the world.
+        // No need to touch the HappinessSystem dead state here:
+        // GameSettings.StartGame() resets every stat cache when the player
+        // begins their next session, which is the single correct moment for
+        // that reset.
         if (deleteWorldOnDeath)
         {
             if (SaveSystemManager.Instance != null)

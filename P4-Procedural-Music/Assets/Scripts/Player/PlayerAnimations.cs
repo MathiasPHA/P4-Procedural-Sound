@@ -11,6 +11,23 @@ public class PlayerAnimations : MonoBehaviour
         playerAnimator = GetComponent<Animator>();
     }
 
+    private void Start()
+    {
+        if (HungerSystem.Instance != null)
+            HungerSystem.Instance.OnFoodEaten += OnFoodEaten;
+    }
+
+    private void OnDestroy()
+    {
+        if (HungerSystem.Instance != null)
+            HungerSystem.Instance.OnFoodEaten -= OnFoodEaten;
+    }
+
+    private void OnFoodEaten()
+    {
+        playerStateManager.StartEat();
+    }
+
     private void Update()
     {
         animationQue = playerStateManager.animationQue;
@@ -110,6 +127,11 @@ public class PlayerAnimations : MonoBehaviour
         if (animationQue == "Shrug")
         {
             playerAnimator.Play("PlayerShrug");
+        }
+
+        if (animationQue == "Eat")
+        {
+            playerAnimator.Play("PlayerEat");
         }
 
         if (animationQue == "Hurt")

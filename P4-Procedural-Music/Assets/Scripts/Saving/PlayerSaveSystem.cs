@@ -23,6 +23,11 @@ public class PlayerSaveSystem : MonoBehaviour
     [Tooltip("The player's Transform to save/restore position from.")]
     [SerializeField] private Transform playerTransform;
 
+    [Header("New Game Defaults")]
+    [SerializeField][Range(0f, 1f)] private float defaultHappiness = 1f;
+    [SerializeField][Range(0f, 1f)] private float defaultHunger = 1f;
+    [SerializeField][Range(0f, 1f)] private float defaultMood = 0.6f;
+
     private HappinessSystem happinessSystem;
     private HungerSystem hungerSystem;
     private MoodSystem moodSystem;
@@ -42,17 +47,35 @@ public class PlayerSaveSystem : MonoBehaviour
 
     private void Start()
     {
-        happinessSystem = HappinessSystem.Instance;
+        EnsureSystemRefs();
+    }
+
+    /// <summary>
+    /// Lazily resolve refs to HappinessSystem / HungerSystem / MoodSystem.
+    /// Called from Start AND from the top of every public Save/Load method,
+    /// because Start() order between scripts is non-deterministic in Unity —
+    /// SaveSystemManager.Start can fire LoadPlayer before this script's Start
+    /// has run, leaving refs null and ApplyDefaults silently no-op'ing while
+    /// stale static-cache values from a previous save persist.
+    ///
+    /// Cheap to call repeatedly: once each ref is non-null it short-circuits.
+    /// </summary>
+    private void EnsureSystemRefs()
+    {
         if (happinessSystem == null)
-            happinessSystem = FindObjectOfType<HappinessSystem>();
+            happinessSystem = HappinessSystem.Instance != null
+                ? HappinessSystem.Instance
+                : FindObjectOfType<HappinessSystem>();
 
-        hungerSystem = HungerSystem.Instance;
         if (hungerSystem == null)
-            hungerSystem = FindObjectOfType<HungerSystem>();
+            hungerSystem = HungerSystem.Instance != null
+                ? HungerSystem.Instance
+                : FindObjectOfType<HungerSystem>();
 
-        moodSystem = MoodSystem.Instance;
         if (moodSystem == null)
-            moodSystem = FindObjectOfType<MoodSystem>();
+            moodSystem = MoodSystem.Instance != null
+                ? MoodSystem.Instance
+                : FindObjectOfType<MoodSystem>();
     }
 
     // -------------------------------------------------------------------------
@@ -61,6 +84,8 @@ public class PlayerSaveSystem : MonoBehaviour
 
     public void SavePlayer(string worldName)
     {
+        EnsureSystemRefs();
+
         bool inDungeon = DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon;
         string path = GetSavePath(worldName);
         PlayerSaveData data;
@@ -86,9 +111,9 @@ public class PlayerSaveSystem : MonoBehaviour
             };
         }
 
-        data.happiness = happinessSystem != null ? happinessSystem.Happiness : 0.5f;
-        data.hunger = hungerSystem != null ? hungerSystem.Hunger : 0.8f;
-        data.mood = moodSystem != null ? moodSystem.Mood : 0.6f;
+        data.happiness = happinessSystem != null ? happinessSystem.Happiness : defaultHappiness;
+        data.hunger = hungerSystem != null ? hungerSystem.Hunger : defaultHunger;
+        data.mood = moodSystem != null ? moodSystem.Mood : defaultMood;
 
         File.WriteAllText(path, JsonUtility.ToJson(data, prettyPrint: true));
         Debug.Log($"[PlayerSaveSystem] Saved player (inDungeon={inDungeon}) " +
@@ -97,6 +122,12 @@ public class PlayerSaveSystem : MonoBehaviour
 
     public void LoadPlayer(string worldName)
     {
+        // CRITICAL: refresh system refs first. Start() order is non-deterministic,
+        // so SaveSystemManager.Start may invoke this before our own Start runs.
+        // If refs are null here, ApplyDefaults() silently no-ops and stale static
+        // caches from a previous save survive — that's the carryover bug.
+        EnsureSystemRefs();
+
         // Don't restore overworld position when in a dungeon
         if (DungeonManager.Instance != null && DungeonManager.Instance.IsInDungeon)
             return;
@@ -104,14 +135,22 @@ public class PlayerSaveSystem : MonoBehaviour
         string path = GetSavePath(worldName);
         if (!File.Exists(path))
         {
-            Debug.Log($"[PlayerSaveSystem] No player save found for '{worldName}' — using defaults.");
+            // ── NEW GAME ── No save exists yet. Explicitly reset stats to starting
+            // defaults so stale static-cache values from a previous session don't
+            // bleed into the new run. (GameSettings.StartGame() also wipes the
+            // static caches before the scene loads — this is the in-scene
+            // counterpart that pushes the inspector defaults into the live
+            // systems.)
+            Debug.Log($"[PlayerSaveSystem] No player save found for '{worldName}' — applying new-game defaults.");
+            ApplyDefaults();
             return;
         }
 
         var data = JsonUtility.FromJson<PlayerSaveData>(File.ReadAllText(path));
         if (data == null)
         {
-            Debug.LogWarning("[PlayerSaveSystem] Player save data was corrupt.");
+            Debug.LogWarning("[PlayerSaveSystem] Player save data was corrupt — applying new-game defaults.");
+            ApplyDefaults();
             return;
         }
 
@@ -136,6 +175,27 @@ public class PlayerSaveSystem : MonoBehaviour
     // -------------------------------------------------------------------------
     // Internal
     // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Pushes the inspector-configured starting values into every live system.
+    /// Called when no save file exists (new game) or when the save is corrupt.
+    /// This is the single authoritative place that resets stale static-cache
+    /// values that survive scene loads.
+    /// </summary>
+    private void ApplyDefaults()
+    {
+        if (happinessSystem != null)
+            happinessSystem.SetHappiness(defaultHappiness);
+
+        if (hungerSystem != null)
+            hungerSystem.SetHunger(defaultHunger);
+
+        if (moodSystem != null)
+            moodSystem.SetMood(defaultMood);
+
+        Debug.Log($"[PlayerSaveSystem] Defaults applied — " +
+                  $"happiness={defaultHappiness:F2}, hunger={defaultHunger:F2}, mood={defaultMood:F2}");
+    }
 
     private static string GetSavePath(string worldName)
     {

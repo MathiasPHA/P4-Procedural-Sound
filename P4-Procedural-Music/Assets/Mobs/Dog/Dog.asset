@@ -32,9 +32,11 @@ MonoBehaviour:
   fleeSpeedMultiplier: 1
   fleeDistance: 120
   fleeHealthThreshold: 0.2
+  randomizeFlee: 1
+  fleeChance: 0.4
   aggroRange: 50
   attackRange: 35
-  happinessPenalty: 0.05
+  happinessPenalty: 0.1
   threatComfortValue: 0.31
   threatRadius: 20
   hurtStunDuration: 0.3

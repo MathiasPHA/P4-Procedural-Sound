@@ -18,7 +18,7 @@ namespace ProceduralTerrain
         private int _spawnId;
         private Vector2Int _chunkCoord;
         private bool _handled;
-        private bool _initialized;
+        internal bool _initialized;
 
         public void Init(int spawnId, Vector2Int chunkCoord)
         {
@@ -64,6 +64,30 @@ namespace ProceduralTerrain
 
             Debug.Log($"[SpawnedObjectTracker] Depleting {gameObject.name} spawnId={_spawnId} chunk={_chunkCoord}");
             _chunkManager.DepleteSpawnedObject(_chunkCoord, _spawnId);
+
+            // HarvestableResource may have already instantiated the depleted prefab (stump) for
+            // immediate visual feedback. Find it — it will be an uninitialized SpawnedObjectTracker
+            // near this position — and give it the stump's tracking ID so it saves correctly.
+            int stumpId = _spawnId ^ 0x5EED;
+            var allTrackers = FindObjectsByType<SpawnedObjectTracker>(FindObjectsSortMode.None);
+            float closestDist = float.MaxValue;
+            SpawnedObjectTracker stumpTracker = null;
+            foreach (var t in allTrackers)
+            {
+                if (t == this || t._initialized) continue;
+                float dist = Vector3.Distance(t.transform.position, transform.position);
+                if (dist < closestDist)
+                {
+                    closestDist = dist;
+                    stumpTracker = t;
+                }
+            }
+
+            if (stumpTracker != null)
+            {
+                stumpTracker.Init(stumpId, _chunkCoord);
+                Debug.Log($"[SpawnedObjectTracker] Initialized live stump tracker stumpId={stumpId} chunk={_chunkCoord}");
+            }
         }
 
         /// <summary>

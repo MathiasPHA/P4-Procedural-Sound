@@ -426,7 +426,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 2140032, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -472,8 +472,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
+  m_sharedMaterial: {fileID: 2140032, guid: 83cea2a285da0f8498e5303b13ae9016, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -734,6 +734,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: feee236670a750e4f9bd4974e4e7ead1, type: 2}
   - {fileID: 11400000, guid: b4a223a398ec44f8ba59d383b5c366c4, type: 2}
   - {fileID: 11400000, guid: ac2de69023ef2dd49b6e247d5c014356, type: 2}
+  - {fileID: 11400000, guid: 2058d5b440c938143aebfb5eebcebbee, type: 2}
   gridSize: 2
   skipGroundCheck: 1
   groundLayer:
@@ -745,6 +746,7 @@ MonoBehaviour:
   validColour: {r: 0.2, g: 1, b: 0.2, a: 0.5}
   invalidColour: {r: 1, g: 0.2, b: 0.2, a: 0.5}
   ghostSortingOrder: 100
+  ghostShader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
   audioSource: {fileID: -1374152125123140291}
   placementSound: {fileID: 8300000, guid: 8e17a6d1d3180bd4784e2fbca7536105, type: 3}
   placementVolume: 1
@@ -770,6 +772,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1bfb98d5d171a4ed186f1743632d2a1a, type: 2}
   - {fileID: 11400000, guid: f048d790656f64efeae146e8437a7fa1, type: 2}
   - {fileID: 11400000, guid: 737d631576b134cdd9e67b94f3cc4a70, type: 2}
+  - {fileID: 11400000, guid: ba943e36e971647b891f8c815031b7e5, type: 2}
+  - {fileID: 11400000, guid: 96c747faef6368646adea7c2d2e005b8, type: 2}
+  - {fileID: 11400000, guid: 4e73f74aef4a5564cab605844b96a366, type: 2}
+  - {fileID: 11400000, guid: b4cabb496960d3746a6c8717e384ff89, type: 2}
   resourceLayer:
     serializedVersion: 2
     m_Bits: 384
@@ -911,6 +917,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveSystem
   playerTransform: {fileID: 6496137450566507929}
+  defaultHappiness: 1
+  defaultHunger: 0.651
+  defaultMood: 0.75
 --- !u!114 &8506979196779420666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1158,6 +1167,7 @@ MonoBehaviour:
   StartAngleDeg: 90
   BaseOctave: 4
   DuckedVolume: 0.35
+  StandaloneVolume: 0.7
   NoteIdleColor: {r: 0.8, g: 0.93, b: 1, a: 0.8}
   NoteHoverColor: {r: 1, g: 1, b: 0.65, a: 1}
   NotePlayingColor: {r: 0.45, g: 1, b: 0.7, a: 1}
@@ -1199,7 +1209,9 @@ MonoBehaviour:
   deathCanvasGroup: {fileID: 0}
   playerRigidbody: {fileID: 50687759397478212}
   playerStateManager: {fileID: 4859490917234952540}
-  componentsToDisable: []
+  componentsToDisable:
+  - {fileID: 0}
+  - {fileID: 5049543004024689469}
   delayBeforeFade: 0.4
   fadeInDuration: 2
   fadeOutDuration: 0.6

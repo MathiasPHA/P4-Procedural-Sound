@@ -17,7 +17,6 @@ namespace ProceduralTerrain
         {
             var grid = new TerrainType[chunkSize, chunkSize];
 
-            // Use override seed if provided, otherwise fall back to config
             int activeSeed = seedOverride ?? config.seed;
 
             // Deterministic offset from seed so different seeds give different worlds
