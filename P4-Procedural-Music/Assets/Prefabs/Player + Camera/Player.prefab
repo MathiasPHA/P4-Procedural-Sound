@@ -734,6 +734,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: feee236670a750e4f9bd4974e4e7ead1, type: 2}
   - {fileID: 11400000, guid: b4a223a398ec44f8ba59d383b5c366c4, type: 2}
   - {fileID: 11400000, guid: ac2de69023ef2dd49b6e247d5c014356, type: 2}
+  - {fileID: 11400000, guid: 2058d5b440c938143aebfb5eebcebbee, type: 2}
   gridSize: 2
   skipGroundCheck: 1
   groundLayer:
@@ -1166,6 +1167,7 @@ MonoBehaviour:
   StartAngleDeg: 90
   BaseOctave: 4
   DuckedVolume: 0.35
+  StandaloneVolume: 0.7
   NoteIdleColor: {r: 0.8, g: 0.93, b: 1, a: 0.8}
   NoteHoverColor: {r: 1, g: 1, b: 0.65, a: 1}
   NotePlayingColor: {r: 0.45, g: 1, b: 0.7, a: 1}
@@ -1207,7 +1209,9 @@ MonoBehaviour:
   deathCanvasGroup: {fileID: 0}
   playerRigidbody: {fileID: 50687759397478212}
   playerStateManager: {fileID: 4859490917234952540}
-  componentsToDisable: []
+  componentsToDisable:
+  - {fileID: 0}
+  - {fileID: 5049543004024689469}
   delayBeforeFade: 0.4
   fadeInDuration: 2
   fadeOutDuration: 0.6

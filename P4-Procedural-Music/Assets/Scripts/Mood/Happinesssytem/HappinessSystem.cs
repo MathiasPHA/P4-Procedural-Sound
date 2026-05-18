@@ -98,15 +98,19 @@ public class HappinessSystem : MonoBehaviour
     //
     // -1f is the "nothing cached yet" sentinel (no real happiness can be
     // negative). Call ResetPersistedState() to wipe the cache when starting
-    // a fresh game.
+    // a fresh game — this is done from GameSettings.StartGame() which is the
+    // single entry point for both new-game and load-save flows.
     private static float _persistedHappiness = -1f;
     private static bool _persistedIsDead = false;
 
     /// <summary>
-    /// Wipe the cross-scene happiness cache. Call this before loading the
-    /// gameplay scene from a "New Game" flow so the player starts with
-    /// startingHappiness instead of whatever value carried over from a prior
-    /// session in the same Unity process.
+    /// Wipe the cross-scene happiness cache. Called from GameSettings.StartGame()
+    /// before the gameplay scene loads, so the player starts with
+    /// startingHappiness (or the saved value from PlayerSaveSystem) rather
+    /// than the dead/depleted value from a prior session in the same Unity
+    /// process. Counterpart to MoodSystem.ResetPersistedState() and
+    /// HungerSystem.ResetPersistedState() — call all three together or the
+    /// stat caches drift out of sync across sessions.
     /// </summary>
     public static void ResetPersistedState()
     {
@@ -162,7 +166,8 @@ public class HappinessSystem : MonoBehaviour
 
     /// <summary>
     /// Force happiness to an exact value. Use for game start, respawn, debug.
-    /// Bypasses smoothing entirely.
+    /// Bypasses smoothing entirely. Also clears the dead state — if you call
+    /// SetHappiness(1f) on a corpse, it comes back to life.
     /// </summary>
     public void SetHappiness(float value)
     {

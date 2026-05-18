@@ -128,6 +128,21 @@ namespace MobSystem.Data
         [Range(0f, 1f)]
         public float fleeHealthThreshold = 0f;
 
+        [Tooltip("If true, fleeing is probabilistic: the moment HP first crosses " +
+                 "fleeHealthThreshold (going down), the mob rolls against fleeChance. " +
+                 "If the roll fails, it commits to fighting and won't re-roll until HP " +
+                 "recovers above the threshold and dips below again. " +
+                 "If false, the mob always flees once HP drops below the threshold.")]
+        public bool randomizeFlee = false;
+
+        [Tooltip("Probability (0–1) the mob flees when HP first crosses fleeHealthThreshold. " +
+                 "Only used when randomizeFlee is on. " +
+                 "1 = always flees (same as toggle off), " +
+                 "0 = never flees, " +
+                 "0.5 = coin flip per threshold crossing.")]
+        [Range(0f, 1f)]
+        public float fleeChance = 0.5f;
+
         // ───────────────────────── Hostile Behaviour ─────────────────────────
 
         [Header("Hostile Behaviour")]
@@ -347,13 +362,13 @@ namespace MobSystem.Data
         [Tooltip("Prefab with WorldItem component for spawning drops.")]
         public GameObject worldItemPrefab;
 
-         // ───────────────────────── Catchable ─────────────────────────
- 
+        // ───────────────────────── Catchable ─────────────────────────
+
         [Header("Catchable")]
         [Tooltip("If true, the player can catch this mob with a Net. " +
                  "CatchableMob is added to instances automatically at spawn.")]
         public bool isCatchable = false;
- 
+
         [Tooltip("Item added to the player's inventory on a successful catch " +
                  "(e.g. a 'Firefly' ItemData ScriptableObject). " +
                  "Leave empty to despawn the mob without giving anything.")]
@@ -384,8 +399,8 @@ namespace MobSystem.Data
             }
         }
 
-       
+
     }
-            
+
 
 }

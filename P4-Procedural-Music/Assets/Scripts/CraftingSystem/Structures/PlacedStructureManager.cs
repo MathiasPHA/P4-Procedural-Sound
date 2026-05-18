@@ -50,6 +50,13 @@ namespace ProceduralTerrain
         // Lookup: item ID → PlaceableData (for spawning on load)
         private Dictionary<string, PlaceableData> _placeableLookup = new();
 
+        // True once LoadAllFromDisk has completed (file-missing counts as success;
+        // exceptions do not). Guards SaveToDisk against writing — and worse,
+        // running the empty-state file-delete branch — when we never managed
+        // to read the existing data. Without this guard, any load failure
+        // permanently wipes the structure save.
+        private bool _loadedFromDisk = false;
+
         private const string SAVE_FILENAME = "world_structures.json";
 
         // =====================================================================
@@ -79,6 +86,23 @@ namespace ProceduralTerrain
             // loading before _savedStructures is populated and silently spawn
             // nothing — only later chunks (loaded by walking) get their structures.
             LoadAllFromDisk();
+        }
+
+        private void Start()
+        {
+            // BUILD SAFETY NET: if Awake's load failed (e.g. GameSettings AND
+            // SaveSystemManager both still null in Awake — possible in some
+            // edge-case Awake orderings), retry now. By Start, every other
+            // script in the scene has finished Awake, so the worldName lookup
+            // will succeed. Without this retry, a build-only Awake-order race
+            // can leave _savedStructures empty and the next SaveToDisk would
+            // permanently wipe the structure save file.
+            if (!_loadedFromDisk)
+            {
+                Debug.LogWarning("[PlacedStructureManager] LoadAllFromDisk did not complete in Awake — retrying in Start. " +
+                                 "This usually means GameSettings.Instance and SaveSystemManager.Instance were both null in Awake.");
+                LoadAllFromDisk();
+            }
         }
 
         // =====================================================================
@@ -254,9 +278,7 @@ namespace ProceduralTerrain
 
             _savedStructures[chunkCoord] = saveEntries;
 
-            string worldName = SaveSystemManager.Instance != null
-                ? SaveSystemManager.Instance.worldName
-                : "default";
+            string worldName = GetActiveWorldName();
             SaveToDisk(worldName);
         }
 
@@ -266,9 +288,7 @@ namespace ProceduralTerrain
         /// </summary>
         public void SaveAll()
         {
-            string worldName = SaveSystemManager.Instance != null
-                ? SaveSystemManager.Instance.worldName
-                : "default";
+            string worldName = GetActiveWorldName();
 
             SyncActiveToSaveData();
             SaveToDisk(worldName);
@@ -280,11 +300,7 @@ namespace ProceduralTerrain
         public void ClearAll(string worldName = null)
         {
             if (worldName == null)
-            {
-                worldName = SaveSystemManager.Instance != null
-                    ? SaveSystemManager.Instance.worldName
-                    : "default";
-            }
+                worldName = GetActiveWorldName();
 
             _savedStructures.Clear();
             _activeStructures.Clear();
@@ -403,6 +419,18 @@ namespace ProceduralTerrain
 
         private void SaveToDisk(string worldName)
         {
+            // CRITICAL: never write to disk if we haven't successfully loaded yet.
+            // _savedStructures would be empty (or partial), and the empty-state
+            // branch below would DELETE the existing save file — permanently
+            // wiping the player's structures. This is the build-only Awake-order
+            // failure mode we're guarding against.
+            if (!_loadedFromDisk)
+            {
+                Debug.LogWarning("[PlacedStructureManager] SaveToDisk skipped — disk load never completed. " +
+                                 "Refusing to write a possibly empty save over existing structure data.");
+                return;
+            }
+
             var saveData = new WorldStructureSaveData();
 
             foreach (var kvp in _savedStructures)
@@ -433,21 +461,29 @@ namespace ProceduralTerrain
 
         private void LoadAllFromDisk()
         {
-            string worldName = SaveSystemManager.Instance != null
-                ? SaveSystemManager.Instance.worldName
-                : "default";
-
+            string worldName = GetActiveWorldName();
             string path = GetSavePath(worldName);
 
+            Debug.Log($"[PlacedStructureManager] LoadAllFromDisk worldName='{worldName}' path='{path}'");
+
             if (!File.Exists(path))
+            {
+                // No save yet — legitimately empty. Mark as loaded so subsequent
+                // SaveToDisk calls can proceed normally.
+                _loadedFromDisk = true;
                 return;
+            }
 
             try
             {
                 string json = File.ReadAllText(path);
                 var saveData = JsonUtility.FromJson<WorldStructureSaveData>(json);
 
-                if (saveData?.chunks == null) return;
+                if (saveData?.chunks == null)
+                {
+                    _loadedFromDisk = true;
+                    return;
+                }
 
                 foreach (var entry in saveData.chunks)
                 {
@@ -455,11 +491,15 @@ namespace ProceduralTerrain
                     _savedStructures[coord] = entry.structures ?? new List<StructureSaveData>();
                 }
 
+                _loadedFromDisk = true;
                 Debug.Log($"[PlacedStructureManager] Loaded structure data for {saveData.chunks.Count} chunks.");
             }
             catch (Exception e)
             {
                 Debug.LogError($"[PlacedStructureManager] Failed to load structures: {e.Message}");
+                // INTENTIONALLY do NOT set _loadedFromDisk = true here. A subsequent
+                // SaveToDisk would otherwise treat the (now empty) in-memory state as
+                // authoritative and wipe the disk file we just failed to read.
             }
         }
 
@@ -484,6 +524,22 @@ namespace ProceduralTerrain
             // Fallback (should never hit this in normal gameplay)
             Debug.LogWarning("[PlacedStructureManager] ChunkManager.Instance is null, using fallback coord calc.");
             return Vector2Int.zero;
+        }
+
+        /// <summary>
+        /// Resolve the current world name. Prefer GameSettings (DontDestroyOnLoad,
+        /// guaranteed-available in Awake) over SaveSystemManager (scene-local,
+        /// with non-deterministic Awake order that caused a build-only data-loss
+        /// bug). Both being null falls back to "default" — only happens in
+        /// editor scene-entry edge cases.
+        /// </summary>
+        private string GetActiveWorldName()
+        {
+            if (GameSettings.Instance != null)
+                return GameSettings.Instance.worldName;
+            if (SaveSystemManager.Instance != null)
+                return SaveSystemManager.Instance.worldName;
+            return "default";
         }
 
         // =====================================================================
