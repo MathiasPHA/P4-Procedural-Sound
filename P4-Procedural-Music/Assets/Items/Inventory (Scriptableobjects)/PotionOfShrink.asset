@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Potion of Shrink
   description: For when the world just doesn't seem big enough
   loreNote: Did I shrink or  everything else grow?
-  icon: {fileID: -3597005921356937373, guid: 465b096fd8314a34883a3287c00d663d, type: 3}
+  icon: {fileID: 21300000, guid: 465b096fd8314a34883a3287c00d663d, type: 3}
   category: 2
   maxStackSize: 1
   isDroppable: 1

@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Potion of Health
   description: Does what it says on the label.
   loreNote: Mmmh... Red... My favourite taste...
-  icon: {fileID: 6242717491161727700, guid: ba65f196962f64045852353ff4a4065c, type: 3}
+  icon: {fileID: 21300000, guid: ba65f196962f64045852353ff4a4065c, type: 3}
   category: 2
   maxStackSize: 1
   isDroppable: 1
